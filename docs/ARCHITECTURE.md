@@ -12,7 +12,7 @@ NeOS (Next Evolution Operating System) is an Arch Linux–based desktop OS targe
 
 ## System Layers
 ### 1) Base Operating System (Arch Linux)
-- **Kernel & core system:** Upstream Arch kernel, systemd, coreutils, and baseline Arch packages.
+- **Kernel & core system:** Upstream Arch kernel with optional `linux-lts` fallback, systemd, coreutils, and baseline Arch packages.
 - **Package manager:** pacman for system-level package management.
 - **Repository structure:**
   - **Arch official repos:** baseline system packages and non-desktop-critical updates.
@@ -60,6 +60,8 @@ These applications are preinstalled but user-removable; NeOS does not claim redi
 
 ## Maintenance & Operational Considerations
 ### Repository Strategy
+- **Snapshot-based rolling model:** NeOS snapshots upstream Arch repos, tests them as a coherent set, and releases a validated snapshot rather than mixing frozen NeOS packages with live Arch feeds.
+- **No mixed feeds:** Avoid combining a frozen NeOS stack with live Arch core/extra; stability requires coherent snapshots.
 - **Staging pipeline:**
   1. **Upstream Arch sync**
   2. **NeOS staging repo** (automated tests and QA)

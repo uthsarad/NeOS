@@ -46,7 +46,7 @@ NeOS is a curated rolling-release, Arch-based desktop OS targeting predictable b
    - Automated smoke testing for KDE/Qt updates.
    - Manual QA for desktop-critical changes and driver bumps.
 3. **Release process**
-   - Staged rollout: *staging → stable*.
+   - Staged rollout: *staging → stable* using validated snapshots.
    - Keep rollback packages for critical components.
 
 **Acceptance Criteria**
@@ -60,6 +60,7 @@ NeOS is a curated rolling-release, Arch-based desktop OS targeting predictable b
 **Workstreams**
 1. **Calamares customization**
    - Streamline the installer with sensible defaults.
+   - Provide Replace Windows / Dual Boot flows.
    - Optional advanced mode for partitioning and custom packages.
 2. **First-boot wizard**
    - Offer post-install updates on first boot.
@@ -94,6 +95,7 @@ NeOS is a curated rolling-release, Arch-based desktop OS targeting predictable b
 **Workstreams**
 1. **System hardening**
    - Adopt secure kernel/sysctl defaults where practical.
+   - Provide optional `linux-lts` fallback for stability-sensitive hardware.
 2. **App sandboxing**
    - Prefer Flatpak for GUI apps where appropriate.
    - Ensure KDE portals are correctly configured.
@@ -145,9 +147,10 @@ NeOS is a curated rolling-release, Arch-based desktop OS targeting predictable b
 **Workstreams**
 1. **Release operations**
    - Define stable and testing channels.
-   - Document how updates are promoted.
+   - Document how updates are promoted from snapshots.
 2. **Support and feedback**
    - Issue tracking and community support channels.
+   - Optional, telemetry-free crash reporting with explicit opt-in.
 3. **Legal and licensing**
    - Compliance with upstream licenses and redistribution rules.
 
@@ -161,6 +164,7 @@ NeOS is a curated rolling-release, Arch-based desktop OS targeting predictable b
 - **Familiar shortcuts:** Provide Windows-like keybindings while documenting KDE equivalents.
 - **File manager defaults:** Configure Dolphin for a clean, no-surprise layout.
 - **Settings clarity:** Group system settings to avoid decision fatigue.
+- **Snapshot rollback UX:** Provide a GUI-friendly rollback path for Btrfs snapshots.
 
 ## Risks and Pitfalls (Arch-Based Distribution)
 - **Upstream breakage:** Arch updates can break KDE or drivers unexpectedly.
