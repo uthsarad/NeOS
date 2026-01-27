@@ -86,3 +86,9 @@ These applications are preinstalled but not tightly coupled; users can replace t
 - **Default backend:** PackageKit + KDE Discover for the most consistent GUI experience.
 - **Staged updates:** NeOS repos should always buffer KDE and driver updates before end-user rollout.
 - **Windows-like UX:** Ship a curated Plasma layout with minimal post-install tweaks needed for typical users.
+
+## Performance Strategy
+- **Boot Time:** Target sub-15s boot time on SSDs. Minimize enabled-by-default systemd services.
+- **Responsiveness:** Prioritize UI thread (KDE) responsiveness. Use `nice` / `ionice` priorities for background maintenance tasks.
+- **Resource Usage:** Baseline idle RAM usage < 1GB.
+- **Updates:** Delta updates where possible to minimize download size and time (though Arch is package-based, we can optimize repository metadata).
