@@ -20,10 +20,17 @@ cd NeOS
 
 ```
 .
+├── docs/            # Project documentation and roadmap
 ├── README.md        # Project overview and setup instructions
 ├── LICENSE          # Project license
 └── .gitignore       # Ignored files and directories
 ```
+
+## Documentation
+
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Development Roadmap](docs/ROADMAP.md)
+- [Performance Standards](docs/PERFORMANCE.md)
 
 ## Development workflow
 
