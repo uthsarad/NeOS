@@ -1,67 +1,119 @@
 # NeOS Architecture
 
+[← Back to Documentation Index](../README.md#documentation)
+
+## Table of Contents
+- [Overview](#overview)
+- [Architecture Goals](#architecture-goals)
+- [System Layers](#system-layers)
+- [UX Architecture Considerations](#ux-architecture-considerations)
+- [Maintenance & Operational Considerations](#maintenance--operational-considerations)
+- [Security Defaults and Sandboxing](#security-defaults-and-sandboxing)
+- [Best-Practice Recommendations](#best-practice-recommendations-windows-familiarity--kde-idioms)
+- [Risks and Pitfalls](#risks-and-pitfalls-arch-based-distribution)
+- [Architecture Decisions](#architecture-decisions-initial-recommendations)
+- [Performance Strategy](#performance-strategy)
+
 ## Overview
-NeOS (Next Evolution Operating System) is a curated, snapshot-based Arch Linux desktop distribution targeting x86-64 hardware. It delivers a KDE Plasma 6 desktop designed to be a drop-in replacement for Windows or other graphical OSes. NeOS prioritizes predictable behavior, low breakage, and a Windows-familiar experience over Arch purity.
+NeOS (Next Evolution Operating System) is an Arch Linux–based desktop OS targeting x86-64 hardware with a KDE Plasma desktop curated to be a drop-in replacement for Windows or other graphical OSes. The architecture prioritizes a polished, predictable end-user experience while preserving Arch’s rolling-release benefits through staged, curated updates.
 
-NeOS is not a thin Arch wrapper. It owns the stability model, update coordination, and end-user experience.
-
-## Architectural Spine (Essentials)
-- **Kernel:** Arch `linux` with optional `linux-lts` fallback.
-- **Init:** systemd.
-- **Filesystem:** Btrfs by default; snapshots are a stability feature, not an advanced option.
-- **Bootloader:** GRUB for Windows-friendly dual boot.
-- **Desktop:** KDE Plasma 6, Wayland-first with X11 fallback where required (notably Nvidia).
+## Architecture Goals
+- **Windows-familiar UX without sacrificing KDE idioms:** Clean defaults, modern Plasma features enabled, minimal visual clutter.
+- **Predictable rolling release:** Use upstream Arch repositories where possible while gating desktop-critical updates through NeOS staging.
+- **Out-of-the-box hardware support:** Seamless handling of Nvidia GPUs, Wi-Fi firmware, and common laptop quirks.
+- **No terminal dependency for daily use:** First-class GUI tooling for updates, apps, and configuration.
+- **Maintainable operations:** Clear repository boundaries, automated validation, and rollback-ready packages.
 
 ## System Layers
-### 1) Base System (Arch Linux)
-- **Core stack:** Arch kernel, systemd, coreutils, and baseline Arch packages.
-- **Package manager:** pacman remains canonical.
-- **Ownership:** NeOS controls the repositories users consume; stability is a NeOS responsibility.
+### 1) Base Operating System (Arch Linux)
+- **Kernel & core system:** Upstream Arch kernel with optional `linux-lts` fallback, systemd, coreutils, and baseline Arch packages.
+- **Package manager:** pacman for system-level package management.
+- **Repository structure:**
+  - **Arch official repos:** baseline system packages and non-desktop-critical updates.
+  - **NeOS curated repos:** KDE Plasma, KDE Frameworks, Qt stack, graphics drivers, firmware, and desktop-critical utilities.
+  - **NeOS staging repo:** pre-release validation channel for gated updates.
 
-### 2) Desktop Layer (KDE Plasma 6)
-- **Experience goal:** KDE Neon–like polish without Ubuntu/KDE Neon infrastructure.
-- **Defaults:** Clean layout, reduced visual noise, modern Plasma features enabled.
-- **Branding:** `neos-artwork` and `neos-settings` provide consistent theming and system defaults.
-- **Session policy:** Wayland-first with X11 fallback where required (notably Nvidia).
+### 2) Desktop Environment (KDE Plasma)
+- **Visual design:** KDE Neon–like defaults (clean layout, modern theme, minimal clutter).
+- **Feature defaults:** Wayland readiness, portal integration, per-app scaling, and tray hygiene.
+- **KDE app cohesion:** Dolphin, Konsole, System Settings, and Discover are themed consistently for a single-system feel.
 
-### 3) Curation Layer (NeOS Value)
-- **Snapshot-based rolling release:** NeOS snapshots upstream Arch repositories, tests them as a coherent set, and promotes the snapshot to stable.
-- **No mixed feeds:** Do not combine frozen NeOS packages with live Arch core/extra; stability requires coherent snapshots.
-- **Update gates:** KDE/Qt, graphics drivers, and firmware updates are staged, tested, and only then promoted.
+### 3) Core Applications (User-Removable)
+- **Browser:** Brave
+- **Media player:** VLC
+- **Media viewer:** nomacs
+- **Email client:** Thunderbird
+- **Office:** LibreOffice
 
-## Installer & First-Boot Experience
-- **Installer:** Calamares with NeOS branding.
-- **Flow:** Windows-like, low-friction steps with explicit Replace Windows / Dual Boot paths.
-- **Storage defaults:** Automatic partitioning with Btrfs subvolumes configured for snapshots.
-- **First boot:** Guided flow to complete updates, driver checks, firmware enablement, and opt-in diagnostics.
+These applications are preinstalled but user-removable; NeOS does not claim redistribution ownership beyond upstream licenses.
 
-## Hardware Enablement
-- **Nvidia GPUs:** First-class requirement. Automatic detection and proprietary driver installation (including `nvidia-dkms`) are mandatory for a Windows replacement.
-- **Wi-Fi firmware:** Curated coverage for common chipsets (Intel, Realtek, Broadcom).
-- **Laptop quirks:** Power management defaults and known-quirk presets for common OEM hardware.
+### 4) Installer and First-Boot Flow
+- **Installer:** Calamares with NeOS branding and a streamlined path for typical users.
+- **Flow:** Windows-like steps with sensible defaults and optional advanced mode for storage and customization.
+- **First boot:** A guided welcome flow for updates, driver checks, firmware enablement, and optional telemetry opt-in.
 
-## Application Distribution & Updates
-- **Primary app store:** KDE Discover, branded for NeOS.
-- **Backend:** PackageKit with libalpm backend for Discover integration.
-- **Flatpak:** Enabled by default with Flathub for GUI apps and sandboxing.
-- **AUR stance:** AUR is unsupported by default; advanced users may opt in at their own risk.
+### 5) Hardware Enablement
+- **Nvidia GPUs:** Automatic detection and installation of proprietary drivers, with fallbacks for open drivers if required.
+- **Wi-Fi firmware:** Curated firmware packages for common chipsets (Intel, Realtek, Broadcom).
+- **Laptop quirks:** Default power management profiles and compatibility tweaks for common OEM hardware.
+
+### 6) Application Distribution & Updates
+- **GUI app store:** KDE Discover as the primary UI, branded for NeOS.
+- **Backend recommendation:** Use PackageKit with libalpm backend for best Discover integration on Arch. Offer pamac only as an optional, advanced add-on if AUR access is a goal.
+- **Update safety:** Staged updates with automated smoke tests and manual QA for KDE/Qt/driver changes.
+
+## UX Architecture Considerations
+### Default Experience Principles
+- **Clarity over configurability:** Provide the right defaults with opt-in advanced settings.
+- **Minimal distractions:** Curate tray icons and background services; hide developer tools by default.
+- **Windows familiarity:** Familiar layout and shortcuts (launcher position, taskbar behavior, file manager defaults).
+
+### Branding & Theming
+- **NeOS identity:** Consistent boot splash, login screen, wallpaper set, and app icons.
+- **KDE theming:** Use KDE’s theming system to preserve upstream compatibility while shipping cohesive defaults.
+
+## Maintenance & Operational Considerations
+### Repository Strategy
+- **Snapshot-based rolling model:** NeOS snapshots upstream Arch repos, tests them as a coherent set, and releases a validated snapshot rather than mixing frozen NeOS packages with live Arch feeds.
+- **No mixed feeds:** Avoid combining a frozen NeOS stack with live Arch core/extra; stability requires coherent snapshots.
+- **Staging pipeline:**
+  1. **Upstream Arch sync**
+  2. **NeOS staging repo** (automated tests and QA)
+  3. **NeOS stable repo**
+- **Update gates:** KDE stack, Qt, and graphics drivers promote only after validation.
+
+### Update Stability
+- **Policy:** Target predictable behavior rather than fixed versions.
+- **Rollback planning:** Keep prior packages for critical components and document downgrade procedures.
+
+### Telemetry & Diagnostics (Optional)
+- **Local diagnostics:** Offer opt-in error reporting to improve stability.
+- **Privacy-forward:** Clear disclosure and explicit opt-in controls.
 
 ## Security Defaults and Sandboxing
 - **Baseline security:** Standard Arch kernel hardening and systemd defaults.
-- **Sandboxing:** Flatpak-first for GUI apps, with KDE portals configured by default.
-- **Optional confinement:** AppArmor profiles for high-risk components where practical.
+- **Sandboxing:** Prefer Flatpak for GUI apps where appropriate; ensure KDE portals are configured by default.
+- **App confinement:** Consider AppArmor profiles for proprietary components (e.g., browsers) when feasible.
 
-## UX Principles (Windows-Familiar, KDE-Idiomatic)
-- **Clarity over configurability:** sensible defaults first, advanced options second.
-- **Minimal distractions:** curated tray and background services.
-- **Familiarity:** Windows-like layout, file manager defaults, and shortcut choices.
+## Best-Practice Recommendations (Windows Familiarity + KDE Idioms)
+- **Single app store:** Keep Discover as the primary software hub.
+- **Minimal tray noise:** Curate startup services and notifications.
+- **Familiar shortcuts:** Provide Windows-like keybindings with KDE equivalents documented.
+- **File manager defaults:** Configure Dolphin for a clean, no-surprise layout.
 
-## Maintenance & Operational Model
-- **Snapshot cadence:** defined and documented; snapshots are promoted only after testing.
-- **Rollback planning:** prior packages are retained; Btrfs snapshots provide user-facing rollback paths.
-- **Ownership:** NeOS accepts responsibility for update regressions and driver breakage.
+## Risks and Pitfalls (Arch-Based Distribution)
+- **Upstream volatility:** Arch updates can break downstream KDE customizations.
+- **Driver churn:** Nvidia and firmware updates can introduce regressions.
+- **Resource demands:** Staged updates require CI, QA, and repository management capacity.
+- **User expectations:** Rolling release can conflict with set-and-forget expectations.
 
-## Risks and Mitigations
-- **Upstream volatility:** mitigated by snapshot testing and staged rollouts.
-- **Driver regressions:** mitigated by Nvidia-first validation and DKMS coverage.
-- **Resource demands:** sustained CI/QA investment is required to maintain trust.
+## Architecture Decisions (Initial Recommendations)
+- **Default backend:** PackageKit + KDE Discover for the most consistent GUI experience.
+- **Staged updates:** NeOS repos buffer KDE and driver updates before end-user rollout.
+- **Windows-like UX:** Ship a curated Plasma layout with minimal post-install tweaks.
+
+## Performance Strategy
+- **Boot time:** Target sub-15s boot on SSDs; minimize enabled-by-default services.
+- **Responsiveness:** Prioritize KDE UI thread responsiveness; use `nice`/`ionice` for background tasks.
+- **Resource usage:** Baseline idle RAM usage < 1 GB on typical hardware.
+- **Updates:** Optimize repository metadata and compression to reduce download size and time.
