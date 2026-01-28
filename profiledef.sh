@@ -2,10 +2,12 @@
 # NeOS archiso profile definition
 
 iso_name="neos"
-iso_label="NEOS_$(date +%Y%m)"
+_iso_date="$(date +%Y%m%d)"
+iso_label="NEOS_${_iso_date:0:6}"
 iso_publisher="NeOS Project <https://neos.example>"
 iso_application="NeOS Linux"
-iso_version="$(date +%Y.%m.%d)"
+iso_version="${_iso_date:0:4}.${_iso_date:4:2}.${_iso_date:6:2}"
+unset _iso_date
 install_dir="neos"
 buildmodes=("iso")
 bootmodes=("bios.syslinux.mbr" "bios.syslinux.eltorito" "uefi-x64.systemd-boot.esp" "uefi-x64.systemd-boot.eltorito")
