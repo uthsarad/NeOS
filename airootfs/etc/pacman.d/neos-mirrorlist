@@ -1,0 +1,10 @@
+# NeOS Mirrorlist
+# This file is managed by pacman-mirrorlist.
+#
+# NeOS repositories are currently in development.
+
+# Stable
+# Server = https://mirrors.neos.example/stable/$repo/$arch
+
+# Staging
+# Server = https://mirrors.neos.example/staging/$repo/$arch

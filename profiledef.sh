@@ -13,4 +13,5 @@ arch="x86_64"
 
 file_permissions=(
   ["/etc/pacman.conf"]="0:0:644"
+  ["/etc/sudoers.d/wheel"]="0:0:440"
 )
