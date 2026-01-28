@@ -39,4 +39,40 @@ thunderbird
 calamares
 grub
 brave
-nomacs
+# Audio
+pipewire
+pipewire-alsa
+pipewire-pulse
+pipewire-jack
+wireplumber
+# Bluetooth
+bluez
+bluez-utils
+# Fonts
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-liberation
+ttf-dejavu
+# KDE Extra
+ark
+spectacle
+gwenview
+kate
+kcalc
+partitionmanager
+okular
+# Utils
+git
+wget
+htop
+neofetch
+p7zip
+unrar
+unzip
+os-prober
+mtools
+xdg-user-dirs
+# Printing
+cups
+print-manager
