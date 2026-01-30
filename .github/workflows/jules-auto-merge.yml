@@ -14,6 +14,7 @@ permissions:
 jobs:
   approve-and-merge:
     runs-on: ubuntu-latest
+    if: github.actor == github.repository_owner
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -24,4 +25,4 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
           gh pr ready "$PR_URL" || true
-          gh pr merge "$PR_URL" --squash --delete-branch
+          gh pr merge "$PR_URL" --auto --squash --delete-branch
