@@ -56,7 +56,6 @@ These applications are preinstalled but user-removable; NeOS does not claim redi
 - **Nvidia GPUs:** Automatic detection and installation of proprietary drivers, with fallbacks for open drivers if required.
 - **Wi-Fi firmware:** Curated firmware packages for common chipsets (Intel, Realtek, Broadcom).
 - **Laptop quirks:** Default power management profiles and compatibility tweaks for common OEM hardware.
-- **Virtual machine startup:** Preload common virtualization drivers (virtio, Hyper-V, VMware, VirtualBox) via `modules-load.d` to ensure reliable boot and networking in VM environments.
 
 ### 6) Application Distribution & Updates
 - **GUI app store:** KDE Discover as the primary UI, branded for NeOS.
