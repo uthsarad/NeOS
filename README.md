@@ -20,6 +20,8 @@ This repository contains the architectural guidance, roadmap, and configuration 
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Development Roadmap](docs/ROADMAP.md)
 - [Performance Standards](docs/PERFORMANCE.md)
+- [VM Startup Modules](docs/VM_STARTUP.md)
+- [Bootloader and Initramfs Defaults](docs/BOOTLOADER.md)
 
 ## Contributing
 NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents.

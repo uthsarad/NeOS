@@ -28,6 +28,7 @@ NeOS (Next Evolution Operating System) is an Arch Linux–based desktop OS targe
 ### 1) Base Operating System (Arch Linux)
 - **Kernel & core system:** Upstream Arch kernel with optional `linux-lts` fallback, systemd, coreutils, and baseline Arch packages.
 - **Package manager:** pacman for system-level package management.
+- **Boot stack:** GRUB for bootloader, mkinitcpio with systemd init, and early filesystem support for Btrfs/ZFS where used.
 - **Repository structure:**
   - **Arch official repos:** baseline system packages and non-desktop-critical updates.
   - **NeOS curated repos:** KDE Plasma, KDE Frameworks, Qt stack, graphics drivers, firmware, and desktop-critical utilities.
@@ -56,6 +57,7 @@ These applications are preinstalled but user-removable; NeOS does not claim redi
 - **Nvidia GPUs:** Automatic detection and installation of proprietary drivers, with fallbacks for open drivers if required.
 - **Wi-Fi firmware:** Curated firmware packages for common chipsets (Intel, Realtek, Broadcom).
 - **Laptop quirks:** Default power management profiles and compatibility tweaks for common OEM hardware.
+- **Virtual machine startup:** Preload common virtualization drivers (virtio, Hyper-V, VMware, VirtualBox) via `modules-load.d` to ensure reliable boot and networking in VM environments.
 
 ### 6) Application Distribution & Updates
 - **GUI app store:** KDE Discover as the primary UI, branded for NeOS.
