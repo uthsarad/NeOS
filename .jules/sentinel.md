@@ -7,3 +7,8 @@
 **Vulnerability:** Defaulting to `DatabaseOptional` allows mirrors to potentially serve stale or tampered package databases without detection (replay attacks).
 **Learning:** In a snapshot-based distribution where the repository state is static and coordinated, there is no reason not to sign the database. Enforcing signatures adds a critical layer of trust to the supply chain.
 **Prevention:** Set `SigLevel = Required DatabaseRequired` in `pacman.conf` to enforce database signature verification.
+
+## 2026-01-30 - Unconditional Auto-Merge Workflow
+**Vulnerability:** The `jules-auto-merge.yml` workflow triggered on all PRs and attempted to merge them immediately without verifying the actor or waiting for checks. This allowed unauthorized users to potentially merge code.
+**Learning:** Convenience automation (like auto-merge bots) must always include strict actor verification (`if: github.actor == ...`) to prevent abuse in public repositories.
+**Prevention:** Restrict auto-merge workflows to trusted bots/owners and use `gh pr merge --auto` to respect branch protection rules.
