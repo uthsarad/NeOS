@@ -29,6 +29,27 @@ NeOS (Next Evolution Operating System) is an Arch Linux–based desktop OS targe
 
 ## System Layers
 
+```mermaid
+graph TD
+    subgraph "User Space"
+        L3[3. Core Apps]
+        L6[6. App Distribution]
+        L4[4. Installer]
+    end
+
+    subgraph "Desktop Layer"
+        L2[2. Desktop Environment]
+    end
+
+    subgraph "System Foundation"
+        L5[5. Hardware Enablement]
+        L1[1. Base Operating System]
+    end
+
+    L3 & L6 & L4 --> L2
+    L2 --> L5 & L1
+```
+
 ### 1) Base Operating System (Arch Linux)
 
 - **Kernel & core system:** Upstream Arch kernel with optional `linux-lts` fallback, systemd, coreutils, and baseline Arch packages.
