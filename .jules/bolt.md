@@ -22,3 +22,8 @@
 
 **Learning:** Found redundant module loading where `modules-load.d` re-specified modules already loaded by initramfs, causing unnecessary overhead. Also identified missing `virtio_gpu` for VM Early KMS.
 **Action:** Always cross-reference `mkinitcpio.conf` MODULES with `modules-load.d` to eliminate redundancy and ensure graphical drivers are loaded early for seamless boot.
+
+## 2026-05-29 - Init System Hook Conflict
+
+**Learning:** Legacy `udev` hooks were accidentally overriding performance-optimized `systemd` hooks in `mkinitcpio.conf` due to a duplicate configuration line. This prevented parallel boot initialization despite other configs (e.g., `rd.systemd...`) implying systemd usage.
+**Action:** When auditing `mkinitcpio.conf`, explicitly check for duplicate `HOOKS` assignments, as the last one wins and can silently revert architectural performance improvements.
