@@ -7,3 +7,7 @@
 ## 2024-10-26 - Visualizing Complexity
 **Learning:** Complex flows (like repo staging pipelines) described purely in text cause cognitive load.
 **Action:** Use Mermaid diagrams to visualize architecture flows directly in markdown.
+
+## 2024-10-27 - Visual Roadmaps
+**Learning:** Long numbered lists (like release phases) are hard to scan for high-level context.
+**Action:** Use flowcharts or timelines to visualize sequential roadmaps before detailing the steps.
