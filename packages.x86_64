@@ -120,3 +120,14 @@ cups-filters
 system-config-printer
 pciutils
 python
+kdeconnect
+wine
+winetricks
+gamemode
+lib32-gamemode
+steam
+lutris
+flatpak
+ufw
+gufw
+fwupd
