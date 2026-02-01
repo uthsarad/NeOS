@@ -2,6 +2,21 @@
 
 [← Back to Documentation Index](../README.md#documentation)
 
+## Table of Contents
+- [Scope and Philosophy](#scope-and-philosophy)
+- [Phase 0: Foundations and Policy](#phase-0-foundations-and-policy)
+- [Phase 1: Repository Snapshot Infrastructure](#phase-1-repository-snapshot-infrastructure)
+- [Phase 2: ISO Build and Branding](#phase-2-iso-build-and-branding)
+- [Phase 3: Installer and First-Boot UX](#phase-3-installer-and-first-boot-ux)
+- [Phase 4: Hardware & Driver Reliability](#phase-4-hardware--driver-reliability)
+- [Phase 5: Application & Update UX](#phase-5-application--update-ux)
+- [Phase 6: UX Polish and Windows Familiarity](#phase-6-ux-polish-and-windows-familiarity)
+- [Phase 7: App Store and Package Management UX](#phase-7-app-store-and-package-management-ux)
+- [Phase 8: Long-Term Maintenance and Distribution](#phase-8-long-term-maintenance-and-distribution)
+- [Best-Practice Recommendations](#best-practice-recommendations-windows-familiarity--kde-idioms)
+- [Risks and Pitfalls](#risks-and-pitfalls-arch-based-distribution)
+- [Success Metrics](#success-metrics)
+
 ## Scope and Philosophy
 NeOS is a curated rolling-release, Arch-based desktop OS targeting predictable behavior through staged updates and QA validation. The roadmap prioritizes a Windows-familiar KDE Plasma experience, low-friction onboarding, and sustainable long-term maintenance.
 

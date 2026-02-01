@@ -44,6 +44,11 @@ kernel_parameters+=(
   "vt.global_cursor_default=0"    # Hide cursor during boot
 )
 
+# ⚡ Bolt: Use EROFS with LZ4HC compression for faster boot and app launch times.
+# This improves random read performance compared to SquashFS while maintaining good compression.
+airootfs_image_type="erofs"
+airootfs_image_tool_options=('-zlz4hc')
+
 file_permissions=(
   ["/etc/shadow"]="0:0:400"
   ["/root"]="0:0:750"

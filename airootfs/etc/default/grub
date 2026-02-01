@@ -1,0 +1,14 @@
+# NeOS GRUB defaults for boot reliability on common storage and VM targets.
+
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=5
+GRUB_DISTRIBUTOR="NeOS"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+GRUB_CMDLINE_LINUX=""
+
+# Preload modules to improve bootloader startup reliability across filesystems.
+# Keep this list conservative to avoid unnecessary probes on unsupported media.
+GRUB_PRELOAD_MODULES="part_gpt part_msdos ext2 btrfs zfs"
+
+# Disable submenus for a simpler boot menu experience.
+GRUB_DISABLE_SUBMENU=true
