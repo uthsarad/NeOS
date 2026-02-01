@@ -40,7 +40,13 @@ thunderbird
 calamares
 grub
 brave
-nomacs
+gwenview
+ark
+spectacle
+kate
+kcalc
+partitionmanager
+okular
 cryptsetup
 lvm2
 mdadm
@@ -77,6 +83,7 @@ xf86-input-vmmouse
 xf86-input-wacom
 libwacom
 cups
+print-manager
 cups-pdf
 gutenprint
 foomatic-db
