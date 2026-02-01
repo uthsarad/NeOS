@@ -1,0 +1,13 @@
+[Unit]
+Description=NeOS Automatic System Updates
+Wants=neos-autoupdate.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/neos-autoupdate.sh
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

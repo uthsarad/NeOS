@@ -1,0 +1,58 @@
+#!/bin/bash
+# NeOS Performance Tweaks Script
+# Applies various performance optimizations during system initialization
+
+# Function to disable unnecessary services
+disable_unnecessary_services() {
+    echo "Disabling unnecessary services for better performance..."
+    
+    # Disable services that are not essential for most users
+    systemctl disable --now lvm2-monitor.service 2>/dev/null || true
+    systemctl disable --now cups-browsed.service 2>/dev/null || true
+    systemctl disable --now ModemManager.service 2>/dev/null || true
+    systemctl disable --now avahi-daemon.service 2>/dev/null || true
+    systemctl disable --now bluetooth.service 2>/dev/null || true
+    
+    echo "Unnecessary services disabled."
+}
+
+# Function to configure I/O scheduler for SSDs
+configure_io_scheduler() {
+    echo "Configuring I/O scheduler for better performance..."
+    
+    # Apply kyber scheduler for better performance on fast storage
+    for dev in /sys/block/*/queue/scheduler; do
+        echo kyber > "$dev" 2>/dev/null || echo mq-deadline > "$dev" 2>/dev/null || true
+    done
+    
+    echo "I/O scheduler configured."
+}
+
+# Function to set CPU governor for better responsiveness
+set_cpu_governor() {
+    echo "Setting CPU governor for better responsiveness..."
+    
+    # Set performance governor for better responsiveness
+    for cpu in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+        echo performance > "$cpu" 2>/dev/null || true
+    done
+    
+    echo "CPU governor set to performance."
+}
+
+# Main execution
+main() {
+    echo "Applying NeOS performance optimizations..."
+    
+    # Only run if we're not in chroot environment (during installation)
+    if [[ $(stat -c %d:%i /) != $(stat -c %d:%i /proc/1/root/.) ]]; then
+        disable_unnecessary_services
+        configure_io_scheduler
+        set_cpu_governor
+    fi
+    
+    echo "NeOS performance optimizations applied."
+}
+
+# Run main function
+main "$@"

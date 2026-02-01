@@ -1,0 +1,130 @@
+# Maintainer: NeOS Development Team <neos-dev@protonmail.com>
+# Based on linux-zen package
+
+pkgbase=linux-neos
+_kernelname=-neos
+pkgver=6.18.1
+pkgrel=1
+arch=(x86_64)
+url='https://kernel.org/'
+license=(GPL2)
+makedepends=(
+  kmod
+  libelf
+  libffi
+  openssl
+  python-sphinx
+  graphviz
+  imagemagick
+  dtc
+  libbpf
+  rust
+  llvm
+  clang
+)
+options=('!strip')
+source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${pkgver}.tar.xz"
+        "config.x86_64::https://raw.githubusercontent.com/neos-project/kernel-configs/main/config-${pkgver}"
+        kernel.install)
+sha256sums=('SKIP'
+            'SKIP'
+            'SKIP')
+
+# Determine which packages to build from the PKGBUILD
+# e.g. make -f PKGBUILD pkgbase=linux-neos prepare
+# This allows us to have only one PKGBUILD for both packages
+[[ $pkgbase == linux-neos ]] && _srcname=linux || _srcname=$pkgbase
+
+prepare() {
+  cd ${srcdir}/linux-${pkgver}
+
+  # Rename kernel to avoid conflicts with other kernels
+  sed -i "s|EXTRAVERSION =.*|EXTRAVERSION = ${_kernelname}|g" Makefile
+
+  # Copy in config files
+  cp "${srcdir}/config.x86_64" .config
+
+  # Generate kernel version from source and config
+  make -s kernelrelease > version
+}
+
+build() {
+  cd ${srcdir}/linux-${pkgver}
+  
+  # Ensure Btrfs is built-in, not module
+  sed -i 's/CONFIG_BTRFS_FS=m/CONFIG_BTRFS_FS=y/' .config
+  sed -i 's/# CONFIG_BTRFS_FS is not set/CONFIG_BTRFS_FS=y/' .config
+  
+  # Security hardening
+  sed -i 's/# CONFIG_SECURITY_LOCKDOWN_LSM is not set/CONFIG_SECURITY_LOCKDOWN_LSM=y/' .config
+  sed -i 's/CONFIG_SECURITY_LOCKDOWN_LSM=.*/CONFIG_SECURITY_LOCKDOWN_LSM=y/' .config
+  sed -i 's/# CONFIG_STATIC_USERMODEHELPER is not set/CONFIG_STATIC_USERMODEHELPER=y/' .config
+  sed -i 's/CONFIG_STATIC_USERMODEHELPER=.*/CONFIG_STATIC_USERMODEHELPER=y/' .config
+  
+  # Apply MuQSS scheduler (requires MuQSS patch)
+  # This assumes MuQSS patch has been applied to the kernel source
+  sed -i 's/CONFIG_SCHED_SMT=.*/CONFIG_SCHED_SMT=y/' .config
+  sed -i 's/CONFIG_SCHED_MC=.*/CONFIG_SCHED_MC=y/' .config
+  
+  # Save modified config
+  yes "" | make oldconfig
+  
+  # Build kernel and modules
+  make ${MAKEFLAGS} bzImage modules
+}
+
+_package_common() {
+  pkgdesc="The Linux NeOS Kernel and modules"
+  depends=('coreutils' 'kmod' 'initramfs')
+  optdepends=('crda: to set country code for wireless devices'
+              'linux-firmware: firmware for network and other devices')
+  install=${srcdir}/kernel.install
+  replaces=('linux-grsec')
+  provides=("${pkgbase%-*}" "linux>=4.14.13" "linux-headers")
+  conflicts=('linux-grsec')
+  backup=("etc/mkinitcpio.d/${pkgbase}${_kernelname}.preset")
+
+  cd ${srcdir}/linux-${pkgver}
+  
+  # Install kernel
+  install -Dt "${pkgdir}/boot" -m644 arch/x86/boot/bzImage
+  # Install modules
+  make INSTALL_MOD_PATH="${pkgdir}/usr" modules_install
+  # Remove build metadata
+  rm -v "${pkgdir}/usr/lib/modules/${pkgver}${_kernelname}/build"
+  rm -v "${pkgdir}/usr/lib/modules/${pkgver}${_kernelname}/source"
+
+  # Install headers
+  local hdrdest="${pkgdir}/usr/lib/modules/${pkgver}${_kernelname}/build"
+  local skipdirs='./(debian|Documentation|scripts|Kbuild|Kconfig.*)'
+
+  install -dm755 "${hdrdest}"
+  # Create all parent directories, preserving permissions
+  find . -depth -mindepth 1 -print0 \
+    | xargs -0 -I {} sh -c 'mkdir -p "$0/$(dirname "$1")"' "${hdrdest}" {}
+  # Copy header files
+  find . -name '*.h' -print0 \
+    | xargs -0 -I {} rsync -aHAXx --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --files-from={} . "${hdrdest}"
+
+  # Install remaining necessary files
+  local f
+  for f in Kbuild Makefile Module.symvers System.map arch/x86/Makefile scripts/Makefile.headersinst; do
+    install -Dm644 "$f" "${hdrdest}/$f"
+  done
+
+  # Install preset file for mkinitcpio
+  install -Dm644 "${srcdir}/kernel.install" "${pkgdir}/usr/lib/kernel/install.sh"
+  install -Dm644 "${srcdir}/linux.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgbase}${_kernelname}.preset"
+}
+
+package_linux-neos() {
+  _package_common
+  pkgdesc="The Linux NeOS Kernel and modules (zen variant)"
+  groups=('neos-base')
+  
+  # Create initramfs hook to ensure btrfs is available
+  install -Dm644 "${srcdir}/btrfs-initramfs.conf" "${pkgdir}/etc/initcpio/hooks/btrfs-neos"
+  install -Dm644 "${srcdir}/btrfs-initramfs.install" "${pkgdir}/etc/initcpio/install/btrfs-neos"
+}
+
+# vim:set ts=2 sw=2 et:

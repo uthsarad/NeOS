@@ -1,0 +1,74 @@
+base
+linux-aarch64
+linux-firmware
+mkinitcpio
+mkinitcpio-archiso
+arch-install-scripts
+sudo
+nano
+vim
+efibootmgr
+btrfs-progs
+dosfstools
+e2fsprogs
+erofs-utils
+xfsprogs
+ntfs-3g
+mesa
+xf86-video-amdgpu
+xf86-video-nouveau
+xf86-video-vmware
+networkmanager
+dhcpcd
+iwd
+plasma-meta
+sddm
+konsole
+dolphin
+packagekit
+discover
+vlc
+libreoffice-fresh
+thunderbird
+calamares
+grub
+brave
+# Audio
+pipewire
+pipewire-alsa
+pipewire-pulse
+pipewire-jack
+wireplumber
+# Bluetooth
+bluez
+bluez-utils
+# Fonts
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
+ttf-liberation
+ttf-dejavu
+# KDE Extra
+ark
+spectacle
+gwenview
+kate
+kcalc
+partitionmanager
+okular
+# Utils
+git
+wget
+htop
+neofetch
+p7zip
+unrar
+unzip
+os-prober
+mtools
+xdg-user-dirs
+# Printing
+cups
+print-manager
+pciutils
+python

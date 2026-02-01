@@ -1,4 +1,4 @@
-# Palette's Journal
+# Palette's Journal 🎨
 
 ## 2024-10-25 - Documentation Navigation
 **Learning:** In a docs-only repo, "UX" translates to "Reading Experience". Dense markdown files without navigation create friction.

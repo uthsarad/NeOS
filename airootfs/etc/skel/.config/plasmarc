@@ -1,0 +1,5 @@
+[PlasmaViews]
+EnableAnimations=false
+
+[Notifications]
+PopupPosition=bottomright

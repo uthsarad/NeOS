@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+
+def log(msg):
+    print(f"[NeOS Driver Manager] {msg}")
+
+def run_command(cmd):
+    try:
+        return subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT).decode().strip()
+    except subprocess.CalledProcessError:
+        return ""
+
+def get_pci_controllers():
+    # List all VGA/3D/Display controllers
+    # lspci -mn | grep -E "0300|0302|0380"
+    # Class 0300: VGA compatible controller
+    # Class 0302: 3D controller (often Nvidia on optimus)
+    output = run_command("lspci -mn")
+    devices = []
+    for line in output.splitlines():
+        parts = line.split()
+        if len(parts) >= 3:
+            # format: "00:02.0" "0300" "8086" "1916" ...
+            slot = parts[0].strip('"')
+            cls = parts[1].strip('"')
+            vendor = parts[2].strip('"')
+            device = parts[3].strip('"')
+            if cls.startswith("03"): # Display controller class
+                devices.append({'slot': slot, 'vendor': vendor, 'device': device})
+    return devices
+
+def check_driver_loaded(module_name):
+    # Check if module is loaded
+    mods = run_command("lsmod")
+    # lsmod output format: Module Size Used by
+    for line in mods.splitlines():
+        if line.split()[0] == module_name:
+            return True
+    return False
+
+def manage_gpu_drivers():
+    devices = get_pci_controllers()
+    if not devices:
+        log("No GPU detected.")
+        return
+
+    for dev in devices:
+        vendor = dev['vendor']
+        log(f"Found GPU: Vendor {vendor}, Device {dev['device']}")
+
+        # Intel (8086)
+        if vendor == "8086":
+            if not check_driver_loaded("i915") and not check_driver_loaded("xe"):
+                log("Intel GPU detected but i915/xe not loaded.")
+                # Try loading
+                os.system("modprobe i915")
+
+        # AMD (1002)
+        elif vendor == "1002":
+            if not check_driver_loaded("amdgpu"):
+                log("AMD GPU detected but amdgpu not loaded.")
+                # Try loading
+                os.system("modprobe amdgpu")
+                # Fallback
+                if not check_driver_loaded("amdgpu"):
+                    log("Retrying with radeon...")
+                    os.system("modprobe radeon")
+            else:
+                log("AMD driver (amdgpu) is loaded.")
+
+        # Nvidia (10de)
+        elif vendor == "10de":
+            if not check_driver_loaded("nvidia"):
+                log("Nvidia GPU detected but nvidia proprietary driver not loaded.")
+                res = os.system("modprobe nvidia")
+                if res != 0:
+                    log("Failed to load nvidia. Checking for nouveau (community)...")
+                    if not check_driver_loaded("nouveau"):
+                        os.system("modprobe nouveau")
+            else:
+                log("Nvidia driver is loaded.")
+
+def manage_network_drivers():
+    # Simple check for network interfaces
+    # If no interface other than lo, try to find drivers
+    output = run_command("ip link show")
+    if len(output.splitlines()) <= 2: # loopback only roughly
+        log("No network interfaces found! Probing common drivers...")
+        # Try loading common modules just in case
+        os.system("modprobe r8169")
+        os.system("modprobe e1000e")
+        os.system("modprobe wl")
+        os.system("modprobe brcmfmac")
+        os.system("modprobe ath10k_pci")
+        os.system("modprobe iwlwifi")
+
+def main():
+    log("Starting Driver Check...")
+    manage_gpu_drivers()
+    manage_network_drivers()
+    log("Driver Check Completed.")
+
+if __name__ == "__main__":
+    main()

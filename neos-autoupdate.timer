@@ -1,0 +1,11 @@
+[Unit]
+Description=Timer for NeOS Automatic System Updates
+Requires=neos-autoupdate.service
+
+[Timer]
+OnCalendar=weekly
+OnBootSec=30min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,23 +1,68 @@
-# OS files
-.DS_Store
-Thumbs.db
+```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+*.class
+*.exe
+*.dll
+*.so
+*.a
+*.out
 
-# Editor files
+# Dependencies
+.venv/
+venv/
+node_modules/
+target/
+.gradle/
+.mypy_cache/
+.pytest_cache/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Editors
 .vscode/
 .idea/
-*.swp
 
-# Logs
-*.log
+# Build and distribution
+dist/
+build/
+coverage/
+htmlcov/
+*.tar
+*.gz
+*.zip
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 
-# Node / JS
-node_modules/
-
-# Python
-__pycache__/
-*.pyc
-.venv/
-
-# Build artifacts
-/dist/
-/build/
+# System files
+.DS_Store
+Thumbs.db
+```

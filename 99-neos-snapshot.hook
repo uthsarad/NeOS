@@ -1,0 +1,16 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Creating pre-transaction snapshot...
+When = PreTransaction
+Exec = /usr/bin/snapper --config=root create --type pre --cleanup-algorithm timeline --description "Pre-package-operation-$(date +%Y%m%d_%H%M%S)"
+
+[Action]
+Description = Creating post-transaction snapshot...
+When = PostTransaction
+Exec = /usr/bin/bash -c 'PRE_NUMBER=$(snapper --config=root list --columns number --sort descending | grep -v "Number\|# " | head -n 1 | tr -d " "); snapper --config=root create --type post --cleanup-algorithm timeline --pre-number "$PRE_NUMBER" --description "Post-package-operation-$(date +%Y%m%d_%H%M%S)"'

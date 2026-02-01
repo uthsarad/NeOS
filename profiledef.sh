@@ -2,14 +2,47 @@
 # NeOS archiso profile definition
 
 iso_name="neos"
-iso_label="NEOS_$(date +%Y%m)"
+_iso_date="$(date +%Y%m%d)"
+iso_label="NEOS_${_iso_date:0:6}"
 iso_publisher="NeOS Project <https://neos.example>"
 iso_application="NeOS Linux"
-iso_version="$(date +%Y.%m.%d)"
+iso_version="${_iso_date:0:4}.${_iso_date:4:2}.${_iso_date:6:2}"
+unset _iso_date
 install_dir="neos"
 buildmodes=("iso")
-bootmodes=("bios.syslinux.mbr" "bios.syslinux.eltorito" "uefi-x64.systemd-boot.esp" "uefi-x64.systemd-boot.eltorito")
-arch="x86_64"
+if [ -z "$arch" ]; then
+  arch="x86_64"
+fi
+
+if [ "$arch" == "x86_64" ]; then
+  bootmodes=("bios.syslinux.mbr" "bios.syslinux.eltorito" "uefi-x64.systemd-boot.esp" "uefi-x64.systemd-boot.eltorito")
+elif [ "$arch" == "i686" ]; then
+  bootmodes=("bios.syslinux.mbr" "bios.syslinux.eltorito")
+elif [ "$arch" == "aarch64" ]; then
+  bootmodes=("uefi-aarch64.systemd-boot.esp" "uefi-aarch64.systemd-boot.eltorito")
+else
+  # Fallback or default for other architectures
+  bootmodes=("uefi-${arch}.systemd-boot.esp" "uefi-${arch}.systemd-boot.eltorito")
+fi
+
+# ⚡ Bolt: Use EROFS with LZ4HC compression for faster boot and app launch times.
+# This improves random read performance compared to SquashFS while maintaining good compression.
+airootfs_image_type="erofs"
+airootfs_image_tool_options=('-zlz4hc')
+
+# Performance-focused kernel parameters
+kernel_parameters+=(
+  "elevator=kyber"          # I/O scheduler optimized for fast storage
+  "nowatchdog"              # Disable hardware watchdog unless specifically needed
+  "mce=ignore_ce"           # Ignore corrected errors to reduce log noise
+  "intel_pstate=enable"     # Intel CPU power management
+  "amd_pstate=enable"       # AMD CPU power management
+  "quiet"                   # Reduce boot verbosity for faster boot
+  "splash"                  # Show splash screen instead of boot messages
+  "rd.systemd.show_status=false"  # Hide systemd status during boot
+  "rd.udev.log_level=3"     # Reduce udev logging level
+  "vt.global_cursor_default=0"    # Hide cursor during boot
+)
 
 # ⚡ Bolt: Use EROFS with LZ4HC compression for faster boot and app launch times.
 # This improves random read performance compared to SquashFS while maintaining good compression.
@@ -17,5 +50,10 @@ airootfs_image_type="erofs"
 airootfs_image_tool_options=('-zlz4hc')
 
 file_permissions=(
+  ["/etc/shadow"]="0:0:400"
+  ["/root"]="0:0:750"
   ["/etc/pacman.conf"]="0:0:644"
+  ["/etc/sudoers.d/wheel"]="0:0:440"
+  ["/etc/systemd/zram-generator.conf"]="0:0:644"
+  ["/usr/local/bin/neos-driver-manager"]="0:0:755"
 )

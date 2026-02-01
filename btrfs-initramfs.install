@@ -1,0 +1,24 @@
+#!/bin/bash
+# Install script for btrfs initramfs hook
+
+build() {
+    # Btrfs is built into the kernel, so we don't need to copy modules
+    # Just ensure the hook is properly configured
+    HOSTONLY=${HOSTONLY:-"yes"}
+    
+    if [[ $HOSTONLY = "yes" ]]; then
+        # Detect if root filesystem is btrfs
+        if [[ $(stat -f -c %T /) == "btrfs" ]]; then
+            # Add btrfs-specific options
+            MODULES="btrfs"
+            BINARIES="/usr/bin/btrfs"
+            FILES="/etc/fstab"
+        fi
+    fi
+}
+
+help() {
+    cat <<HELPEOF
+This hook provides support for mounting btrfs root filesystems with compression and other optimizations.
+HELPEOF
+}
