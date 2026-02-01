@@ -25,8 +25,10 @@ else
   bootmodes=("uefi-${arch}.systemd-boot.esp" "uefi-${arch}.systemd-boot.eltorito")
 fi
 
+# ⚡ Bolt: Use EROFS with LZ4HC compression for faster boot and app launch times.
+# This improves random read performance compared to SquashFS while maintaining good compression.
 airootfs_image_type="erofs"
-airootfs_image_tool_options=("-Xcompression" "zstd")  # Use zstd for better compression ratio and speed
+airootfs_image_tool_options=('-zlz4hc')
 
 # Performance-focused kernel parameters
 kernel_parameters+=(
