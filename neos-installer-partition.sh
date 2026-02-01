@@ -15,22 +15,41 @@ if [[ -z "$DEVICE" ]]; then
     exit 1
 fi
 
+# Sentinel: Input Validation - Ensure target is a block device
+if [[ ! -b "$DEVICE" ]]; then
+    echo "Error: '$DEVICE' is not a block device."
+    exit 1
+fi
+
+# Sentinel: Logic Fix - Calculate sizes in bytes using numfmt to handle units safely
+# This avoids 'bc' errors with units and ensures precise boundaries
+BOOT_BYTES=$(numfmt --from=iec "$BOOT_SIZE")
+SWAP_BYTES=$(numfmt --from=iec "$SWAP_SIZE")
+SWAP_END_BYTES=$((BOOT_BYTES + SWAP_BYTES))
+
 echo "WARNING: This will erase all data on $DEVICE. Press Ctrl+C to abort."
 sleep 5
 
 # Partition the device
 echo "Creating partitions on $DEVICE..."
+# Note: Parted accepts 'B' suffix for bytes. We use 1MiB start for alignment.
 parted --script "$DEVICE" \
     mklabel gpt \
-    mkpart ESP fat32 1MiB "$BOOT_SIZE" \
+    mkpart ESP fat32 1MiB "${BOOT_BYTES}B" \
     set 1 esp on \
-    mkpart primary linux-swap "$BOOT_SIZE" "$(echo "$BOOT_SIZE + $SWAP_SIZE" | bc -l)" \
-    mkpart primary btrfs "$(echo "$BOOT_SIZE + $SWAP_SIZE" | bc -l)" 100%
+    mkpart primary linux-swap "${BOOT_BYTES}B" "${SWAP_END_BYTES}B" \
+    mkpart primary btrfs "${SWAP_END_BYTES}B" 100%
 
-# Get partition names
-EFI_PARTITION="${DEVICE}1"
-SWAP_PARTITION="${DEVICE}2"
-ROOT_PARTITION="${DEVICE}3"
+# Sentinel: Logic Fix - Handle NVMe partition naming (e.g. nvme0n1p1 vs sda1)
+if [[ "$DEVICE" =~ [0-9]$ ]]; then
+    PART_PREFIX="${DEVICE}p"
+else
+    PART_PREFIX="${DEVICE}"
+fi
+
+EFI_PARTITION="${PART_PREFIX}1"
+SWAP_PARTITION="${PART_PREFIX}2"
+ROOT_PARTITION="${PART_PREFIX}3"
 
 # Format partitions
 echo "Formatting partitions..."
