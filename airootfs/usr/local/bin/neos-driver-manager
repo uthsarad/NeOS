@@ -12,6 +12,26 @@ def run_command(cmd):
     except subprocess.CalledProcessError:
         return ""
 
+_LOADED_MODULES_CACHE = None
+
+def get_loaded_modules(force_refresh=False):
+    global _LOADED_MODULES_CACHE
+    if _LOADED_MODULES_CACHE is None or force_refresh:
+        mods = run_command("lsmod")
+        _LOADED_MODULES_CACHE = set()
+        for line in mods.splitlines():
+            parts = line.split()
+            if parts:
+                _LOADED_MODULES_CACHE.add(parts[0])
+    return _LOADED_MODULES_CACHE
+
+def probe_driver(module_name):
+    # Try to load module and invalidate cache
+    res = os.system(f"modprobe {module_name}")
+    global _LOADED_MODULES_CACHE
+    _LOADED_MODULES_CACHE = None
+    return res
+
 def get_pci_controllers():
     # List all VGA/3D/Display controllers
     # lspci -mn | grep -E "0300|0302|0380"
@@ -32,13 +52,8 @@ def get_pci_controllers():
     return devices
 
 def check_driver_loaded(module_name):
-    # Check if module is loaded
-    mods = run_command("lsmod")
-    # lsmod output format: Module Size Used by
-    for line in mods.splitlines():
-        if line.split()[0] == module_name:
-            return True
-    return False
+    # Check if module is loaded using cache
+    return module_name in get_loaded_modules()
 
 def manage_gpu_drivers():
     devices = get_pci_controllers()
@@ -55,18 +70,18 @@ def manage_gpu_drivers():
             if not check_driver_loaded("i915") and not check_driver_loaded("xe"):
                 log("Intel GPU detected but i915/xe not loaded.")
                 # Try loading
-                os.system("modprobe i915")
+                probe_driver("i915")
 
         # AMD (1002)
         elif vendor == "1002":
             if not check_driver_loaded("amdgpu"):
                 log("AMD GPU detected but amdgpu not loaded.")
                 # Try loading
-                os.system("modprobe amdgpu")
+                probe_driver("amdgpu")
                 # Fallback
                 if not check_driver_loaded("amdgpu"):
                     log("Retrying with radeon...")
-                    os.system("modprobe radeon")
+                    probe_driver("radeon")
             else:
                 log("AMD driver (amdgpu) is loaded.")
 
@@ -74,11 +89,11 @@ def manage_gpu_drivers():
         elif vendor == "10de":
             if not check_driver_loaded("nvidia"):
                 log("Nvidia GPU detected but nvidia proprietary driver not loaded.")
-                res = os.system("modprobe nvidia")
+                res = probe_driver("nvidia")
                 if res != 0:
                     log("Failed to load nvidia. Checking for nouveau (community)...")
                     if not check_driver_loaded("nouveau"):
-                        os.system("modprobe nouveau")
+                        probe_driver("nouveau")
             else:
                 log("Nvidia driver is loaded.")
 
@@ -89,12 +104,12 @@ def manage_network_drivers():
     if len(output.splitlines()) <= 2: # loopback only roughly
         log("No network interfaces found! Probing common drivers...")
         # Try loading common modules just in case
-        os.system("modprobe r8169")
-        os.system("modprobe e1000e")
-        os.system("modprobe wl")
-        os.system("modprobe brcmfmac")
-        os.system("modprobe ath10k_pci")
-        os.system("modprobe iwlwifi")
+        probe_driver("r8169")
+        probe_driver("e1000e")
+        probe_driver("wl")
+        probe_driver("brcmfmac")
+        probe_driver("ath10k_pci")
+        probe_driver("iwlwifi")
 
 def main():
     log("Starting Driver Check...")
