@@ -12,14 +12,12 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
-# Check if another instance is running
-if [[ -f "$LOCK_FILE" ]]; then
-    log "Update already running (lock file exists), exiting."
+# Sentinel: Prevent race conditions using flock (TOCTOU fix)
+exec 9> "$LOCK_FILE"
+if ! flock -n 9; then
+    log "Update already running (lock held), exiting."
     exit 1
 fi
-
-# Create lock file
-touch "$LOCK_FILE"
 
 # Create pre-update snapshot
 log "Creating pre-update snapshot..."
@@ -37,9 +35,6 @@ if pacman -Syu --noconfirm; then
     POST_SNAP_ID=$(echo "$POST_SNAP_NUM" | grep "create:" | cut -d: -f2 | tr -d ' ')
     log "Post-update snapshot created: $POST_SNAP_ID"
     
-    # Clean up lock file
-    rm -f "$LOCK_FILE"
-    
     # Optionally clean old snapshots (keep last 10)
     log "Cleaning old snapshots..."
     snapper --config=root cleanup number --keep-number 10
@@ -55,15 +50,8 @@ else
         shutdown -r +1 "NeOS automatic update failed, rolled back to previous state. Rebooting in 1 minute."
     else
         log "Rollback failed, manual intervention required"
-        # Still remove lock file even if rollback fails
-        rm -f "$LOCK_FILE"
         exit 1
     fi
     
-    # Remove lock file
-    rm -f "$LOCK_FILE"
     exit 1
 fi
-
-# Remove lock file
-rm -f "$LOCK_FILE"
