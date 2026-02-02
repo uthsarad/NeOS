@@ -11,3 +11,7 @@
 ## 2024-10-27 - Visual Roadmaps
 **Learning:** Long numbered lists (like release phases) are hard to scan for high-level context.
 **Action:** Use flowcharts or timelines to visualize sequential roadmaps before detailing the steps.
+
+## 2024-05-22 - Destructive Action Clarity
+**Learning:** Generic "Confirm" buttons on destructive system actions (like rollback) increase user anxiety.
+**Action:** Use explicit verb-based labels (e.g., "Rollback & Reboot") to clarify consequences immediately.
