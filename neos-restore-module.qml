@@ -67,6 +67,9 @@ Page {
                     width: ListView.view.width
                     padding: 15
                     
+                    Accessible.role: Accessible.ListItem
+                    Accessible.name: "Snapshot " + modelData.number + " from " + modelData.date + ". " + modelData.description
+
                     Column {
                         anchors.fill: parent
                         
@@ -102,6 +105,14 @@ Page {
                         }
                     }
                 }
+            }
+
+            Label {
+                text: "No snapshots found. Click Refresh or check your configuration."
+                visible: snapshotList.count === 0
+                Layout.alignment: Qt.AlignHCenter
+                font.italic: true
+                color: "gray"
             }
             
             Button {
@@ -146,7 +157,9 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 
                 Button {
-                    text: "Confirm"
+                    text: "Rollback & Reboot"
+                    Accessible.name: "Rollback and Reboot"
+                    Accessible.description: "Restores the system to the selected snapshot and restarts the computer immediately."
                     onClicked: {
                         rollbackToSnapshot(confirmDialog.snapshotNumber);
                         confirmDialog.close();
@@ -155,6 +168,8 @@ Page {
                 
                 Button {
                     text: "Cancel"
+                    Accessible.name: "Cancel"
+                    Accessible.description: "Closes this dialog without making changes."
                     onClicked: confirmDialog.close()
                 }
             }
