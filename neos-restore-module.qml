@@ -62,6 +62,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 400
                 clip: true
+                focus: true
                 
                 delegate: ItemDelegate {
                     width: ListView.view.width
@@ -118,6 +119,13 @@ Page {
             Button {
                 text: "Refresh Snapshots"
                 Layout.alignment: Qt.AlignHCenter
+
+                Accessible.name: "Refresh Snapshots"
+                Accessible.description: "Reloads the list of system snapshots from disk."
+
+                ToolTip.visible: hovered
+                ToolTip.text: "Reload available snapshots"
+
                 onClicked: loadSnapshots()
             }
         }
