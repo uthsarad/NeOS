@@ -31,3 +31,7 @@
 ## 2026-05-30 - Ghost Configuration
 **Learning:** Discovered `zram-generator.conf` present but the required `zram-generator` package was missing from `packages.x86_64`, rendering the optimization silent and ineffective.
 **Action:** Always verify that performance-critical configuration files have their corresponding binaries installed in the package list.
+
+## 2026-02-04 - Synchronous vs Async Discard
+**Learning:** Default `discard` mount option is synchronous and causes latency spikes on Ext4/XFS. Btrfs `discard=async` avoids this.
+**Action:** Use `discard=async` for Btrfs. For others, rely on `fstrim.timer` and explicitly disable `discard` in installer configs.
