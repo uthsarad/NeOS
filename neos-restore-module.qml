@@ -64,6 +64,8 @@ Page {
                 clip: true
                 focus: true
                 
+                Accessible.name: "System Snapshots"
+
                 delegate: ItemDelegate {
                     width: ListView.view.width
                     padding: 15
@@ -143,10 +145,16 @@ Page {
         
         property string snapshotNumber: ""
         
+        onOpened: cancelButton.forceActiveFocus()
+
         Column {
             anchors.centerIn: parent
             spacing: 20
             
+            Accessible.role: Accessible.Dialog
+            Accessible.name: "Confirm System Rollback"
+            Accessible.description: warningLabel.text
+
             Label {
                 text: "Confirm System Rollback"
                 font.bold: true
@@ -154,6 +162,7 @@ Page {
             }
             
             Label {
+                id: warningLabel
                 text: "Are you sure you want to rollback to snapshot #" + confirmDialog.snapshotNumber + "? " +
                       "This will restore your system to the state at that time and reboot the computer."
                 wrapMode: Text.Wrap
@@ -175,6 +184,7 @@ Page {
                 }
                 
                 Button {
+                    id: cancelButton
                     text: "Cancel"
                     Accessible.name: "Cancel"
                     Accessible.description: "Closes this dialog without making changes."
