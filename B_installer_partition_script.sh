@@ -34,7 +34,7 @@ parted --script "$DEVICE" \
     mkpart root btrfs ${SWAP_SIZE}GiB ${ROOT_SIZE:+$((SWAP_SIZE + ROOT_SIZE))}GiB
 
 # Wait for partitions to be created
-sleep 2
+udevadm settle
 
 # Format partitions
 ESP_PART="${DEVICE}1"
