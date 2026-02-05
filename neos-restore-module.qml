@@ -57,65 +57,100 @@ Page {
                 Layout.leftMargin: 20
             }
             
-            ListView {
-                id: snapshotList
+            StackLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 400
-                clip: true
-                focus: true
-                
-                Accessible.name: "System Snapshots"
+                currentIndex: snapshotList.count > 0 ? 0 : 1
 
-                delegate: ItemDelegate {
-                    width: ListView.view.width
-                    padding: 15
+                ListView {
+                    id: snapshotList
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    focus: true
                     
-                    Accessible.role: Accessible.ListItem
-                    Accessible.name: "Snapshot " + modelData.number + " from " + modelData.date + ". " + modelData.description
+                    Accessible.name: "System Snapshots"
 
-                    Column {
-                        anchors.fill: parent
+                    delegate: ItemDelegate {
+                        width: ListView.view.width
+                        padding: 15
                         
-                        Row {
-                            spacing: 10
+                        Accessible.role: Accessible.ListItem
+                        Accessible.name: "Snapshot " + modelData.number + " from " + modelData.date + ". " + modelData.description
+
+                        Column {
+                            anchors.fill: parent
                             
-                            Label {
-                                text: "Snapshot #" + modelData.number
-                                font.bold: true
+                            Row {
+                                spacing: 10
+
+                                Label {
+                                    text: "Snapshot #" + modelData.number
+                                    font.bold: true
+                                }
+
+                                Label {
+                                    text: "(" + modelData.date + ")"
+                                    color: "gray"
+                                }
                             }
                             
                             Label {
-                                text: "(" + modelData.date + ")"
-                                color: "gray"
+                                text: modelData.description
+                                font.pixelSize: 12
+                                wrapMode: Text.Wrap
+                                width: parent.width - 40
                             }
                         }
                         
-                        Label {
-                            text: modelData.description
-                            font.pixelSize: 12
-                            wrapMode: Text.Wrap
-                            width: parent.width - 40
-                        }
-                    }
-                    
-                    highlighted: ListView.isCurrentItem
-                    
-                    onClicked: {
-                        // Show confirmation dialog before rollback
-                        if (confirmDialog) {
-                            confirmDialog.snapshotNumber = modelData.number;
-                            confirmDialog.open();
+                        highlighted: ListView.isCurrentItem
+
+                        onClicked: {
+                            // Show confirmation dialog before rollback
+                            if (confirmDialog) {
+                                confirmDialog.snapshotNumber = modelData.number;
+                                confirmDialog.open();
+                            }
                         }
                     }
                 }
-            }
 
-            Label {
-                text: "No snapshots found. Click Refresh or check your configuration."
-                visible: snapshotList.count === 0
-                Layout.alignment: Qt.AlignHCenter
-                font.italic: true
-                color: "gray"
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    spacing: 15
+                    
+                    Item { Layout.fillHeight: true }
+
+                    Label {
+                        text: "📂"
+                        font.pixelSize: 48
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+                    
+                    Label {
+                        text: "No Snapshots Found"
+                        font.bold: true
+                        font.pointSize: 14
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Label {
+                        text: "Check your configuration or try refreshing."
+                        color: "gray"
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Button {
+                        text: "Refresh Now"
+                        Layout.alignment: Qt.AlignHCenter
+                        onClicked: loadSnapshots()
+                        Accessible.name: "Refresh Now"
+                        Accessible.description: "Reloads the list of system snapshots."
+                    }
+
+                    Item { Layout.fillHeight: true }
+                }
             }
             
             Button {

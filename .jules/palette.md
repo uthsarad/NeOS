@@ -19,3 +19,7 @@
 ## 2025-02-12 - Safe Focus in Destructive Dialogs
 **Learning:** In QML Popups, focus defaults to the first interactive element (often the destructive action), creating a risk of accidental execution via Enter key.
 **Action:** Explicitly set `onOpened: cancelButton.forceActiveFocus()` in destructive dialogs to default safety to "Cancel".
+
+## 2025-05-23 - Empty State Visibility
+**Learning:** Placing an empty state message *below* a list creates a disconnected experience, especially if the list retains its height (blank space).
+**Action:** Use `StackLayout` to swap the list with a centered, actionable empty state container that fills the same visual space.
