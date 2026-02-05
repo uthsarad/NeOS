@@ -3,7 +3,7 @@
 
 iso_name="neos"
 _iso_date="$(date +%Y%m%d)"
-iso_label="NEOS_${_iso_date:0:6}"
+iso_label="NEOS_LIVE"
 iso_publisher="NeOS Project <https://neos.example>"
 iso_application="NeOS Linux"
 iso_version="${_iso_date:0:4}.${_iso_date:4:2}.${_iso_date:6:2}"
@@ -15,14 +15,14 @@ if [ -z "$arch" ]; then
 fi
 
 if [ "$arch" == "x86_64" ]; then
-  bootmodes=("bios.syslinux.mbr" "bios.syslinux.eltorito" "uefi-x64.systemd-boot.esp" "uefi-x64.systemd-boot.eltorito")
+  bootmodes=("bios.grub.mbr" "bios.grub.eltorito" "uefi-x64.grub.esp" "uefi-x64.grub.eltorito")
 elif [ "$arch" == "i686" ]; then
-  bootmodes=("bios.syslinux.mbr" "bios.syslinux.eltorito")
+  bootmodes=("bios.grub.mbr" "bios.grub.eltorito")
 elif [ "$arch" == "aarch64" ]; then
-  bootmodes=("uefi-aarch64.systemd-boot.esp" "uefi-aarch64.systemd-boot.eltorito")
+  bootmodes=("uefi-aarch64.grub.esp" "uefi-aarch64.grub.eltorito")
 else
   # Fallback or default for other architectures
-  bootmodes=("uefi-${arch}.systemd-boot.esp" "uefi-${arch}.systemd-boot.eltorito")
+  bootmodes=("uefi-${arch}.grub.esp" "uefi-${arch}.grub.eltorito")
 fi
 
 # ⚡ Bolt: Use EROFS with LZ4HC compression for faster boot and app launch times.
