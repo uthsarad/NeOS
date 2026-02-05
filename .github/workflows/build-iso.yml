@@ -1,0 +1,50 @@
+name: Build NeOS ISO
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm archiso git wget erofs-utils
+
+      - name: Setup Chaotic AUR (for linux-lqx)
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+          pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+          pacman-key --lsign-key 3056513887B78AEB
+          pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+          echo "[chaotic-aur]" >> /etc/pacman.conf
+          echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /etc/pacman.conf
+          pacman -Sy --noconfirm
+
+      - name: Prepare Build Config
+        run: |
+          # Use the container's working pacman configuration for the build
+          cp /etc/pacman.conf ./pacman-build.conf
+
+      - name: Build ISO
+        run: |
+          mkarchiso -v -w work -o out -C ./pacman-build.conf .
+
+      - name: Upload ISO to Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: out/*.iso
