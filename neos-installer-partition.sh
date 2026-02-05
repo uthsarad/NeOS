@@ -73,15 +73,16 @@ umount /mnt
 
 # Mount subvolumes with proper options
 echo "Mounting subvolumes..."
-mount -o noatime,compress=zstd:3,ssd,space_cache=v2,subvol=@ "$ROOT_PARTITION" /mnt
+# ⚡ Bolt: Added discard=async for better Btrfs performance on SSDs
+mount -o noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@ "$ROOT_PARTITION" /mnt
 
 # Create mount points
 mkdir -p /mnt/{boot,home,.snapshots,var/log}
 
 # Mount other subvolumes
-mount -o noatime,compress=zstd:3,ssd,space_cache=v2,subvol=@home "$ROOT_PARTITION" /mnt/home
-mount -o noatime,compress=zstd:3,ssd,space_cache=v2,subvol=@snapshots "$ROOT_PARTITION" /mnt/.snapshots
-mount -o noatime,compress=zstd:3,ssd,space_cache=v2,subvol=@var_log "$ROOT_PARTITION" /mnt/var/log
+mount -o noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@home "$ROOT_PARTITION" /mnt/home
+mount -o noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@snapshots "$ROOT_PARTITION" /mnt/.snapshots
+mount -o noatime,compress=zstd:3,ssd,discard=async,space_cache=v2,subvol=@var_log "$ROOT_PARTITION" /mnt/var/log
 
 # Mount EFI partition
 mkdir -p /mnt/boot
