@@ -104,12 +104,7 @@ def manage_network_drivers():
     if len(output.splitlines()) <= 2: # loopback only roughly
         log("No network interfaces found! Probing common drivers...")
         # Try loading common modules just in case
-        probe_driver("r8169")
-        probe_driver("e1000e")
-        probe_driver("wl")
-        probe_driver("brcmfmac")
-        probe_driver("ath10k_pci")
-        probe_driver("iwlwifi")
+        subprocess.run(["modprobe", "-a", "r8169", "e1000e", "wl", "brcmfmac", "ath10k_pci", "iwlwifi"], check=False)
 
 def main():
     log("Starting Driver Check...")

@@ -57,56 +57,112 @@ Page {
                 Layout.leftMargin: 20
             }
             
-            ListView {
-                id: snapshotList
+            StackLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 400
-                clip: true
-                
-                delegate: ItemDelegate {
-                    width: ListView.view.width
-                    padding: 15
+                currentIndex: snapshotList.count > 0 ? 0 : 1
+
+                ListView {
+                    id: snapshotList
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+                    focus: true
                     
-                    Column {
-                        anchors.fill: parent
+                    Accessible.name: "System Snapshots"
+
+                    delegate: ItemDelegate {
+                        width: ListView.view.width
+                        padding: 15
                         
-                        Row {
-                            spacing: 10
+                        Accessible.role: Accessible.ListItem
+                        Accessible.name: "Snapshot " + modelData.number + " from " + modelData.date + ". " + modelData.description
+
+                        Column {
+                            anchors.fill: parent
                             
-                            Label {
-                                text: "Snapshot #" + modelData.number
-                                font.bold: true
+                            Row {
+                                spacing: 10
+
+                                Label {
+                                    text: "Snapshot #" + modelData.number
+                                    font.bold: true
+                                }
+
+                                Label {
+                                    text: "(" + modelData.date + ")"
+                                    color: "gray"
+                                }
                             }
                             
                             Label {
-                                text: "(" + modelData.date + ")"
-                                color: "gray"
+                                text: modelData.description
+                                font.pixelSize: 12
+                                wrapMode: Text.Wrap
+                                width: parent.width - 40
                             }
                         }
                         
-                        Label {
-                            text: modelData.description
-                            font.pixelSize: 12
-                            wrapMode: Text.Wrap
-                            width: parent.width - 40
+                        highlighted: ListView.isCurrentItem
+
+                        onClicked: {
+                            // Show confirmation dialog before rollback
+                            if (confirmDialog) {
+                                confirmDialog.snapshotNumber = modelData.number;
+                                confirmDialog.open();
+                            }
                         }
                     }
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    spacing: 15
                     
-                    highlighted: ListView.isCurrentItem
-                    
-                    onClicked: {
-                        // Show confirmation dialog before rollback
-                        if (confirmDialog) {
-                            confirmDialog.snapshotNumber = modelData.number;
-                            confirmDialog.open();
-                        }
+                    Item { Layout.fillHeight: true }
+
+                    Label {
+                        text: "📂"
+                        font.pixelSize: 48
+                        Layout.alignment: Qt.AlignHCenter
                     }
+                    
+                    Label {
+                        text: "No Snapshots Found"
+                        font.bold: true
+                        font.pointSize: 14
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Label {
+                        text: "Check your configuration or try refreshing."
+                        color: "gray"
+                        Layout.alignment: Qt.AlignHCenter
+                    }
+
+                    Button {
+                        text: "Refresh Now"
+                        Layout.alignment: Qt.AlignHCenter
+                        onClicked: loadSnapshots()
+                        Accessible.name: "Refresh Now"
+                        Accessible.description: "Reloads the list of system snapshots."
+                    }
+
+                    Item { Layout.fillHeight: true }
                 }
             }
             
             Button {
                 text: "Refresh Snapshots"
                 Layout.alignment: Qt.AlignHCenter
+
+                Accessible.name: "Refresh Snapshots"
+                Accessible.description: "Reloads the list of system snapshots from disk."
+
+                ToolTip.visible: hovered
+                ToolTip.text: "Reload available snapshots"
+
                 onClicked: loadSnapshots()
             }
         }
@@ -124,10 +180,16 @@ Page {
         
         property string snapshotNumber: ""
         
+        onOpened: cancelButton.forceActiveFocus()
+
         Column {
             anchors.centerIn: parent
             spacing: 20
             
+            Accessible.role: Accessible.Dialog
+            Accessible.name: "Confirm System Rollback"
+            Accessible.description: warningLabel.text
+
             Label {
                 text: "Confirm System Rollback"
                 font.bold: true
@@ -135,6 +197,7 @@ Page {
             }
             
             Label {
+                id: warningLabel
                 text: "Are you sure you want to rollback to snapshot #" + confirmDialog.snapshotNumber + "? " +
                       "This will restore your system to the state at that time and reboot the computer."
                 wrapMode: Text.Wrap
@@ -146,7 +209,9 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 
                 Button {
-                    text: "Confirm"
+                    text: "Rollback & Reboot"
+                    Accessible.name: "Rollback and Reboot"
+                    Accessible.description: "Restores the system to the selected snapshot and restarts the computer immediately."
                     onClicked: {
                         rollbackToSnapshot(confirmDialog.snapshotNumber);
                         confirmDialog.close();
@@ -154,7 +219,10 @@ Page {
                 }
                 
                 Button {
+                    id: cancelButton
                     text: "Cancel"
+                    Accessible.name: "Cancel"
+                    Accessible.description: "Closes this dialog without making changes."
                     onClicked: confirmDialog.close()
                 }
             }

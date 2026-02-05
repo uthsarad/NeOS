@@ -17,3 +17,13 @@
 **Vulnerability:** Installer scripts operating on user-supplied paths without block device validation (`[[ -b ... ]]`).
 **Learning:** Shell scripts dealing with `parted` or `mkfs` can easily destroy files or directories if the input is not strictly validated as a block device. This is a critical safety check for any system administration tool.
 **Prevention:** Always use `[[ -b "$DEVICE" ]]` before executing destructive disk operations.
+
+## 2026-06-01 - Installer Privilege Escalation via Live Config
+**Vulnerability:** The installer copied `airootfs/etc/sudoers.d/wheel` (NOPASSWD) to the target system via `unpackfs`.
+**Learning:** Files meant for the Live ISO environment (like passwordless sudo) must be explicitly excluded or removed from the installed system. Calamares `unpackfs` copies everything by default.
+**Prevention:** Use a `shellprocess` module or `unpackfs` exclusions to remove sensitive live-only configuration files from the target.
+
+## 2026-06-02 - Weak Password Policy in Installer
+**Vulnerability:** The Calamares installer configuration explicitly allowed weak passwords (`allowWeakPasswords: true`).
+**Learning:** Default configurations in installer frameworks often prioritize user convenience over security, allowing users to set single-character passwords that are easily brute-forced.
+**Prevention:** Audit all installer configuration files (especially `users.conf`) to ensure `allowWeakPasswords` is set to `false`.

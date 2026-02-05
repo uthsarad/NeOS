@@ -4,6 +4,7 @@ linux-lqx-headers
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
+zram-generator
 arch-install-scripts
 sudo
 nano
