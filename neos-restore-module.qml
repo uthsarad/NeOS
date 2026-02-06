@@ -147,6 +147,9 @@ Page {
                         onClicked: loadSnapshots()
                         Accessible.name: "Refresh Now"
                         Accessible.description: "Reloads the list of system snapshots."
+
+                        ToolTip.visible: hovered
+                        ToolTip.text: "Reload available snapshots"
                     }
 
                     Item { Layout.fillHeight: true }
@@ -155,6 +158,7 @@ Page {
             
             Button {
                 text: "Refresh Snapshots"
+                visible: snapshotList.count > 0
                 Layout.alignment: Qt.AlignHCenter
 
                 Accessible.name: "Refresh Snapshots"
@@ -198,8 +202,9 @@ Page {
             
             Label {
                 id: warningLabel
+                textFormat: Text.RichText
                 text: "Are you sure you want to rollback to snapshot #" + confirmDialog.snapshotNumber + "? " +
-                      "This will restore your system to the state at that time and reboot the computer."
+                      "This will <b>restore your system</b> to the state at that time and <b>reboot the computer</b>."
                 wrapMode: Text.Wrap
                 width: parent.width - 40
             }
