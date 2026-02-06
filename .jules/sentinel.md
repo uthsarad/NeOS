@@ -27,3 +27,8 @@
 **Vulnerability:** The Calamares installer configuration explicitly allowed weak passwords (`allowWeakPasswords: true`).
 **Learning:** Default configurations in installer frameworks often prioritize user convenience over security, allowing users to set single-character passwords that are easily brute-forced.
 **Prevention:** Audit all installer configuration files (especially `users.conf`) to ensure `allowWeakPasswords` is set to `false`.
+
+## 2026-06-05 - Unsafe Shell Execution in Driver Scripts
+**Vulnerability:** The `neos-driver-manager` script utilized `shell=True` and `os.system` for executing system commands.
+**Learning:** While the current inputs were hardcoded, using `shell=True` creates a latent vulnerability that becomes critical if dynamic input is ever introduced. It also violates the principle of least privilege by invoking a full shell environment unnecessarily.
+**Prevention:** Always use `subprocess` functions with a list of arguments (e.g., `["cmd", "arg"]`) and `shell=False` to bypass shell expansion risks.
