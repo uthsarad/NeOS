@@ -32,3 +32,8 @@
 **Vulnerability:** The `neos-driver-manager` script utilized `shell=True` and `os.system` for executing system commands.
 **Learning:** While the current inputs were hardcoded, using `shell=True` creates a latent vulnerability that becomes critical if dynamic input is ever introduced. It also violates the principle of least privilege by invoking a full shell environment unnecessarily.
 **Prevention:** Always use `subprocess` functions with a list of arguments (e.g., `["cmd", "arg"]`) and `shell=False` to bypass shell expansion risks.
+
+## 2026-06-08 - Insecure Lock File Location
+**Vulnerability:** The automatic update script used `/var/lock` (a world-writable directory) for its lock file, allowing unprivileged users to pre-create and lock the file, causing a Denial of Service (DoS) for system updates.
+**Learning:** System scripts running as root must place lock files in directories only writable by root (e.g., `/run` or `/var/lib`) to prevent user interference. World-writable directories like `/tmp` or `/var/lock` are unsafe for privileged lock files.
+**Prevention:** Always use a secure, root-owned directory for lock files in privileged scripts.
