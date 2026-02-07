@@ -6,23 +6,37 @@ Page {
     id: root
     
     property var snapshots: []
+    property bool isLoading: false
     
     Component.onCompleted: loadSnapshots()
     
     function loadSnapshots() {
-        // In a real implementation, this would use a system call to get snapshots
-        // For now, we'll simulate with dummy data
-        snapshots = [
-            { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
-            { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
-            { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
-            { date: "2026-01-09 14:30", number: "6", description: "Post-automatic-update-20260109_143015" },
-            { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
-            { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
-        ];
-        
-        // Update UI
-        snapshotList.model = snapshots;
+        if (isLoading) return;
+        isLoading = true;
+        // Simulate async loading
+        loadTimer.start();
+    }
+
+    Timer {
+        id: loadTimer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            // In a real implementation, this would use a system call to get snapshots
+            // For now, we'll simulate with dummy data
+            snapshots = [
+                { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
+                { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
+                { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
+                { date: "2026-01-09 14:30", number: "6", description: "Post-automatic-update-20260109_143015" },
+                { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
+                { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
+            ];
+
+            // Update UI
+            snapshotList.model = snapshots;
+            isLoading = false;
+        }
     }
     
     function rollbackToSnapshot(snapshotNumber) {
@@ -60,7 +74,7 @@ Page {
             StackLayout {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 400
-                currentIndex: snapshotList.count > 0 ? 0 : 1
+                currentIndex: isLoading ? 2 : (snapshotList.count > 0 ? 0 : 1)
 
                 ListView {
                     id: snapshotList
@@ -149,7 +163,31 @@ Page {
                         Accessible.description: "Reloads the list of system snapshots."
 
                         ToolTip.visible: hovered
-                        ToolTip.text: "Reload available snapshots"
+                        ToolTip.text: qsTr("Reload available snapshots (F5)")
+                    }
+
+                    Item { Layout.fillHeight: true }
+                }
+
+                // Loading State (Index 2)
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    Item { Layout.fillHeight: true }
+
+                    BusyIndicator {
+                        running: root.isLoading
+                        Layout.alignment: Qt.AlignHCenter
+
+                        Accessible.name: qsTr("Loading snapshots")
+                        Accessible.role: Accessible.Animation
+                    }
+
+                    Label {
+                        text: qsTr("Loading snapshots...")
+                        color: "gray"
+                        Layout.alignment: Qt.AlignHCenter
                     }
 
                     Item { Layout.fillHeight: true }
@@ -159,19 +197,30 @@ Page {
             Button {
                 text: "Refresh Snapshots"
                 visible: snapshotList.count > 0
+                enabled: !isLoading
                 Layout.alignment: Qt.AlignHCenter
 
                 Accessible.name: "Refresh Snapshots"
                 Accessible.description: "Reloads the list of system snapshots from disk."
 
                 ToolTip.visible: hovered
-                ToolTip.text: "Reload available snapshots"
+                ToolTip.text: qsTr("Reload available snapshots (F5)")
 
                 onClicked: loadSnapshots()
             }
         }
     }
     
+    Shortcut {
+        sequence: StandardKey.Refresh
+        onActivated: loadSnapshots()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+R"
+        onActivated: loadSnapshots()
+    }
+
     // Confirmation Dialog
     Popup {
         id: confirmDialog
