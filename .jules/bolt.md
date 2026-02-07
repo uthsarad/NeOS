@@ -35,3 +35,11 @@
 ## 2026-02-04 - Synchronous vs Async Discard
 **Learning:** Default `discard` mount option is synchronous and causes latency spikes on Ext4/XFS. Btrfs `discard=async` avoids this.
 **Action:** Use `discard=async` for Btrfs. For others, rely on `fstrim.timer` and explicitly disable `discard` in installer configs.
+
+## 2026-02-04 - Target System Initramfs Portability
+**Learning:** Removing explicit virtualization modules from the target system's `mkinitcpio.conf` (to rely on `autodetect`) breaks portability if the installed drive is moved from bare metal to a VM.
+**Action:** Retain explicit VM driver loading in `mkinitcpio.conf` if the installed system is expected to be portable across hypervisors, even if it slightly increases initramfs size.
+
+## 2026-02-04 - Ghost Module Config
+**Learning:** `mkinitcpio.conf` requested `zfs` module but `packages.x86_64` did not include ZFS support, causing build-time warnings.
+**Action:** Cross-reference `mkinitcpio.conf` `MODULES` with `packages.x86_64` to remove unsupported modules and silence warnings.
