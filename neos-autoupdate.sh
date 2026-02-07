@@ -5,14 +5,15 @@
 set -euo pipefail
 
 LOG_FILE="/var/log/neos-autoupdate.log"
-LOCK_FILE="/var/lock/neos-autoupdate.lock"
+LOCK_FILE="/run/neos-autoupdate.lock"
 
 # Log function
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
-# Sentinel: Prevent race conditions using flock (TOCTOU fix)
+# Sentinel: Prevent race conditions and DoS using flock
+# Use /run for lock file as it's only writable by root, preventing user DoS
 exec 9> "$LOCK_FILE"
 if ! flock -n 9; then
     log "Update already running (lock held), exiting."
