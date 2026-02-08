@@ -59,14 +59,14 @@ Page {
             spacing: 20
             
             Label {
-                text: "NeOS System Restore"
+                text: qsTr("NeOS System Restore")
                 font.pointSize: 16
                 font.bold: true
                 Layout.alignment: Qt.AlignHCenter
             }
             
             Label {
-                text: "Select a system snapshot to restore from:"
+                text: qsTr("Select a system snapshot to restore from:")
                 font.pointSize: 12
                 Layout.leftMargin: 20
             }
@@ -83,48 +83,68 @@ Page {
                     clip: true
                     focus: true
                     
-                    Accessible.name: "System Snapshots"
+                    Accessible.name: qsTr("System Snapshots")
 
                     delegate: ItemDelegate {
                         width: ListView.view.width
                         padding: 15
                         
                         Accessible.role: Accessible.ListItem
-                        Accessible.name: "Snapshot " + modelData.number + " from " + modelData.date + ". " + modelData.description
+                        Accessible.name: qsTr("Snapshot %1 from %2. %3").arg(modelData.number).arg(modelData.date).arg(modelData.description)
 
-                        Column {
-                            anchors.fill: parent
+                        contentItem: RowLayout {
+                            spacing: 15
                             
-                            Row {
-                                spacing: 10
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 2
 
-                                Label {
-                                    text: "Snapshot #" + modelData.number
-                                    font.bold: true
+                                Row {
+                                    spacing: 10
+
+                                    Label {
+                                        text: qsTr("Snapshot #%1").arg(modelData.number)
+                                        font.bold: true
+                                    }
+
+                                    Label {
+                                        text: "(" + modelData.date + ")"
+                                        color: "gray"
+                                    }
                                 }
 
                                 Label {
-                                    text: "(" + modelData.date + ")"
-                                    color: "gray"
+                                    text: modelData.description
+                                    font.pixelSize: 12
+                                    wrapMode: Text.Wrap
+                                    Layout.fillWidth: true
                                 }
                             }
                             
-                            Label {
-                                text: modelData.description
-                                font.pixelSize: 12
-                                wrapMode: Text.Wrap
-                                width: parent.width - 40
+                            Button {
+                                text: qsTr("Restore")
+                                highlighted: true
+
+                                onClicked: {
+                                    if (confirmDialog) {
+                                        confirmDialog.snapshotNumber = modelData.number;
+                                        confirmDialog.open();
+                                    }
+                                }
+
+                                ToolTip.visible: hovered
+                                ToolTip.text: qsTr("Restore system to this snapshot")
+                                ToolTip.delay: 500
+
+                                Accessible.name: qsTr("Restore snapshot %1").arg(modelData.number)
+                                Accessible.description: qsTr("Restores the system to this snapshot")
                             }
                         }
                         
                         highlighted: ListView.isCurrentItem
 
                         onClicked: {
-                            // Show confirmation dialog before rollback
-                            if (confirmDialog) {
-                                confirmDialog.snapshotNumber = modelData.number;
-                                confirmDialog.open();
-                            }
+                           ListView.view.currentIndex = index
                         }
                     }
                 }
@@ -143,24 +163,24 @@ Page {
                     }
                     
                     Label {
-                        text: "No Snapshots Found"
+                        text: qsTr("No Snapshots Found")
                         font.bold: true
                         font.pointSize: 14
                         Layout.alignment: Qt.AlignHCenter
                     }
 
                     Label {
-                        text: "Check your configuration or try refreshing."
+                        text: qsTr("Check your configuration or try refreshing.")
                         color: "gray"
                         Layout.alignment: Qt.AlignHCenter
                     }
 
                     Button {
-                        text: "Refresh Now"
+                        text: qsTr("Refresh Now")
                         Layout.alignment: Qt.AlignHCenter
                         onClicked: loadSnapshots()
-                        Accessible.name: "Refresh Now"
-                        Accessible.description: "Reloads the list of system snapshots."
+                        Accessible.name: qsTr("Refresh Now")
+                        Accessible.description: qsTr("Reloads the list of system snapshots.")
 
                         ToolTip.visible: hovered
                         ToolTip.text: qsTr("Reload available snapshots (F5)")
@@ -195,13 +215,13 @@ Page {
             }
             
             Button {
-                text: "Refresh Snapshots"
+                text: qsTr("Refresh Snapshots")
                 visible: snapshotList.count > 0
                 enabled: !isLoading
                 Layout.alignment: Qt.AlignHCenter
 
-                Accessible.name: "Refresh Snapshots"
-                Accessible.description: "Reloads the list of system snapshots from disk."
+                Accessible.name: qsTr("Refresh Snapshots")
+                Accessible.description: qsTr("Reloads the list of system snapshots from disk.")
 
                 ToolTip.visible: hovered
                 ToolTip.text: qsTr("Reload available snapshots (F5)")
@@ -240,11 +260,11 @@ Page {
             spacing: 20
             
             Accessible.role: Accessible.Dialog
-            Accessible.name: "Confirm System Rollback"
+            Accessible.name: qsTr("Confirm System Rollback")
             Accessible.description: warningLabel.text
 
             Label {
-                text: "Confirm System Rollback"
+                text: qsTr("Confirm System Rollback")
                 font.bold: true
                 font.pointSize: 14
             }
@@ -252,8 +272,7 @@ Page {
             Label {
                 id: warningLabel
                 textFormat: Text.RichText
-                text: "Are you sure you want to rollback to snapshot #" + confirmDialog.snapshotNumber + "? " +
-                      "This will <b>restore your system</b> to the state at that time and <b>reboot the computer</b>."
+                text: qsTr("Are you sure you want to rollback to snapshot #%1? This will <b>restore your system</b> to the state at that time and <b>reboot the computer</b>.").arg(confirmDialog.snapshotNumber)
                 wrapMode: Text.Wrap
                 width: parent.width - 40
             }
@@ -263,9 +282,9 @@ Page {
                 anchors.horizontalCenter: parent.horizontalCenter
                 
                 Button {
-                    text: "Rollback & Reboot"
-                    Accessible.name: "Rollback and Reboot"
-                    Accessible.description: "Restores the system to the selected snapshot and restarts the computer immediately."
+                    text: qsTr("Rollback & Reboot")
+                    Accessible.name: qsTr("Rollback and Reboot")
+                    Accessible.description: qsTr("Restores the system to the selected snapshot and restarts the computer immediately.")
                     onClicked: {
                         rollbackToSnapshot(confirmDialog.snapshotNumber);
                         confirmDialog.close();
@@ -274,9 +293,9 @@ Page {
                 
                 Button {
                     id: cancelButton
-                    text: "Cancel"
-                    Accessible.name: "Cancel"
-                    Accessible.description: "Closes this dialog without making changes."
+                    text: qsTr("Cancel")
+                    Accessible.name: qsTr("Cancel")
+                    Accessible.description: qsTr("Closes this dialog without making changes.")
                     onClicked: confirmDialog.close()
                 }
             }
