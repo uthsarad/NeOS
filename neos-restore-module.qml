@@ -83,6 +83,9 @@ Page {
                     clip: true
                     focus: true
                     
+                    // ⚡ Bolt: Enable item reuse for smoother scrolling performance
+                    reuseItems: true
+
                     Accessible.name: qsTr("System Snapshots")
 
                     delegate: ItemDelegate {
