@@ -37,3 +37,8 @@
 **Vulnerability:** The automatic update script used `/var/lock` (a world-writable directory) for its lock file, allowing unprivileged users to pre-create and lock the file, causing a Denial of Service (DoS) for system updates.
 **Learning:** System scripts running as root must place lock files in directories only writable by root (e.g., `/run` or `/var/lib`) to prevent user interference. World-writable directories like `/tmp` or `/var/lock` are unsafe for privileged lock files.
 **Prevention:** Always use a secure, root-owned directory for lock files in privileged scripts.
+
+## 2026-06-15 - Missing Kernel Hardening Defaults
+**Vulnerability:** The default `airootfs` configuration lacked `fs.protected_hardlinks`, `fs.protected_symlinks`, and `kernel.unprivileged_bpf_disabled`.
+**Learning:** Arch Linux and many minimal distributions default to upstream kernel settings, which are often permissive for compatibility. Security-focused distributions must explicitly enable these protections to mitigate TOCTOU attacks and reduce the kernel attack surface.
+**Prevention:** Audit `sysctl.d` configurations against security baselines (like the Kernel Self Protection Project) and enforce restrictive defaults.
