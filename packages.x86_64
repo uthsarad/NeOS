@@ -120,3 +120,10 @@ cups-filters
 system-config-printer
 pciutils
 python
+kdeconnect
+wine
+winetricks
+flatpak
+ufw
+gufw
+fwupd
