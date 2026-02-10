@@ -99,12 +99,11 @@ _package_common() {
   local skipdirs='./(debian|Documentation|scripts|Kbuild|Kconfig.*)'
 
   install -dm755 "${hdrdest}"
-  # Create all parent directories, preserving permissions
-  find . -depth -mindepth 1 -print0 \
-    | xargs -0 -I {} sh -c 'mkdir -p "$0/$(dirname "$1")"' "${hdrdest}" {}
   # Copy header files
+  # ⚡ Bolt: Replaced inefficient find|xargs loops with single find|rsync pipeline
+  # This avoids spawning thousands of processes and correctly handles directory creation
   find . -name '*.h' -print0 \
-    | xargs -0 -I {} rsync -aHAXx --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --files-from={} . "${hdrdest}"
+    | rsync -aHAXx --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --files-from=- --from0 . "${hdrdest}"
 
   # Install remaining necessary files
   local f
