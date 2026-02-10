@@ -89,9 +89,12 @@ Page {
                     Accessible.name: qsTr("System Snapshots")
 
                     delegate: ItemDelegate {
+                        id: snapshotDelegate
                         width: ListView.view.width
                         padding: 15
                         
+                        KeyNavigation.right: restoreButton
+
                         Accessible.role: Accessible.ListItem
                         Accessible.name: qsTr("Snapshot %1 from %2. %3").arg(modelData.number).arg(modelData.date).arg(modelData.description)
 
@@ -125,8 +128,11 @@ Page {
                             }
                             
                             Button {
+                                id: restoreButton
                                 text: qsTr("Restore")
                                 highlighted: true
+
+                                KeyNavigation.left: snapshotDelegate
 
                                 onClicked: {
                                     if (confirmDialog) {
@@ -135,7 +141,7 @@ Page {
                                     }
                                 }
 
-                                ToolTip.visible: hovered
+                                ToolTip.visible: hovered || activeFocus
                                 ToolTip.text: qsTr("Restore system to this snapshot")
                                 ToolTip.delay: 500
 
@@ -185,7 +191,7 @@ Page {
                         Accessible.name: qsTr("Refresh Now")
                         Accessible.description: qsTr("Reloads the list of system snapshots.")
 
-                        ToolTip.visible: hovered
+                        ToolTip.visible: hovered || activeFocus
                         ToolTip.text: qsTr("Reload available snapshots (F5)")
                     }
 
@@ -226,7 +232,7 @@ Page {
                 Accessible.name: qsTr("Refresh Snapshots")
                 Accessible.description: qsTr("Reloads the list of system snapshots from disk.")
 
-                ToolTip.visible: hovered
+                ToolTip.visible: hovered || activeFocus
                 ToolTip.text: qsTr("Reload available snapshots (F5)")
 
                 onClicked: loadSnapshots()
