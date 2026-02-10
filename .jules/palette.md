@@ -27,3 +27,7 @@
 ## 2025-05-24 - List Item Safety
 **Learning:** In destructive contexts (e.g., system restore), allowing the entire list row to trigger the action increases the risk of accidental execution (slip error).
 **Action:** Decouple selection from execution by using a specific action button (e.g., "Restore") within the delegate, leaving the row click for selection only.
+
+## 2026-05-25 - Keyboard Navigation in List Items
+**Learning:** In QML `ListView`, complex delegates with internal actions (like buttons) are often skipped by standard arrow key navigation, making them inaccessible to keyboard users.
+**Action:** Use `KeyNavigation.right` (or appropriate direction) on the delegate root to move focus *into* the action button, and `KeyNavigation.left` on the button to return focus to the list item.
