@@ -43,3 +43,7 @@
 ## 2026-02-04 - Ghost Module Config
 **Learning:** `mkinitcpio.conf` requested `zfs` module but `packages.x86_64` did not include ZFS support, causing build-time warnings.
 **Action:** Cross-reference `mkinitcpio.conf` `MODULES` with `packages.x86_64` to remove unsupported modules and silence warnings.
+
+## 2026-02-04 - Btrfs Space Cache Inconsistency
+**Learning:** The manual installer script `neos-installer-partition.sh` used `space_cache=v2` (performance win), but the Calamares installer config `fstab.conf` did not, leading to degraded performance for users who installed via the GUI.
+**Action:** When maintaining dual installation methods (script vs GUI), always synchronize filesystem performance options in both `mount` commands and `fstab.conf` templates.
