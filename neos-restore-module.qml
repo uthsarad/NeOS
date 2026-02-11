@@ -48,6 +48,25 @@ Page {
         // proc.arguments = ["sh", "-c", `snapper rollback ${snapshotNumber} && reboot`];
         // proc.start();
     }
+
+    function timeAgo(dateString) {
+        var date = new Date(dateString);
+        var now = new Date();
+        var diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+        if (diff < 60) return qsTr("just now");
+
+        var m = Math.floor(diff / 60);
+        if (m < 60) return m === 1 ? qsTr("1 minute ago") : qsTr("%1 minutes ago").arg(m);
+
+        var h = Math.floor(m / 60);
+        if (h < 24) return h === 1 ? qsTr("1 hour ago") : qsTr("%1 hours ago").arg(h);
+
+        var d = Math.floor(h / 24);
+        if (d < 30) return d === 1 ? qsTr("1 day ago") : qsTr("%1 days ago").arg(d);
+
+        return "";
+    }
     
     Flickable {
         anchors.fill: parent
@@ -114,7 +133,8 @@ Page {
                                     }
 
                                     Label {
-                                        text: "(" + modelData.date + ")"
+                                        property string ago: root.timeAgo(modelData.date)
+                                        text: "(" + modelData.date + (ago ? " - " + ago : "") + ")"
                                         color: "gray"
                                     }
                                 }
