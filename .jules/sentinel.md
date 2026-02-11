@@ -42,3 +42,8 @@
 **Vulnerability:** The default `airootfs` configuration lacked `fs.protected_hardlinks`, `fs.protected_symlinks`, and `kernel.unprivileged_bpf_disabled`.
 **Learning:** Arch Linux and many minimal distributions default to upstream kernel settings, which are often permissive for compatibility. Security-focused distributions must explicitly enable these protections to mitigate TOCTOU attacks and reduce the kernel attack surface.
 **Prevention:** Audit `sysctl.d` configurations against security baselines (like the Kernel Self Protection Project) and enforce restrictive defaults.
+
+## 2026-06-20 - QML HTML Injection via Default Text Format
+**Vulnerability:** The QML `Label` component defaults to `Text.AutoText`, which renders HTML tags (like `<b>`, `<img>`, `<a href>`) if present in the text property. This allows stored XSS or UI redress attacks if the text comes from untrusted user input (e.g., snapshot descriptions).
+**Learning:** Default UI component behaviors often prioritize richness over security. In QML, any string that looks like HTML is rendered as such by default, which is dangerous for user-generated content.
+**Prevention:** Explicitly set `textFormat: Text.PlainText` for all `Label` components displaying dynamic or user-controlled text to force literal rendering.
