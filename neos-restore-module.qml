@@ -130,12 +130,14 @@ Page {
                                     Label {
                                         text: qsTr("Snapshot #%1").arg(modelData.number)
                                         font.bold: true
+                                        textFormat: Text.PlainText
                                     }
 
                                     Label {
                                         property string ago: root.timeAgo(modelData.date)
                                         text: "(" + modelData.date + (ago ? " - " + ago : "") + ")"
                                         color: "gray"
+                                        textFormat: Text.PlainText
                                     }
                                 }
 
@@ -144,6 +146,7 @@ Page {
                                     font.pixelSize: 12
                                     wrapMode: Text.Wrap
                                     Layout.fillWidth: true
+                                    textFormat: Text.PlainText
                                 }
                             }
                             
