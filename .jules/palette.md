@@ -31,3 +31,7 @@
 ## 2026-05-25 - Keyboard Navigation in List Items
 **Learning:** In QML `ListView`, complex delegates with internal actions (like buttons) are often skipped by standard arrow key navigation, making them inaccessible to keyboard users.
 **Action:** Use `KeyNavigation.right` (or appropriate direction) on the delegate root to move focus *into* the action button, and `KeyNavigation.left` on the button to return focus to the list item.
+
+## 2026-06-25 - Contextual Safety with Tooltips
+**Learning:** Destructive buttons in QML dialogs (like "Reboot") often lack secondary safety checks for keyboard users who might tab-press quickly.
+**Action:** Add `ToolTip.visible: hovered || activeFocus` to destructive buttons to reinforce the consequence (e.g., "Reboot immediately") *before* the click occurs.

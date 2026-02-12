@@ -135,7 +135,7 @@ Page {
 
                                     Label {
                                         property string ago: root.timeAgo(modelData.date)
-                                        text: "(" + modelData.date + (ago ? " - " + ago : "") + ")"
+                                        text: modelData.date + (ago ? " • " + ago : "")
                                         color: "gray"
                                         textFormat: Text.PlainText
                                     }
@@ -152,7 +152,7 @@ Page {
                             
                             Button {
                                 id: restoreButton
-                                text: qsTr("Restore")
+                                text: qsTr("Restore...")
                                 highlighted: true
 
                                 KeyNavigation.left: snapshotDelegate
@@ -317,6 +317,11 @@ Page {
                     text: qsTr("Rollback & Reboot")
                     Accessible.name: qsTr("Rollback and Reboot")
                     Accessible.description: qsTr("Restores the system to the selected snapshot and restarts the computer immediately.")
+
+                    ToolTip.visible: hovered || activeFocus
+                    ToolTip.text: qsTr("Warning: This will reboot your computer immediately")
+                    ToolTip.delay: 500
+
                     onClicked: {
                         rollbackToSnapshot(confirmDialog.snapshotNumber);
                         confirmDialog.close();
@@ -328,6 +333,11 @@ Page {
                     text: qsTr("Cancel")
                     Accessible.name: qsTr("Cancel")
                     Accessible.description: qsTr("Closes this dialog without making changes.")
+
+                    ToolTip.visible: hovered || activeFocus
+                    ToolTip.text: qsTr("Close without changes")
+                    ToolTip.delay: 500
+
                     onClicked: confirmDialog.close()
                 }
             }
