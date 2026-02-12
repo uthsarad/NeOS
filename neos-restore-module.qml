@@ -13,30 +13,23 @@ Page {
     function loadSnapshots() {
         if (isLoading) return;
         isLoading = true;
-        // Simulate async loading
-        loadTimer.start();
-    }
 
-    Timer {
-        id: loadTimer
-        interval: 1000
-        repeat: false
-        onTriggered: {
-            // In a real implementation, this would use a system call to get snapshots
-            // For now, we'll simulate with dummy data
-            snapshots = [
-                { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
-                { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
-                { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
-                { date: "2026-01-09 14:30", number: "6", description: "Post-automatic-update-20260109_143015" },
-                { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
-                { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
-            ];
+        // Remove artificial delay
+        // In a real implementation, this would use a system call to get snapshots
+        // For now, we'll simulate with dummy data
+        var newSnapshots = [
+            { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
+            { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
+            { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
+            { date: "2026-01-09 14:30", number: "6", description: "Post-automatic-update-20260109_143015" },
+            { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
+            { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
+        ];
 
-            // Update UI
-            snapshotList.model = snapshots;
-            isLoading = false;
-        }
+        // Update UI
+        snapshots = newSnapshots;
+        snapshotList.model = snapshots;
+        isLoading = false;
     }
     
     function rollbackToSnapshot(snapshotNumber) {
