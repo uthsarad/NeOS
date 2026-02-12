@@ -32,7 +32,6 @@ airootfs_image_tool_options=('-zlz4hc')
 
 # Performance-focused kernel parameters
 kernel_parameters+=(
-  "elevator=kyber"          # I/O scheduler optimized for fast storage
   "nowatchdog"              # Disable hardware watchdog unless specifically needed
   "mce=ignore_ce"           # Ignore corrected errors to reduce log noise
   "intel_pstate=enable"     # Intel CPU power management
