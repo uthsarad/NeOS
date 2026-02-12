@@ -38,7 +38,7 @@ if pacman -Syu --noconfirm; then
     
     # Optionally clean old snapshots (keep last 10)
     log "Cleaning old snapshots..."
-    snapper --config=root cleanup number --keep-number 10
+    snapper --config=root cleanup number
     
     log "Automatic update process completed successfully"
 else

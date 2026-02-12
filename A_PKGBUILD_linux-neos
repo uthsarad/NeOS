@@ -6,11 +6,12 @@ _kernelname=${pkgbase#linux}
 _kernelname=${_kernelname:+-${_kernelname}}
 
 # Set pkgver and src version here. This is updated by update.sh
-_kernelver=6.18
+_kernelver=6.19
 _kernelrel=1
 
 # Update these to match the version of the zen kernel
 _kernver="${_kernelver}-${_kernelrel}-zen${_kernelname}"
+_zentag="v${_kernelver}-zen${_kernelrel}"
 
 pkgver=${_kernver/-/_}
 
@@ -23,11 +24,11 @@ makedepends=('xmlto' 'asciidoc' 'docbook-xsl' 'gperf' 'python-sphinx'
              'gcc>=7.3' 'binutils>=2.30' 'openssl' 'libelf' 'libdw'
              'libarchive' 'libudev' 'libseccomp' 'zstd' 'llvm' 'clang'
              'lld' 'python-sphinx' 'python-sphinx_rtd_theme' 'graphviz'
-             'pahole' 'rust' 'rust-bindgen' 'python-m2r2')
+             'pahole' 'rust' 'rust-bindgen' 'python-myst-parser')
 
 options=('!strip' '!debug' 'docs')
 source=("https://www.kernel.org/pub/linux/kernel/v6.x/linux-${_kernelver}.tar.xz"{,.sig}
-        "https://github.com/zen-kernel/zen-kernel/archive/${_kernver}.tar.gz"{,.sig}
+        "https://github.com/zen-kernel/zen-kernel/archive/${_zentag}.tar.gz"{,.sig}
         # Config
         "config.x86_64::https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/linux/trunk/config"
         
@@ -57,7 +58,7 @@ prepare() {
   cd "${srcdir}/linux-${_kernelver}"
   
   # Extract zen kernel patches
-  tar -xaf "${srcdir}/${_kernver}.tar.gz" --strip-components=1
+  tar -xaf "${srcdir}/${_zentag}.tar.gz" --strip-components=1
   
   # Apply custom NeOS patches
   patch -Np1 -i "${srcdir}/neos-btrfs-built-in.patch"

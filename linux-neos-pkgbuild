@@ -3,7 +3,7 @@
 
 pkgbase=linux-neos
 _kernelname=-neos
-pkgver=6.18.1
+pkgver=6.19
 pkgrel=1
 arch=(x86_64)
 url='https://kernel.org/'
