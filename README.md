@@ -17,6 +17,7 @@ NeOS (Next Evolution Operating System) is a curated, snapshot-based Arch Linux d
 This repository contains the architectural guidance, roadmap, and configuration scaffolding for the NeOS distribution. It is written for contributors, reviewers, and early users as NeOS approaches its first public beta.
 
 ## Documentation
+- **[NeOS Handbook (Getting Started)](docs/HANDBOOK.md)** - Start here!
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Development Roadmap](docs/ROADMAP.md)
 - [Performance Standards](docs/PERFORMANCE.md)
