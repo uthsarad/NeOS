@@ -34,11 +34,9 @@ def probe_driver(module_name):
     _LOADED_MODULES_CACHE = None
     return res
 
-def get_pci_controllers():
-    # List all VGA/3D/Display controllers
-    # lspci -mn | grep -E "0300|0302|0380"
-    # Class 0300: VGA compatible controller
-    # Class 0302: 3D controller (often Nvidia on optimus)
+def get_pci_controllers(class_prefixes=("03",)):
+    # List all PCI controllers matching the class prefixes
+    # lspci -mn output format: "slot" "class" "vendor" "device" ...
     output = run_command(["lspci", "-mn"])
     devices = []
     for line in output.splitlines():
@@ -49,8 +47,9 @@ def get_pci_controllers():
             cls = parts[1].strip('"')
             vendor = parts[2].strip('"')
             device = parts[3].strip('"')
-            if cls.startswith("03"): # Display controller class
-                devices.append({'slot': slot, 'vendor': vendor, 'device': device})
+
+            if any(cls.startswith(prefix) for prefix in class_prefixes):
+                devices.append({'slot': slot, 'vendor': vendor, 'device': device, 'class': cls})
     return devices
 
 def check_driver_loaded(module_name):
@@ -58,7 +57,7 @@ def check_driver_loaded(module_name):
     return module_name in get_loaded_modules()
 
 def manage_gpu_drivers():
-    devices = get_pci_controllers()
+    devices = get_pci_controllers(class_prefixes=("03",))
     if not devices:
         log("No GPU detected.")
         return
@@ -104,9 +103,36 @@ def manage_network_drivers():
     # If no interface other than lo, try to find drivers
     output = run_command(["ip", "link", "show"])
     if len(output.splitlines()) <= 2: # loopback only roughly
-        log("No network interfaces found! Probing common drivers...")
-        # Try loading common modules just in case
-        subprocess.run(["modprobe", "-a", "r8169", "e1000e", "wl", "brcmfmac", "ath10k_pci", "iwlwifi"], check=False)
+        # Identify specific network controller via PCI ID
+        devices = get_pci_controllers(class_prefixes=("02",))
+        drivers_to_load = []
+
+        for dev in devices:
+            vendor = dev['vendor']
+            cls = dev['class']
+
+            # Realtek (10ec)
+            if vendor == "10ec":
+                drivers_to_load.append("r8169")
+            # Intel (8086)
+            elif vendor == "8086":
+                if cls.startswith("0200"): # Ethernet
+                    drivers_to_load.append("e1000e")
+                elif cls.startswith("0280"): # Wireless
+                    drivers_to_load.append("iwlwifi")
+            # Broadcom (14e4)
+            elif vendor == "14e4":
+                if "brcmfmac" not in drivers_to_load: drivers_to_load.append("brcmfmac")
+                if "wl" not in drivers_to_load: drivers_to_load.append("wl")
+            # Atheros (168c)
+            elif vendor == "168c":
+                drivers_to_load.append("ath10k_pci")
+
+        if drivers_to_load:
+            log(f"No network interfaces found! Probing detected drivers: {', '.join(drivers_to_load)}")
+            subprocess.run(["modprobe", "-a"] + drivers_to_load, check=False)
+        else:
+            log("No network interfaces found and no specific driver identified for detected hardware.")
 
 def main():
     log("Starting Driver Check...")
