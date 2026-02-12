@@ -24,7 +24,7 @@ Page {
         onTriggered: {
             // In a real implementation, this would use a system call to get snapshots
             // For now, we'll simulate with dummy data
-            snapshots = [
+            var data = [
                 { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
                 { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
                 { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
@@ -32,6 +32,14 @@ Page {
                 { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
                 { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
             ];
+
+            // ⚡ Bolt: Pre-calculate relative time strings to avoid re-calculation during scrolling
+            // This moves O(n) Date creation from the render loop (binding) to the load phase
+            for (var i = 0; i < data.length; i++) {
+                data[i].ago = root.timeAgo(data[i].date);
+            }
+
+            snapshots = data;
 
             // Update UI
             snapshotList.model = snapshots;
@@ -134,8 +142,8 @@ Page {
                                     }
 
                                     Label {
-                                        property string ago: root.timeAgo(modelData.date)
-                                        text: modelData.date + (ago ? " • " + ago : "")
+                                        // ⚡ Bolt: Use pre-calculated relative time
+                                        text: modelData.date + (modelData.ago ? " • " + modelData.ago : "")
                                         color: "gray"
                                         textFormat: Text.PlainText
                                     }
