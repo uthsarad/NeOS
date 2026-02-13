@@ -13,9 +13,6 @@ Page {
     function loadSnapshots() {
         if (isLoading) return;
         isLoading = true;
-        // Simulate async loading
-        loadTimer.start();
-    }
 
     Timer {
         id: loadTimer
