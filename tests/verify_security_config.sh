@@ -29,4 +29,28 @@ else
     exit 1
 fi
 
+# Check for net.ipv4.tcp_syncookies
+if grep -q "net.ipv4.tcp_syncookies = 1" "$CONFIG_FILE"; then
+    echo "✅ net.ipv4.tcp_syncookies found"
+else
+    echo "❌ net.ipv4.tcp_syncookies NOT found"
+    exit 1
+fi
+
+# Check for net.ipv4.conf.all.rp_filter
+if grep -q "net.ipv4.conf.all.rp_filter = 1" "$CONFIG_FILE"; then
+    echo "✅ net.ipv4.conf.all.rp_filter found"
+else
+    echo "❌ net.ipv4.conf.all.rp_filter NOT found"
+    exit 1
+fi
+
+# Check for net.ipv4.icmp_echo_ignore_broadcasts
+if grep -q "net.ipv4.icmp_echo_ignore_broadcasts = 1" "$CONFIG_FILE"; then
+    echo "✅ net.ipv4.icmp_echo_ignore_broadcasts found"
+else
+    echo "❌ net.ipv4.icmp_echo_ignore_broadcasts NOT found"
+    exit 1
+fi
+
 echo "All security checks passed!"
