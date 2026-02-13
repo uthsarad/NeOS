@@ -14,21 +14,39 @@ Page {
         if (isLoading) return;
         isLoading = true;
 
-        // In a real implementation, this would use a system call to get snapshots
-        // For now, we'll simulate with dummy data (immediately available)
-        var newSnapshots = [
-            { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
-            { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
-            { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
-            { date: "2026-01-09 14:30", number: "6", description: "Post-automatic-update-20260109_143015" },
-            { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
-            { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
-        ];
+    Timer {
+        id: loadTimer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            // In a real implementation, this would use a system call to get snapshots
+            // For now, we'll simulate with dummy data
+            var data = [
+                { date: "2026-01-30 14:30", number: "15", description: "Post-automatic-update-20260130_143015" },
+                { date: "2026-01-23 14:30", number: "12", description: "Post-automatic-update-20260123_143015" },
+                { date: "2026-01-16 14:30", number: "9", description: "Post-automatic-update-20260116_143015" },
+                { date: "2026-01-09 14:30", number: "6", description: "Post-automatic-update-20260109_143015" },
+                { date: "2026-01-02 14:30", number: "3", description: "Post-automatic-update-20260102_143015" },
+                { date: "2025-12-26 10:15", number: "1", description: "Initial system installation" }
+            ];
 
-        // Update UI
-        snapshots = newSnapshots;
-        snapshotList.model = snapshots;
-        isLoading = false;
+            // ⚡ Bolt: Pre-calculate relative time strings to avoid re-calculation during scrolling
+            // This moves O(n) Date creation from the render loop (binding) to the load phase
+            for (var i = 0; i < data.length; i++) {
+                data[i].ago = root.timeAgo(data[i].date);
+            }
+
+            snapshots = data;
+
+            // Update UI
+            snapshotList.model = snapshots;
+            isLoading = false;
+
+            if (snapshotList.count > 0) {
+                snapshotList.currentIndex = 0;
+                snapshotList.forceActiveFocus();
+            }
+        }
     }
     
     function rollbackToSnapshot(snapshotNumber) {
@@ -126,9 +144,10 @@ Page {
                                     }
 
                                     Label {
-                                        property string ago: root.timeAgo(modelData.date)
-                                        text: "(" + modelData.date + (ago ? " - " + ago : "") + ")"
-                                        color: "gray"
+                                        // ⚡ Bolt: Use pre-calculated relative time
+                                        text: modelData.date + (modelData.ago ? " • " + modelData.ago : "")
+                                        color: snapshotDelegate.highlighted ? palette.highlightedText : palette.text
+                                        opacity: snapshotDelegate.highlighted ? 0.8 : 0.6
                                         textFormat: Text.PlainText
                                     }
                                 }
@@ -144,7 +163,7 @@ Page {
                             
                             Button {
                                 id: restoreButton
-                                text: qsTr("Restore")
+                                text: qsTr("Restore...")
                                 highlighted: true
 
                                 KeyNavigation.left: snapshotDelegate
@@ -195,7 +214,8 @@ Page {
 
                     Label {
                         text: qsTr("Check your configuration or try refreshing.")
-                        color: "gray"
+                        color: palette.text
+                        opacity: 0.6
                         Layout.alignment: Qt.AlignHCenter
                     }
 
@@ -230,7 +250,8 @@ Page {
 
                     Label {
                         text: qsTr("Loading snapshots...")
-                        color: "gray"
+                        color: palette.text
+                        opacity: 0.6
                         Layout.alignment: Qt.AlignHCenter
                     }
 
@@ -309,6 +330,11 @@ Page {
                     text: qsTr("Rollback & Reboot")
                     Accessible.name: qsTr("Rollback and Reboot")
                     Accessible.description: qsTr("Restores the system to the selected snapshot and restarts the computer immediately.")
+
+                    ToolTip.visible: hovered || activeFocus
+                    ToolTip.text: qsTr("Warning: This will reboot your computer immediately")
+                    ToolTip.delay: 500
+
                     onClicked: {
                         rollbackToSnapshot(confirmDialog.snapshotNumber);
                         confirmDialog.close();
@@ -320,6 +346,11 @@ Page {
                     text: qsTr("Cancel")
                     Accessible.name: qsTr("Cancel")
                     Accessible.description: qsTr("Closes this dialog without making changes.")
+
+                    ToolTip.visible: hovered || activeFocus
+                    ToolTip.text: qsTr("Close without changes")
+                    ToolTip.delay: 500
+
                     onClicked: confirmDialog.close()
                 }
             }

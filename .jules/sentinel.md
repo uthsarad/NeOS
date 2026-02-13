@@ -47,3 +47,8 @@
 **Vulnerability:** The QML `Label` component defaults to `Text.AutoText`, which renders HTML tags (like `<b>`, `<img>`, `<a href>`) if present in the text property. This allows stored XSS or UI redress attacks if the text comes from untrusted user input (e.g., snapshot descriptions).
 **Learning:** Default UI component behaviors often prioritize richness over security. In QML, any string that looks like HTML is rendered as such by default, which is dangerous for user-generated content.
 **Prevention:** Explicitly set `textFormat: Text.PlainText` for all `Label` components displaying dynamic or user-controlled text to force literal rendering.
+
+## 2026-06-25 - Enable Firewall by Default
+**Vulnerability:** The `ufw` firewall package was installed but not enabled by default (`ufw.service` was missing from `services-systemd.conf`). This left new installations with no network filtering, exposing them to potential attacks on open ports.
+**Learning:** Installing security tools is not enough; they must be explicitly enabled and configured. Desktop users expect "secure by default" networking.
+**Prevention:** Audit `services-systemd` configuration in Calamares to ensure critical security services (like firewalls) are enabled on first boot.
