@@ -13,15 +13,25 @@ NeOS (Next Evolution Operating System) is a curated, snapshot-based Arch Linux d
 - **Not a DIY power-user distro** that expects terminal-first management for day-to-day use.
 - **Not a frozen release**, but a curated rolling model with snapshot gating and rollback expectations.
 
-## Repository focus
-This repository contains the architectural guidance, roadmap, and configuration scaffolding for the NeOS distribution. It is written for contributors, reviewers, and early users as NeOS approaches its first public beta.
+## Repository Focus & Structure
+This repository serves as the **official Archiso profile** for building the NeOS distribution ISO. It contains the architectural guidance, roadmap, and configuration scaffolding necessary to produce a bootable system. It is written for contributors, reviewers, and early users as NeOS approaches its first public beta.
 
 ## Documentation
+- **[NeOS Mission & Identity](docs/MISSION.md)** - Core philosophy and target audience.
 - **[NeOS Handbook (Getting Started)](docs/HANDBOOK.md)** - Start here!
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Development Roadmap](docs/ROADMAP.md)
 - [Performance Standards](docs/PERFORMANCE.md)
 - [VM Startup Modules](docs/VM_STARTUP.md)
+
+## Building NeOS
+To build the ISO locally, you can use the provided `build.sh` script, which handles dependency checks and configuration setup:
+
+```bash
+sudo ./build.sh
+```
+
+For more detailed instructions, refer to the [NeOS Handbook](docs/HANDBOOK.md).
 
 ## Contributing
 NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents.
