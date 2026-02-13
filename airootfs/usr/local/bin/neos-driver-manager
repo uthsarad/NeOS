@@ -27,11 +27,12 @@ def get_loaded_modules(force_refresh=False):
     return _LOADED_MODULES_CACHE
 
 def probe_driver(module_name):
-    # Try to load module and invalidate cache
+    # Try to load module and update cache
     # Sentinel: Security fix - use subprocess.run instead of os.system
     res = subprocess.run(["modprobe", module_name], check=False).returncode
     global _LOADED_MODULES_CACHE
-    _LOADED_MODULES_CACHE = None
+    if res == 0 and _LOADED_MODULES_CACHE is not None:
+        _LOADED_MODULES_CACHE.add(module_name)
     return res
 
 def get_pci_controllers():
