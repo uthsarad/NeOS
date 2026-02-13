@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Install NeOS
+GenericName=Live Installer
+Comment=Install the operating system to disk
+Exec=calamares
+Icon=calamares
+Terminal=false
+StartupNotify=true
+Categories=Qt;System;
