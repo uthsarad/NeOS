@@ -59,6 +59,16 @@ Page {
         // proc.start();
     }
 
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     function timeAgo(dateString) {
         var date = new Date(dateString);
         var now = new Date();
@@ -317,7 +327,8 @@ Page {
             Label {
                 id: warningLabel
                 textFormat: Text.RichText
-                text: qsTr("Are you sure you want to rollback to snapshot #%1? This will <b>restore your system</b> to the state at that time and <b>reboot the computer</b>.").arg(confirmDialog.snapshotNumber)
+                // Sentinel: Escaped input to prevent HTML injection/XSS
+                text: qsTr("Are you sure you want to rollback to snapshot #%1? This will <b>restore your system</b> to the state at that time and <b>reboot the computer</b>.").arg(escapeHtml(confirmDialog.snapshotNumber))
                 wrapMode: Text.Wrap
                 width: parent.width - 40
             }
