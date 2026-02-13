@@ -38,10 +38,15 @@ jobs:
         run: |
           # Use the container's working pacman configuration for the build
           cp /etc/pacman.conf ./pacman-build.conf
+          ls -la ./pacman-build.conf
 
       - name: Build ISO
         run: |
-          mkarchiso -v -w work -o out -C ./pacman-build.conf .
+          PROFILE_DIR="$GITHUB_WORKSPACE"
+          PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
+          WORK_DIR="$GITHUB_WORKSPACE/work"
+          OUT_DIR="$GITHUB_WORKSPACE/out"
+          mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
 
       - name: Upload ISO to Release
         uses: softprops/action-gh-release@v1
