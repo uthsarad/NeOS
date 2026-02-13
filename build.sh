@@ -21,6 +21,11 @@ if ! command -v mkarchiso &> /dev/null; then
     exit 1
 fi
 
+if ! command -v mkfs.erofs &> /dev/null; then
+    echo -e "${RED}Error: mkfs.erofs could not be found. Please install 'erofs-utils'.${NC}"
+    exit 1
+fi
+
 # Check for Chaotic-AUR configuration
 # We need chaotic-aur for linux-lqx
 if ! grep -q "chaotic-aur" /etc/pacman.conf; then
@@ -76,8 +81,11 @@ cp /etc/pacman.conf "$BUILD_CONF"
 REPO_ROOT=$(pwd)
 MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/neos-mirrorlist"
 
-if ! grep -q "neos-core" "$BUILD_CONF"; then
-    cat >> "$BUILD_CONF" <<EOF
+# Check if mirrorlist has active servers
+if grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
+    if ! grep -q "neos-core" "$BUILD_CONF"; then
+        echo "Appending NeOS repositories to build configuration..."
+        cat >> "$BUILD_CONF" <<EOF
 
 # NeOS Repositories (Local Build)
 [neos-core]
@@ -92,6 +100,10 @@ Include = $MIRRORLIST_PATH
 [neos-multilib]
 Include = $MIRRORLIST_PATH
 EOF
+    fi
+else
+    echo -e "${YELLOW}Warning: No active servers found in $MIRRORLIST_PATH.${NC}"
+    echo "Skipping NeOS repository configuration. Using standard repositories only."
 fi
 
 # Run mkarchiso
