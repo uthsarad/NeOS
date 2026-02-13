@@ -44,6 +44,11 @@ Page {
             // Update UI
             snapshotList.model = snapshots;
             isLoading = false;
+
+            if (snapshotList.count > 0) {
+                snapshotList.currentIndex = 0;
+                snapshotList.forceActiveFocus();
+            }
         }
     }
     
@@ -144,7 +149,8 @@ Page {
                                     Label {
                                         // ⚡ Bolt: Use pre-calculated relative time
                                         text: modelData.date + (modelData.ago ? " • " + modelData.ago : "")
-                                        color: "gray"
+                                        color: snapshotDelegate.highlighted ? palette.highlightedText : palette.text
+                                        opacity: snapshotDelegate.highlighted ? 0.8 : 0.6
                                         textFormat: Text.PlainText
                                     }
                                 }
@@ -211,7 +217,8 @@ Page {
 
                     Label {
                         text: qsTr("Check your configuration or try refreshing.")
-                        color: "gray"
+                        color: palette.text
+                        opacity: 0.6
                         Layout.alignment: Qt.AlignHCenter
                     }
 
@@ -246,7 +253,8 @@ Page {
 
                     Label {
                         text: qsTr("Loading snapshots...")
-                        color: "gray"
+                        color: palette.text
+                        opacity: 0.6
                         Layout.alignment: Qt.AlignHCenter
                     }
 
