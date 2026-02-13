@@ -23,6 +23,15 @@ This repository contains the architectural guidance, roadmap, and configuration 
 - [Performance Standards](docs/PERFORMANCE.md)
 - [VM Startup Modules](docs/VM_STARTUP.md)
 
+## Building NeOS
+To build the ISO locally, you can use the provided `build.sh` script, which handles dependency checks and configuration setup:
+
+```bash
+sudo ./build.sh
+```
+
+For more detailed instructions, refer to the [NeOS Handbook](docs/HANDBOOK.md).
+
 ## Contributing
 NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents.
 
