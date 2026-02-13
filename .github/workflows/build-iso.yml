@@ -23,7 +23,7 @@ jobs:
         run: |
           pacman -Sy --noconfirm archiso git wget erofs-utils
 
-      - name: Setup Chaotic AUR (for linux-lqx)
+      - name: Setup Chaotic AUR
         run: |
           pacman-key --init
           pacman-key --populate archlinux
