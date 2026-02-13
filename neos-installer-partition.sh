@@ -5,13 +5,31 @@
 set -euo pipefail
 
 # Configuration
+POSITIONAL_ARGS=()
+FORCE=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -y|--force)
+            FORCE=true
+            shift
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
 DEVICE=${1:-""}
 BOOT_SIZE=${2:-"512M"}
 SWAP_SIZE=${3:-"4G"}
 
 if [[ -z "$DEVICE" ]]; then
-    echo "Usage: $0 <device> [boot_size] [swap_size]"
-    echo "Example: $0 /dev/sda 1G 8G"
+    echo "Usage: $0 <device> [boot_size] [swap_size] [--force|-y]"
+    echo "Example: $0 /dev/sda 1G 8G -y"
     exit 1
 fi
 
@@ -27,8 +45,10 @@ BOOT_BYTES=$(numfmt --from=iec "$BOOT_SIZE")
 SWAP_BYTES=$(numfmt --from=iec "$SWAP_SIZE")
 SWAP_END_BYTES=$((BOOT_BYTES + SWAP_BYTES))
 
-echo "WARNING: This will erase all data on $DEVICE. Press Ctrl+C to abort."
-sleep 5
+if [[ "$FORCE" != "true" ]]; then
+    echo "WARNING: This will erase all data on $DEVICE. Press Ctrl+C to abort."
+    sleep 5
+fi
 
 # Partition the device
 echo "Creating partitions on $DEVICE..."
