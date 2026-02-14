@@ -39,3 +39,7 @@
 ## 2026-06-25 - Async Load Focus
 **Learning:** When replacing content asynchronously (e.g., refreshing a list), keyboard focus is often lost or remains on the trigger, disrupting the navigation flow.
 **Action:** Automatically shift focus to the new content (e.g., `listView.forceActiveFocus()`) and select the first item upon successful load to maintain continuity.
+
+## 2026-02-14 - Calamares Slideshow Accessibility
+**Learning:** Default QML slideshows in Calamares often lack accessibility properties, making the installation process silent for screen reader users. Also, improper anchoring can render text invisible.
+**Action:** Always wrap Calamares slides in a layout container (like `Column`) and explicitly set `Accessible.role` and `Accessible.name` on all visual elements.
