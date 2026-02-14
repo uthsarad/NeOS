@@ -2,8 +2,19 @@
 set -e
 
 PROFILE_FILE="profiledef.sh"
+WORKFLOW_FILE=".github/workflows/build-iso.yml"
 
 echo "Verifying mkarchiso build profile configuration..."
+
+# Verify workflow YAML is valid (prevents broken CI from heredoc/YAML conflicts)
+if [ -f "$WORKFLOW_FILE" ]; then
+    if python3 -c "import yaml; yaml.safe_load(open('$WORKFLOW_FILE'))" 2>/dev/null; then
+        echo "✅ $WORKFLOW_FILE is valid YAML"
+    else
+        echo "❌ $WORKFLOW_FILE has YAML syntax errors (CI will fail with 0 jobs)"
+        exit 1
+    fi
+fi
 
 # Verify profiledef.sh exists
 if [ ! -f "$PROFILE_FILE" ]; then

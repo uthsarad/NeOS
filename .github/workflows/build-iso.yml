@@ -38,18 +38,18 @@ jobs:
             exit 1
           fi
           if ! grep -q "\[core\]" "$GITHUB_WORKSPACE/pacman-build.conf"; then
-            cat >> "$GITHUB_WORKSPACE/pacman-build.conf" <<EOF
-
-# Arch Repositories (Local Build)
-[core]
-Include = $MIRRORLIST_PATH
-
-[extra]
-Include = $MIRRORLIST_PATH
-
-[multilib]
-Include = $MIRRORLIST_PATH
-EOF
+            {
+              echo ""
+              echo "# Arch Repositories (Local Build)"
+              echo "[core]"
+              echo "Include = $MIRRORLIST_PATH"
+              echo ""
+              echo "[extra]"
+              echo "Include = $MIRRORLIST_PATH"
+              echo ""
+              echo "[multilib]"
+              echo "Include = $MIRRORLIST_PATH"
+            } >> "$GITHUB_WORKSPACE/pacman-build.conf"
           fi
           ls -la "$GITHUB_WORKSPACE/pacman-build.conf"
 
