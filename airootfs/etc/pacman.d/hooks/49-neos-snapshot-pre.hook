@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Creating pre-transaction Btrfs snapshot...
+When = PreTransaction
+Exec = /usr/bin/bash -c 'snapper --config=root create --type pre --cleanup-algorithm timeline --description "Pre-package-operation-$(date +%Y%m%d_%H%M%S)"'

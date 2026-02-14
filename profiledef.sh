@@ -50,4 +50,7 @@ file_permissions=(
   ["/etc/sudoers.d/wheel"]="0:0:440"
   ["/etc/systemd/zram-generator.conf"]="0:0:644"
   ["/usr/local/bin/neos-driver-manager"]="0:0:755"
+  ["/usr/local/bin/neos-performance-tweaks"]="0:0:755"
+  ["/usr/local/bin/neos-autoupdate.sh"]="0:0:755"
+  ["/usr/local/bin/neos-installer-partition.sh"]="0:0:755"
 )
