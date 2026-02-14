@@ -1,6 +1,7 @@
 [Unit]
 Description=NeOS Automatic System Updates
-Wants=neos-autoupdate.timer
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
