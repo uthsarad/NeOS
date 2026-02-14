@@ -17,8 +17,6 @@ jobs:
     defaults:
       run:
         shell: bash
-    env:
-      WORKSPACE: ${{ github.workspace }}
 
     steps:
       - name: Checkout repository
@@ -41,8 +39,7 @@ jobs:
 
       - name: Prepare Build Config
         run: |
-          WORKSPACE="${WORKSPACE:-$PWD}"
-          WORKSPACE="$(realpath "$WORKSPACE")"
+          WORKSPACE="$PWD"
           cd "$WORKSPACE"
           # Use the container's working pacman configuration for the build
           cp /etc/pacman.conf "$WORKSPACE/pacman-build.conf"
@@ -69,8 +66,7 @@ EOF
 
       - name: Build ISO
         run: |
-          WORKSPACE="${WORKSPACE:-$PWD}"
-          WORKSPACE="$(realpath "$WORKSPACE")"
+          WORKSPACE="$PWD"
           PROFILE_DIR="$WORKSPACE"
           PACMAN_CONF="$WORKSPACE/pacman-build.conf"
           WORK_DIR="$WORKSPACE/work"
@@ -87,8 +83,7 @@ EOF
 
       - name: Validate ISO
         run: |
-          WORKSPACE="${WORKSPACE:-$PWD}"
-          WORKSPACE="$(realpath "$WORKSPACE")"
+          WORKSPACE="$PWD"
           cd "$WORKSPACE"
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_smoketest.sh
