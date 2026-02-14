@@ -1,4 +1,3 @@
-```
 # Compiled and build artifacts
 *.pyc
 __pycache__/
@@ -65,4 +64,8 @@ htmlcov/
 # System files
 .DS_Store
 Thumbs.db
-```
+
+# archiso build artifacts
+work/
+out/
+pacman-build.conf

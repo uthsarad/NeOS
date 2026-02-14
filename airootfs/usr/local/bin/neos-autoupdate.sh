@@ -22,8 +22,7 @@ fi
 
 # Create pre-update snapshot
 log "Creating pre-update snapshot..."
-PRE_SNAP_NUM=$(snapper --config=root create --type pre --cleanup-algorithm timeline --description "Pre-automatic-update-$(date +%Y%m%d_%H%M%S)")
-PRE_SNAP_ID=$(echo "$PRE_SNAP_NUM" | grep "create:" | cut -d: -f2 | tr -d ' ')
+PRE_SNAP_ID=$(snapper --config=root create --type pre --cleanup-algorithm timeline --print-number --description "Pre-automatic-update-$(date +%Y%m%d_%H%M%S)")
 log "Pre-update snapshot created: $PRE_SNAP_ID"
 
 # Run system update
@@ -32,8 +31,7 @@ if pacman -Syu --noconfirm; then
     log "System update completed successfully"
     
     # Create post-update snapshot
-    POST_SNAP_NUM=$(snapper --config=root create --type post --cleanup-algorithm timeline --pre-number "$PRE_SNAP_ID" --description "Post-automatic-update-$(date +%Y%m%d_%H%M%S)")
-    POST_SNAP_ID=$(echo "$POST_SNAP_NUM" | grep "create:" | cut -d: -f2 | tr -d ' ')
+    POST_SNAP_ID=$(snapper --config=root create --type post --cleanup-algorithm timeline --pre-number "$PRE_SNAP_ID" --print-number --description "Post-automatic-update-$(date +%Y%m%d_%H%M%S)")
     log "Post-update snapshot created: $POST_SNAP_ID"
     
     # Optionally clean old snapshots (keep last 10)
