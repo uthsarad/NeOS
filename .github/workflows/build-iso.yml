@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm archiso git wget erofs-utils
+          pacman -Sy --noconfirm archiso git wget erofs-utils grub
 
       - name: Prepare Build Config
         run: |
