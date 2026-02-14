@@ -3,13 +3,7 @@
 GRUB_DEFAULT=0
 GRUB_TIMEOUT=5
 GRUB_DISTRIBUTOR="NeOS"
-# ⚡ Bolt: Performance tuning for installed system
-# - nowatchdog: Disable NMI watchdog (saves CPU cycles/interrupts)
-# - intel_pstate=enable: Force Intel P-state driver for better power management
-# - amd_pstate=active: Enable AMD P-state EPP driver for better efficiency/perf (Zen 2+)
-# - loglevel=3: Reduce kernel boot verbosity
-# - rd.systemd.show_status=false: Clean boot (faster console)
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nowatchdog intel_pstate=enable amd_pstate=active loglevel=3 rd.systemd.show_status=false"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
 GRUB_CMDLINE_LINUX=""
 
 # Preload modules to improve bootloader startup reliability across filesystems.

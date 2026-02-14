@@ -16,12 +16,15 @@ fi
 
 echo "Verifying ISO GRUB entries in $GRUB_FILE..."
 
-# Required boot paths and parameters
 REQUIRED_STRINGS=(
-    "linux /neos/boot/x86_64/vmlinuz-linux"
-    "initrd /neos/boot/x86_64/initramfs-linux.img"
+    "linux /neos/boot/x86_64/vmlinuz-linux-lts"
+    "initrd /neos/boot/x86_64/initramfs-linux-lts.img"
     "archisobasedir=neos"
     "archisolabel=NEOS_LIVE"
+    "quiet splash"
+)
+
+FORBIDDEN_STRINGS=(
     "nowatchdog"
     "intel_pstate=enable"
     "amd_pstate=active"
@@ -36,13 +39,20 @@ for STR in "${REQUIRED_STRINGS[@]}"; do
     fi
 done
 
+for STR in "${FORBIDDEN_STRINGS[@]}"; do
+    if grep -q "$STR" "$GRUB_FILE"; then
+        echo "❌ '$STR' should not be present"
+        exit 1
+    else
+        echo "✅ '$STR' not present"
+    fi
+done
+
 echo "Verifying profile settings in $PROFILE_FILE..."
 
 PROFILE_STRINGS=(
     "iso_label=\"NEOS_LIVE\""
     "install_dir=\"neos\""
-    "amd_pstate=active"
-    "intel_pstate=enable"
 )
 
 for STR in "${PROFILE_STRINGS[@]}"; do
