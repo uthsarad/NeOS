@@ -33,27 +33,22 @@ jobs:
       - name: Prepare Build Config
         run: |
           cd "$GITHUB_WORKSPACE"
-          cp /etc/pacman.conf "$GITHUB_WORKSPACE/pacman-build.conf"
+          # Use the repository's pacman.conf which includes size optimizations (NoExtract)
+          cp "$GITHUB_WORKSPACE/pacman.conf" "$GITHUB_WORKSPACE/pacman-build.conf"
+
           MIRRORLIST_PATH="$GITHUB_WORKSPACE/airootfs/etc/pacman.d/neos-mirrorlist"
           if ! grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
             echo "No active servers in $MIRRORLIST_PATH" >&2
             exit 1
           fi
-          if ! grep -q "\[core\]" "$GITHUB_WORKSPACE/pacman-build.conf"; then
-            {
-              echo ""
-              echo "# Arch Repositories (Local Build)"
-              echo "[core]"
-              echo "Include = $MIRRORLIST_PATH"
-              echo ""
-              echo "[extra]"
-              echo "Include = $MIRRORLIST_PATH"
-              echo ""
-              echo "[multilib]"
-              echo "Include = $MIRRORLIST_PATH"
-            } >> "$GITHUB_WORKSPACE/pacman-build.conf"
-          fi
-          ls -la "$GITHUB_WORKSPACE/pacman-build.conf"
+
+          # Update the Include path for the local build environment
+          # The repo pacman.conf points to /etc/pacman.d/neos-mirrorlist (inside ISO)
+          # We need it to point to the actual file in the workspace for mkarchiso
+          sed -i "s|/etc/pacman.d/neos-mirrorlist|$MIRRORLIST_PATH|g" "$GITHUB_WORKSPACE/pacman-build.conf"
+
+          echo "Generated pacman-build.conf:"
+          cat "$GITHUB_WORKSPACE/pacman-build.conf"
 
       - name: Build ISO
         run: |
