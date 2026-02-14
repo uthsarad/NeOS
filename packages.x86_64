@@ -1,6 +1,6 @@
 base
-linux-lqx
-linux-lqx-headers
+linux
+linux-headers
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
@@ -126,8 +126,6 @@ flatpak
 ufw
 gufw
 fwupd
-chaotic-keyring
-chaotic-mirrorlist
 htop
 fastfetch
 filelight

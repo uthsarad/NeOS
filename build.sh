@@ -26,34 +26,6 @@ if ! command -v mkfs.erofs &> /dev/null; then
     exit 1
 fi
 
-# Check for Chaotic-AUR configuration
-# We need chaotic-aur for linux-lqx
-if ! grep -q "chaotic-aur" /etc/pacman.conf; then
-    echo -e "${YELLOW}Warning: Chaotic-AUR repository not detected in /etc/pacman.conf.${NC}"
-    echo "NeOS requires packages from Chaotic-AUR (e.g., linux-lqx)."
-    echo "Please configure Chaotic-AUR on your host system before building, or ensure your custom mirrorlist includes it."
-    read -p "Do you want to proceed anyway? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
-fi
-
-# Check for Chaotic-AUR keys
-# Key ID: 3056513887B78AEB
-if ! pacman-key --list-keys 3056513887B78AEB &> /dev/null; then
-    echo -e "${YELLOW}Warning: Chaotic-AUR signing key (3056513887B78AEB) not found in keyring.${NC}"
-    echo "This may cause package verification failures."
-    echo "Please import and sign the key: "
-    echo "  pacman-key --recv-key 3056513887B78AEB"
-    echo "  pacman-key --lsign-key 3056513887B78AEB"
-    read -p "Do you want to proceed anyway? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
-fi
-
 # Work and Out directories
 WORK_DIR="work"
 OUT_DIR="out"
