@@ -36,6 +36,7 @@ libreoffice-fresh
 thunderbird
 calamares
 grub
+firefox
 # Audio
 pipewire
 pipewire-alsa
@@ -63,7 +64,7 @@ okular
 git
 wget
 htop
-neofetch
+fastfetch
 p7zip
 unrar
 unzip
