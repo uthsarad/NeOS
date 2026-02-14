@@ -16,7 +16,7 @@ if [ -z "$arch" ]; then
 fi
 
 if [ "$arch" == "x86_64" ]; then
-  bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito' 'uefi-x64.grub.esp' 'uefi-x64.grub.eltorito')
+  bootmodes=("bios.syslinux" "uefi.grub")
 elif [ "$arch" == "i686" ]; then
   bootmodes=("bios.syslinux")
 elif [ "$arch" == "aarch64" ]; then
