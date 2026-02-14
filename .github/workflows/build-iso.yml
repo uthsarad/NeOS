@@ -1,6 +1,8 @@
 name: Build NeOS ISO
 
 on:
+  push:
+    branches: [main]
   release:
     types: [created]
   workflow_dispatch:
@@ -28,17 +30,15 @@ jobs:
 
       - name: Prepare Build Config
         run: |
-          WORKSPACE="$PWD"
-          cd "$WORKSPACE"
-          # Use the container's working pacman configuration for the build
-          cp /etc/pacman.conf "$WORKSPACE/pacman-build.conf"
-          MIRRORLIST_PATH="$WORKSPACE/airootfs/etc/pacman.d/neos-mirrorlist"
+          cd "$GITHUB_WORKSPACE"
+          cp /etc/pacman.conf "$GITHUB_WORKSPACE/pacman-build.conf"
+          MIRRORLIST_PATH="$GITHUB_WORKSPACE/airootfs/etc/pacman.d/neos-mirrorlist"
           if ! grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
             echo "No active servers in $MIRRORLIST_PATH" >&2
             exit 1
           fi
-          if ! grep -q "\[core\]" "$WORKSPACE/pacman-build.conf"; then
-            cat >> "$WORKSPACE/pacman-build.conf" <<EOF
+          if ! grep -q "\[core\]" "$GITHUB_WORKSPACE/pacman-build.conf"; then
+            cat >> "$GITHUB_WORKSPACE/pacman-build.conf" <<EOF
 
 # Arch Repositories (Local Build)
 [core]
@@ -51,15 +51,16 @@ Include = $MIRRORLIST_PATH
 Include = $MIRRORLIST_PATH
 EOF
           fi
-          ls -la "$WORKSPACE/pacman-build.conf"
+          ls -la "$GITHUB_WORKSPACE/pacman-build.conf"
 
       - name: Build ISO
         run: |
-          WORKSPACE="$PWD"
-          PROFILE_DIR="$WORKSPACE"
-          PACMAN_CONF="$WORKSPACE/pacman-build.conf"
-          WORK_DIR="$WORKSPACE/work"
-          OUT_DIR="$WORKSPACE/out"
+          PROFILE_DIR="$GITHUB_WORKSPACE"
+          PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
+          WORK_DIR="$GITHUB_WORKSPACE/work"
+          OUT_DIR="$GITHUB_WORKSPACE/out"
+          echo "PROFILE_DIR=$PROFILE_DIR"
+          echo "PACMAN_CONF=$PACMAN_CONF"
           if [ -z "$PROFILE_DIR" ]; then
             echo "PROFILE_DIR is empty" >&2
             exit 1
@@ -68,12 +69,15 @@ EOF
             echo "Missing pacman config at $PACMAN_CONF" >&2
             exit 1
           fi
+          if [ ! -f "$PROFILE_DIR/profiledef.sh" ]; then
+            echo "Missing profiledef.sh in $PROFILE_DIR" >&2
+            exit 1
+          fi
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
 
       - name: Validate ISO
         run: |
-          WORKSPACE="$PWD"
-          cd "$WORKSPACE"
+          cd "$GITHUB_WORKSPACE"
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_smoketest.sh
 
