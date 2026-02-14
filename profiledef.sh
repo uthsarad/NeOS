@@ -34,19 +34,6 @@ else
   airootfs_image_tool_options=('-comp' 'xz' '-b' '1M' '-Xdict-size' '1M')
 fi
 
-# Performance-focused kernel parameters
-kernel_parameters+=(
-  "nowatchdog"              # Disable hardware watchdog unless specifically needed
-  "mce=ignore_ce"           # Ignore corrected errors to reduce log noise
-  "intel_pstate=enable"     # Intel CPU power management
-    "amd_pstate=active"       # AMD CPU power management
-  "quiet"                   # Reduce boot verbosity for faster boot
-  "splash"                  # Show splash screen instead of boot messages
-  "rd.systemd.show_status=false"  # Hide systemd status during boot
-  "rd.udev.log_level=3"     # Reduce udev logging level
-  "vt.global_cursor_default=0"    # Hide cursor during boot
-)
-
 file_permissions=(
   ["/etc/shadow"]="0:0:400"
   ["/root"]="0:0:750"
@@ -54,7 +41,6 @@ file_permissions=(
   ["/etc/sudoers.d/wheel"]="0:0:440"
   ["/etc/systemd/zram-generator.conf"]="0:0:644"
   ["/usr/local/bin/neos-driver-manager"]="0:0:755"
-  ["/usr/local/bin/neos-performance-tweaks"]="0:0:755"
   ["/usr/local/bin/neos-autoupdate.sh"]="0:0:755"
   ["/usr/local/bin/neos-installer-partition.sh"]="0:0:755"
   ["/usr/local/bin/neos-liveuser-setup"]="0:0:755"

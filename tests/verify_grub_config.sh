@@ -3,10 +3,8 @@ set -e
 
 CONFIG_FILE="airootfs/etc/default/grub"
 
-echo "Verifying GRUB performance configuration in $CONFIG_FILE..."
+echo "Verifying GRUB release configuration in $CONFIG_FILE..."
 
-# Extract the line (assuming standard format: GRUB_CMDLINE_LINUX_DEFAULT="params...")
-# We use grep to find the line starting with the variable assignment, then cut to get the value inside quotes.
 CMDLINE=$(grep '^GRUB_CMDLINE_LINUX_DEFAULT=' "$CONFIG_FILE" | cut -d'"' -f2)
 
 if [ -z "$CMDLINE" ]; then
@@ -16,13 +14,12 @@ fi
 
 echo "Current cmdline: $CMDLINE"
 
-# List of performance parameters to check
-# Note: mce=ignore_ce is excluded as it suppresses hardware errors
-PARAMS=("nowatchdog" "intel_pstate=enable" "amd_pstate=active")
+REQUIRED_PARAMS=("quiet" "splash")
+FORBIDDEN_PARAMS=("nowatchdog" "intel_pstate=enable" "amd_pstate=active")
 
 ALL_PASSED=true
 
-for PARAM in "${PARAMS[@]}"; do
+for PARAM in "${REQUIRED_PARAMS[@]}"; do
     if [[ "$CMDLINE" == *"$PARAM"* ]]; then
         echo "✅ '$PARAM' found in active configuration"
     else
@@ -31,10 +28,19 @@ for PARAM in "${PARAMS[@]}"; do
     fi
 done
 
+for PARAM in "${FORBIDDEN_PARAMS[@]}"; do
+    if [[ "$CMDLINE" == *"$PARAM"* ]]; then
+        echo "❌ '$PARAM' should not be present in release configuration"
+        ALL_PASSED=false
+    else
+        echo "✅ '$PARAM' is not present"
+    fi
+done
+
 if [ "$ALL_PASSED" = true ]; then
-    echo "All GRUB performance checks passed!"
+    echo "GRUB release configuration checks passed!"
     exit 0
 else
-    echo "One or more performance checks failed."
+    echo "One or more GRUB checks failed."
     exit 1
 fi

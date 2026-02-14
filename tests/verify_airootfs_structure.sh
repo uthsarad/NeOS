@@ -4,12 +4,10 @@ echo "Verifying required airootfs files exist..."
 
 REQUIRED_FILES=(
     "airootfs/usr/local/bin/neos-driver-manager"
-    "airootfs/usr/local/bin/neos-performance-tweaks"
     "airootfs/usr/local/bin/neos-autoupdate.sh"
     "airootfs/usr/local/bin/neos-installer-partition.sh"
     "airootfs/usr/local/bin/neos-liveuser-setup"
     "airootfs/etc/systemd/system/neos-driver-manager.service"
-    "airootfs/etc/systemd/system/neos-performance-tweaks.service"
     "airootfs/etc/systemd/system/neos-autoupdate.service"
     "airootfs/etc/systemd/system/neos-autoupdate.timer"
     "airootfs/etc/systemd/system/neos-liveuser-setup.service"
@@ -18,7 +16,6 @@ REQUIRED_FILES=(
     "airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
     "airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
     "airootfs/etc/sysctl.d/90-neos-security.conf"
-    "airootfs/etc/sysctl.d/99-neos-performance.conf"
     "airootfs/etc/default/grub"
     "airootfs/etc/pacman.conf"
     "airootfs/etc/calamares/settings.conf"
@@ -45,7 +42,6 @@ SERVICES_FILE="airootfs/etc/calamares/modules/services-systemd.conf"
 REQUIRED_SERVICES=(
     "neos-autoupdate.timer"
     "neos-driver-manager"
-    "neos-performance-tweaks"
     "fstrim.timer"
     "ufw"
 )
@@ -66,7 +62,6 @@ done
 PROFILE_FILE="profiledef.sh"
 REQUIRED_PERMS=(
     "neos-driver-manager"
-    "neos-performance-tweaks"
     "neos-autoupdate.sh"
     "neos-installer-partition.sh"
     "neos-liveuser-setup"
