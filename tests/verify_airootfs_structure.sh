@@ -7,10 +7,13 @@ REQUIRED_FILES=(
     "airootfs/usr/local/bin/neos-performance-tweaks"
     "airootfs/usr/local/bin/neos-autoupdate.sh"
     "airootfs/usr/local/bin/neos-installer-partition.sh"
+    "airootfs/usr/local/bin/neos-liveuser-setup"
     "airootfs/etc/systemd/system/neos-driver-manager.service"
     "airootfs/etc/systemd/system/neos-performance-tweaks.service"
     "airootfs/etc/systemd/system/neos-autoupdate.service"
     "airootfs/etc/systemd/system/neos-autoupdate.timer"
+    "airootfs/etc/systemd/system/neos-liveuser-setup.service"
+    "airootfs/etc/sddm.conf.d/autologin.conf"
     "airootfs/etc/snapper/configs/root"
     "airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
     "airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
@@ -66,6 +69,7 @@ REQUIRED_PERMS=(
     "neos-performance-tweaks"
     "neos-autoupdate.sh"
     "neos-installer-partition.sh"
+    "neos-liveuser-setup"
 )
 
 echo ""

@@ -1,0 +1,15 @@
+#!/bin/bash
+# NeOS Live User Setup
+# Creates a temporary live user for the live ISO session.
+# Only runs on the live ISO (detected via /run/archiso).
+
+# Only run on the live ISO
+if [ ! -d /run/archiso ]; then
+    exit 0
+fi
+
+# Create liveuser if it doesn't exist
+if ! id liveuser &>/dev/null; then
+    useradd -m -G wheel,sys,lp,network,video,optical,storage,scanner,power,adm,uucp -s /bin/bash liveuser
+    passwd -d liveuser
+fi
