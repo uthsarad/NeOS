@@ -36,16 +36,23 @@ jobs:
 
       - name: Prepare Build Config
         run: |
+          WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
+          cd "$WORKSPACE"
           # Use the container's working pacman configuration for the build
-          cp /etc/pacman.conf ./pacman-build.conf
-          ls -la ./pacman-build.conf
+          cp /etc/pacman.conf "$WORKSPACE/pacman-build.conf"
+          ls -la "$WORKSPACE/pacman-build.conf"
 
       - name: Build ISO
         run: |
-          PROFILE_DIR="$GITHUB_WORKSPACE"
-          PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
-          WORK_DIR="$GITHUB_WORKSPACE/work"
-          OUT_DIR="$GITHUB_WORKSPACE/out"
+          WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
+          PROFILE_DIR="$WORKSPACE"
+          PACMAN_CONF="$WORKSPACE/pacman-build.conf"
+          WORK_DIR="$WORKSPACE/work"
+          OUT_DIR="$WORKSPACE/out"
+          if [ ! -f "$PACMAN_CONF" ]; then
+            echo "Missing pacman config at $PACMAN_CONF" >&2
+            exit 1
+          fi
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
 
       - name: Upload ISO to Release

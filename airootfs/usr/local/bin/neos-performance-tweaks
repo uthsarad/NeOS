@@ -2,20 +2,6 @@
 # NeOS Performance Tweaks Script
 # Applies various performance optimizations during system initialization
 
-# Function to disable unnecessary services
-disable_unnecessary_services() {
-    echo "Disabling unnecessary services for better performance..."
-    
-    # Disable services that are not essential for most users
-    systemctl disable --now lvm2-monitor.service 2>/dev/null || true
-    systemctl disable --now cups-browsed.service 2>/dev/null || true
-    systemctl disable --now ModemManager.service 2>/dev/null || true
-    systemctl disable --now avahi-daemon.service 2>/dev/null || true
-    systemctl disable --now bluetooth.service 2>/dev/null || true
-    
-    echo "Unnecessary services disabled."
-}
-
 # Function to configure I/O scheduler for SSDs
 configure_io_scheduler() {
     echo "Configuring I/O scheduler for better performance..."
@@ -46,7 +32,6 @@ main() {
     
     # Only run if we're not in chroot environment (during installation)
     if [[ $(stat -c %d:%i /) != $(stat -c %d:%i /proc/1/root/.) ]]; then
-        disable_unnecessary_services
         configure_io_scheduler
         set_cpu_governor
     fi

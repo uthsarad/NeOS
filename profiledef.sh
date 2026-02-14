@@ -35,7 +35,7 @@ kernel_parameters+=(
   "nowatchdog"              # Disable hardware watchdog unless specifically needed
   "mce=ignore_ce"           # Ignore corrected errors to reduce log noise
   "intel_pstate=enable"     # Intel CPU power management
-  "amd_pstate=enable"       # AMD CPU power management
+    "amd_pstate=active"       # AMD CPU power management
   "quiet"                   # Reduce boot verbosity for faster boot
   "splash"                  # Show splash screen instead of boot messages
   "rd.systemd.show_status=false"  # Hide systemd status during boot
