@@ -21,8 +21,8 @@ if ! command -v mkarchiso &> /dev/null; then
     exit 1
 fi
 
-if ! command -v mkfs.erofs &> /dev/null; then
-    echo -e "${RED}Error: mkfs.erofs could not be found. Please install 'erofs-utils'.${NC}"
+if ! command -v mksquashfs &> /dev/null; then
+    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}"
     exit 1
 fi
 
