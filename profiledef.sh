@@ -25,11 +25,10 @@ else
   bootmodes=("uefi.grub")
 fi
 
-# ⚡ Bolt: Use EROFS with zstd compression for fast boot times and good compression ratio.
-# EROFS gives excellent random read performance; zstd provides significantly better compression
-# than LZ4HC, keeping the ISO under GitHub's 2 GiB release asset limit.
-airootfs_image_type="erofs"
-airootfs_image_tool_options=('-zzstd')
+# Use squashfs with xz compression to keep the ISO under GitHub's 2 GiB release asset limit.
+# xz with BCJ filter provides the best compression ratio for x86_64 binaries.
+airootfs_image_type="squashfs"
+airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
 
 # Performance-focused kernel parameters
 kernel_parameters+=(
