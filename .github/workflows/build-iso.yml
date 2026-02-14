@@ -81,7 +81,7 @@ jobs:
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_smoketest.sh
 
-      - name: Display ISO info and split if needed
+      - name: Display ISO info
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -89,12 +89,6 @@ jobs:
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
           echo "ISO size: $ISO_SIZE bytes"
           ls -lh out/
-          MAX_SIZE=2147483648
-          if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
-            echo "ISO exceeds 2 GiB GitHub release asset limit, splitting..."
-            split -b 1900m -d "$ISO_FILE" "${ISO_FILE}.part" && rm "$ISO_FILE"
-            ls -lh out/
-          fi
 
       - name: Generate release tag
         id: tag
