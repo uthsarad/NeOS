@@ -10,19 +10,19 @@ iso_version="${_iso_date:0:4}.${_iso_date:4:2}.${_iso_date:6:2}"
 unset _iso_date
 install_dir="neos"
 buildmodes=("iso")
+pacman_conf="pacman.conf"
 if [ -z "$arch" ]; then
   arch="x86_64"
 fi
 
 if [ "$arch" == "x86_64" ]; then
-  bootmodes=("bios.grub.mbr" "bios.grub.eltorito" "uefi-x64.grub.esp" "uefi-x64.grub.eltorito")
+  bootmodes=("uefi.grub")
 elif [ "$arch" == "i686" ]; then
-  bootmodes=("bios.grub.mbr" "bios.grub.eltorito")
+  bootmodes=("bios.syslinux")
 elif [ "$arch" == "aarch64" ]; then
-  bootmodes=("uefi-aarch64.grub.esp" "uefi-aarch64.grub.eltorito")
+  bootmodes=("uefi.grub")
 else
-  # Fallback or default for other architectures
-  bootmodes=("uefi-${arch}.grub.esp" "uefi-${arch}.grub.eltorito")
+  bootmodes=("uefi.grub")
 fi
 
 # ⚡ Bolt: Use EROFS with LZ4HC compression for faster boot and app launch times.
