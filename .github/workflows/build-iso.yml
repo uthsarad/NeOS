@@ -35,8 +35,13 @@ jobs:
           pacman -Sy --noconfirm
 
       - name: Prepare Build Config
+        shell: bash
         run: |
           WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
+          if [ -z "$WORKSPACE" ]; then
+            WORKSPACE="$PWD"
+          fi
+          WORKSPACE="$(realpath "$WORKSPACE")"
           cd "$WORKSPACE"
           # Use the container's working pacman configuration for the build
           cp /etc/pacman.conf "$WORKSPACE/pacman-build.conf"
@@ -62,12 +67,21 @@ EOF
           ls -la "$WORKSPACE/pacman-build.conf"
 
       - name: Build ISO
+        shell: bash
         run: |
           WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
+          if [ -z "$WORKSPACE" ]; then
+            WORKSPACE="$PWD"
+          fi
+          WORKSPACE="$(realpath "$WORKSPACE")"
           PROFILE_DIR="$WORKSPACE"
           PACMAN_CONF="$WORKSPACE/pacman-build.conf"
           WORK_DIR="$WORKSPACE/work"
           OUT_DIR="$WORKSPACE/out"
+          if [ -z "$PROFILE_DIR" ]; then
+            echo "PROFILE_DIR is empty" >&2
+            exit 1
+          fi
           if [ ! -f "$PACMAN_CONF" ]; then
             echo "Missing pacman config at $PACMAN_CONF" >&2
             exit 1
@@ -75,8 +89,13 @@ EOF
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
 
       - name: Validate ISO
+        shell: bash
         run: |
           WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
+          if [ -z "$WORKSPACE" ]; then
+            WORKSPACE="$PWD"
+          fi
+          WORKSPACE="$(realpath "$WORKSPACE")"
           cd "$WORKSPACE"
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_smoketest.sh
