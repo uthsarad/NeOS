@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Creating post-transaction Btrfs snapshot...
+When = PostTransaction
+Exec = /usr/bin/bash -c 'PRE_NUMBER=$(snapper --config=root list --columns number --sort descending | grep -v "Number\|# " | head -n 1 | tr -d " "); if [ -n "$PRE_NUMBER" ]; then snapper --config=root create --type post --cleanup-algorithm timeline --pre-number "$PRE_NUMBER" --description "Post-package-operation-$(date +%Y%m%d_%H%M%S)"; fi'

@@ -18,8 +18,8 @@ echo "Verifying ISO GRUB entries in $GRUB_FILE..."
 
 # Required boot paths and parameters
 REQUIRED_STRINGS=(
-    "linux /neos/boot/x86_64/vmlinuz-linux-lqx"
-    "initrd /neos/boot/x86_64/initramfs-linux-lqx.img"
+    "linux /neos/boot/x86_64/vmlinuz-linux"
+    "initrd /neos/boot/x86_64/initramfs-linux.img"
     "archisobasedir=neos"
     "archisolabel=NEOS_LIVE"
     "nowatchdog"

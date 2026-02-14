@@ -1,7 +1,5 @@
-You are a senior Arch Linux developer. Output ONLY code blocks with file paths. No explanations unless critical.
-
 [Unit]
-Description=NeOS Auto Update Service
+Description=NeOS Automatic System Updates
 Wants=neos-autoupdate.timer
 
 [Service]

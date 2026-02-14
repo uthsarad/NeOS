@@ -1,6 +1,6 @@
 base
-linux-lqx
-linux-lqx-headers
+linux
+linux-headers
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
@@ -11,6 +11,7 @@ nano
 vim
 efibootmgr
 btrfs-progs
+snapper
 dosfstools
 e2fsprogs
 erofs-utils
@@ -121,15 +122,10 @@ system-config-printer
 pciutils
 python
 kdeconnect
-wine
-winetricks
 flatpak
 ufw
 gufw
 fwupd
-steam
-gamemode
-mangohud
 htop
 fastfetch
 filelight
