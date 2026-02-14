@@ -81,8 +81,16 @@ jobs:
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_smoketest.sh
 
+      - name: Generate release tag
+        id: tag
+        if: github.ref == 'refs/heads/main'
+        run: echo "value=v$(date +%Y.%m.%d)-$(echo ${{ github.sha }} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+
       - name: Upload ISO to Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
         with:
+          tag_name: ${{ steps.tag.outputs.value || github.ref_name }}
+          name: NeOS ${{ steps.tag.outputs.value || github.ref_name }}
+          generate_release_notes: true
           files: out/*.iso
