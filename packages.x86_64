@@ -23,7 +23,6 @@ mesa
 xf86-video-amdgpu
 xf86-video-ati
 xf86-video-nouveau
-xf86-video-vmware
 nvidia-dkms
 nvidia-utils
 networkmanager
@@ -38,7 +37,6 @@ discover
 vlc
 libreoffice-fresh
 thunderbird
-calamares
 grub
 firefox
 gwenview
@@ -65,7 +63,6 @@ alsa-firmware
 alsa-ucm-conf
 wireless-regdb
 broadcom-wl-dkms
-r8168-dkms
 usb_modeswitch
 modemmanager
 mobile-broadband-provider-info
