@@ -20,7 +20,7 @@ else
 fi
 
 # Verify the referenced pacman.conf file exists
-PACMAN_CONF=$(grep 'pacman_conf=' "$PROFILE_FILE" | head -1 | sed 's/.*pacman_conf="\(.*\)"/\1/')
+PACMAN_CONF=$(grep 'pacman_conf=' "$PROFILE_FILE" | head -1 | sed "s/.*pacman_conf=[\"']\{0,1\}\([^\"']*\)[\"']\{0,1\}/\1/")
 if [ -n "$PACMAN_CONF" ] && [ -f "$PACMAN_CONF" ]; then
     echo "✅ Referenced pacman config '$PACMAN_CONF' exists"
 else
@@ -44,7 +44,7 @@ else
     exit 1
 fi
 
-# Verify boot modes are valid
+# Verify boot modes are valid (extract quoted values from bootmodes= lines)
 VALID_MODES="uefi.grub uefi.systemd-boot bios.syslinux"
 if grep -q 'bootmodes=' "$PROFILE_FILE"; then
     for mode in $(grep 'bootmodes=' "$PROFILE_FILE" | grep -o '"[^"]*"' | tr -d '"'); do
