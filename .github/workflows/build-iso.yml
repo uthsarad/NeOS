@@ -14,6 +14,11 @@ jobs:
     container:
       image: archlinux:latest
       options: --privileged
+    defaults:
+      run:
+        shell: bash
+    env:
+      WORKSPACE: ${{ github.workspace }}
 
     steps:
       - name: Checkout repository
@@ -35,12 +40,8 @@ jobs:
           pacman -Sy --noconfirm
 
       - name: Prepare Build Config
-        shell: bash
         run: |
-          WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
-          if [ -z "$WORKSPACE" ]; then
-            WORKSPACE="$PWD"
-          fi
+          WORKSPACE="${WORKSPACE:-$PWD}"
           WORKSPACE="$(realpath "$WORKSPACE")"
           cd "$WORKSPACE"
           # Use the container's working pacman configuration for the build
@@ -67,12 +68,8 @@ EOF
           ls -la "$WORKSPACE/pacman-build.conf"
 
       - name: Build ISO
-        shell: bash
         run: |
-          WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
-          if [ -z "$WORKSPACE" ]; then
-            WORKSPACE="$PWD"
-          fi
+          WORKSPACE="${WORKSPACE:-$PWD}"
           WORKSPACE="$(realpath "$WORKSPACE")"
           PROFILE_DIR="$WORKSPACE"
           PACMAN_CONF="$WORKSPACE/pacman-build.conf"
@@ -89,12 +86,8 @@ EOF
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
 
       - name: Validate ISO
-        shell: bash
         run: |
-          WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
-          if [ -z "$WORKSPACE" ]; then
-            WORKSPACE="$PWD"
-          fi
+          WORKSPACE="${WORKSPACE:-$PWD}"
           WORKSPACE="$(realpath "$WORKSPACE")"
           cd "$WORKSPACE"
           bash tests/verify_iso_grub.sh
