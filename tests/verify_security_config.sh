@@ -53,4 +53,36 @@ else
     exit 1
 fi
 
+# Check for net.ipv4.conf.all.accept_source_route
+if grep -q "net.ipv4.conf.all.accept_source_route = 0" "$CONFIG_FILE"; then
+    echo "✅ net.ipv4.conf.all.accept_source_route found"
+else
+    echo "❌ net.ipv4.conf.all.accept_source_route NOT found"
+    exit 1
+fi
+
+# Check for net.ipv4.tcp_rfc1337
+if grep -q "net.ipv4.tcp_rfc1337 = 1" "$CONFIG_FILE"; then
+    echo "✅ net.ipv4.tcp_rfc1337 found"
+else
+    echo "❌ net.ipv4.tcp_rfc1337 NOT found"
+    exit 1
+fi
+
+# Check for kernel.sysrq
+if grep -q "kernel.sysrq = 0" "$CONFIG_FILE"; then
+    echo "✅ kernel.sysrq found"
+else
+    echo "❌ kernel.sysrq NOT found"
+    exit 1
+fi
+
+# Check for kernel.core_uses_pid
+if grep -q "kernel.core_uses_pid = 1" "$CONFIG_FILE"; then
+    echo "✅ kernel.core_uses_pid found"
+else
+    echo "❌ kernel.core_uses_pid NOT found"
+    exit 1
+fi
+
 echo "All security checks passed!"
