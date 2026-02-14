@@ -87,7 +87,7 @@ jobs:
         run: echo "value=v$(date +%Y.%m.%d)-$(echo ${{ github.sha }} | cut -c1-7)" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
         with:
           tag_name: ${{ steps.tag.outputs.value || github.ref_name }}
