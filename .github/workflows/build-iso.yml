@@ -40,6 +40,25 @@ jobs:
           cd "$WORKSPACE"
           # Use the container's working pacman configuration for the build
           cp /etc/pacman.conf "$WORKSPACE/pacman-build.conf"
+          MIRRORLIST_PATH="$WORKSPACE/airootfs/etc/pacman.d/neos-mirrorlist"
+          if ! grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
+            echo "No active servers in $MIRRORLIST_PATH" >&2
+            exit 1
+          fi
+          if ! grep -q "\[core\]" "$WORKSPACE/pacman-build.conf"; then
+            cat >> "$WORKSPACE/pacman-build.conf" <<EOF
+
+# Arch Repositories (Local Build)
+[core]
+Include = $MIRRORLIST_PATH
+
+[extra]
+Include = $MIRRORLIST_PATH
+
+[multilib]
+Include = $MIRRORLIST_PATH
+EOF
+          fi
           ls -la "$WORKSPACE/pacman-build.conf"
 
       - name: Build ISO
@@ -54,6 +73,13 @@ jobs:
             exit 1
           fi
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
+
+      - name: Validate ISO
+        run: |
+          WORKSPACE="${GITHUB_WORKSPACE:-$PWD}"
+          cd "$WORKSPACE"
+          bash tests/verify_iso_grub.sh
+          bash tests/verify_iso_smoketest.sh
 
       - name: Upload ISO to Release
         uses: softprops/action-gh-release@v1

@@ -76,28 +76,25 @@ BUILD_CONF="pacman-build.conf"
 # Copy host pacman.conf as base
 cp /etc/pacman.conf "$BUILD_CONF"
 
-# Append NeOS repositories if not already present
+# Append Arch repositories if not already present
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)
 MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/neos-mirrorlist"
 
 # Check if mirrorlist has active servers
 if grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
-    if ! grep -q "neos-core" "$BUILD_CONF"; then
-        echo "Appending NeOS repositories to build configuration..."
+    if ! grep -q "\[core\]" "$BUILD_CONF"; then
+        echo "Appending Arch repositories to build configuration..."
         cat >> "$BUILD_CONF" <<EOF
 
-# NeOS Repositories (Local Build)
-[neos-core]
+# Arch Repositories (Local Build)
+[core]
 Include = $MIRRORLIST_PATH
 
-[neos-desktop]
+[extra]
 Include = $MIRRORLIST_PATH
 
-[neos-extra]
-Include = $MIRRORLIST_PATH
-
-[neos-multilib]
+[multilib]
 Include = $MIRRORLIST_PATH
 EOF
     fi
@@ -109,5 +106,9 @@ fi
 # Run mkarchiso
 echo -e "${GREEN}Building ISO...${NC}"
 mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" .
+
+echo -e "${GREEN}Running ISO validation...${NC}"
+bash tests/verify_iso_grub.sh
+bash tests/verify_iso_smoketest.sh
 
 echo -e "${GREEN}Build complete! ISO is in $OUT_DIR${NC}"
