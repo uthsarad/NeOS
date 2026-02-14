@@ -82,6 +82,7 @@ jobs:
           bash tests/verify_iso_smoketest.sh
 
       - name: Prepare ISO for release
+        id: prepare
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -91,11 +92,13 @@ jobs:
           echo "ISO size: $ISO_SIZE bytes"
           if [ "$ISO_SIZE" -gt "$MAX_SIZE" ]; then
             echo "ISO exceeds GitHub 2 GiB release asset limit. Splitting..."
-            split -b 1900m -d --additional-suffix=.iso.part "$ISO_FILE" "out/$(basename "$ISO_FILE" .iso).part"
+            split -b 1900m -d "$ISO_FILE" "${ISO_FILE}.part"
             rm "$ISO_FILE"
             ls -lh out/
+            echo "split=true" >> "$GITHUB_OUTPUT"
           else
             echo "ISO is within GitHub release asset limits."
+            echo "split=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Generate release tag
@@ -110,11 +113,5 @@ jobs:
           tag_name: ${{ steps.tag.outputs.value || github.ref_name }}
           name: NeOS ${{ steps.tag.outputs.value || github.ref_name }}
           generate_release_notes: true
-          body: |
-            ${{ steps.tag.outputs.value || github.ref_name }}
-
-            If the ISO was split into multiple parts, reassemble with:
-            ```
-            cat neos-*.part*.iso.part > neos.iso
-            ```
+          body: ${{ steps.prepare.outputs.split == 'true' && 'ISO was split into multiple parts. To reassemble:\n```\ncat neos-*.iso.part* > neos.iso\n```' || '' }}
           files: out/neos-*
