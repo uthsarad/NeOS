@@ -28,7 +28,11 @@ fi
 # Use squashfs with xz compression to keep the ISO under GitHub's 2 GiB release asset limit.
 # xz with BCJ filter provides the best compression ratio for x86_64 binaries.
 airootfs_image_type="squashfs"
-airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
+if [ "$arch" == "x86_64" ] || [ "$arch" == "i686" ]; then
+  airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
+else
+  airootfs_image_tool_options=('-comp' 'xz' '-b' '1M' '-Xdict-size' '1M')
+fi
 
 # Performance-focused kernel parameters
 kernel_parameters+=(
