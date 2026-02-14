@@ -91,20 +91,6 @@ jobs:
           ISO_FILE=$(ls out/*.iso)
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
           echo "ISO size: $ISO_SIZE bytes"
-          MAX_SIZE=2147483648
-          if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
-            echo "ISO is larger than 2 GiB, splitting into parts for upload..."
-            split -b 1900m -d "$ISO_FILE" "${ISO_FILE}.part" && rm "$ISO_FILE"
-            {
-              echo 'body<<BODY_EOF'
-              echo 'ISO was split into multiple parts due to GitHub size limits. To reassemble, download all parts and run:'
-              echo '```'
-              echo 'cat neos-YYYY.MM.DD-x86_64.iso.part* > neos.iso'
-              echo '```'
-              echo '(Replace `YYYY.MM.DD` with the actual date in the filenames.)'
-              echo 'BODY_EOF'
-            } >> "$GITHUB_OUTPUT"
-          fi
           ls -lh out/
 
       - name: Generate release tag
