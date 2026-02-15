@@ -96,4 +96,15 @@ else
     exit 1
 fi
 
+# Sentinel: Check for NOPASSWD in sudoers
+SUDOERS_FILE="airootfs/etc/sudoers.d/wheel"
+echo "Verifying security configuration in $SUDOERS_FILE..."
+
+if grep -q "NOPASSWD" "$SUDOERS_FILE"; then
+    echo "❌ NOPASSWD found in $SUDOERS_FILE - This is insecure for the installed system!"
+    exit 1
+else
+    echo "✅ NOPASSWD NOT found in $SUDOERS_FILE"
+fi
+
 echo "All security checks passed!"
