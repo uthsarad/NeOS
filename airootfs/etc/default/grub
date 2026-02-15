@@ -3,7 +3,11 @@
 GRUB_DEFAULT=0
 GRUB_TIMEOUT=5
 GRUB_DISTRIBUTOR="NeOS"
-GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+# ⚡ Bolt: Performance Optimizations
+# - nowatchdog: Disable watchdog timer to reduce CPU interrupts
+# - intel_pstate=enable: Force Intel P-state driver (if valid/supported)
+# - amd_pstate=active: Enable AMD P-state active mode for modern Ryzen CPUs
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nowatchdog intel_pstate=enable amd_pstate=active"
 GRUB_CMDLINE_LINUX=""
 
 # Preload modules to improve bootloader startup reliability across filesystems.
