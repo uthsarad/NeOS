@@ -52,3 +52,8 @@
 **Vulnerability:** The `ufw` firewall package was installed but not enabled by default (`ufw.service` was missing from `services-systemd.conf`). This left new installations with no network filtering, exposing them to potential attacks on open ports.
 **Learning:** Installing security tools is not enough; they must be explicitly enabled and configured. Desktop users expect "secure by default" networking.
 **Prevention:** Audit `services-systemd` configuration in Calamares to ensure critical security services (like firewalls) are enabled on first boot.
+
+## 2026-07-15 - Insecure Build Configuration Inheritance
+**Vulnerability:** The ISO build script (`build.sh`) copied `/etc/pacman.conf` from the host system, inheriting its repository configuration, mirrorlist, and security settings (like `SigLevel`).
+**Learning:** Build processes must be hermetic and reproducible. Relying on host configuration introduces unpredictability and potential security risks (e.g., weak signature checks or compromised mirrors on the host).
+**Prevention:** Always use a repository-controlled configuration file for build tools and explicitly inject necessary environment-specific paths (like mirrorlists) rather than copying host files.

@@ -96,4 +96,26 @@ else
     exit 1
 fi
 
+# Sentinel: Check for SigLevel = Required DatabaseRequired in root pacman.conf
+ROOT_PACMAN_CONF="pacman.conf"
+echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
+
+if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$ROOT_PACMAN_CONF"; then
+    echo "✅ SigLevel = Required DatabaseRequired found in root pacman.conf"
+else
+    echo "❌ SigLevel = Required DatabaseRequired NOT found in $ROOT_PACMAN_CONF"
+    exit 1
+fi
+
+# Sentinel: Check build.sh for secure pacman.conf usage
+BUILD_SCRIPT="build.sh"
+echo "Verifying security configuration in $BUILD_SCRIPT..."
+
+if grep -q "cp pacman.conf \"\$BUILD_CONF\"" "$BUILD_SCRIPT"; then
+    echo "✅ build.sh uses repo pacman.conf"
+else
+    echo "❌ build.sh does NOT use repo pacman.conf"
+    exit 1
+fi
+
 echo "All security checks passed!"
