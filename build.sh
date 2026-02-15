@@ -45,34 +45,23 @@ fi
 echo "Generating temporary build configuration..."
 BUILD_CONF="pacman-build.conf"
 
-# Copy host pacman.conf as base
-cp /etc/pacman.conf "$BUILD_CONF"
+# Copy repository pacman.conf as base to ensure reproducible and secure builds
+cp pacman.conf "$BUILD_CONF"
 
-# Append Arch repositories if not already present
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)
 MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/neos-mirrorlist"
 
 # Check if mirrorlist has active servers
 if grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
-    if ! grep -q "\[core\]" "$BUILD_CONF"; then
-        echo "Appending Arch repositories to build configuration..."
-        cat >> "$BUILD_CONF" <<EOF
-
-# Arch Repositories (Local Build)
-[core]
-Include = $MIRRORLIST_PATH
-
-[extra]
-Include = $MIRRORLIST_PATH
-
-[multilib]
-Include = $MIRRORLIST_PATH
-EOF
-    fi
+    echo "Injecting NeOS mirrorlist path into build configuration..."
+    # Replace the relative path in pacman.conf with the absolute path on the host
+    # We use | as delimiter to avoid conflict with / in paths
+    sed -i "s|/etc/pacman.d/neos-mirrorlist|$MIRRORLIST_PATH|g" "$BUILD_CONF"
 else
-    echo -e "${YELLOW}Warning: No active servers found in $MIRRORLIST_PATH.${NC}"
-    echo "Skipping NeOS repository configuration. Using standard repositories only."
+    echo -e "${RED}Error: No active servers found in $MIRRORLIST_PATH.${NC}"
+    echo "The build cannot proceed without valid repositories."
+    exit 1
 fi
 
 # Run mkarchiso
