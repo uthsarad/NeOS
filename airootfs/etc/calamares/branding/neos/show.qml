@@ -14,6 +14,7 @@ Presentation {
     Slide {
         Column {
             anchors.centerIn: parent
+            width: parent.width * 0.8
             spacing: 20
 
             Image {
@@ -30,7 +31,11 @@ Presentation {
             Text {
                 text: qsTr("Welcome to NeOS")
                 color: "white"
-                font.pixelSize: 24
+                font.pixelSize: 32
+                font.bold: true
+                width: parent.width
+                wrapMode: Text.Wrap
+                horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 textFormat: Text.PlainText
                 // Accessibility
@@ -43,6 +48,7 @@ Presentation {
     Slide {
         Column {
             anchors.centerIn: parent
+            width: parent.width * 0.8
             spacing: 20
 
             Image {
@@ -60,6 +66,10 @@ Presentation {
                 text: qsTr("Fast, Secure, Reliable")
                 color: "white"
                 font.pixelSize: 24
+                font.bold: true
+                width: parent.width
+                wrapMode: Text.Wrap
+                horizontalAlignment: Text.AlignHCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 textFormat: Text.PlainText
                 // Accessibility
