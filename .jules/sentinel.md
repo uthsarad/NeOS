@@ -57,3 +57,8 @@
 **Vulnerability:** The ISO build script (`build.sh`) copied `/etc/pacman.conf` from the host system, inheriting its repository configuration, mirrorlist, and security settings (like `SigLevel`).
 **Learning:** Build processes must be hermetic and reproducible. Relying on host configuration introduces unpredictability and potential security risks (e.g., weak signature checks or compromised mirrors on the host).
 **Prevention:** Always use a repository-controlled configuration file for build tools and explicitly inject necessary environment-specific paths (like mirrorlists) rather than copying host files.
+
+## 2026-08-05 - Deprecated User Groups Removal
+**Vulnerability:** The default user configuration in Calamares added users to deprecated and potentially unsafe groups like `storage`, `optical`, `video`, etc.
+**Learning:** Modern systemd-logind systems manage device access via ACLs (uaccess) for the active session. Adding users to these static groups grants permanent access, bypassing session security and increasing the attack surface.
+**Prevention:** Audit `users.conf` to ensure only `wheel` (for sudo) is assigned by default, removing all legacy device groups.
