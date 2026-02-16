@@ -43,3 +43,7 @@
 ## 2026-02-14 - Calamares Slideshow Accessibility
 **Learning:** Default QML slideshows in Calamares often lack accessibility properties, making the installation process silent for screen reader users. Also, improper anchoring can render text invisible.
 **Action:** Always wrap Calamares slides in a layout container (like `Column`) and explicitly set `Accessible.role` and `Accessible.name` on all visual elements.
+
+## 2026-06-26 - Contrast Assurance in Themed Environments
+**Learning:** In customizable branding environments (like Calamares), text color (e.g., white) can become invisible if the background changes (e.g., to a light theme).
+**Action:** Always wrap text content in a semi-transparent container (e.g., `Rectangle { color: "#99000000" }`) to guarantee high contrast and legibility regardless of the underlying background.
