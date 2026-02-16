@@ -35,23 +35,30 @@ def probe_driver(module_name):
         _LOADED_MODULES_CACHE.add(module_name)
     return res
 
+_PCI_DEVICES_CACHE = None
+
+def get_all_pci_devices(force_refresh=False):
+    global _PCI_DEVICES_CACHE
+    if _PCI_DEVICES_CACHE is None or force_refresh:
+        # lspci -mn output format: "slot" "class" "vendor" "device" ...
+        output = run_command(["lspci", "-mn"])
+        _PCI_DEVICES_CACHE = []
+        for line in output.splitlines():
+            parts = line.split()
+            if len(parts) >= 4:
+                # format: "00:02.0" "0300" "8086" "1916" ...
+                slot = parts[0].strip('"')
+                cls = parts[1].strip('"')
+                vendor = parts[2].strip('"')
+                device = parts[3].strip('"')
+                _PCI_DEVICES_CACHE.append({'slot': slot, 'vendor': vendor, 'device': device, 'class': cls})
+    return _PCI_DEVICES_CACHE
+
 def get_pci_controllers(class_prefixes=("03",)):
     # List all PCI controllers matching the class prefixes
-    # lspci -mn output format: "slot" "class" "vendor" "device" ...
-    output = run_command(["lspci", "-mn"])
-    devices = []
-    for line in output.splitlines():
-        parts = line.split()
-        if len(parts) >= 3:
-            # format: "00:02.0" "0300" "8086" "1916" ...
-            slot = parts[0].strip('"')
-            cls = parts[1].strip('"')
-            vendor = parts[2].strip('"')
-            device = parts[3].strip('"')
-
-            if any(cls.startswith(prefix) for prefix in class_prefixes):
-                devices.append({'slot': slot, 'vendor': vendor, 'device': device, 'class': cls})
-    return devices
+    # ⚡ Bolt: Use cached device list to avoid repeated lspci calls
+    all_devices = get_all_pci_devices()
+    return [d for d in all_devices if any(d['class'].startswith(prefix) for prefix in class_prefixes)]
 
 def check_driver_loaded(module_name):
     # Check if module is loaded using cache
