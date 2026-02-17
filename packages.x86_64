@@ -42,12 +42,11 @@ xf86-video-nouveau
 xf86-video-vesa
 xf86-video-fbdev
 xf86-video-qxl
-extra/nvidia
-extra/nvidia-utils
+nvidia
+nvidia-utils
 vulkan-radeon
 vulkan-intel
 vulkan-mesa-layers
-libva-mesa-driver
 libva-intel-driver
 intel-media-driver
 
@@ -92,7 +91,6 @@ filelight
 # Virtualization Guest Tools
 open-vm-tools
 virtualbox-guest-utils-nox
-virtualbox-guest-modules-arch
 qemu-guest-agent
 spice-vdagent
 
