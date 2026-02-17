@@ -20,6 +20,18 @@ if ! flock -n 9; then
     exit 1
 fi
 
+# Sentinel: Dependency Check - Ensure snapper is installed
+if ! command -v snapper &>/dev/null; then
+    log "ERROR: snapper not found. Cannot perform snapshot-based updates."
+    exit 1
+fi
+
+# Sentinel: Configuration Check - Ensure root is Btrfs
+if ! findmnt -n -o FSTYPE / | grep -q "btrfs"; then
+    log "ERROR: Root filesystem is not Btrfs. Cannot perform snapshot-based updates."
+    exit 1
+fi
+
 # Create pre-update snapshot
 log "Creating pre-update snapshot..."
 PRE_SNAP_ID=$(snapper --config=root create --type pre --cleanup-algorithm timeline --print-number --description "Pre-automatic-update-$(date +%Y%m%d_%H%M%S)")

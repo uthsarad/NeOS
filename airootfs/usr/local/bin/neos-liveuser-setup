@@ -3,6 +3,9 @@
 # Creates a temporary live user for the live ISO session.
 # Only runs on the live ISO (detected via /run/archiso).
 
+# Sentinel: Error Handling - Enable strict mode
+set -euo pipefail
+
 # Only run on the live ISO
 if [ ! -d /run/archiso ]; then
     exit 0
@@ -15,13 +18,16 @@ if ! id liveuser &>/dev/null; then
 
     # Sentinel: Grant NOPASSWD only for live user in the live session
     # This ensures the installed system requires passwords for wheel users
-    echo "liveuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
-    chmod 440 /etc/sudoers.d/zz-live-wheel
+    # Note: This file is created in the overlay and will NOT persist to installed system
+    if [ -d /etc/sudoers.d ]; then
+        echo "liveuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
+        chmod 440 /etc/sudoers.d/zz-live-wheel
+    fi
 fi
 
 # Sentinel: Enable passwordless sudo for live session only
 # Create a temporary sudoers file in the overlay (not copied to installed system)
-if [ ! -f /etc/sudoers.d/zz-live-wheel ]; then
+if [ ! -f /etc/sudoers.d/zz-live-wheel ] && [ -d /etc/sudoers.d ]; then
     echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
     chmod 440 /etc/sudoers.d/zz-live-wheel
 fi
