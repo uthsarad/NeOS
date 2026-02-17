@@ -34,6 +34,7 @@ jobs:
 
       - name: Prepare Build Config
         run: |
+          set -euo pipefail
           cd "$GITHUB_WORKSPACE"
           # Use the repository's pacman.conf which includes size optimizations (NoExtract)
           cp "$GITHUB_WORKSPACE/pacman.conf" "$GITHUB_WORKSPACE/pacman-build.conf"
@@ -54,6 +55,7 @@ jobs:
 
       - name: Build ISO
         run: |
+          set -euo pipefail
           PROFILE_DIR="$GITHUB_WORKSPACE"
           PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
           WORK_DIR="$GITHUB_WORKSPACE/work"
@@ -76,7 +78,8 @@ jobs:
 
       - name: Combine ISO parts if split
         run: |
-          cd "$GITHUB_WORKSPACE/out"
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/out" || exit 1
           # Check if ISO was split into parts
           shopt -s nullglob
           parts=(neos-*.iso.part*)
@@ -106,8 +109,10 @@ jobs:
         id: iso
         if: github.ref == 'refs/heads/main'
         run: |
+          set -euo pipefail
           cd "$GITHUB_WORKSPACE"
-          ISO_FILE=$(ls out/*.iso)
+          # Find the ISO file safely without relying on ls
+          ISO_FILE=$(find out -maxdepth 1 -name "*.iso" -type f | head -1)
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
           echo "ISO size: $ISO_SIZE bytes"
           ls -lh out/
