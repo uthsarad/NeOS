@@ -101,6 +101,22 @@ else
     exit 1
 fi
 
+# Sentinel: Check for vm.unprivileged_userfaultfd
+if grep -q "vm.unprivileged_userfaultfd = 0" "$CONFIG_FILE"; then
+    echo "✅ vm.unprivileged_userfaultfd found"
+else
+    echo "❌ vm.unprivileged_userfaultfd NOT found"
+    exit 1
+fi
+
+# Sentinel: Check for kernel.perf_event_paranoid
+if grep -q "kernel.perf_event_paranoid = 3" "$CONFIG_FILE"; then
+    echo "✅ kernel.perf_event_paranoid found"
+else
+    echo "❌ kernel.perf_event_paranoid NOT found"
+    exit 1
+fi
+
 # Sentinel: Check for SigLevel = Required DatabaseRequired in airootfs/etc/pacman.conf
 PACMAN_CONF="airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
