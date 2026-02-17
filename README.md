@@ -23,6 +23,8 @@ This repository serves as the **official Archiso profile** for building the NeOS
 - [Development Roadmap](docs/ROADMAP.md)
 - [Performance Standards](docs/PERFORMANCE.md)
 - [VM Startup Modules](docs/VM_STARTUP.md)
+- [Deep Audit Report](docs/DEEP_AUDIT.md) - Comprehensive repository analysis
+- [Audit Action Plan](docs/AUDIT_ACTION_PLAN.md) - Prioritized improvement roadmap
 
 ## Building NeOS
 To build the ISO locally, you can use the provided `build.sh` script, which handles dependency checks and configuration setup:
