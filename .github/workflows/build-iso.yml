@@ -28,10 +28,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm archiso git wget squashfs-tools grub syslinux
+          # Use --overwrite to handle gcc-libs split into libgcc/libstdc++
+          # Target specific library files to avoid masking other conflicts
+          pacman -Sy --noconfirm --overwrite='/usr/lib/libgcc*' --overwrite='/usr/lib/libstdc++*' --overwrite='/usr/share/licenses/gcc-libs/*' archiso git wget squashfs-tools grub syslinux
 
       - name: Prepare Build Config
         run: |
+          set -euo pipefail
           cd "$GITHUB_WORKSPACE"
           # Use the repository's pacman.conf which includes size optimizations (NoExtract)
           cp "$GITHUB_WORKSPACE/pacman.conf" "$GITHUB_WORKSPACE/pacman-build.conf"
@@ -52,6 +55,7 @@ jobs:
 
       - name: Build ISO
         run: |
+          set -euo pipefail
           PROFILE_DIR="$GITHUB_WORKSPACE"
           PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
           WORK_DIR="$GITHUB_WORKSPACE/work"
@@ -72,6 +76,29 @@ jobs:
           fi
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
 
+      - name: Combine ISO parts if split
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/out" || exit 1
+          # Check if ISO was split into parts
+          shopt -s nullglob
+          parts=(neos-*.iso.part*)
+          if [ ${#parts[@]} -gt 0 ]; then
+            echo "Found ISO part files, combining them..."
+            # Extract the base filename from the first part file
+            base_name="${parts[0]%.part*}"
+            echo "Combining into: $base_name"
+            # Use sort -V for proper numeric ordering (part1, part2, ..., part10)
+            printf '%s\n' "${parts[@]}" | sort -V | xargs cat > "$base_name"
+            echo "Combined ISO created: $base_name"
+            ls -lh "$base_name"
+            # Remove the part files to keep only the combined ISO
+            rm -f "${parts[@]}"
+          else
+            echo "No split ISO parts found, using existing ISO file"
+          fi
+          ls -lh
+
       - name: Validate ISO
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -82,8 +109,10 @@ jobs:
         id: iso
         if: github.ref == 'refs/heads/main'
         run: |
+          set -euo pipefail
           cd "$GITHUB_WORKSPACE"
-          ISO_FILE=$(ls out/*.iso)
+          # Find the ISO file safely without relying on ls
+          ISO_FILE=$(find out -maxdepth 1 -name "*.iso" -type f | head -1)
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
           echo "ISO size: $ISO_SIZE bytes"
           ls -lh out/
