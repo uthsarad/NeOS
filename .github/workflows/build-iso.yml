@@ -78,14 +78,16 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE/out"
           # Check if ISO was split into parts
-          if ls neos-*.iso.part* 1> /dev/null 2>&1; then
+          shopt -s nullglob
+          parts=(neos-*.iso.part*)
+          if [ ${#parts[@]} -gt 0 ]; then
             echo "Found ISO part files, combining them..."
             # Use sort -V for proper numeric ordering (part1, part2, ..., part10)
-            cat $(ls neos-*.iso.part* | sort -V) > neos.iso
+            printf '%s\n' "${parts[@]}" | sort -V | xargs cat > neos.iso
             echo "Combined ISO created: neos.iso"
             ls -lh neos.iso
             # Remove the part files to keep only the combined ISO
-            rm -f neos-*.iso.part*
+            rm -f "${parts[@]}"
           else
             echo "No split ISO parts found, using existing ISO file"
           fi
