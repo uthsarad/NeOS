@@ -27,6 +27,9 @@ This repository serves as the **official Archiso profile** for building the NeOS
 - [Audit Action Plan](docs/AUDIT_ACTION_PLAN.md) - Prioritized improvement roadmap
 
 ## Building NeOS
+
+**⚠️ Important:** If you're experiencing issues with VMs not recognizing the ISO, see [ISO Build Fix Guide](docs/ISO_BUILD_FIX.md).
+
 To build the ISO locally, you can use the provided `build.sh` script, which handles dependency checks and configuration setup:
 
 ```bash
