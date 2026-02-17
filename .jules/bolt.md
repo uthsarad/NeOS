@@ -47,3 +47,7 @@
 ## 2026-02-04 - Btrfs Space Cache Inconsistency
 **Learning:** The manual installer script `neos-installer-partition.sh` used `space_cache=v2` (performance win), but the Calamares installer config `fstab.conf` did not, leading to degraded performance for users who installed via the GUI.
 **Action:** When maintaining dual installation methods (script vs GUI), always synchronize filesystem performance options in both `mount` commands and `fstab.conf` templates.
+
+## 2026-06-01 - Python Import Without Extension
+**Learning:** Testing Python scripts that lack a `.py` extension (common for executables in `bin/`) requires `importlib.machinery.SourceFileLoader` rather than `importlib.util.spec_from_file_location`, as the latter may return `None` if the file extension is not recognized.
+**Action:** When writing tests for executable scripts, use `SourceFileLoader` to explicitly load the module from path, or ensure the script has a `.py` extension if possible.

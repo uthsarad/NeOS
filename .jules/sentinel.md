@@ -58,7 +58,7 @@
 **Learning:** Build processes must be hermetic and reproducible. Relying on host configuration introduces unpredictability and potential security risks (e.g., weak signature checks or compromised mirrors on the host).
 **Prevention:** Always use a repository-controlled configuration file for build tools and explicitly inject necessary environment-specific paths (like mirrorlists) rather than copying host files.
 
-## 2026-08-01 - Secure Default with Runtime Override
-**Vulnerability:** The `sudoers` file was configured with `NOPASSWD` in `airootfs`, which persisted to the installed system, granting permanent passwordless root access to all administrators.
-**Learning:** Relying on installer exclusions to remove insecure live-only configurations is fragile. If the exclusion fails or is misconfigured, the system is permanently compromised.
-**Prevention:** Configure the base system (`airootfs`) securely by default (require passwords). Apply insecure convenience settings (like passwordless sudo) *only* at runtime in the live environment using ephemeral overlays or temporary files.
+## 2026-08-05 - Deprecated User Groups Removal
+**Vulnerability:** The default user configuration in Calamares added users to deprecated and potentially unsafe groups like `storage`, `optical`, `video`, etc.
+**Learning:** Modern systemd-logind systems manage device access via ACLs (uaccess) for the active session. Adding users to these static groups grants permanent access, bypassing session security and increasing the attack surface.
+**Prevention:** Audit `users.conf` to ensure only `wheel` (for sudo) is assigned by default, removing all legacy device groups.

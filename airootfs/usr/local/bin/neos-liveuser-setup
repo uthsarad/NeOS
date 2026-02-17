@@ -18,3 +18,10 @@ if ! id liveuser &>/dev/null; then
     echo "liveuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
     chmod 440 /etc/sudoers.d/zz-live-wheel
 fi
+
+# Sentinel: Enable passwordless sudo for live session only
+# Create a temporary sudoers file in the overlay (not copied to installed system)
+if [ ! -f /etc/sudoers.d/zz-live-wheel ]; then
+    echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
+    chmod 440 /etc/sudoers.d/zz-live-wheel
+fi
