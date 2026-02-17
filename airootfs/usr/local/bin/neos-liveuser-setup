@@ -12,6 +12,11 @@ fi
 if ! id liveuser &>/dev/null; then
     useradd -m -G wheel,sys,lp,network,video,optical,storage,scanner,power,adm,uucp -s /bin/bash liveuser
     passwd -d liveuser
+
+    # Sentinel: Grant NOPASSWD only for live user in the live session
+    # This ensures the installed system requires passwords for wheel users
+    echo "liveuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
+    chmod 440 /etc/sudoers.d/zz-live-wheel
 fi
 
 # Sentinel: Enable passwordless sudo for live session only
