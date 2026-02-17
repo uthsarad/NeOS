@@ -29,7 +29,8 @@ jobs:
       - name: Install dependencies
         run: |
           # Use --overwrite to handle gcc-libs split into libgcc/libstdc++
-          pacman -Sy --noconfirm --overwrite='*' archiso git wget squashfs-tools grub syslinux
+          # Target specific library files to avoid masking other conflicts
+          pacman -Sy --noconfirm --overwrite='/usr/lib/libgcc*' --overwrite='/usr/lib/libstdc++*' --overwrite='/usr/share/licenses/gcc-libs/*' archiso git wget squashfs-tools grub syslinux
 
       - name: Prepare Build Config
         run: |
@@ -79,7 +80,8 @@ jobs:
           # Check if ISO was split into parts
           if ls neos-*.iso.part* 1> /dev/null 2>&1; then
             echo "Found ISO part files, combining them..."
-            cat neos-*.iso.part* > neos.iso
+            # Use sort -V for proper numeric ordering (part1, part2, ..., part10)
+            cat $(ls neos-*.iso.part* | sort -V) > neos.iso
             echo "Combined ISO created: neos.iso"
             ls -lh neos.iso
             # Remove the part files to keep only the combined ISO
