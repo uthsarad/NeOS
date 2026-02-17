@@ -53,6 +53,10 @@ BUILD_CONF="pacman-build.conf"
 # Copy repository pacman.conf as base to ensure reproducible and secure builds
 cp pacman.conf "$BUILD_CONF"
 
+# Update Arch Linux Keyring to prevent signature errors
+echo "Updating Arch Linux Keyring..."
+pacman -Sy --noconfirm archlinux-keyring
+
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
 pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
