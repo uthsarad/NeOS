@@ -3,15 +3,24 @@ import Calamares 1.0;
 
 Presentation {
     id: presentation
+    property bool paused: false
 
     Timer {
         interval: 5000
-        running: true
+        running: !presentation.paused
         repeat: true
         onTriggered: presentation.advance()
     }
 
     Slide {
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: presentation.paused = true
+            onExited: presentation.paused = false
+            z: 1
+        }
+
         Rectangle {
             id: slide1Background
             anchors.centerIn: parent
@@ -63,6 +72,14 @@ Presentation {
     }
 
     Slide {
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onEntered: presentation.paused = true
+            onExited: presentation.paused = false
+            z: 1
+        }
+
         Rectangle {
             id: slide2Background
             anchors.centerIn: parent
