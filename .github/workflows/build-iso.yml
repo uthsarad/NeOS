@@ -28,7 +28,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm archiso git wget squashfs-tools grub syslinux
+          # Use --overwrite to handle gcc-libs split into libgcc/libstdc++
+          pacman -Sy --noconfirm --overwrite='*' archiso git wget squashfs-tools grub syslinux
 
       - name: Prepare Build Config
         run: |
@@ -71,6 +72,22 @@ jobs:
             exit 1
           fi
           mkarchiso -v -C "$PACMAN_CONF" -w "$WORK_DIR" -o "$OUT_DIR" "$PROFILE_DIR"
+
+      - name: Combine ISO parts if split
+        run: |
+          cd "$GITHUB_WORKSPACE/out"
+          # Check if ISO was split into parts
+          if ls neos-*.iso.part* 1> /dev/null 2>&1; then
+            echo "Found ISO part files, combining them..."
+            cat neos-*.iso.part* > neos.iso
+            echo "Combined ISO created: neos.iso"
+            ls -lh neos.iso
+            # Remove the part files to keep only the combined ISO
+            rm -f neos-*.iso.part*
+          else
+            echo "No split ISO parts found, using existing ISO file"
+          fi
+          ls -lh
 
       - name: Validate ISO
         run: |
