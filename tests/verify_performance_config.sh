@@ -46,4 +46,13 @@ else
     exit 1
 fi
 
+# Verify vm.vfs_cache_pressure=50
+if grep -q "vm.vfs_cache_pressure.*=.*50" "$SYSCTL_FILE"; then
+    echo "✅ vm.vfs_cache_pressure set to 50 (prefer cache retention)"
+else
+    echo "❌ vm.vfs_cache_pressure NOT set to 50"
+    grep "vm.vfs_cache_pressure" "$SYSCTL_FILE" || true
+    exit 1
+fi
+
 echo "All performance checks passed!"
