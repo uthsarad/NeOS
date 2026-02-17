@@ -1,5 +1,6 @@
 base
-linux-lts
+linux
+linux-headers
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
