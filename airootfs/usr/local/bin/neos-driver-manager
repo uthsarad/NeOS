@@ -18,12 +18,21 @@ _LOADED_MODULES_CACHE = None
 def get_loaded_modules(force_refresh=False):
     global _LOADED_MODULES_CACHE
     if _LOADED_MODULES_CACHE is None or force_refresh:
-        mods = run_command(["lsmod"])
         _LOADED_MODULES_CACHE = set()
-        for line in mods.splitlines():
-            parts = line.split()
-            if parts:
-                _LOADED_MODULES_CACHE.add(parts[0])
+        # Optimization: Read /proc/modules directly to avoid fork/exec overhead
+        try:
+            with open("/proc/modules", "r") as f:
+                for line in f:
+                    parts = line.split()
+                    if parts:
+                        _LOADED_MODULES_CACHE.add(parts[0])
+        except (FileNotFoundError, IOError):
+            # Fallback to lsmod if /proc/modules is inaccessible
+            mods = run_command(["lsmod"])
+            for line in mods.splitlines():
+                parts = line.split()
+                if parts and parts[0] != "Module": # Skip header
+                    _LOADED_MODULES_CACHE.add(parts[0])
     return _LOADED_MODULES_CACHE
 
 def probe_driver(module_name):
@@ -110,7 +119,10 @@ def manage_network_drivers():
     # Simple check for network interfaces
     # If no interface other than lo, try to find drivers
     output = run_command(["ip", "link", "show"])
-    if len(output.splitlines()) <= 2: # loopback only roughly
+    # Improved check: count interfaces properly
+    interfaces = [line for line in output.splitlines() if line[0].isdigit()]
+    # If only loopback (usually index 1)
+    if len(interfaces) <= 1:
         # Identify specific network controller via PCI ID
         devices = get_pci_controllers(class_prefixes=("02",))
         drivers_to_load = []

@@ -60,6 +60,12 @@ parted --script "$DEVICE" \
     mkpart primary linux-swap "${BOOT_BYTES}B" "${SWAP_END_BYTES}B" \
     mkpart primary btrfs "${SWAP_END_BYTES}B" 100%
 
+# Sentinel: Race Condition Fix - Wait for device nodes to be created
+echo "Waiting for device nodes..."
+udevadm settle
+partprobe "$DEVICE" || true
+sleep 1
+
 # Sentinel: Logic Fix - Handle NVMe partition naming (e.g. nvme0n1p1 vs sda1)
 if [[ "$DEVICE" =~ [0-9]$ ]]; then
     PART_PREFIX="${DEVICE}p"
@@ -110,6 +116,8 @@ mount "$EFI_PARTITION" /mnt/boot
 
 # Create fstab
 echo "Generating fstab..."
+# Sentinel: Reliability Fix - Ensure /mnt/etc exists before writing fstab
+mkdir -p /mnt/etc
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Verify fstab entries

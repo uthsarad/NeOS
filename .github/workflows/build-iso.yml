@@ -110,7 +110,34 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           bash tests/verify_iso_grub.sh
+          bash tests/verify_iso_size.sh
           bash tests/verify_iso_smoketest.sh
+
+      - name: Validate ISO Size
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          # Find the ISO file safely without relying on ls
+          ISO_FILE=$(find out -maxdepth 1 -name "*.iso" -type f | head -1)
+          if [ -z "$ISO_FILE" ]; then
+             echo "❌ No ISO file found to validate"
+             exit 1
+          fi
+
+          ISO_SIZE=$(stat -c%s "$ISO_FILE")
+          MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
+
+          echo "ISO File: $ISO_FILE"
+          echo "ISO Size: $ISO_SIZE bytes"
+          echo "Max Size: $MAX_SIZE bytes"
+
+          if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
+            echo "❌ ISO exceeds GitHub release limit (2GB)!"
+            exit 1
+          else
+            echo "✅ ISO size is within limits."
+          fi
 
       - name: Prepare ISO for upload
         id: iso
