@@ -82,10 +82,13 @@ jobs:
           parts=(neos-*.iso.part*)
           if [ ${#parts[@]} -gt 0 ]; then
             echo "Found ISO part files, combining them..."
+            # Extract the base filename from the first part file
+            base_name="${parts[0]%.part*}"
+            echo "Combining into: $base_name"
             # Use sort -V for proper numeric ordering (part1, part2, ..., part10)
-            printf '%s\n' "${parts[@]}" | sort -V | xargs cat > neos.iso
-            echo "Combined ISO created: neos.iso"
-            ls -lh neos.iso
+            printf '%s\n' "${parts[@]}" | sort -V | xargs cat > "$base_name"
+            echo "Combined ISO created: $base_name"
+            ls -lh "$base_name"
             # Remove the part files to keep only the combined ISO
             rm -f "${parts[@]}"
           else
