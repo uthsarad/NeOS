@@ -85,6 +85,22 @@ else
     exit 1
 fi
 
+# Sentinel: Check for fs.suid_dumpable
+if grep -q "fs.suid_dumpable = 2" "$CONFIG_FILE"; then
+    echo "✅ fs.suid_dumpable found"
+else
+    echo "❌ fs.suid_dumpable NOT found"
+    exit 1
+fi
+
+# Sentinel: Check for dev.tty.ldisc_autoload
+if grep -q "dev.tty.ldisc_autoload = 0" "$CONFIG_FILE"; then
+    echo "✅ dev.tty.ldisc_autoload found"
+else
+    echo "❌ dev.tty.ldisc_autoload NOT found"
+    exit 1
+fi
+
 # Sentinel: Check for SigLevel = Required DatabaseRequired in airootfs/etc/pacman.conf
 PACMAN_CONF="airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
@@ -108,6 +124,15 @@ else
     echo "❌ SigLevel = Required DatabaseOptional NOT found in $ROOT_PACMAN_CONF"
     echo "   Root pacman.conf must use DatabaseOptional to prevent build errors"
     exit 1
+fi
+
+# Sentinel: Check for unsafe TrustAll directive in root pacman.conf
+# We use grep -v "^#" to ignore comments
+if grep -v "^#" "$ROOT_PACMAN_CONF" | grep -q "TrustAll"; then
+    echo "❌ TrustAll found in active configuration of $ROOT_PACMAN_CONF - This is insecure!"
+    exit 1
+else
+    echo "✅ TrustAll NOT found in active configuration of $ROOT_PACMAN_CONF (secure)"
 fi
 
 # Sentinel: Check build.sh for secure pacman.conf usage
