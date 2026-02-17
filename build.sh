@@ -48,9 +48,16 @@ BUILD_CONF="pacman-build.conf"
 # Copy repository pacman.conf as base to ensure reproducible and secure builds
 cp pacman.conf "$BUILD_CONF"
 
+# Setup Chaotic-AUR keys
+echo "Setting up Chaotic-AUR keys..."
+pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+pacman-key --lsign-key 3056513887B78AEB
+pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)
 MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/neos-mirrorlist"
+CHAOTIC_MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/chaotic-mirrorlist"
 
 # Check if mirrorlist has active servers
 if grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
@@ -58,6 +65,7 @@ if grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
     # Replace the relative path in pacman.conf with the absolute path on the host
     # We use | as delimiter to avoid conflict with / in paths
     sed -i "s|/etc/pacman.d/neos-mirrorlist|$MIRRORLIST_PATH|g" "$BUILD_CONF"
+    sed -i "s|/etc/pacman.d/chaotic-mirrorlist|$CHAOTIC_MIRRORLIST_PATH|g" "$BUILD_CONF"
 else
     echo -e "${RED}Error: No active servers found in $MIRRORLIST_PATH.${NC}"
     echo "The build cannot proceed without valid repositories."
