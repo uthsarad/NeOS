@@ -96,15 +96,49 @@ else
     exit 1
 fi
 
-# Sentinel: Check for NOPASSWD in sudoers
-SUDOERS_FILE="airootfs/etc/sudoers.d/wheel"
-echo "Verifying security configuration in $SUDOERS_FILE..."
+# Sentinel: Check for SigLevel = Required DatabaseRequired in root pacman.conf
+ROOT_PACMAN_CONF="pacman.conf"
+echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
 
-if grep -q "NOPASSWD" "$SUDOERS_FILE"; then
-    echo "❌ NOPASSWD found in $SUDOERS_FILE - This is insecure for the installed system!"
-    exit 1
+if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$ROOT_PACMAN_CONF"; then
+    echo "✅ SigLevel = Required DatabaseRequired found in root pacman.conf"
 else
-    echo "✅ NOPASSWD NOT found in $SUDOERS_FILE"
+    echo "❌ SigLevel = Required DatabaseRequired NOT found in $ROOT_PACMAN_CONF"
+    exit 1
+fi
+
+# Sentinel: Check build.sh for secure pacman.conf usage
+BUILD_SCRIPT="build.sh"
+echo "Verifying security configuration in $BUILD_SCRIPT..."
+
+if grep -q "cp pacman.conf \"\$BUILD_CONF\"" "$BUILD_SCRIPT"; then
+    echo "✅ build.sh uses repo pacman.conf"
+else
+    echo "❌ build.sh does NOT use repo pacman.conf"
+    exit 1
+fi
+
+# Sentinel: Check for unsafe user groups in Calamares configuration
+USERS_CONF="airootfs/etc/calamares/modules/users.conf"
+echo "Verifying user groups in $USERS_CONF..."
+
+if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
+    UNSAFE_GROUPS=("sys" "lp" "network" "video" "optical" "storage" "scanner" "power" "adm" "uucp")
+    UNSAFE_FOUND=false
+    for group in "${UNSAFE_GROUPS[@]}"; do
+        if grep -q "[[:space:]]- $group" "$USERS_CONF"; then
+            echo "❌ Unsafe group '$group' found in $USERS_CONF"
+            UNSAFE_FOUND=true
+        fi
+    done
+    if [ "$UNSAFE_FOUND" = true ]; then
+        exit 1
+    else
+        echo "✅ User groups configuration is secure"
+    fi
+else
+    echo "❌ defaultGroups or wheel not found in $USERS_CONF"
+    exit 1
 fi
 
 echo "All security checks passed!"

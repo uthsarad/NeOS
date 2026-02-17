@@ -14,8 +14,8 @@ fi
 
 echo "Current cmdline: $CMDLINE"
 
-REQUIRED_PARAMS=("quiet" "splash")
-FORBIDDEN_PARAMS=("nowatchdog" "intel_pstate=enable" "amd_pstate=active")
+REQUIRED_PARAMS=("quiet" "splash" "nowatchdog" "intel_pstate=enable" "amd_pstate=active")
+FORBIDDEN_PARAMS=("mce=ignore_ce")
 
 ALL_PASSED=true
 
