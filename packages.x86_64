@@ -1,7 +1,6 @@
 # Base System
 base
 linux
-linux-headers
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
@@ -62,12 +61,20 @@ modemmanager
 mobile-broadband-provider-info
 
 # Desktop Environment (KDE Plasma)
-plasma-meta
+plasma-desktop
+plasma-nm
+plasma-pa
+powerdevil
+bluedevil
+kscreen
+systemsettings
+sddm-kcm
+xdg-desktop-portal-kde
+breeze-gtk
+kde-gtk-config
 sddm
 konsole
 dolphin
-packagekit
-discover
 kcalc
 partitionmanager
 ark
@@ -75,12 +82,9 @@ spectacle
 gwenview
 okular
 kwrite
-kdeconnect
 
 # Applications
-vlc
 firefox
-flatpak
 htop
 fastfetch
 filelight
