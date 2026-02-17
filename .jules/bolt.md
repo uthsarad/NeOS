@@ -51,3 +51,7 @@
 ## 2026-06-01 - Python Import Without Extension
 **Learning:** Testing Python scripts that lack a `.py` extension (common for executables in `bin/`) requires `importlib.machinery.SourceFileLoader` rather than `importlib.util.spec_from_file_location`, as the latter may return `None` if the file extension is not recognized.
 **Action:** When writing tests for executable scripts, use `SourceFileLoader` to explicitly load the module from path, or ensure the script has a `.py` extension if possible.
+
+## 2026-06-01 - Filesystem Cache Pressure
+**Learning:** Tuning `vm.vfs_cache_pressure` to 50 (down from 100) on ZRAM-enabled systems improves desktop responsiveness by preferring to retain dentry/inode caches over reclaiming them, effectively trading a small amount of RAM for faster file access.
+**Action:** Always verify `vm.vfs_cache_pressure` alongside `vm.swappiness` in performance configurations to ensure a balanced memory management strategy.
