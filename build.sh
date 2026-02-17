@@ -33,11 +33,16 @@ OUT_DIR="out"
 # Clean previous build artifacts if requested
 if [ -d "$WORK_DIR" ]; then
     echo -e "${YELLOW}Work directory '$WORK_DIR' exists.${NC}"
-    read -p "Clean work directory before building? (y/N) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Removing $WORK_DIR..."
+    if [[ "${CI:-}" == "true" ]]; then
+        echo "Running in CI environment. Removing $WORK_DIR..."
         rm -rf "$WORK_DIR"
+    else
+        read -p "Clean work directory before building? (y/N) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo "Removing $WORK_DIR..."
+            rm -rf "$WORK_DIR"
+        fi
     fi
 fi
 
