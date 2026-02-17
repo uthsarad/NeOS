@@ -31,4 +31,12 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     exit 1
 fi
 
-echo "✅ verification passed: $MKINITCPIO_CONF contains '$REQUIRED_HOOK' and does not contain '$FORBIDDEN_HOOK'"
+# Check for required modules
+REQUIRED_MODULE="btrfs"
+MODULES_SECTION=$(sed -n '/^MODULES=/,/)/p' "$MKINITCPIO_CONF")
+if [[ "$MODULES_SECTION" != *"$REQUIRED_MODULE"* ]]; then
+    echo "❌ Missing required module: $REQUIRED_MODULE"
+    exit 1
+fi
+
+echo "✅ verification passed: $MKINITCPIO_CONF contains '$REQUIRED_HOOK' hook, '$REQUIRED_MODULE' module, and does not contain '$FORBIDDEN_HOOK' hook"
