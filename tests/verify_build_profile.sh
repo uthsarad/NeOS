@@ -60,11 +60,23 @@ else
 fi
 
 # Verify bootstrap_packages exists (required by newer archiso)
-if [ -f "bootstrap_packages" ] || [ -f "bootstrap_packages.x86_64" ]; then
-    echo "✅ bootstrap_packages file exists"
+if [ -f "bootstrap_packages.x86_64" ]; then
+    echo "✅ bootstrap_packages.x86_64 file exists"
 else
-    echo "❌ bootstrap_packages file does not exist"
+    echo "❌ bootstrap_packages.x86_64 file does not exist"
     exit 1
+fi
+
+if [ -f "bootstrap_packages.i686" ]; then
+    echo "✅ bootstrap_packages.i686 file exists"
+else
+    echo "⚠️ bootstrap_packages.i686 file does not exist (recommended for i686 support)"
+fi
+
+if [ -f "bootstrap_packages.aarch64" ]; then
+    echo "✅ bootstrap_packages.aarch64 file exists"
+else
+    echo "⚠️ bootstrap_packages.aarch64 file does not exist (recommended for aarch64 support)"
 fi
 
 # Verify boot modes are valid (extract quoted values from bootmodes= lines)
