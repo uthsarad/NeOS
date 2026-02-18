@@ -62,3 +62,8 @@
 **Vulnerability:** The default user configuration in Calamares added users to deprecated and potentially unsafe groups like `storage`, `optical`, `video`, etc.
 **Learning:** Modern systemd-logind systems manage device access via ACLs (uaccess) for the active session. Adding users to these static groups grants permanent access, bypassing session security and increasing the attack surface.
 **Prevention:** Audit `users.conf` to ensure only `wheel` (for sudo) is assigned by default, removing all legacy device groups.
+
+## 2026-10-24 - Log File Symlink Attacks
+**Vulnerability:** `neos-autoupdate.sh` wrote to `/var/log/neos-autoupdate.log` using `tee -a` without checking if the target file was a symlink.
+**Learning:** Even root-owned directories like `/var/log` can be vectors for privilege escalation if permissions are misconfigured or if a user can pre-create a symlink (TOCTOU). Scripts running as root must be paranoid about file operations.
+**Prevention:** Always check `if [ -L "$FILE" ]` before writing to predictable file paths in shell scripts, or use `O_NOFOLLOW` where possible.

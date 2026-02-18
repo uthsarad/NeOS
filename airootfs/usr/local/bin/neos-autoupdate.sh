@@ -7,6 +7,13 @@ set -euo pipefail
 LOG_FILE="/var/log/neos-autoupdate.log"
 LOCK_FILE="/run/neos-autoupdate.lock"
 
+# Sentinel: Security Check - Ensure log file is not a symlink
+# This prevents potential privilege escalation if /var/log permissions are compromised
+if [ -L "$LOG_FILE" ]; then
+    echo "ERROR: Log file is a symlink! Possible security attack." >&2
+    exit 1
+fi
+
 # Log function
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
