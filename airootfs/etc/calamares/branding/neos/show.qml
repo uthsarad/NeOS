@@ -4,6 +4,9 @@ import Calamares 1.0;
 Presentation {
     id: presentation
     property bool paused: false
+    focus: true
+
+    Keys.onRightPressed: presentation.advance()
 
     Timer {
         interval: 5000
@@ -18,6 +21,10 @@ Presentation {
             hoverEnabled: true
             onEntered: presentation.paused = true
             onExited: presentation.paused = false
+            onClicked: {
+                presentation.forceActiveFocus()
+                presentation.advance()
+            }
             z: 1
         }
 
@@ -67,6 +74,31 @@ Presentation {
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
                 }
+
+                Row {
+                    spacing: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        radius: 5
+                        color: "white"
+                        opacity: 1.0
+                        Accessible.role: Accessible.Graphic
+                        Accessible.name: qsTr("Slide 1 active")
+                    }
+
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        radius: 5
+                        color: "white"
+                        opacity: 0.5
+                        Accessible.role: Accessible.Graphic
+                        Accessible.name: qsTr("Slide 2 inactive")
+                    }
+                }
             }
         }
     }
@@ -77,6 +109,10 @@ Presentation {
             hoverEnabled: true
             onEntered: presentation.paused = true
             onExited: presentation.paused = false
+            onClicked: {
+                presentation.forceActiveFocus()
+                presentation.advance()
+            }
             z: 1
         }
 
@@ -125,6 +161,31 @@ Presentation {
                     // Accessibility
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
+                }
+
+                Row {
+                    spacing: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        radius: 5
+                        color: "white"
+                        opacity: 0.5
+                        Accessible.role: Accessible.Graphic
+                        Accessible.name: qsTr("Slide 1 inactive")
+                    }
+
+                    Rectangle {
+                        width: 10
+                        height: 10
+                        radius: 5
+                        color: "white"
+                        opacity: 1.0
+                        Accessible.role: Accessible.Graphic
+                        Accessible.name: qsTr("Slide 2 active")
+                    }
                 }
             }
         }

@@ -47,3 +47,7 @@
 ## 2026-06-26 - Contrast Assurance in Themed Environments
 **Learning:** In customizable branding environments (like Calamares), text color (e.g., white) can become invisible if the background changes (e.g., to a light theme).
 **Action:** Always wrap text content in a semi-transparent container (e.g., `Rectangle { color: "#99000000" }`) to guarantee high contrast and legibility regardless of the underlying background.
+
+## 2024-05-27 - Calamares Slideshow Navigation
+**Learning:** Default Calamares slideshows are often passive, frustrating users who read quickly or want to skip. Lack of keyboard controls also alienates power users.
+**Action:** Add explicit navigation controls (like clicking to advance) and bind keyboard shortcuts (e.g., Right Arrow) to the `Presentation` component to empower user control.
