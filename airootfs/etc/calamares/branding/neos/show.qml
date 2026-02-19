@@ -69,6 +69,9 @@ Presentation {
                     source: "welcome.png"
                     width: 200
                     height: 200
+                    // ⚡ Bolt: Load images asynchronously to prevent UI jank during slide transitions
+                    asynchronous: true
+                    cache: true
                     fillMode: Image.PreserveAspectFit
                     anchors.horizontalCenter: parent.horizontalCenter
                     // Accessibility
@@ -172,6 +175,9 @@ Presentation {
                     source: "logo.png"
                     width: 150
                     height: 150
+                    // ⚡ Bolt: Load images asynchronously to prevent UI jank during slide transitions
+                    asynchronous: true
+                    cache: true
                     fillMode: Image.PreserveAspectFit
                     anchors.horizontalCenter: parent.horizontalCenter
                     // Accessibility
