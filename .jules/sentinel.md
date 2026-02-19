@@ -67,3 +67,8 @@
 **Vulnerability:** `neos-autoupdate.sh` wrote to `/var/log/neos-autoupdate.log` using `tee -a` without checking if the target file was a symlink.
 **Learning:** Even root-owned directories like `/var/log` can be vectors for privilege escalation if permissions are misconfigured or if a user can pre-create a symlink (TOCTOU). Scripts running as root must be paranoid about file operations.
 **Prevention:** Always check `if [ -L "$FILE" ]` before writing to predictable file paths in shell scripts, or use `O_NOFOLLOW` where possible.
+
+## 2026-10-25 - Hardening Live ISO SSH Access
+**Vulnerability:** The live ISO environment configures the `liveuser` with an empty password and installs `openssh`. If `sshd` is enabled (manually or accidentally), it allows unauthorized root access via passwordless sudo.
+**Learning:** Live ISOs often prioritize convenience (no password) but fail to account for the risk of installed services like SSH being activated. The combination of "empty password" + "sudo ALL" + "sshd installed" is a critical chain.
+**Prevention:** Explicitly configure `sshd_config` in the live overlay to deny empty passwords (`PermitEmptyPasswords no`) and root login (`PermitRootLogin no`). This forces the user to set a password before remote access is possible.
