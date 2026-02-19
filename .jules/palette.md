@@ -51,3 +51,7 @@
 ## 2024-05-27 - Calamares Slideshow Navigation
 **Learning:** Default Calamares slideshows are often passive, frustrating users who read quickly or want to skip. Lack of keyboard controls also alienates power users.
 **Action:** Add explicit navigation controls (like clicking to advance) and bind keyboard shortcuts (e.g., Right Arrow) to the `Presentation` component to empower user control.
+
+## 2024-10-24 - Accessibility in QML Slideshows
+**Learning:** QML `Presentation` components in Calamares often lack built-in focus indicators and keyboard navigation beyond basic advancement, making them inaccessible to keyboard users.
+**Action:** When working with QML slideshows, always explicitly add `activeFocus` visual states (e.g., borders) and comprehensive keyboard handlers (Space, Left/Right arrows) to ensure WCAG compliance.
