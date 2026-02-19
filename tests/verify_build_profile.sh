@@ -43,12 +43,12 @@ else
     exit 1
 fi
 
-# Verify pacman.conf uses DatabaseOptional (DatabaseRequired causes errors in chroot builds)
+# Verify pacman.conf uses DatabaseRequired (Secure build requirement)
 if grep -q 'DatabaseRequired' "$PACMAN_CONF"; then
-    echo "❌ $PACMAN_CONF uses DatabaseRequired (causes 'missing required signature' errors during build)"
-    exit 1
+    echo "✅ $PACMAN_CONF uses DatabaseRequired"
 else
-    echo "✅ $PACMAN_CONF does not use DatabaseRequired"
+    echo "❌ $PACMAN_CONF does not use DatabaseRequired (must be enabled for security)"
+    exit 1
 fi
 
 # Verify packages file exists for x86_64
