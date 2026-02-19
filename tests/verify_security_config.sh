@@ -128,17 +128,15 @@ else
     exit 1
 fi
 
-# Sentinel: Check for SigLevel = Required DatabaseOptional in root pacman.conf (build-time config)
+# Sentinel: Check for SigLevel = Required DatabaseRequired in root pacman.conf (build-time config)
 ROOT_PACMAN_CONF="pacman.conf"
 echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
 
-# Root pacman.conf is used during ISO build and must use DatabaseOptional to avoid signature errors
-# The installed system (airootfs/etc/pacman.conf) uses DatabaseRequired for end-user security
-if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseOptional" "$ROOT_PACMAN_CONF"; then
-    echo "✅ SigLevel = Required DatabaseOptional found in root pacman.conf (correct for build-time)"
+# Root pacman.conf is used during ISO build and must use DatabaseRequired to prevent replay attacks
+if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$ROOT_PACMAN_CONF"; then
+    echo "✅ SigLevel = Required DatabaseRequired found in root pacman.conf (secure build-time config)"
 else
-    echo "❌ SigLevel = Required DatabaseOptional NOT found in $ROOT_PACMAN_CONF"
-    echo "   Root pacman.conf must use DatabaseOptional to prevent build errors"
+    echo "❌ SigLevel = Required DatabaseRequired NOT found in $ROOT_PACMAN_CONF"
     exit 1
 fi
 
