@@ -72,3 +72,8 @@
 **Vulnerability:** The live ISO environment configures the `liveuser` with an empty password and installs `openssh`. If `sshd` is enabled (manually or accidentally), it allows unauthorized root access via passwordless sudo.
 **Learning:** Live ISOs often prioritize convenience (no password) but fail to account for the risk of installed services like SSH being activated. The combination of "empty password" + "sudo ALL" + "sshd installed" is a critical chain.
 **Prevention:** Explicitly configure `sshd_config` in the live overlay to deny empty passwords (`PermitEmptyPasswords no`) and root login (`PermitRootLogin no`). This forces the user to set a password before remote access is possible.
+
+## 2026-10-26 - Persistent Live Sudo Configuration
+**Vulnerability:** The Calamares installer copied the live session's temporary sudoers configuration (`/etc/sudoers.d/zz-live-wheel`) to the installed system. This file could potentially grant passwordless sudo access to the `wheel` group or a user named `liveuser` on the target machine.
+**Learning:** `unpackfs` in Calamares copies the entire runtime overlay (mounted at `/run/archiso/airootfs`) by default. Any temporary files created during the live session boot process (like `neos-liveuser-setup` tweaks) become permanent if not explicitly cleaned up.
+**Prevention:** Add a cleanup command to the `shellprocess` module in Calamares configuration (`shellprocess.conf`) to remove specific live-only files (like `zz-live-wheel`) from the target system before installation completes.
