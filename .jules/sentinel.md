@@ -1,4 +1,4 @@
-## 2024-10-24 - Rolling Release Security Model
+## 2026-10-24 - Rolling Release Security Model
 **Vulnerability:** Ambiguity in "Supported Versions" for rolling releases.
 **Learning:** NeOS follows a rolling release model (Arch-based). This creates a unique security constraint where "supported versions" are effectively only the "latest". Traditional long-term support (LTS) policies do not apply, and the security policy must explicitly clarify this to avoid user confusion about backports.
 **Prevention:** Explicitly define "Rolling" support in SECURITY.md and educate users that updates are the only fix.
@@ -72,3 +72,8 @@
 **Vulnerability:** The live ISO environment configures the `liveuser` with an empty password and installs `openssh`. If `sshd` is enabled (manually or accidentally), it allows unauthorized root access via passwordless sudo.
 **Learning:** Live ISOs often prioritize convenience (no password) but fail to account for the risk of installed services like SSH being activated. The combination of "empty password" + "sudo ALL" + "sshd installed" is a critical chain.
 **Prevention:** Explicitly configure `sshd_config` in the live overlay to deny empty passwords (`PermitEmptyPasswords no`) and root login (`PermitRootLogin no`). This forces the user to set a password before remote access is possible.
+
+## 2026-02-20 - Unsigned Build Repositories
+**Vulnerability:** The build process uses `[alci_repo]` with `SigLevel = Optional`. This allows potential supply chain attacks if the build environment is compromised or MITM'd, as package signatures are not enforced for this repo.
+**Learning:** Third-party repositories often lack rigorous signing infrastructure. Relying on them for critical components (like the installer) introduces a weak link in the security chain.
+**Prevention:** Enforce `SigLevel = Required` for all repositories and vendor the necessary keys. If keys are unavailable, consider mirroring packages to a signed internal repository.
