@@ -5,7 +5,7 @@ iso_name="neos"
 _iso_date="$(date +%Y%m%d)"
 iso_label="NEOS_LIVE"
 iso_publisher="NeOS Project <https://neos.example>"
-iso_application="NeOS Linux"
+iso_application="NeOS"
 iso_version="${_iso_date:0:4}.${_iso_date:4:2}.${_iso_date:6:2}"
 unset _iso_date
 install_dir="neos"
