@@ -1,0 +1,11 @@
+NAME="NeOS"
+PRETTY_NAME="NeOS"
+ID=neos
+ID_LIKE=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://neos.example"
+DOCUMENTATION_URL="https://neos.example"
+SUPPORT_URL="https://neos.example"
+BUG_REPORT_URL="https://neos.example"
+LOGO=neos-logo

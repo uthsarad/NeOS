@@ -52,6 +52,7 @@ intel-media-driver
 
 # Network
 networkmanager
+network-manager-applet
 dhcpcd
 iwd
 wireless-regdb
