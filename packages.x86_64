@@ -130,6 +130,7 @@ pciutils
 python
 ufw
 fwupd
+flatpak
 v4l-utils
 android-udev
 
