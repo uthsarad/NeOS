@@ -1,0 +1,14 @@
+# Sentinel: Hardened SSH Configuration for NeOS
+# Prevent empty password login (mitigates liveuser risk)
+PermitEmptyPasswords no
+# Disable root login
+PermitRootLogin no
+# Allow password authentication (users must set password first)
+PasswordAuthentication yes
+# Standard security
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding no
+PrintMotd no
+# Allow sftp using internal-sftp (safer than hardcoded path)
+Subsystem sftp internal-sftp
