@@ -43,11 +43,11 @@ else
     exit 1
 fi
 
-# Verify pacman.conf uses DatabaseRequired (Secure build requirement)
-if grep -q 'DatabaseRequired' "$PACMAN_CONF"; then
-    echo "✅ $PACMAN_CONF uses DatabaseRequired"
+# Verify pacman.conf uses DatabaseOptional (Required for mirrors without .db.sig)
+if grep -q 'DatabaseOptional' "$PACMAN_CONF"; then
+    echo "✅ $PACMAN_CONF uses DatabaseOptional"
 else
-    echo "❌ $PACMAN_CONF does not use DatabaseRequired (must be enabled for security)"
+    echo "❌ $PACMAN_CONF does not use DatabaseOptional"
     exit 1
 fi
 
