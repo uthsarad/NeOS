@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Install NeOS (GUI)
+Exec=sudo calamares
+Icon=calamares
+Terminal=false
+StartupNotify=true
