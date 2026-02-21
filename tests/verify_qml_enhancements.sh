@@ -26,11 +26,19 @@ else
     exit 1
 fi
 
-# Check for Pause Indicator
-if grep -q "text: qsTr(\"Paused\")" "$QML_FILE"; then
-    echo "✅ Pause indicator text found."
+# Check for Pause Indicator (enhanced)
+if grep -q "text: \"⏸ \" + qsTr(\"Paused\")" "$QML_FILE"; then
+    echo "✅ Enhanced Pause indicator found."
 else
-    echo "❌ Pause indicator text missing!"
+    echo "❌ Enhanced Pause indicator missing!"
+    exit 1
+fi
+
+# Check for Cursor Shape
+if grep -q "cursorShape: Qt.PointingHandCursor" "$QML_FILE"; then
+    echo "✅ Cursor shape enhancement found."
+else
+    echo "❌ Cursor shape enhancement missing!"
     exit 1
 fi
 

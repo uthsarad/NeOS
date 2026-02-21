@@ -20,6 +20,7 @@ Presentation {
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
             onEntered: presentation.paused = true
             onExited: presentation.paused = false
             onClicked: {
@@ -40,9 +41,10 @@ Presentation {
             border.color: "#ffffff"
 
             Text {
-                text: qsTr("Paused")
+                text: "⏸ " + qsTr("Paused")
                 color: "white"
-                opacity: 0.7
+                opacity: 1.0
+                font.bold: true
                 font.pixelSize: 14
                 anchors.top: parent.top
                 anchors.right: parent.right
@@ -126,6 +128,7 @@ Presentation {
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
             onEntered: presentation.paused = true
             onExited: presentation.paused = false
             onClicked: {
@@ -146,9 +149,10 @@ Presentation {
             border.color: "#ffffff"
 
             Text {
-                text: qsTr("Paused")
+                text: "⏸ " + qsTr("Paused")
                 color: "white"
-                opacity: 0.7
+                opacity: 1.0
+                font.bold: true
                 font.pixelSize: 14
                 anchors.top: parent.top
                 anchors.right: parent.right
