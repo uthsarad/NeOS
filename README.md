@@ -18,6 +18,7 @@ This repository serves as the **official Archiso profile** for building the NeOS
 
 ## Documentation
 - **[NeOS Mission & Identity](docs/MISSION.md)** - Core philosophy and target audience.
+- **[NeOS Brand Structure](docs/BRAND_STRUCTURE.md)** - Brand ethos, voice, and evolution model.
 - **[NeOS Handbook (Getting Started)](docs/HANDBOOK.md)** - Start here!
 - [Architecture Overview](docs/ARCHITECTURE.md)
 - [Development Roadmap](docs/ROADMAP.md)
