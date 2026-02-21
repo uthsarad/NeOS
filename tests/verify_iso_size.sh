@@ -19,11 +19,11 @@ fi
 # 1. Verify Compression Settings in profiledef.sh
 echo "Checking compression settings in $PROFILE_FILE..."
 # We check for the x86_64 specific options which include BCJ
-if grep -Fq "airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')" "$PROFILE_FILE"; then
-    echo "✅ Compression settings are optimized for size (xz, 1M block/dict, BCJ)"
+if grep -Fq "airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')" "$PROFILE_FILE"; then
+    echo "✅ Compression settings are optimized for size (xz, 1M block, BCJ)"
 else
     echo "❌ Compression settings do NOT match optimized profile"
-    echo "Expected: airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')"
+    echo "Expected: airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')"
     echo "Found:"
     grep "airootfs_image_tool_options" "$PROFILE_FILE" || true
     exit 1
@@ -37,6 +37,8 @@ REQUIRED_EXCLUDES=(
     "usr/share/doc/*"
     "usr/share/gtk-doc/*"
     "usr/share/locale/*"
+    "usr/share/help/*"
+    "usr/include/*"
 )
 
 MISSING=false
