@@ -27,74 +27,74 @@ if [ ! -f "$SYSCTL_FILE" ]; then
     exit 1
 fi
 
-# Verify vm.swappiness is COMMENTED OUT (stability first)
-if grep -q "#vm.swappiness.*=.*180" "$SYSCTL_FILE"; then
-    echo "✅ vm.swappiness is commented out (correct for stable release)"
+# Verify vm.swappiness is SET TO 100 (ZRAM optimization)
+if grep -E "^vm.swappiness.*=.*100" "$SYSCTL_FILE"; then
+    echo "✅ vm.swappiness set to 100 (optimized for ZRAM)"
 else
-    echo "❌ vm.swappiness is NOT commented out correctly"
+    echo "❌ vm.swappiness is NOT set to 100"
     grep "vm.swappiness" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify vm.page-cluster is COMMENTED OUT
-if grep -q "#vm.page-cluster.*=.*0" "$SYSCTL_FILE"; then
-    echo "✅ vm.page-cluster is commented out (correct for stable release)"
+# Verify vm.page-cluster is SET TO 0
+if grep -E "^vm.page-cluster.*=.*0" "$SYSCTL_FILE"; then
+    echo "✅ vm.page-cluster set to 0 (optimized for ZRAM)"
 else
-    echo "❌ vm.page-cluster is NOT commented out correctly"
+    echo "❌ vm.page-cluster is NOT set to 0"
     grep "vm.page-cluster" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify vm.vfs_cache_pressure is COMMENTED OUT
-if grep -q "#vm.vfs_cache_pressure.*=.*50" "$SYSCTL_FILE"; then
-    echo "✅ vm.vfs_cache_pressure is commented out (correct for stable release)"
+# Verify vm.vfs_cache_pressure is SET TO 50
+if grep -E "^vm.vfs_cache_pressure.*=.*50" "$SYSCTL_FILE"; then
+    echo "✅ vm.vfs_cache_pressure set to 50 (optimized for responsiveness)"
 else
-    echo "❌ vm.vfs_cache_pressure is NOT commented out correctly"
+    echo "❌ vm.vfs_cache_pressure is NOT set to 50"
     grep "vm.vfs_cache_pressure" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify vm.max_map_count is COMMENTED OUT
-if grep -q "#vm.max_map_count.*=.*2147483642" "$SYSCTL_FILE"; then
-    echo "✅ vm.max_map_count is commented out (correct for stable release)"
+# Verify vm.max_map_count is SET TO 2147483642
+if grep -E "^vm.max_map_count.*=.*2147483642" "$SYSCTL_FILE"; then
+    echo "✅ vm.max_map_count set to 2147483642 (optimized for gaming)"
 else
-    echo "❌ vm.max_map_count is NOT commented out correctly"
+    echo "❌ vm.max_map_count is NOT set to 2147483642"
     grep "vm.max_map_count" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify net.core.default_qdisc is COMMENTED OUT
+# Verify net.core.default_qdisc is COMMENTED OUT (still experimental)
 if grep -q "#net.core.default_qdisc.*=.*cake" "$SYSCTL_FILE"; then
-    echo "✅ net.core.default_qdisc is commented out (correct for stable release)"
+    echo "✅ net.core.default_qdisc is commented out (correct)"
 else
     echo "❌ net.core.default_qdisc is NOT commented out correctly"
     grep "net.core.default_qdisc" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify net.ipv4.tcp_congestion_control is COMMENTED OUT
+# Verify net.ipv4.tcp_congestion_control is COMMENTED OUT (still experimental)
 if grep -q "#net.ipv4.tcp_congestion_control.*=.*bbr" "$SYSCTL_FILE"; then
-    echo "✅ net.ipv4.tcp_congestion_control is commented out (correct for stable release)"
+    echo "✅ net.ipv4.tcp_congestion_control is commented out (correct)"
 else
     echo "❌ net.ipv4.tcp_congestion_control is NOT commented out correctly"
     grep "net.ipv4.tcp_congestion_control" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify vm.dirty_ratio is COMMENTED OUT
-if grep -q "#vm.dirty_ratio.*=.*10" "$SYSCTL_FILE"; then
-    echo "✅ vm.dirty_ratio is commented out (correct for stable release)"
+# Verify vm.dirty_ratio is SET TO 10
+if grep -E "^vm.dirty_ratio.*=.*10" "$SYSCTL_FILE"; then
+    echo "✅ vm.dirty_ratio set to 10 (optimized for I/O latency)"
 else
-    echo "❌ vm.dirty_ratio is NOT commented out correctly"
+    echo "❌ vm.dirty_ratio is NOT set to 10"
     grep "vm.dirty_ratio" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify vm.dirty_background_ratio is COMMENTED OUT
-if grep -q "#vm.dirty_background_ratio.*=.*5" "$SYSCTL_FILE"; then
-    echo "✅ vm.dirty_background_ratio is commented out (correct for stable release)"
+# Verify vm.dirty_background_ratio is SET TO 5
+if grep -E "^vm.dirty_background_ratio.*=.*5" "$SYSCTL_FILE"; then
+    echo "✅ vm.dirty_background_ratio set to 5 (optimized for I/O latency)"
 else
-    echo "❌ vm.dirty_background_ratio is NOT commented out correctly"
+    echo "❌ vm.dirty_background_ratio is NOT set to 5"
     grep "vm.dirty_background_ratio" "$SYSCTL_FILE" || true
     exit 1
 fi
@@ -122,4 +122,4 @@ else
     exit 1
 fi
 
-echo "All performance checks (disabled) passed!"
+echo "All performance checks passed!"
