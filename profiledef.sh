@@ -3,7 +3,7 @@
 
 iso_name="neos"
 _iso_date="$(date +%Y%m%d)"
-iso_label="NEOS_LIVE"
+iso_label="NEOS_ISO"
 iso_publisher="NeOS Project <https://neos.example>"
 iso_application="NeOS"
 iso_version="${_iso_date:0:4}.${_iso_date:4:2}.${_iso_date:6:2}"
@@ -29,9 +29,9 @@ fi
 # xz with BCJ filter provides the best compression ratio for x86_64 binaries.
 airootfs_image_type="squashfs"
 if [ "$arch" == "x86_64" ] || [ "$arch" == "i686" ]; then
-  airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
+  airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')
 else
-  airootfs_image_tool_options=('-comp' 'xz' '-b' '1M' '-Xdict-size' '1M')
+  airootfs_image_tool_options=('-comp' 'xz' '-b' '1M')
 fi
 
 file_permissions=(
