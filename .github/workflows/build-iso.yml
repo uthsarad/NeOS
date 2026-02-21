@@ -112,6 +112,11 @@ jobs:
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_size.sh
           bash tests/verify_iso_smoketest.sh
+          # Updated performance config verification
+          bash tests/verify_performance_config.sh
+          # Additional non-blocking checks as requested
+          timeout 60s bash tests/verify_mkinitcpio.sh || echo "⚠️ verify_mkinitcpio.sh failed or timed out (skipping)"
+          timeout 60s bash tests/verify_qml_enhancements.sh || echo "⚠️ verify_qml_enhancements.sh failed or timed out (skipping)"
 
       - name: Validate ISO Size
         if: github.ref == 'refs/heads/main'

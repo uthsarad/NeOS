@@ -67,7 +67,8 @@ def get_pci_controllers(class_prefixes=("03",)):
     # List all PCI controllers matching the class prefixes
     # ⚡ Bolt: Use cached device list to avoid repeated lspci calls
     all_devices = get_all_pci_devices()
-    return [d for d in all_devices if any(d['class'].startswith(prefix) for prefix in class_prefixes)]
+    # Optimization: startswith accepts a tuple, no need for generator expression
+    return [d for d in all_devices if d['class'].startswith(class_prefixes)]
 
 def check_driver_loaded(module_name):
     # Check if module is loaded using cache
@@ -147,6 +148,7 @@ def manage_network_drivers():
             # Atheros (168c)
             elif vendor == "168c":
                 drivers_to_load.append("ath10k_pci")
+                if "ath9k" not in drivers_to_load: drivers_to_load.append("ath9k")
 
         if drivers_to_load:
             log(f"No network interfaces found! Probing detected drivers: {', '.join(drivers_to_load)}")
