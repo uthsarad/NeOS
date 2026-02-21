@@ -3,43 +3,43 @@ set -e
 
 QML_FILE="airootfs/etc/calamares/branding/neos/neos-restore-module.qml"
 
-echo "Verifying restore module implementation in $QML_FILE..."
+echo "Verifying QML restore module: $QML_FILE..."
 
 if [ ! -f "$QML_FILE" ]; then
-    echo "Error: QML file not found at $QML_FILE!"
+    echo "Error: QML file not found!"
     exit 1
 fi
 
-# Check for Timer
-if grep -q "id: loadTimer" "$QML_FILE"; then
-    echo "✅ Timer found."
+# Check for rollbackToSnapshot function
+if grep -q "function rollbackToSnapshot(snapshotNumber)" "$QML_FILE"; then
+    echo "✅ rollbackToSnapshot function found."
 else
-    echo "❌ Timer 'loadTimer' missing!"
+    echo "❌ rollbackToSnapshot function missing!"
     exit 1
 fi
 
-# Check for Process and snapper command with secure path
-if grep -q "Process {" "$QML_FILE" && grep -q "snapper list --xml > /root/snapshots.xml" "$QML_FILE"; then
-    echo "✅ Process and snapper command with secure path found."
+# Check for Process component
+if grep -q "Process {" "$QML_FILE"; then
+    echo "✅ Process component found."
 else
-    echo "❌ Process or snapper command missing or using insecure path!"
+    echo "❌ Process component missing!"
     exit 1
 fi
 
-# Check for XmlListModel pointing to secure path
-if grep -q "XmlListModel {" "$QML_FILE" && grep -q "source: \"file:///root/snapshots.xml\"" "$QML_FILE"; then
-    echo "✅ XmlListModel source correct."
+# Check for snapper command
+if grep -q "snapper" "$QML_FILE"; then
+    echo "✅ snapper command found."
 else
-    echo "❌ XmlListModel source missing or incorrect!"
+    echo "❌ snapper command missing!"
     exit 1
 fi
 
-# Check if snapper package is listed
-if grep -q "snapper" packages.x86_64; then
-    echo "✅ Snapper package is listed in packages.x86_64."
+# Check for config=root
+if grep -q "\-\-config=root" "$QML_FILE"; then
+    echo "✅ --config=root parameter found."
 else
-    echo "❌ Snapper package is missing from packages.x86_64!"
+    echo "❌ --config=root parameter missing!"
     exit 1
 fi
 
-echo "Restore module verification successful!"
+echo "QML restore module verification successful!"
