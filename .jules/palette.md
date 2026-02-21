@@ -55,3 +55,7 @@
 ## 2024-10-24 - Accessibility in QML Slideshows
 **Learning:** QML `Presentation` components in Calamares often lack built-in focus indicators and keyboard navigation beyond basic advancement, making them inaccessible to keyboard users.
 **Action:** When working with QML slideshows, always explicitly add `activeFocus` visual states (e.g., borders) and comprehensive keyboard handlers (Space, Left/Right arrows) to ensure WCAG compliance.
+
+## 2026-06-27 - Visual Affordance in Slideshows
+**Learning:** In interactive slideshows (like Calamares), users often don't realize the entire slide area is clickable to advance without explicit cursor feedback.
+**Action:** Always set `cursorShape: Qt.PointingHandCursor` on large interactive areas to clearly signal interactivity, especially when visual buttons are absent.
