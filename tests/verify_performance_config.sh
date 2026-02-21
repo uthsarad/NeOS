@@ -82,6 +82,24 @@ else
     exit 1
 fi
 
+# Verify vm.dirty_ratio=10
+if grep -q "vm.dirty_ratio.*=.*10" "$SYSCTL_FILE"; then
+    echo "✅ vm.dirty_ratio set to 10 (disk write latency optimization)"
+else
+    echo "❌ vm.dirty_ratio NOT set to 10"
+    grep "vm.dirty_ratio" "$SYSCTL_FILE" || true
+    exit 1
+fi
+
+# Verify vm.dirty_background_ratio=5
+if grep -q "vm.dirty_background_ratio.*=.*5" "$SYSCTL_FILE"; then
+    echo "✅ vm.dirty_background_ratio set to 5 (background write optimization)"
+else
+    echo "❌ vm.dirty_background_ratio NOT set to 5"
+    grep "vm.dirty_background_ratio" "$SYSCTL_FILE" || true
+    exit 1
+fi
+
 # --- Network Modules Verification ---
 MODULES_FILE="airootfs/etc/modules-load.d/neos-networking.conf"
 echo "Verifying network modules in $MODULES_FILE..."
