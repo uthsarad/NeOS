@@ -11,7 +11,7 @@ permissions:
 jobs:
   approve-and-merge:
     runs-on: ubuntu-latest
-    if: github.actor == github.repository_owner
+    if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
