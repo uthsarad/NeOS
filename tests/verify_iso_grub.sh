@@ -20,7 +20,8 @@ REQUIRED_STRINGS=(
     "linux /neos/boot/x86_64/vmlinuz-linux"
     "initrd /neos/boot/x86_64/initramfs-linux.img"
     "archisobasedir=neos"
-    "archisolabel=NEOS_LIVE"
+    "archisolabel=NEOS_ISO"
+    "cow_spacesize=4G"
     "quiet splash"
 )
 
@@ -51,7 +52,7 @@ done
 echo "Verifying profile settings in $PROFILE_FILE..."
 
 PROFILE_STRINGS=(
-    "iso_label=\"NEOS_LIVE\""
+    "iso_label=\"NEOS_ISO\""
     "install_dir=\"neos\""
 )
 
