@@ -7,5 +7,12 @@ Type=oneshot
 ExecStart=/usr/local/bin/neos-driver-manager
 RemainAfterExit=yes
 
+# Sentinel: Service Hardening
+# This script only loads kernel modules (via /sys) and does not need to write to /etc or /usr.
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
 [Install]
 WantedBy=multi-user.target
