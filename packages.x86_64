@@ -82,16 +82,11 @@ okular
 kwrite
 
 # Applications
-firefox
 htop
 fastfetch
 filelight
 
 # Virtualization Guest Tools
-open-vm-tools
-virtualbox-guest-utils-nox
-qemu-guest-agent
-spice-vdagent
 
 # Audio (Pipewire)
 pipewire
