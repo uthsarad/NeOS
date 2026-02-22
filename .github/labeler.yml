@@ -1,0 +1,33 @@
+# Add 'core' label to any changes within 'airootfs' directory
+core:
+- airootfs/**/*
+
+# Add 'packages' label to changes in package lists
+packages:
+- packages.*
+- bootstrap_packages.*
+
+# Add 'config' label to changes in profiledef.sh or pacman.conf
+config:
+- profiledef.sh
+- pacman.conf
+
+# Add 'boot' label to changes in bootloader configurations
+boot:
+- syslinux/**/*
+- grub/**/*
+- BOOTING.md
+
+# Add 'documentation' label to changes in docs or markdown files
+documentation:
+- docs/**/*
+- "*.md"
+
+# Add 'ci' label to changes in .github directory
+ci:
+- .github/**/*
+
+# Add 'scripts' label to changes in build scripts
+scripts:
+- build.sh
+- tests/**/*
