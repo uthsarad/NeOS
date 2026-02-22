@@ -119,14 +119,20 @@ def manage_gpu_drivers():
 def manage_network_drivers():
     # Simple check for network interfaces
     # If no interface other than lo, try to find drivers
-    output = run_command(["/usr/bin/ip", "link", "show"])
-    # Improved check: count interfaces properly
-    interfaces = [line for line in output.splitlines() if line[0].isdigit()]
+    try:
+        # ⚡ Bolt: Fast path - check /sys/class/net to avoid 'ip link' subprocess overhead
+        interfaces = os.listdir('/sys/class/net')
+    except (FileNotFoundError, OSError):
+        # Fallback if /sys is not mounted or accessible
+        output = run_command(["/usr/bin/ip", "link", "show"])
+        interfaces = [line for line in output.splitlines() if line[0].isdigit()]
+
     # If only loopback (usually index 1)
     if len(interfaces) <= 1:
         # Identify specific network controller via PCI ID
         devices = get_pci_controllers(class_prefixes=("02",))
-        drivers_to_load = []
+        # ⚡ Bolt: Use set to handle duplicate drivers automatically
+        drivers_to_load = set()
 
         for dev in devices:
             vendor = dev['vendor']
@@ -134,25 +140,27 @@ def manage_network_drivers():
 
             # Realtek (10ec)
             if vendor == "10ec":
-                drivers_to_load.append("r8169")
+                drivers_to_load.add("r8169")
             # Intel (8086)
             elif vendor == "8086":
                 if cls.startswith("0200"): # Ethernet
-                    drivers_to_load.append("e1000e")
+                    drivers_to_load.add("e1000e")
                 elif cls.startswith("0280"): # Wireless
-                    drivers_to_load.append("iwlwifi")
+                    drivers_to_load.add("iwlwifi")
             # Broadcom (14e4)
             elif vendor == "14e4":
-                if "brcmfmac" not in drivers_to_load: drivers_to_load.append("brcmfmac")
-                if "wl" not in drivers_to_load: drivers_to_load.append("wl")
+                drivers_to_load.add("brcmfmac")
+                drivers_to_load.add("wl")
             # Atheros (168c)
             elif vendor == "168c":
-                drivers_to_load.append("ath10k_pci")
-                if "ath9k" not in drivers_to_load: drivers_to_load.append("ath9k")
+                drivers_to_load.add("ath10k_pci")
+                drivers_to_load.add("ath9k")
 
         if drivers_to_load:
-            log(f"No network interfaces found! Probing detected drivers: {', '.join(drivers_to_load)}")
-            subprocess.run(["/usr/bin/modprobe", "-a"] + drivers_to_load, check=False)
+            # Sort for consistent logging and execution
+            sorted_drivers = sorted(drivers_to_load)
+            log(f"No network interfaces found! Probing detected drivers: {', '.join(sorted_drivers)}")
+            subprocess.run(["/usr/bin/modprobe", "-a"] + sorted_drivers, check=False)
         else:
             log("No network interfaces found and no specific driver identified for detected hardware.")
 
