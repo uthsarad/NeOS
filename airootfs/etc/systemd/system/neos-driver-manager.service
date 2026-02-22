@@ -9,10 +9,13 @@ RemainAfterExit=yes
 
 # Sentinel: Service Hardening
 # This script only loads kernel modules (via /sys) and does not need to write to /etc or /usr.
-ProtectSystem=full
+ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
 
 [Install]
 WantedBy=multi-user.target

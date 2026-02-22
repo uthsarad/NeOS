@@ -16,6 +16,18 @@ NeOS (Next Evolution Operating System) is a curated, snapshot-based Arch Linux d
 ## Repository Focus & Structure
 This repository serves as the **official Archiso profile** for building the NeOS distribution ISO. It contains the architectural guidance, roadmap, and configuration scaffolding necessary to produce a bootable system. It is written for contributors, reviewers, and early users as NeOS approaches its first public beta.
 
+## Supported Architectures
+
+### x86_64 (Primary)
+- ✅ Full feature set (Calamares installer, snapshots, ZRAM)
+- ✅ Official support and testing
+- ✅ Recommended for production use
+
+### i686 and aarch64 (Experimental)
+- ⚠️ Limited feature set (no GUI installer)
+- ⚠️ Community-supported
+- ⚠️ Use for testing/evaluation only
+
 ## Documentation
 - **[NeOS Mission & Identity](docs/MISSION.md)** - Core philosophy and target audience.
 - **[NeOS Brand Structure](docs/BRAND_STRUCTURE.md)** - Brand ethos, voice, and evolution model.

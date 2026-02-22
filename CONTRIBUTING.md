@@ -15,6 +15,21 @@ Thanks for your interest in improving NeOS! This guide covers how to propose cha
 - Update documentation whenever behavior changes.
 - Include sample commands or screenshots for user-facing changes.
 
+## Testing
+
+We have a suite of verification scripts in the `tests/` directory to ensure the ISO configuration is valid.
+
+To run the tests:
+```bash
+# Run all verification tests
+for test in tests/verify_*.sh; do
+    echo "Running $test..."
+    bash "$test"
+done
+```
+
+Please run these tests before submitting a PR to ensure your changes don't break the build or security configuration.
+
 ## Reporting issues
 
 Please include:

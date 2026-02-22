@@ -6,6 +6,9 @@
 # Sentinel: Error Handling - Enable strict mode
 set -euo pipefail
 
+# Sentinel: Add trap for better debugging
+trap 'logger -t "$(basename "$0")" "ERROR at line $LINENO"' ERR
+
 # Only run on the live ISO
 if [ ! -d /run/archiso ]; then
     exit 0

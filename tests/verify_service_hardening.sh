@@ -5,11 +5,16 @@ SERVICE_FILE="airootfs/etc/systemd/system/neos-driver-manager.service"
 
 echo "Verifying service hardening in $SERVICE_FILE..."
 
-# Check for ProtectSystem=full
-if grep -q "ProtectSystem=full" "$SERVICE_FILE"; then
-    echo "✅ ProtectSystem=full found"
+if [ ! -f "$SERVICE_FILE" ]; then
+    echo "❌ $SERVICE_FILE not found"
+    exit 1
+fi
+
+# Check for ProtectSystem=strict
+if grep -q "ProtectSystem=strict" "$SERVICE_FILE"; then
+    echo "✅ ProtectSystem=strict found"
 else
-    echo "❌ ProtectSystem=full NOT found"
+    echo "❌ ProtectSystem=strict NOT found"
     exit 1
 fi
 
@@ -34,6 +39,30 @@ if grep -q "NoNewPrivileges=yes" "$SERVICE_FILE"; then
     echo "✅ NoNewPrivileges=yes found"
 else
     echo "❌ NoNewPrivileges=yes NOT found"
+    exit 1
+fi
+
+# Check for ProtectKernelTunables=yes
+if grep -q "ProtectKernelTunables=yes" "$SERVICE_FILE"; then
+    echo "✅ ProtectKernelTunables=yes found"
+else
+    echo "❌ ProtectKernelTunables=yes NOT found"
+    exit 1
+fi
+
+# Check for ProtectControlGroups=yes
+if grep -q "ProtectControlGroups=yes" "$SERVICE_FILE"; then
+    echo "✅ ProtectControlGroups=yes found"
+else
+    echo "❌ ProtectControlGroups=yes NOT found"
+    exit 1
+fi
+
+# Check for RestrictRealtime=yes
+if grep -q "RestrictRealtime=yes" "$SERVICE_FILE"; then
+    echo "✅ RestrictRealtime=yes found"
+else
+    echo "❌ RestrictRealtime=yes NOT found"
     exit 1
 fi
 
