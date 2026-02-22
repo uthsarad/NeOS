@@ -56,3 +56,5 @@ NeOS is a distribution with clear opinions. Contributions should align with the 
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+<!-- trigger ci -->
