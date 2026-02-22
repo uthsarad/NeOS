@@ -1,0 +1,67 @@
+name: Delete Old Releases
+
+on:
+  schedule:
+    - cron: '30 23 * * *' # Runs daily at 11:30 PM UTC (5:00 AM UTC+0530)
+  workflow_dispatch:
+
+jobs:
+  delete-old-releases:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete non-anchor releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          echo "Repository: $REPO"
+          echo "Selecting one monthly anchor release (latest non-draft, non-prerelease) per calendar month."
+
+          RELEASES=$(gh release list --repo "$REPO" --limit 1000 --json tagName,createdAt,isDraft,isPrerelease)
+
+          ANCHORS=$(echo "$RELEASES" | jq -c '
+            [ .[]
+              | select(.isDraft | not)
+              | select(.isPrerelease | not)
+            ]
+            | sort_by(.createdAt)
+            | group_by(.createdAt[0:7])
+            | map(max_by(.createdAt))
+          ')
+
+          ANCHOR_TAGS=$(echo "$ANCHORS" | jq -r '.[].tagName')
+
+          echo "Anchor releases to keep (one per month):"
+          if [ -n "$ANCHOR_TAGS" ]; then
+            echo "$ANCHOR_TAGS"
+          else
+            echo "None found."
+          fi
+
+          TO_DELETE=$(jq -n -r --argjson releases "$RELEASES" --argjson anchors "$ANCHORS" '
+            [ $anchors[].tagName ] as $anchorTags
+            | $releases[]
+            | select(.isDraft | not)
+            | select(.isPrerelease | not)
+            | select(($anchorTags | index(.tagName)) | not)
+            | .tagName
+          ')
+
+          if [ -z "$TO_DELETE" ]; then
+            echo "No non-anchor releases to delete."
+            exit 0
+          fi
+
+          echo "Deleting non-anchor releases:"
+          echo "$TO_DELETE"
+
+          while IFS= read -r TAG; do
+            if [ -n "$TAG" ]; then
+              echo "Deleting release: $TAG"
+              gh release delete "$TAG" --repo "$REPO" --yes || echo "Failed to delete $TAG"
+            fi
+          done <<< "$TO_DELETE"
