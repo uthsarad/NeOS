@@ -13,12 +13,25 @@ fi
 LOG_FILE="/var/log/neos-autoupdate.log"
 LOCK_FILE="/run/neos-autoupdate.lock"
 
-# Sentinel: Security Check - Ensure log file is not a symlink
-# This prevents potential privilege escalation if /var/log permissions are compromised
-if [ -L "$LOG_FILE" ]; then
-    echo "ERROR: Log file is a symlink! Possible security attack." >&2
-    exit 1
-fi
+# Sentinel: Create files with strict permissions
+# This prevents:
+# 1. DoS attacks: A user could lock a world-readable lock file, preventing updates.
+# 2. Information Disclosure: Log files might contain sensitive system information.
+for FILE in "$LOG_FILE" "$LOCK_FILE"; do
+    # Sentinel: Security Check - Ensure file is not a symlink (including broken ones)
+    if [ -L "$FILE" ]; then
+        echo "ERROR: $FILE is a symlink! Possible security attack." >&2
+        exit 1
+    fi
+
+    if [ ! -e "$FILE" ]; then
+        touch "$FILE"
+        chmod 600 "$FILE"
+    fi
+
+    # Enforce strict permissions on existing regular files too
+    chmod 600 "$FILE"
+done
 
 # Log function
 log() {
