@@ -47,8 +47,7 @@ jobs:
             | $releases[]
             | select(.isDraft | not)
             | select(.isPrerelease | not)
-            | . as $release
-            | select(($anchorTags | index($release.tagName)) | not)
+            | select(($anchorTags | index(.tagName)) | not)
             | .tagName
           ')
 
