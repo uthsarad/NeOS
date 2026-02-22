@@ -39,6 +39,7 @@ Presentation {
             radius: 10
             border.width: presentation.activeFocus ? 2 : 0
             border.color: "#ffffff"
+            z: 2
 
             Text {
                 text: "⏸ " + qsTr("Paused")
@@ -121,6 +122,41 @@ Presentation {
                     }
                 }
             }
+
+            Rectangle {
+                id: nextButton1
+                width: 30
+                height: 30
+                radius: 15
+                color: nextMouseArea1.pressed ? "#dddddd" : "#ffffff"
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 10
+                visible: presentation.paused || presentation.activeFocus
+                z: 2
+
+                Text {
+                    text: "❯"
+                    anchors.centerIn: parent
+                    color: "black"
+                    font.pixelSize: 16
+                }
+
+                MouseArea {
+                    id: nextMouseArea1
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        presentation.forceActiveFocus()
+                        presentation.advance()
+                    }
+                }
+
+                Accessible.role: Accessible.Button
+                Accessible.name: qsTr("Next Slide")
+                Accessible.description: qsTr("Advance to the next slide")
+            }
         }
     }
 
@@ -147,6 +183,7 @@ Presentation {
             radius: 10
             border.width: presentation.activeFocus ? 2 : 0
             border.color: "#ffffff"
+            z: 2
 
             Text {
                 text: "⏸ " + qsTr("Paused")
@@ -228,6 +265,41 @@ Presentation {
                         Accessible.name: qsTr("Slide 2 active")
                     }
                 }
+            }
+
+            Rectangle {
+                id: nextButton2
+                width: 30
+                height: 30
+                radius: 15
+                color: nextMouseArea2.pressed ? "#dddddd" : "#ffffff"
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: 10
+                visible: presentation.paused || presentation.activeFocus
+                z: 2
+
+                Text {
+                    text: "❯"
+                    anchors.centerIn: parent
+                    color: "black"
+                    font.pixelSize: 16
+                }
+
+                MouseArea {
+                    id: nextMouseArea2
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        presentation.forceActiveFocus()
+                        presentation.advance()
+                    }
+                }
+
+                Accessible.role: Accessible.Button
+                Accessible.name: qsTr("Next Slide")
+                Accessible.description: qsTr("Advance to the next slide")
             }
         }
     }

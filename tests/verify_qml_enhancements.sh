@@ -50,4 +50,19 @@ else
     exit 1
 fi
 
+# Check for Next Button Accessibility
+if grep -q "Accessible.role: Accessible.Button" "$QML_FILE"; then
+    echo "✅ Next Button accessibility role found."
+else
+    echo "❌ Next Button accessibility role missing!"
+    exit 1
+fi
+
+if grep -q "Accessible.name: qsTr(\"Next Slide\")" "$QML_FILE"; then
+    echo "✅ Next Button accessible name found."
+else
+    echo "❌ Next Button accessible name missing!"
+    exit 1
+fi
+
 echo "All QML UX enhancements verified successfully!"
