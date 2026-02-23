@@ -8,10 +8,12 @@ Presentation {
 
     Keys.onRightPressed: presentation.advance()
     Keys.onSpacePressed: presentation.advance()
+    Keys.onReturnPressed: presentation.advance()
+    Keys.onEnterPressed: presentation.advance()
 
     Timer {
         interval: 5000
-        running: !presentation.paused
+        running: !presentation.paused && !presentation.activeFocus
         repeat: true
         onTriggered: presentation.advance()
     }
@@ -50,7 +52,7 @@ Presentation {
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 10
-                visible: presentation.paused
+                visible: presentation.paused || presentation.activeFocus
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
             }
@@ -128,7 +130,7 @@ Presentation {
                 width: 30
                 height: 30
                 radius: 15
-                color: nextMouseArea1.pressed ? "#dddddd" : "#ffffff"
+                color: nextMouseArea1.pressed ? "#cccccc" : (nextMouseArea1.containsMouse ? "#eeeeee" : "#ffffff")
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 10
@@ -194,7 +196,7 @@ Presentation {
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 10
-                visible: presentation.paused
+                visible: presentation.paused || presentation.activeFocus
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
             }
@@ -272,7 +274,7 @@ Presentation {
                 width: 30
                 height: 30
                 radius: 15
-                color: nextMouseArea2.pressed ? "#dddddd" : "#ffffff"
+                color: nextMouseArea2.pressed ? "#cccccc" : (nextMouseArea2.containsMouse ? "#eeeeee" : "#ffffff")
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 10
