@@ -49,8 +49,45 @@ _PCI_DEVICES_CACHE = None
 def get_all_pci_devices(force_refresh=False):
     global _PCI_DEVICES_CACHE
     if _PCI_DEVICES_CACHE is None or force_refresh:
+        _PCI_DEVICES_CACHE = []
+
+        # ⚡ Bolt: Fast path - read /sys/bus/pci/devices directly to avoid fork/exec overhead of lspci
+        sys_pci = "/sys/bus/pci/devices"
+        sysfs_success = False
+
+        if os.path.isdir(sys_pci):
+            try:
+                for device_id in os.listdir(sys_pci):
+                    dev_path = os.path.join(sys_pci, device_id)
+                    if not os.path.isdir(dev_path):
+                        continue
+
+                    try:
+                        with open(os.path.join(dev_path, "vendor"), "r") as f:
+                            vendor = f.read().strip().replace("0x", "")
+                        with open(os.path.join(dev_path, "device"), "r") as f:
+                            device = f.read().strip().replace("0x", "")
+                        with open(os.path.join(dev_path, "class"), "r") as f:
+                            # class is usually 0x030000 (0x + 6 digits), we want first 4 digits of value
+                            cls_full = f.read().strip()
+                            if cls_full.startswith("0x"):
+                                cls = cls_full[2:6]
+                            else:
+                                cls = cls_full[:4]
+
+                        _PCI_DEVICES_CACHE.append({'slot': device_id, 'vendor': vendor, 'device': device, 'class': cls})
+                    except (OSError, ValueError):
+                        continue
+                sysfs_success = True
+            except OSError:
+                pass # Fallback to lspci
+
+        if sysfs_success:
+            return _PCI_DEVICES_CACHE
+
         # lspci -mn output format: "slot" "class" "vendor" "device" ...
         output = run_command(["/usr/bin/lspci", "-mn"])
+        # Clear any partial results from failed sysfs scan
         _PCI_DEVICES_CACHE = []
         for line in output.splitlines():
             parts = line.split()
