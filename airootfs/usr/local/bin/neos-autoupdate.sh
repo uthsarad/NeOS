@@ -24,12 +24,12 @@ for FILE in "$LOG_FILE" "$LOCK_FILE"; do
         exit 1
     fi
 
-    if [ ! -e "$FILE" ]; then
-        touch "$FILE"
-        chmod 600 "$FILE"
-    fi
+    # Sentinel: Atomic creation with restricted permissions
+    # Use umask 077 in a subshell to ensure file is created with 600 permissions
+    # avoiding the race condition where it is world-readable.
+    (umask 077 && touch "$FILE")
 
-    # Enforce strict permissions on existing regular files too
+    # Enforce strict permissions on existing files
     chmod 600 "$FILE"
 done
 
