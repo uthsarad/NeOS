@@ -131,6 +131,9 @@ Presentation {
                 height: 30
                 radius: 15
                 color: nextMouseArea1.pressed ? "#cccccc" : (nextMouseArea1.containsMouse ? "#eeeeee" : "#ffffff")
+                scale: nextMouseArea1.containsMouse ? 1.1 : 1.0
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+                Behavior on color { ColorAnimation { duration: 200 } }
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 10
@@ -275,6 +278,9 @@ Presentation {
                 height: 30
                 radius: 15
                 color: nextMouseArea2.pressed ? "#cccccc" : (nextMouseArea2.containsMouse ? "#eeeeee" : "#ffffff")
+                scale: nextMouseArea2.containsMouse ? 1.1 : 1.0
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
+                Behavior on color { ColorAnimation { duration: 200 } }
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: 10

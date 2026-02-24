@@ -65,4 +65,12 @@ else
     exit 1
 fi
 
+# Check for Scale Animation
+if grep -q "Behavior on scale" "$QML_FILE"; then
+    echo "✅ Scale animation found."
+else
+    echo "❌ Scale animation missing!"
+    exit 1
+fi
+
 echo "All QML UX enhancements verified successfully!"
