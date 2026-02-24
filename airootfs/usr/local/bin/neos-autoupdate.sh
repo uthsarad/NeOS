@@ -13,24 +13,79 @@ fi
 LOG_FILE="/var/log/neos-autoupdate.log"
 LOCK_FILE="/run/neos-autoupdate.lock"
 
-# Sentinel: Create files with strict permissions
-# This prevents:
-# 1. DoS attacks: A user could lock a world-readable lock file, preventing updates.
-# 2. Information Disclosure: Log files might contain sensitive system information.
-for FILE in "$LOG_FILE" "$LOCK_FILE"; do
-    # Sentinel: Security Check - Ensure file is not a symlink (including broken ones)
-    if [ -L "$FILE" ]; then
-        echo "ERROR: $FILE is a symlink! Possible security attack." >&2
-        exit 1
+# Sentinel: Set strict umask globally
+# This ensures all files created by this script (including lock file and logs)
+# default to 0600 permissions, preventing race conditions during creation.
+umask 0077
+
+# Sentinel: Secure Directory Check
+# Validates that the directory is owned by root and not writable by others (unless sticky).
+# This mitigates TOCTOU attacks where an attacker replaces a file with a symlink in an insecure directory.
+check_secure_dir() {
+    local file_path="$1"
+    local dir_path
+    dir_path=$(dirname "$file_path")
+
+    # Check if directory exists
+    if [ ! -d "$dir_path" ]; then
+        echo "ERROR: Directory $dir_path does not exist." >&2
+        return 1
     fi
 
-    # Sentinel: Atomic creation with restricted permissions
-    # Use umask 077 in a subshell to ensure file is created with 600 permissions
-    # avoiding the race condition where it is world-readable.
-    (umask 077 && touch "$FILE")
+    # Check ownership and permissions using stat
+    # %u: Owner UID (should be 0)
+    # %a: Octal permissions
+    local stats
+    stats=$(stat -c "%u %a" "$dir_path")
+    local owner=${stats%% *}
+    local perms=${stats#* }
 
-    # Enforce strict permissions on existing files
-    chmod 600 "$FILE"
+    # Owner must be root (0)
+    if [ "$owner" -ne 0 ]; then
+        echo "ERROR: Directory $dir_path is not owned by root (UID $owner)." >&2
+        return 1
+    fi
+
+    # Check for world-writability and sticky bit
+    # If 4 digits (e.g., 1777), first digit is special bits.
+    # If 3 digits (e.g., 755), no special bits.
+
+    local sticky=0
+    local world_writable=0
+
+    if [ ${#perms} -eq 4 ]; then
+        # Check first digit for sticky bit (1)
+        if [ $(( ${perms:0:1} & 1 )) -eq 1 ]; then
+            sticky=1
+        fi
+        # Use last 3 digits for permission check
+        perms=${perms:1}
+    fi
+
+    # Check last digit (other permissions)
+    local other_perm=${perms: -1}
+    if [ $(( other_perm & 2 )) -eq 2 ]; then
+        world_writable=1
+    fi
+
+    if [ "$world_writable" -eq 1 ] && [ "$sticky" -eq 0 ]; then
+        echo "ERROR: Directory $dir_path is world-writable and not sticky. Unsafe." >&2
+        return 1
+    fi
+
+    return 0
+}
+
+# Verify directories and secure existing files
+for FILE in "$LOG_FILE" "$LOCK_FILE"; do
+    if ! check_secure_dir "$FILE"; then
+        echo "Security check failed for $FILE directory. Aborting." >&2
+        exit 1
+    fi
+    # If file exists, ensure strict permissions (safe because we verified directory)
+    if [ -e "$FILE" ]; then
+        chmod 600 "$FILE"
+    fi
 done
 
 # Log function
@@ -39,12 +94,17 @@ log() {
 }
 
 # Sentinel: Prevent race conditions and DoS using flock
-# Use /run for lock file as it's only writable by root, preventing user DoS
-exec 9> "$LOCK_FILE"
+# Use append mode (>>) to prevent truncation of the target file if it exists.
+# Combined with umask 0077 and secure directory check, this is safe.
+exec 9>> "$LOCK_FILE"
 if ! /usr/bin/flock -n 9; then
     log "Update already running (lock held), exiting."
     exit 1
 fi
+
+# Restore standard umask for external tools (pacman/snapper)
+# This prevents creating system files with overly restrictive permissions
+umask 0022
 
 # Sentinel: Dependency Check - Ensure snapper is installed
 if ! command -v /usr/bin/snapper &>/dev/null; then

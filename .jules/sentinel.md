@@ -77,3 +77,11 @@
 **Vulnerability:** The Calamares installer copied the live session's temporary sudoers configuration (`/etc/sudoers.d/zz-live-wheel`) to the installed system. This file could potentially grant passwordless sudo access to the `wheel` group or a user named `liveuser` on the target machine.
 **Learning:** `unpackfs` in Calamares copies the entire runtime overlay (mounted at `/run/archiso/airootfs`) by default. Any temporary files created during the live session boot process (like `neos-liveuser-setup` tweaks) become permanent if not explicitly cleaned up.
 **Prevention:** Add a cleanup command to the `shellprocess` module in Calamares configuration (`shellprocess.conf`) to remove specific live-only files (like `zz-live-wheel`) from the target system before installation completes.
+
+## 2024-10-24 - TOCTOU Mitigation in Root Scripts
+**Vulnerability:** A previous mitigation for symlink attacks (checking `[ -L "$FILE" ]`) introduced a Time-of-Check Time-of-Use (TOCTOU) race condition. An attacker could swap the file with a symlink between the check and the write operation.
+**Learning:** Checking file properties before use is inherently racy. Security must rely on the environment (directory permissions) being trustworthy.
+**Prevention:**
+1. Validate that the parent directory is owned by root and not writable by others (or has sticky bit).
+2. Use atomic operations like `umask` for permissions and `>>` for append (which creates if missing).
+3. Avoid modifying file permissions (`chmod`) on paths if possible; rely on `umask` at creation time.
