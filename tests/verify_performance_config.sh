@@ -63,20 +63,20 @@ else
     exit 1
 fi
 
-# Verify net.core.default_qdisc is COMMENTED OUT (still experimental)
-if grep -q "#net.core.default_qdisc.*=.*cake" "$SYSCTL_FILE"; then
-    echo "✅ net.core.default_qdisc is commented out (correct)"
+# Verify net.core.default_qdisc is SET TO cake
+if grep -E "^net.core.default_qdisc.*=.*cake" "$SYSCTL_FILE"; then
+    echo "✅ net.core.default_qdisc set to cake (bufferbloat mitigation)"
 else
-    echo "❌ net.core.default_qdisc is NOT commented out correctly"
+    echo "❌ net.core.default_qdisc is NOT set to cake"
     grep "net.core.default_qdisc" "$SYSCTL_FILE" || true
     exit 1
 fi
 
-# Verify net.ipv4.tcp_congestion_control is COMMENTED OUT (still experimental)
-if grep -q "#net.ipv4.tcp_congestion_control.*=.*bbr" "$SYSCTL_FILE"; then
-    echo "✅ net.ipv4.tcp_congestion_control is commented out (correct)"
+# Verify net.ipv4.tcp_congestion_control is SET TO bbr
+if grep -E "^net.ipv4.tcp_congestion_control.*=.*bbr" "$SYSCTL_FILE"; then
+    echo "✅ net.ipv4.tcp_congestion_control set to bbr (congestion control)"
 else
-    echo "❌ net.ipv4.tcp_congestion_control is NOT commented out correctly"
+    echo "❌ net.ipv4.tcp_congestion_control is NOT set to bbr"
     grep "net.ipv4.tcp_congestion_control" "$SYSCTL_FILE" || true
     exit 1
 fi
@@ -108,17 +108,19 @@ if [ ! -f "$MODULES_FILE" ]; then
     exit 1
 fi
 
-if grep -q "#tcp_bbr" "$MODULES_FILE"; then
-    echo "✅ tcp_bbr module commented out (correct for stable release)"
+if grep -E "^tcp_bbr" "$MODULES_FILE"; then
+    echo "✅ tcp_bbr module enabled"
 else
-    echo "❌ tcp_bbr module NOT commented out correctly"
+    echo "❌ tcp_bbr module NOT enabled"
+    grep "tcp_bbr" "$MODULES_FILE" || true
     exit 1
 fi
 
-if grep -q "#sch_cake" "$MODULES_FILE"; then
-    echo "✅ sch_cake module commented out (correct for stable release)"
+if grep -E "^sch_cake" "$MODULES_FILE"; then
+    echo "✅ sch_cake module enabled"
 else
-    echo "❌ sch_cake module NOT commented out correctly"
+    echo "❌ sch_cake module NOT enabled"
+    grep "sch_cake" "$MODULES_FILE" || true
     exit 1
 fi
 
