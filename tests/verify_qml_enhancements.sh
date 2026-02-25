@@ -20,9 +20,9 @@ fi
 
 # Check for Focus Border (checking one instance is enough to verify intent, but let's check count if possible, or just presence)
 if grep -q "border.width: presentation.activeFocus" "$QML_FILE"; then
-    echo "✅ Focus border logic found."
+    echo "✅ Focus border logic found (Slide Background)."
 else
-    echo "❌ Focus border logic missing!"
+    echo "❌ Focus border logic missing (Slide Background)!"
     exit 1
 fi
 
@@ -70,6 +70,47 @@ if grep -q "Behavior on scale" "$QML_FILE"; then
     echo "✅ Scale animation found."
 else
     echo "❌ Scale animation missing!"
+    exit 1
+fi
+
+# --- NEW CHECKS ---
+
+# Check for Pause Locks Logic
+if grep -q "property int pauseLocks: 0" "$QML_FILE"; then
+    echo "✅ Pause Locks property found."
+else
+    echo "❌ Pause Locks property missing!"
+    exit 1
+fi
+
+if grep -q "presentation.pauseLocks++" "$QML_FILE"; then
+    echo "✅ Pause Locks increment logic found."
+else
+    echo "❌ Pause Locks increment logic missing!"
+    exit 1
+fi
+
+# Check for Keyboard Focus Enablement
+if grep -q "activeFocusOnTab: true" "$QML_FILE"; then
+    echo "✅ Keyboard focus enabled (activeFocusOnTab) found."
+else
+    echo "❌ Keyboard focus enabled (activeFocusOnTab) missing!"
+    exit 1
+fi
+
+# Check for Visual Focus Indicator on Button
+if grep -q "border.color: \"#3daee9\"" "$QML_FILE"; then
+    echo "✅ Visual focus indicator (blue border) found."
+else
+    echo "❌ Visual focus indicator (blue border) missing!"
+    exit 1
+fi
+
+# Check for Keyboard Activation
+if grep -q "Keys.onReturnPressed: presentation.advance()" "$QML_FILE"; then
+    echo "✅ Return key activation found."
+else
+    echo "❌ Return key activation missing!"
     exit 1
 fi
 
