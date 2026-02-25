@@ -1,0 +1,23 @@
+{
+  "bolt": {
+    "focus": "Build & Runtime Optimization",
+    "tasks": [
+      "Review `airootfs/etc/sysctl.d/99-neos-performance.conf` to ensure active settings match current best practices (vm.swappiness=100, etc.).",
+      "Verify `airootfs/etc/modules-load.d/neos-networking.conf` enables `tcp_bbr` and `sch_cake` as documented."
+    ]
+  },
+  "palette": {
+    "focus": "Installer UX Consistency",
+    "tasks": [
+      "Review `airootfs/etc/calamares/branding/neos/neos-restore-module.qml` for visual polish and accessibility compliance (Accessible.role/name).",
+      "Ensure `show.qml` slideshow uses `cache: true` and `asynchronous: true` on images for smooth transitions."
+    ]
+  },
+  "sentinel": {
+    "focus": "Security Posture Verification",
+    "tasks": [
+      "Verify `airootfs/usr/local/bin/neos-autoupdate.sh` correctly checks for secure directory permissions on log/lock files.",
+      "Validate that `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired` (or correct intended level) for the installed system."
+    ]
+  }
+}

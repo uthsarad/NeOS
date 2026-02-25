@@ -1,0 +1,36 @@
+{
+  "deliverable": "Release Preparation & Verification Fixes",
+  "files": [
+    "tests/verify_build_profile.sh",
+    "README.md",
+    "docs/HANDBOOK.md",
+    "CHANGELOG.md"
+  ],
+  "tasks": [
+    {
+      "file": "tests/verify_build_profile.sh",
+      "action": "Make robust against missing dependencies",
+      "details": "Modify the script to check for 'pyyaml' availability. If missing, print a WARNING and skip the YAML validation instead of failing. If present, proceed with validation."
+    },
+    {
+      "file": "README.md",
+      "action": "Document Architecture Support",
+      "details": "Add a 'Supported Architectures' section listing x86_64 as Primary/Supported and i686/aarch64 as Experimental/Community, as requested in the audit."
+    },
+    {
+      "file": "docs/HANDBOOK.md",
+      "action": "Clarify Prerequisites",
+      "details": "Update the 'Prerequisites' section to explicitly mention that x86_64 is the only officially supported architecture for the installer and updates."
+    },
+    {
+      "file": "CHANGELOG.md",
+      "action": "Update Unreleased Section",
+      "details": "Add entries for: Fixed pacman.conf build blocker, Added ISO size validation in CI, Updated documentation for architecture support."
+    }
+  ],
+  "constraints": [
+    "Do not modify pacman.conf (already correct).",
+    "Do not modify .github/workflows/build-iso.yml (already contains ISO size validation).",
+    "Ensure verify_build_profile.sh exits with 0 (success) even if pyyaml is missing."
+  ]
+}
