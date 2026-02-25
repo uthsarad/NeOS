@@ -59,9 +59,28 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
-pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-pacman-key --lsign-key 3056513887B78AEB
-pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+
+# ⚡ Bolt: Check if key exists to avoid redundant imports and keyserver hits
+if ! pacman-key --list-keys 3056513887B78AEB >/dev/null 2>&1; then
+    echo "Importing Chaotic-AUR key..."
+    pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+    pacman-key --lsign-key 3056513887B78AEB
+else
+    echo "Chaotic-AUR key already imported."
+fi
+
+# ⚡ Bolt: Cache keyring package locally and only update if remote is newer
+CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
+if [ ! -f "$CHAOTIC_KEYRING_PKG" ]; then
+    echo "Downloading Chaotic-AUR keyring..."
+    curl -L -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+else
+    echo "Updating cached Chaotic-AUR keyring..."
+    curl -L -z "$CHAOTIC_KEYRING_PKG" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+fi
+
+# Install/Update
+pacman -U --noconfirm --needed "$CHAOTIC_KEYRING_PKG"
 
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)
