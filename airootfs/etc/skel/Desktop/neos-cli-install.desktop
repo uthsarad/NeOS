@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Install NeOS (CLI)
-Exec=konsole -e sudo archinstall
-Icon=utilities-terminal
-Terminal=false
-StartupNotify=true

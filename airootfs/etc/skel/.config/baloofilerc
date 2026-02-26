@@ -1,9 +1,0 @@
-[Basic Settings]
-Indexing-Enabled=false
-
-[Excluded Paths]
-@KeyAlias_0=@Variant(\0\0\0\t\0\0\0\0)
-@KeyAlias_1=@Variant(\0\0\0\t\0\0\0\0)
-@KeyAlias_2=@Variant(\0\0\0\t\0\0\0\0)
-@KeyAlias_3=@Variant(\0\0\0\t\0\0\0\0)
-@KeyAlias_4=@Variant(\0\0\0\t\0\0\0\0)
