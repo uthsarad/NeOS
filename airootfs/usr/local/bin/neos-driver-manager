@@ -46,49 +46,61 @@ def probe_driver(module_name):
 
 _PCI_DEVICES_CACHE = None
 
-def get_all_pci_devices(force_refresh=False):
+def get_pci_devices(class_prefixes=None, force_refresh=False):
     global _PCI_DEVICES_CACHE
-    if _PCI_DEVICES_CACHE is None or force_refresh:
-        _PCI_DEVICES_CACHE = []
 
-        # ⚡ Bolt: Fast path - read /sys/bus/pci/devices directly to avoid fork/exec overhead of lspci
-        sys_pci = "/sys/bus/pci/devices"
-        sysfs_success = False
+    # ⚡ Bolt: Smart Caching - If full cache exists, filter from memory to save I/O.
+    # If filtering is requested and cache is empty, perform filtered scan to save I/O.
+    use_cache = (class_prefixes is None)
 
-        if os.path.isdir(sys_pci):
-            try:
-                for device_id in os.listdir(sys_pci):
-                    dev_path = os.path.join(sys_pci, device_id)
-                    if not os.path.isdir(dev_path):
+    if _PCI_DEVICES_CACHE is not None and not force_refresh:
+        # If we have a full cache, we can always use it regardless of filters
+        if class_prefixes:
+            return [d for d in _PCI_DEVICES_CACHE if d['class'].startswith(class_prefixes)]
+        return _PCI_DEVICES_CACHE
+
+    devices = []
+    # ⚡ Bolt: Fast path - read /sys/bus/pci/devices directly to avoid fork/exec overhead of lspci
+    sys_pci = "/sys/bus/pci/devices"
+    sysfs_success = False
+
+    if os.path.isdir(sys_pci):
+        try:
+            for device_id in os.listdir(sys_pci):
+                dev_path = os.path.join(sys_pci, device_id)
+                if not os.path.isdir(dev_path):
+                    continue
+
+                try:
+                    # Optimization: Read class first to skip irrelevant devices early
+                    with open(os.path.join(dev_path, "class"), "r") as f:
+                        # class is usually 0x030000 (0x + 6 digits), we want first 4 digits of value
+                        cls_full = f.read().strip()
+                        if cls_full.startswith("0x"):
+                            cls = cls_full[2:6]
+                        else:
+                            cls = cls_full[:4]
+
+                    # ⚡ Bolt: Filter early to avoid unnecessary file reads
+                    if class_prefixes and not cls.startswith(class_prefixes):
                         continue
 
-                    try:
-                        with open(os.path.join(dev_path, "vendor"), "r") as f:
-                            vendor = f.read().strip().replace("0x", "")
-                        with open(os.path.join(dev_path, "device"), "r") as f:
-                            device = f.read().strip().replace("0x", "")
-                        with open(os.path.join(dev_path, "class"), "r") as f:
-                            # class is usually 0x030000 (0x + 6 digits), we want first 4 digits of value
-                            cls_full = f.read().strip()
-                            if cls_full.startswith("0x"):
-                                cls = cls_full[2:6]
-                            else:
-                                cls = cls_full[:4]
+                    with open(os.path.join(dev_path, "vendor"), "r") as f:
+                        vendor = f.read().strip().replace("0x", "")
+                    with open(os.path.join(dev_path, "device"), "r") as f:
+                        device = f.read().strip().replace("0x", "")
 
-                        _PCI_DEVICES_CACHE.append({'slot': device_id, 'vendor': vendor, 'device': device, 'class': cls})
-                    except (OSError, ValueError):
-                        continue
-                sysfs_success = True
-            except OSError:
-                pass # Fallback to lspci
+                    devices.append({'slot': device_id, 'vendor': vendor, 'device': device, 'class': cls})
+                except (OSError, ValueError):
+                    continue
+            sysfs_success = True
+        except OSError:
+            pass # Fallback to lspci
 
-        if sysfs_success:
-            return _PCI_DEVICES_CACHE
-
+    if not sysfs_success:
         # lspci -mn output format: "slot" "class" "vendor" "device" ...
         output = run_command(["/usr/bin/lspci", "-mn"])
-        # Clear any partial results from failed sysfs scan
-        _PCI_DEVICES_CACHE = []
+        devices = []
         for line in output.splitlines():
             parts = line.split()
             if len(parts) >= 4:
@@ -97,15 +109,22 @@ def get_all_pci_devices(force_refresh=False):
                 cls = parts[1].strip('"')
                 vendor = parts[2].strip('"')
                 device = parts[3].strip('"')
-                _PCI_DEVICES_CACHE.append({'slot': slot, 'vendor': vendor, 'device': device, 'class': cls})
-    return _PCI_DEVICES_CACHE
+
+                if class_prefixes and not cls.startswith(class_prefixes):
+                    continue
+
+                devices.append({'slot': slot, 'vendor': vendor, 'device': device, 'class': cls})
+
+    # Only update global cache if we performed a full scan
+    if use_cache:
+        _PCI_DEVICES_CACHE = devices
+
+    return devices
 
 def get_pci_controllers(class_prefixes=("03",)):
     # List all PCI controllers matching the class prefixes
-    # ⚡ Bolt: Use cached device list to avoid repeated lspci calls
-    all_devices = get_all_pci_devices()
-    # Optimization: startswith accepts a tuple, no need for generator expression
-    return [d for d in all_devices if d['class'].startswith(class_prefixes)]
+    # ⚡ Bolt: Use filtered scan to minimize file I/O
+    return get_pci_devices(class_prefixes=class_prefixes)
 
 def check_driver_loaded(module_name):
     # Check if module is loaded using cache

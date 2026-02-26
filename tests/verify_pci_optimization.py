@@ -59,7 +59,8 @@ class TestPciOptimization(unittest.TestCase):
         mock_file.side_effect = open_side_effect
 
         # Run the function
-        devices = neos_driver_manager.get_all_pci_devices(force_refresh=True)
+        # ⚡ Bolt: Updated to new function name
+        devices = neos_driver_manager.get_pci_devices(force_refresh=True)
 
         # Verify results
         self.assertEqual(len(devices), 2)
@@ -87,7 +88,8 @@ class TestPciOptimization(unittest.TestCase):
         mock_run_command.return_value = '"00:02.0" "0300" "8086" "1916"\n"03:00.0" "0302" "10de" "1c03"'
 
         # Run function
-        devices = neos_driver_manager.get_all_pci_devices(force_refresh=True)
+        # ⚡ Bolt: Updated to new function name
+        devices = neos_driver_manager.get_pci_devices(force_refresh=True)
 
         # Verify results
         self.assertEqual(len(devices), 2)
