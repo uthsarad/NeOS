@@ -2,11 +2,11 @@
 # NeOS CLI Netinstaller profile definition
 
 iso_name="neos"
-iso_label="NEOS_$(date +%Y%m)"
+iso_label="NEOS_ISO"
 iso_publisher="NeOS Team <https://github.com/uthsarad>"
 iso_application="NeOS CLI Netinstaller"
 iso_version="$(date +%Y.%m.%d)"
-install_dir="arch"
+install_dir="neos"
 buildmodes=('iso')
 bootmodes=('bios.syslinux.mbr' 'bios.syslinux.eltorito' 'uefi-ia32.grub.esp' 'uefi-x64.grub.esp' 'uefi-x64.grub.eltorito')
 arch="x86_64"
