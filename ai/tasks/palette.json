@@ -1,0 +1,7 @@
+{
+  "focus": "Installer UX Consistency",
+  "tasks": [
+    "Review `airootfs/etc/calamares/branding/neos/neos-restore-module.qml` for visual polish and accessibility compliance (Accessible.role/name).",
+    "Ensure `show.qml` slideshow uses `cache: true` and `asynchronous: true` on images for smooth transitions."
+  ]
+}
