@@ -22,7 +22,7 @@ Unlike a standard Arch Linux installation which is "Do It Yourself" (DIY), NeOS 
 ## Prerequisites
 
 ### For Users (Installing NeOS)
-*   **Hardware**: A 64-bit (x86_64) computer.
+*   **Hardware**: A 64-bit (x86_64) computer. (x86_64 is the only officially supported architecture; i686 and aarch64 are experimental).
 *   **Storage**: At least 20GB of free disk space (SSD recommended).
 *   **Memory**: At least 4GB RAM (8GB+ recommended).
 *   **Boot Mode**: UEFI (recommended) or Legacy BIOS.

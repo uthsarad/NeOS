@@ -1,0 +1,7 @@
+{
+  "focus": "Security Posture Verification",
+  "tasks": [
+    "Verify `airootfs/usr/local/bin/neos-autoupdate.sh` correctly checks for secure directory permissions on log/lock files.",
+    "Validate that `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired` (or correct intended level) for the installed system."
+  ]
+}
