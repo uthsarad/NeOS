@@ -8,6 +8,7 @@ Presentation {
     property bool paused: pauseLocks > 0
     focus: true
 
+    Keys.onLeftPressed: presentation.advance()
     Keys.onRightPressed: presentation.advance()
     Keys.onSpacePressed: presentation.advance()
     Keys.onReturnPressed: presentation.advance()
@@ -50,13 +51,15 @@ Presentation {
             Text {
                 text: "⏸ " + qsTr("Paused")
                 color: "white"
+                style: Text.Outline
+                styleColor: "black"
                 opacity: 1.0
                 font.bold: true
                 font.pixelSize: 14
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 10
-                visible: presentation.paused || presentation.activeFocus
+                visible: presentation.paused || presentation.activeFocus || nextButton1.activeFocus
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
             }
@@ -91,6 +94,8 @@ Presentation {
                 Text {
                     text: qsTr("Welcome to NeOS")
                     color: "white"
+                    style: Text.Outline
+                    styleColor: "black"
                     font.pixelSize: 32
                     font.bold: true
                     width: parent.width
@@ -181,6 +186,8 @@ Presentation {
                 Keys.onReturnPressed: presentation.advance()
                 Keys.onEnterPressed: presentation.advance()
                 Keys.onSpacePressed: presentation.advance()
+                Keys.onLeftPressed: presentation.advance()
+                Keys.onRightPressed: presentation.advance()
 
                 Accessible.role: Accessible.Button
                 Accessible.name: qsTr("Next Slide")
@@ -218,13 +225,15 @@ Presentation {
             Text {
                 text: "⏸ " + qsTr("Paused")
                 color: "white"
+                style: Text.Outline
+                styleColor: "black"
                 opacity: 1.0
                 font.bold: true
                 font.pixelSize: 14
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.margins: 10
-                visible: presentation.paused || presentation.activeFocus
+                visible: presentation.paused || presentation.activeFocus || nextButton2.activeFocus
                 Accessible.role: Accessible.StaticText
                 Accessible.name: text
             }
@@ -259,6 +268,8 @@ Presentation {
                 Text {
                     text: qsTr("Fast, Secure, Reliable")
                     color: "white"
+                    style: Text.Outline
+                    styleColor: "black"
                     font.pixelSize: 24
                     font.bold: true
                     width: parent.width
@@ -349,6 +360,8 @@ Presentation {
                 Keys.onReturnPressed: presentation.advance()
                 Keys.onEnterPressed: presentation.advance()
                 Keys.onSpacePressed: presentation.advance()
+                Keys.onLeftPressed: presentation.advance()
+                Keys.onRightPressed: presentation.advance()
 
                 Accessible.role: Accessible.Button
                 Accessible.name: qsTr("Next Slide")

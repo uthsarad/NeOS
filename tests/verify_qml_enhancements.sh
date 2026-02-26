@@ -114,4 +114,20 @@ else
     exit 1
 fi
 
+# Check for Text Outline (Readability enhancement)
+if grep -q "style: Text.Outline" "$QML_FILE"; then
+    echo "✅ Text Outline style found."
+else
+    echo "❌ Text Outline style missing!"
+    exit 1
+fi
+
+# Check for Left Arrow Navigation
+if grep -q "Keys.onLeftPressed: presentation.advance()" "$QML_FILE"; then
+    echo "✅ Left Arrow navigation binding found."
+else
+    echo "❌ Left Arrow navigation binding missing!"
+    exit 1
+fi
+
 echo "All QML UX enhancements verified successfully!"
