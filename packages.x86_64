@@ -1,133 +1,17 @@
-# Base System
 base
-linux
+linux-zen
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
-zram-generator
-arch-install-scripts
-sudo
+archinstall
+networkmanager
 nano
 vim
-efibootmgr
+git
+curl
+wget
+sudo
 grub
+efibootmgr
+zsh
 syslinux
-
-# Filesystems
-btrfs-progs
-snapper
-dosfstools
-e2fsprogs
-erofs-utils
-xfsprogs
-ntfs-3g
-exfatprogs
-f2fs-tools
-udftools
-nilfs-utils
-gpart
-cryptsetup
-lvm2
-mdadm
-
-# Microcode
-amd-ucode
-intel-ucode
-
-# Graphics & Drivers
-mesa
-xf86-video-amdgpu
-xf86-video-ati
-xf86-video-nouveau
-xf86-video-vesa
-xf86-video-fbdev
-xf86-video-qxl
-vulkan-radeon
-vulkan-intel
-vulkan-mesa-layers
-libva-intel-driver
-intel-media-driver
-
-# Network
-networkmanager
-network-manager-applet
-dhcpcd
-iwd
-wireless-regdb
-usb_modeswitch
-modemmanager
-mobile-broadband-provider-info
-
-# Desktop Environment (KDE Plasma)
-plasma-desktop
-plasma-nm
-plasma-pa
-powerdevil
-bluedevil
-kscreen
-systemsettings
-sddm-kcm
-xdg-desktop-portal-kde
-breeze-gtk
-kde-gtk-config
-sddm
-konsole
-dolphin
-kcalc
-partitionmanager
-ark
-spectacle
-gwenview
-okular
-kwrite
-
-# Applications
-htop
-fastfetch
-filelight
-
-# Virtualization Guest Tools
-
-# Audio (Pipewire)
-pipewire
-pipewire-alsa
-pipewire-pulse
-pipewire-jack
-wireplumber
-sof-firmware
-alsa-firmware
-alsa-ucm-conf
-
-# Input Devices
-xf86-input-libinput
-xf86-input-elographics
-xf86-input-vmmouse
-xf86-input-wacom
-libwacom
-
-# Bluetooth & Smartcards
-bluez
-bluez-utils
-bluez-hid2hci
-ccid
-opensc
-pcsc-tools
-
-# Utilities & System
-usbutils
-smartmontools
-openssh
-rsync
-avahi
-nss-mdns
-pciutils
-python
-ufw
-fwupd
-flatpak
-v4l-utils
-android-udev
-
-# Installer
-alci-calamares
-archinstall

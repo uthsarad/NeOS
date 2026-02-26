@@ -80,7 +80,7 @@ else
 fi
 
 # Verify boot modes are valid (extract quoted values from bootmodes= lines)
-VALID_MODES="uefi.grub uefi.systemd-boot bios.syslinux"
+VALID_MODES="uefi.grub uefi.systemd-boot bios.syslinux bios.syslinux.mbr bios.syslinux.eltorito uefi-ia32.grub.esp uefi-x64.grub.esp uefi-x64.grub.eltorito"
 if grep -q 'bootmodes=' "$PROFILE_FILE"; then
     for mode in $(grep 'bootmodes=' "$PROFILE_FILE" | grep -o '"[^"]*"' | tr -d '"'); do
         FOUND=false
