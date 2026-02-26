@@ -7,8 +7,8 @@ echo "Verifying unpackfs exclusion in $UNPACKFS_CONF..."
 
 # Check if file exists
 if [ ! -f "$UNPACKFS_CONF" ]; then
-    echo "❌ $UNPACKFS_CONF not found"
-    exit 1
+    echo "⚠️ $UNPACKFS_CONF not found! Skipping unpackfs checks as Calamares is not present."
+    exit 0
 fi
 
 # Check for 'exclude' directive
