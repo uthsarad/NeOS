@@ -103,6 +103,24 @@ else
     exit 1
 fi
 
+# Verify net.ipv4.tcp_fastopen is SET TO 3
+if grep -E "^net.ipv4.tcp_fastopen.*=.*3" "$SYSCTL_FILE"; then
+    echo "✅ net.ipv4.tcp_fastopen set to 3"
+else
+    echo "❌ net.ipv4.tcp_fastopen is NOT set to 3"
+    grep "net.ipv4.tcp_fastopen" "$SYSCTL_FILE" || true
+    exit 1
+fi
+
+# Verify net.ipv4.tcp_slow_start_after_idle is SET TO 0
+if grep -E "^net.ipv4.tcp_slow_start_after_idle.*=.*0" "$SYSCTL_FILE"; then
+    echo "✅ net.ipv4.tcp_slow_start_after_idle set to 0"
+else
+    echo "❌ net.ipv4.tcp_slow_start_after_idle is NOT set to 0"
+    grep "net.ipv4.tcp_slow_start_after_idle" "$SYSCTL_FILE" || true
+    exit 1
+fi
+
 # --- Network Modules Verification ---
 MODULES_FILE="airootfs/etc/modules-load.d/neos-networking.conf"
 echo "Verifying network modules in $MODULES_FILE..."
