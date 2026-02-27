@@ -1,0 +1,74 @@
+#!/bin/bash
+# neos-autoupdate.sh - Automatic system updates with Btrfs snapshots
+#
+# This script performs system updates and manages Btrfs snapshots using Snapper.
+# It is designed to be run as a root cron job or systemd timer.
+
+set -euo pipefail
+
+LOG_FILE="/var/log/neos-autoupdate.log"
+
+# SECURITY: Prevent symlink attacks on log file
+if [ -L "$LOG_FILE" ]; then
+    echo "Security error: $LOG_FILE is a symlink. Aborting." >&2
+    exit 1
+fi
+
+# Ensure log file exists with secure permissions
+if [ ! -f "$LOG_FILE" ]; then
+    touch "$LOG_FILE"
+    chmod 600 "$LOG_FILE"
+fi
+
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
+check_root() {
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "This script must be run as root." >&2
+        exit 1
+    fi
+}
+
+check_dependencies() {
+    local dependencies=("snapper" "pacman" "awk")
+    for cmd in "${dependencies[@]}"; do
+        if ! command -v "$cmd" &> /dev/null; then
+            log "Error: Required command '$cmd' not found."
+            exit 1
+        fi
+    done
+}
+
+perform_update() {
+    log "Starting system update..."
+
+    # Create pre-update snapshot
+    local desc="Pre-update snapshot"
+    local snap_id
+    snap_id=$(snapper create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
+
+    log "Created pre-update snapshot: $snap_id"
+
+    # Perform update
+    if pacman -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
+        log "System update completed successfully."
+        # Create post-update snapshot
+        snapper create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
+        log "Created post-update snapshot linked to $snap_id"
+    else
+        log "System update failed. Check pacman logs."
+        # Still create post snapshot to close the pair, but mark as failed
+        snapper create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
+        exit 1
+    fi
+}
+
+main() {
+    check_root
+    check_dependencies
+    perform_update
+}
+
+main
