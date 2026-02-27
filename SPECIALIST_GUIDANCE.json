@@ -1,23 +1,24 @@
 {
   "bolt": {
-    "focus": "Build & Runtime Optimization",
+    "focus": "Update Performance and ISO Size Optimization",
     "tasks": [
-      "Review `airootfs/etc/sysctl.d/99-neos-performance.conf` to ensure active settings match current best practices (vm.swappiness=100, etc.).",
-      "Verify `airootfs/etc/modules-load.d/neos-networking.conf` enables `tcp_bbr` and `sch_cake` as documented."
+      "Ensure the disk space checks in `neos-autoupdate.sh` use lightweight commands (e.g., `df` vs parsing full Btrfs stats) to avoid performance regressions during the update cycle.",
+      "Verify that `airootfs/etc/sysctl.d/99-neos-performance.conf` and `airootfs/etc/modules-load.d/neos-networking.conf` settings remain active and properly impact network tuning during live sessions."
     ]
   },
   "palette": {
-    "focus": "Installer UX Consistency",
+    "focus": "Installer UX Accessibility",
     "tasks": [
-      "Review `airootfs/etc/calamares/branding/neos/neos-restore-module.qml` for visual polish and accessibility compliance (Accessible.role/name).",
-      "Ensure `show.qml` slideshow uses `cache: true` and `asynchronous: true` on images for smooth transitions."
+      "Ensure any user-facing error messages generated from `neos-autoupdate.sh` failures (e.g., insufficient disk space) are legible in logs and consider how they surface to any graphical front-end.",
+      "Review `airootfs/etc/calamares/branding/neos/neos-restore-module.qml` to verify it uses appropriate `Accessible.role` and `Accessible.name` attributes for all interactive elements to comply with WCAG AA contrast and screen-reader requirements."
     ]
   },
   "sentinel": {
-    "focus": "Security Posture Verification",
+    "focus": "Supply Chain Security and Autologin Hardening",
     "tasks": [
-      "Verify `airootfs/usr/local/bin/neos-autoupdate.sh` correctly checks for secure directory permissions on log/lock files.",
-      "Validate that `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired` (or correct intended level) for the installed system."
+      "Verify that `airootfs/usr/local/bin/neos-autoupdate.sh` checks for safe file permissions on its log and lock files, mitigating any local denial of service or symlink attacks.",
+      "Ensure the installed system's `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired`.",
+      "Review the risk of the unsigned `alci_repo` in the build process `pacman.conf` and document paths to securely mirror or sign these packages."
     ]
   }
 }

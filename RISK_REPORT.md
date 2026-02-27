@@ -1,19 +1,27 @@
-# Risk Report: Build System & Documentation
+# Risk & Priority Report
 
-**Date:** 2026-02-17
-**Assessment:** Moderate Risk
+**Date:** 2026-02-18
+**Author:** Maestro
 
-## 1. Build Verification Fragility (High Impact, Medium Likelihood)
-The current `tests/verify_build_profile.sh` script has a hidden dependency on the `pyyaml` Python library. This creates a brittle CI/CD pipeline where passing builds may fail purely due to environment differences in the test runner, rather than actual code defects.
-**Mitigation:** Modify the verification script to degrade gracefully (skip check with warning) if dependencies are missing, or explicitly install dependencies in a virtual environment.
+## Identified Risks
 
-## 2. Documentation Drift (Medium Impact, High Likelihood)
-The project documentation (`README.md`, `HANDBOOK.md`) currently implies broad support or fails to distinguish between the stable x86_64 architecture and experimental ports (i686, aarch64). This risks user confusion and increased support burden.
-**Mitigation:** Explicitly document tier levels for supported architectures immediately.
+### 1. Supply Chain Attack via Unsigned Packages (Medium Severity)
+- **Description:** The `pacman.conf` used during the ISO build process defines the `alci_repo` with `SigLevel = Optional`. If the mirror or network traffic is compromised, malicious packages could be injected into the live ISO.
+- **Likelihood:** Low
+- **Impact:** High (Full compromise of the live environment, potentially cascading to installed systems).
+- **Mitigation:** The installed system (`airootfs/etc/pacman.conf`) uses strict signature checking. However, the build environment must either securely mirror these packages or implement a signing process.
 
-## 3. Dependency Management (Low Impact, Low Likelihood)
-The `neos-autoupdate.sh` script relies on `snapper` and `btrfs`. While checks exist, a failure in these dependencies during an update could leave the system in an inconsistent state if the rollback mechanism also fails (e.g., due to disk space).
-**Mitigation:** Ensure `neos-autoupdate.sh` checks for sufficient free space before attempting snapshots.
+### 2. Update Brittleness due to Disk Space (Medium Severity)
+- **Description:** `neos-autoupdate.sh` executes system updates and takes Btrfs snapshots without verifying available disk space. If a snapshot or update fills the disk mid-process, the system could be left in an unbootable state with broken rollbacks.
+- **Likelihood:** Medium (Especially on smaller partitions or after extended use).
+- **Impact:** High (System failure requiring manual intervention).
+- **Mitigation:** Add pre-flight disk space checks (e.g., minimum 10% free space) to `neos-autoupdate.sh` before initializing updates.
 
-## Recommendation
-Prioritize the robustness of `verify_build_profile.sh` to unblock reliable CI feedback loops. Follow with immediate documentation updates to clarify product scope.
+### 3. Architecture Fragmentation & User Confusion (Low Severity)
+- **Description:** The project unofficially builds for `i686` and `aarch64` (evident via `bootstrap_packages.*` files), but `x86_64` is the only supported architecture.
+- **Likelihood:** Medium (Users attempting to install on unsupported hardware).
+- **Impact:** Low (Support burden and poor user experience).
+- **Mitigation:** Continue ensuring documentation explicitly states these architectures are experimental, and consider warning users during the Calamares install phase if non-x86_64 architecture is detected.
+
+## Next Steps
+The immediate priority is to address **Risk 2** by hardening the autoupdate script with disk space checks, and to begin exploring solutions for **Risk 1** without breaking the current ISO build pipeline.
