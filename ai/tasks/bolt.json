@@ -2,6 +2,7 @@
   "focus": "Build & Runtime Optimization",
   "tasks": [
     "Review `airootfs/etc/sysctl.d/99-neos-performance.conf` to ensure active settings match current best practices (vm.swappiness=100, etc.).",
-    "Verify `airootfs/etc/modules-load.d/neos-networking.conf` enables `tcp_bbr` and `sch_cake` as documented."
+    "Verify `airootfs/etc/modules-load.d/neos-networking.conf` enables `tcp_bbr` and `sch_cake` as documented.",
+    "Evaluate the `df` command used in `airootfs/usr/local/bin/neos-autoupdate.sh` to ensure it is the most efficient way to check disk space with minimal performance overhead during update initialization."
   ]
 }
