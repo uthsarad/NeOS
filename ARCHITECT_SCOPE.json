@@ -1,30 +1,24 @@
 {
-  "deliverable": "Installer & Update Hardening",
+  "deliverable": "Profile Tooling Migration",
   "files": [
-    "airootfs/usr/local/bin/neos-autoupdate.sh",
-    "pacman.conf",
-    "airootfs/etc/pacman.conf"
+    "tools/neos-profile-audit/src/main.rs",
+    "tests/verify_build_profile.sh"
   ],
   "tasks": [
     {
-      "file": "airootfs/usr/local/bin/neos-autoupdate.sh",
-      "action": "Implement strict disk space checks",
-      "details": "Add a check to ensure there is sufficient free space (e.g., at least 5GB or 10%) on the root filesystem before attempting to create a Btrfs pre-snapshot and running pacman. This mitigates the risk of failing mid-update and breaking rollback capability."
+      "file": "tools/neos-profile-audit/src/main.rs",
+      "action": "Parse and validate `profiledef.sh` properties in Rust",
+      "details": "Expand the Rust validation logic to parse `profiledef.sh` and verify that `pacman_conf` is defined and resolves to a file that exists, and that all `bootmodes` are valid (from the list: `uefi.grub`, `uefi.systemd-boot`, `bios.syslinux`, `bios.syslinux.mbr`, `bios.syslinux.eltorito`, `uefi-ia32.grub.esp`, `uefi-x64.grub.esp`, `uefi-x64.grub.eltorito`). Handle missing or malformed configuration gracefully with clear user output."
     },
     {
-      "file": "pacman.conf",
-      "action": "Address unsigned package risk",
-      "details": "Investigate and document the feasibility of removing `SigLevel = Optional` for the alci_repo. If it cannot be removed, ensure it is clearly scoped and not inherited globally. The root `pacman.conf` should continue to use `SigLevel = Required DatabaseOptional` for the build process."
-    },
-    {
-      "file": "airootfs/etc/pacman.conf",
-      "action": "Verify installed system security",
-      "details": "Ensure the system-level pacman configuration used on the installed system enforces `SigLevel = Required DatabaseRequired` to prevent supply chain attacks post-installation."
+      "file": "tests/verify_build_profile.sh",
+      "action": "Remove redundant shell checks",
+      "details": "Remove the brittle `grep`/`sed` checks for `pacman_conf` and `bootmodes` from `tests/verify_build_profile.sh` since the Rust audit tool now covers these verifications."
     }
   ],
   "constraints": [
-    "Do not introduce new features to the update script; only hardening measures.",
-    "Changes to pacman.conf must not break the `build.sh` process.",
-    "Do not alter the Btrfs subvolume layout or snapshot logic itself."
+    "Keep Rust parsing robust and user-friendly (do not panic on bad files).",
+    "Do not rewrite unrelated logic in `verify_build_profile.sh`.",
+    "Do not add new external Rust dependencies if they are not strictly necessary; use the standard library where possible."
   ]
 }

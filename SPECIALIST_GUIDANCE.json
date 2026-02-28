@@ -1,24 +1,22 @@
 {
   "bolt": {
-    "focus": "Update Performance and ISO Size Optimization",
+    "focus": "Validation Performance and Build Speed",
     "tasks": [
-      "Ensure the disk space checks in `neos-autoupdate.sh` use lightweight commands (e.g., `df` vs parsing full Btrfs stats) to avoid performance regressions during the update cycle.",
-      "Verify that `airootfs/etc/sysctl.d/99-neos-performance.conf` and `airootfs/etc/modules-load.d/neos-networking.conf` settings remain active and properly impact network tuning during live sessions."
+      "Ensure the Rust `profiledef.sh` parser uses efficient reading mechanisms (e.g. standard file I/O avoiding excessive allocation or backtracking) to keep the CLI fast.",
+      "Verify that removing shell execution overhead in `verify_build_profile.sh` slightly improves or keeps CI test suite duration flat."
     ]
   },
   "palette": {
-    "focus": "Installer UX Accessibility",
+    "focus": "CLI Tool Usability",
     "tasks": [
-      "Ensure any user-facing error messages generated from `neos-autoupdate.sh` failures (e.g., insufficient disk space) are legible in logs and consider how they surface to any graphical front-end.",
-      "Review `airootfs/etc/calamares/branding/neos/neos-restore-module.qml` to verify it uses appropriate `Accessible.role` and `Accessible.name` attributes for all interactive elements to comply with WCAG AA contrast and screen-reader requirements."
+      "Ensure the error messages emitted by `neos-profile-audit` for missing files, missing `pacman_conf`, or invalid `bootmodes` are clear, context-rich, and actionable for developers (e.g., listing valid options if an invalid bootmode is found)."
     ]
   },
   "sentinel": {
-    "focus": "Supply Chain Security and Autologin Hardening",
+    "focus": "Validation Integrity",
     "tasks": [
-      "Verify that `airootfs/usr/local/bin/neos-autoupdate.sh` checks for safe file permissions on its log and lock files, mitigating any local denial of service or symlink attacks.",
-      "Ensure the installed system's `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired`.",
-      "Review the risk of the unsigned `alci_repo` in the build process `pacman.conf` and document paths to securely mirror or sign these packages."
+      "Review the new Rust parser for logic bypasses (e.g., ensure it correctly handles quotes and spaces like `pacman_conf=\"pacman.conf\"`).",
+      "Ensure that `DatabaseOptional` and `DatabaseRequired` verifications, if relocated or touched, continue to accurately reflect the required security posture for the build and installed environments respectively."
     ]
   }
 }
