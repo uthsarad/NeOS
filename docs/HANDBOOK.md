@@ -88,16 +88,39 @@ Once finished, the ISO will be in the `out/` directory.
 
 ## Project Structure
 
-This repository is an **Archiso Profile**. Here are the key files and directories:
+This repository is an **Archiso profile**. If you are new, focus on these key paths first:
 
-*   **`profiledef.sh`**: Defines the ISO name, version, boot modes, and file permissions.
-*   **`packages.x86_64`**: A list of all packages to be installed on the ISO. Add or remove package names here.
-*   **`pacman.conf`**: The Pacman configuration used during the build. Defines repositories (Arch, Chaotic-AUR, NeOS custom repos).
-*   **`airootfs/`**: The "Arch ISO Root File System". Files here are copied directly to the live system (and the installed system if configured).
-    *   `airootfs/etc/`: Configuration files (e.g., systemd units, skel).
-    *   `airootfs/usr/local/bin/`: Custom scripts like `neos-driver-manager`.
-*   **`mkinitcpio.conf`**: Configuration for the initramfs (initial ramdisk) used by the live ISO.
-*   **`.github/workflows/`**: CI/CD pipelines that automatically build the ISO on GitHub.
+| Path | Purpose | When you should edit it |
+| --- | --- | --- |
+| `profiledef.sh` | Core Archiso profile settings (ISO label, publisher, build modes, file permissions). | You need to change identity, metadata, permissions, or boot profile behavior. |
+| `build.sh` | Wrapper script to build the ISO with project defaults. | You want to change build flow (output/work directories, cleanup, build args). |
+| `packages.x86_64` | Main package manifest for the supported architecture. | You are adding/removing software from the live image. |
+| `packages.i686` / `packages.aarch64` | Experimental architecture package lists. | You are working on non-x86_64 experiments. |
+| `bootstrap_packages.*` | Minimal package sets used during bootstrap stages. | You are changing early build/bootstrap dependencies. |
+| `pacman.conf` | Package manager configuration for the build environment (repos, signatures, options). | Repositories or package trust configuration must change. |
+| `airootfs/` | Files copied directly into the live root filesystem. | You are changing system defaults, services, scripts, installer behavior, or branding. |
+| `grub/` and `syslinux/` | UEFI/BIOS bootloader menus and boot parameters. | You need to adjust boot entries, kernel parameters, or boot UX. |
+| `tests/` | Verification scripts for profile integrity and release gates. | You are validating or extending quality checks. |
+| `docs/` | Architecture, roadmap, mission, and operational documentation. | You are updating design intent, process, or contributor guidance. |
+| `.github/workflows/` | CI pipelines that run checks/builds in automation. | You need to change automated build/test behavior. |
+
+### `airootfs/` quick map
+
+`airootfs/` is the most important directory for day-to-day system customization:
+
+*   `airootfs/etc/`: System configuration shipped in the live/install image (systemd units, security defaults, Calamares settings, kernel/sysctl tuning).
+*   `airootfs/usr/local/bin/`: Project-maintained operational scripts (for example, auto-update and maintenance helpers).
+*   `airootfs/etc/calamares/`: Installer modules and branding behavior.
+*   `airootfs/etc/pacman.d/`: Mirrorlists and package-manager hooks that run on package transactions.
+
+### Safe change workflow
+
+When modifying key structure files:
+
+1. Update the source file(s) (for example `packages.x86_64`, `profiledef.sh`, or files under `airootfs/`).
+2. Run the relevant script(s) in `tests/` that validate your change area.
+3. If boot behavior was modified, verify both `grub/` and `syslinux/` paths stay consistent.
+4. Document intent in `docs/` whenever a change affects architecture, defaults, or contributor workflow.
 
 ## Customization
 
