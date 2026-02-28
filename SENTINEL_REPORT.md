@@ -40,3 +40,27 @@
 - **High**: 1 (Fixed)
 - **Medium**: 1 (Open)
 - **Low**: 1 (Open)
+
+## Sentinel Report - Security Posture Verification
+
+### Risks Found
+
+1. **Medium Priority - Time-of-Check Time-of-Use (TOCTOU) Race Condition**
+   - **File**: `airootfs/usr/local/bin/neos-autoupdate.sh`
+   - **Description**: The script checked if a log file existed (`if [ ! -f "$LOG_FILE" ]`), then created it (`touch "$LOG_FILE"`) and finally set permissions (`chmod 600 "$LOG_FILE"`). This three-step process creates a brief window where the file exists with default permissions (often `644`) before the `chmod` command is executed. If an attacker could anticipate this window, they could potentially read from or write to the file before it is secured.
+   - **Impact**: Potential information disclosure or log tampering.
+
+### Fixes Applied
+
+1. **Atomic File Creation in `neos-autoupdate.sh`**
+   - **Fix**: Replaced the separate `touch` command with the atomic pattern `(umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true` followed by `chmod 600 "$LOG_FILE"`. This ensures exclusive creation with the restricted `umask` of `077` (resulting in `600` permissions), completely eliminating the TOCTOU window for new files, while also ensuring `600` permissions if the file already exists.
+
+### Remaining Attack Surface
+
+-   While the log file creation is now secure, the script still requires root privileges to execute and manages critical system operations (Btrfs snapshots and pacman updates). Any future modifications must carefully audit how files and directories are manipulated to prevent privilege escalation.
+-   The overall attack surface remains largely unchanged but is marginally safer regarding log manipulation.
+
+### Severity Summary
+
+-   **Medium Risks Resolved**: 1 (TOCTOU race condition)
+-   **Security Validations Passed**: 1 (Verified `airootfs/etc/pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on the installed system).
