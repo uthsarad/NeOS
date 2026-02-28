@@ -1,0 +1,8 @@
+[package]
+name = "neos-profile-audit"
+version = "0.1.0"
+edition = "2021"
+description = "Rust-based validator for NeOS Archiso profile manifests"
+license = "MIT"
+
+[dependencies]

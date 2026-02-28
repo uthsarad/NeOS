@@ -1,37 +1,48 @@
 # Strategic Directive
 
-**Date:** 2026-02-18
+**Date:** 2026-02-28
 **Author:** Maestro (Strategic Engineering Director AI)
-**Phase:** 3 (Installer UX) & 4 (Hardware Reliability)
+**Phase:** 5 (Tooling Reliability & Rust Adoption)
 
 ## Phase 1: Product Alignment Check
 **What is the product trying to become?**
 NeOS is a curated, snapshot-based Arch Linux desktop distribution targeting predictable behavior, low breakage, and a Windows-familiar KDE Plasma experience. It prioritizes stability and clear UX over DIY flexibility.
 
 **Are we building toward that?**
-Yes. Recent fixes in verification, boot configurations, and documentation (as seen in `ARCHITECT_REPORT.md` and related commits) have solidified the base ISO build process. The core Plasma experience is mostly staged, but edge-case reliability (especially during installation and post-install updates) requires attention.
+Yes. Core ISO profile hardening and validation have improved. The next reliability gain is in pre-build/profile verification so breakage is caught before full ISO creation or release.
 
 **Are we solving the highest leverage problem?**
-The highest leverage problem right now is ensuring that a user who successfully builds the ISO and boots it can install the OS *securely* and that the system can *reliably update* itself post-install without bricking due to space or dependency failures.
+The highest leverage problem now is reducing configuration drift and fragile validation logic in build-critical manifests (`packages.*`, mirrorlists, and profile files).
 
 ## Phase 2: Technical Posture Review
 **Is the system stable?**
-The build process is stabilizing. However, runtime stability relies heavily on the `neos-autoupdate.sh` script and the initial Calamares configuration.
+Build stability is improving, but several checks are still string-parsing heavy and distributed across shell scripts. This increases maintenance cost and missed edge cases.
+
 **Is tech debt increasing?**
-Yes, slightly. The `alci_repo` in `pacman.conf` uses `SigLevel = Optional`, which is a recognized security debt (noted by Sentinel).
+Potentially. Validation logic is fragmented across multiple scripts with inconsistent error handling.
+
 **Are we overbuilding?**
-No, but we must be careful not to expand scope before the core install/update loop is bulletproof.
+No. The right move is focused hardening of validation tooling—not feature expansion.
 
 ## Phase 3: Priority Selection
-**Selected Priority:** Stabilization / hardening (Specifically: Security & Reliability of the Update/Install Process).
+**Selected Priority:** Tooling hardening with modest Rust integration.
 
 ## Phase 4: Controlled Scope Definition (Architect)
-Architect must focus *only* on hardening the update script and securing the package configuration.
-- **Goal:** Address the open medium-severity risks identified by Sentinel and Risk reports, specifically the unsigned repository risk and update script robustness.
-- **Constraints:** Do not introduce new features. Do not modify the desktop environment layout.
+Architect must focus *only* on build/profile validation reliability and tooling consistency.
+- **Goal:** Keep Rust adoption around **3-5%** of project code by concentrating Rust in validation CLIs and preserving shell wrappers for workflow compatibility.
+- **Constraints:**
+  - Do not rewrite installer/UI flows in Rust.
+  - Do not change desktop UX or release branding.
+  - Prefer incremental replacement of brittle parsing checks with typed Rust validation.
 
 ## Phase 5: Delegation Strategy
-- **Architect:** Implement strict space checks in `neos-autoupdate.sh` and enforce stricter repository signing rules where possible.
-- **Bolt:** Ensure that the added checks in the update script do not block the UI thread or cause significant delays during startup.
-- **Palette:** Ensure any error states from failed updates (e.g., due to low disk space) are communicated cleanly to the user (if a UI hook exists), or at least logged legibly.
-- **Sentinel:** Audit the newly implemented space checks and any changes to `pacman.conf` for bypass vulnerabilities.
+- **Architect:** Expand and maintain Rust-based profile validation for required files, package manifest quality, mirrorlist integrity, and architecture expectations.
+- **Bolt:** Ensure validation additions remain fast enough for CI and local contributor workflows.
+- **Palette:** Keep user-facing errors concise and actionable when validation fails.
+- **Sentinel:** Audit validation coverage for bypass paths and verify that security-sensitive files remain in required checks.
+
+## Phase 6: Execution Notes for AI Agents
+1. Treat `tools/neos-profile-audit` as the primary typed validator for build profile integrity.
+2. Keep entry points simple (`tests/verify_*.sh`) so existing CI jobs remain stable.
+3. When adding new validation rules, pair them with clear failure messages and include them in CI.
+4. Track Rust footprint pragmatically: target ~3-5% by LOC, focused on tooling and reliability hotspots.

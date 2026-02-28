@@ -35,7 +35,7 @@ jobs:
           pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
           # Use --overwrite to handle gcc-libs split into libgcc/libstdc++
           # Target specific library files to avoid masking other conflicts
-          pacman -Sy --noconfirm --overwrite='/usr/lib/libgcc*' --overwrite='/usr/lib/libstdc++*' --overwrite='/usr/share/licenses/gcc-libs/*' archiso git wget squashfs-tools grub syslinux
+          pacman -Sy --noconfirm --overwrite='/usr/lib/libgcc*' --overwrite='/usr/lib/libstdc++*' --overwrite='/usr/share/licenses/gcc-libs/*' archiso git wget squashfs-tools grub syslinux rust
 
       - name: Prepare Build Config
         run: |
@@ -117,6 +117,7 @@ jobs:
           # Additional non-blocking checks as requested
           timeout 60s bash tests/verify_mkinitcpio.sh || echo "⚠️ verify_mkinitcpio.sh failed or timed out (skipping)"
           timeout 60s bash tests/verify_qml_enhancements.sh || echo "⚠️ verify_qml_enhancements.sh failed or timed out (skipping)"
+          bash tests/verify_rust_profile_audit.sh
 
       - name: Validate ISO Size
         if: github.ref == 'refs/heads/main'

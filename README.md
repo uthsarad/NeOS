@@ -47,6 +47,23 @@ sudo ./build.sh
 
 For more detailed instructions, refer to the [NeOS Handbook](docs/HANDBOOK.md).
 
+Before building, you can run the Rust-based profile validator to catch duplicate or malformed package manifests:
+
+```bash
+bash tests/verify_rust_profile_audit.sh
+```
+
+
+## Rust Integration Direction (3-5% target)
+
+NeOS now includes a Rust-based profile validator under `tools/neos-profile-audit`. A practical next step is to keep Rust usage in the tooling layer while preserving shell compatibility in build scripts:
+
+- Keep policy and manifest validation in Rust CLIs (fast, typed parsing, clearer errors).
+- Use shell wrappers in `tests/` to call Rust tools so CI and contributor workflows stay simple.
+- Gradually replace brittle text parsing checks in bash/python with focused Rust subcommands.
+
+This keeps Rust around the 3-5% footprint while strengthening reliability in the parts of the project most prone to configuration drift.
+
 ## Contributing
 NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents.
 
