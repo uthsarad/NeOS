@@ -1,7 +1,8 @@
 {
-  "focus": "Security Posture Verification",
+  "focus": "Security and Reliability",
   "tasks": [
-    "Verify `airootfs/usr/local/bin/neos-autoupdate.sh` correctly checks for secure directory permissions on log/lock files.",
-    "Validate that `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired` (or correct intended level) for the installed system."
+    "Verify that `airootfs/usr/local/bin/neos-autoupdate.sh` checks for safe file permissions on its log and lock files, mitigating any local denial of service or symlink attacks.",
+    "Ensure the installed system's `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired`.",
+    "Review the risk of the unsigned `alci_repo` in the build process `pacman.conf` and document paths to securely mirror or sign these packages."
   ]
 }

@@ -117,14 +117,14 @@ else
     exit 1
 fi
 
-# Sentinel: Check for SigLevel = Required DatabaseOptional in airootfs/etc/pacman.conf
+# Sentinel: Check for SigLevel = Required DatabaseRequired in airootfs/etc/pacman.conf
 PACMAN_CONF="airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
 
-if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseOptional" "$PACMAN_CONF"; then
-    echo "✅ SigLevel = Required DatabaseOptional found"
+if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
+    echo "✅ SigLevel = Required DatabaseRequired found"
 else
-    echo "❌ SigLevel = Required DatabaseOptional NOT found in $PACMAN_CONF"
+    echo "❌ SigLevel = Required DatabaseRequired NOT found in $PACMAN_CONF"
     exit 1
 fi
 

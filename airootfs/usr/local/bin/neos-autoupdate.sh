@@ -32,13 +32,28 @@ check_root() {
 }
 
 check_dependencies() {
-    local dependencies=("snapper" "pacman" "awk")
+    local dependencies=("snapper" "pacman" "awk" "df")
     for cmd in "${dependencies[@]}"; do
         if ! command -v "$cmd" &> /dev/null; then
             log "Error: Required command '$cmd' not found."
             exit 1
         fi
     done
+}
+
+check_disk_space() {
+    # Bolt: Using lightweight 'df' instead of 'btrfs fi usage' to minimize performance overhead during update initialization.
+    # Minimum required space: 5GB (5242880 KB)
+    local min_space=5242880
+    local available_space
+    # Use -Pk to ensure POSIX output format, preventing line wrapping on long filesystem names.
+    available_space=$(df -Pk / | awk 'NR==2 {print $4}')
+
+    if [ "$available_space" -lt "$min_space" ]; then
+        # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
+        log "Error: Insufficient disk space for update. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB."
+        exit 1
+    fi
 }
 
 perform_update() {
@@ -68,6 +83,7 @@ perform_update() {
 main() {
     check_root
     check_dependencies
+    check_disk_space
     perform_update
 }
 

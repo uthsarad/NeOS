@@ -1,34 +1,22 @@
-# Architect Report
+# Architect Report: Installer & Update Hardening
 
-**Date:** 2026-02-17
-**Task:** Release Preparation & Verification Fixes
-**Status:** Completed
+## Phase 1: Scope Validation
+- **Deliverable:** Installer & Update Hardening.
+- **Constraints Checked:** Scope restricted to `neos-autoupdate.sh` and `pacman.conf` hardening. No new features were added to the desktop or update logic other than the space check.
 
-## 1. Scope Validation
-- **Authorized Scope:** `ARCHITECT_SCOPE.json`
-- **Validation:** Confirmed that all requested changes fall strictly within the "Release Preparation & Verification Fixes" deliverable. No unauthorized scope expansion occurred.
+## Phase 2: Impact Mapping
+- **Files Modified:**
+  - `airootfs/usr/local/bin/neos-autoupdate.sh`: Disk space check implemented to prevent broken updates.
+  - `tests/verify_security_config.sh`: Updated expected system `pacman.conf` SigLevel to `DatabaseRequired`.
+- **Files Verified:**
+  - `pacman.conf`: Unsigned `alci_repo` usage correctly scopes `SigLevel = Optional`.
+  - `airootfs/etc/pacman.conf`: Found already compliant with `DatabaseRequired` for installed system security.
 
-## 2. Impact Mapping
-- **Modified Files:**
-  - `tests/verify_build_profile.sh`: Updated to handle missing `pyyaml` gracefully.
-  - `README.md`: Added "Supported Architectures" section.
-  - `docs/HANDBOOK.md`: Clarified hardware prerequisites (x86_64 only).
-  - `CHANGELOG.md`: Updated with unreleased changes.
-- **New Files:**
-  - `ai/tasks/bolt.json`: Performance optimization tasks.
-  - `ai/tasks/palette.json`: UX/UI polish tasks.
-  - `ai/tasks/sentinel.json`: Security verification tasks.
+## Phase 3: Implementation Notes
+- **Disk Space Check:** Implemented a lightweight `df` check for 5GB free space on the root filesystem in `neos-autoupdate.sh`. Avoided slower `btrfs fi usage` checks.
+- **Data Contracts:** Scripts interact securely with their expected dependencies. Output is appropriately logged.
 
-## 3. Implementation Plan Execution
-- **Verification Script:** `tests/verify_build_profile.sh` now correctly warns instead of failing when `pyyaml` is missing, allowing the build verification to proceed in minimal environments.
-- **Documentation:** Architecture support is now explicitly documented in both the README and Handbook, aligning with audit requirements to manage user expectations.
-- **Changelog:** Reflects the current state of the repository including the recent fixes.
-
-## 4. Delegation Strategy
-Specialist tasks have been generated in `ai/tasks/` to guide the next phase of refinement:
-- **Bolt:** Focused on kernel parameter validation.
-- **Palette:** Focused on Calamares QML polish.
-- **Sentinel:** Focused on script permission security.
-
-## 5. Conclusion
-The repository is now in a stable, verified state for the "Release Preparation" phase. The build verification is robust, and documentation accurately reflects the supported platform status.
+## Phase 4: Delegation Strategy
+- **Bolt (`bolt.json`):** Advised to evaluate the efficiency of the `df` check.
+- **Palette (`palette.json`):** Advised to surface low disk space log messages gracefully.
+- **Sentinel (`sentinel.json`):** Advised to review the system-level `DatabaseRequired` policy and any remaining risks of `alci_repo` in the live environment.
