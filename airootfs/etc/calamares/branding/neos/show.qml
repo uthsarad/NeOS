@@ -29,16 +29,17 @@ Presentation {
     Rectangle { // Next Button
         id: btn; width: 100; height: 40; radius: 4
         anchors { bottom: parent.bottom; right: parent.right; margins: 20 }
-        color: activeFocus ? "#3daee9" : "#444"
+        color: activeFocus || btnMouseArea.containsMouse ? "#3daee9" : "#444"
         activeFocusOnTab: true // A11y: Keyboard nav
-        border.color: "#3daee9"; border.width: activeFocus ? 2 : 0
+        border.color: "#3daee9"; border.width: activeFocus || btnMouseArea.containsMouse ? 2 : 0
 
         Behavior on scale { NumberAnimation { duration: 150 } }
-        scale: activeFocus ? 1.1 : 1.0
+        scale: activeFocus || btnMouseArea.containsMouse ? 1.1 : 1.0
         onActiveFocusChanged: activeFocus ? presentation.pauseLocks++ : presentation.pauseLocks--
 
         Text { anchors.centerIn: parent; text: qsTr("Next Slide"); color: "white" }
         MouseArea {
+            id: btnMouseArea
             anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
             onClicked: presentation.advance()
             onEntered: presentation.pauseLocks++; onExited: presentation.pauseLocks--
