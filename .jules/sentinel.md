@@ -85,3 +85,8 @@
 1. Validate that the parent directory is owned by root and not writable by others (or has sticky bit).
 2. Use atomic operations like `umask` for permissions and `>>` for append (which creates if missing).
 3. Avoid modifying file permissions (`chmod`) on paths if possible; rely on `umask` at creation time.
+
+## 2024-05-24 - [Atomic File Creation]
+**Vulnerability:** Checking for file existence before creation (`if [ ! -f "$LOG_FILE" ]; then touch "$LOG_FILE"; chmod 600 "$LOG_FILE"; fi`) in root-privileged shell scripts introduces a Time-of-Check Time-of-Use (TOCTOU) race condition. An attacker can create a file between `touch` and `chmod`.
+**Learning:** Atomic creation requires using `set -C` (noclobber) with redirection or a secure utility like `mktemp` to guarantee exclusive creation and strict permissions.
+**Prevention:** Use `(umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true` and enforce `chmod 600 "$LOG_FILE"` to handle the case where the file might already exist.

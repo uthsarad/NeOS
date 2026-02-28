@@ -16,7 +16,7 @@ fi
 
 # Ensure log file exists with secure permissions
 if [ ! -f "$LOG_FILE" ]; then
-    touch "$LOG_FILE"
+    (umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true
     chmod 600 "$LOG_FILE"
 fi
 
