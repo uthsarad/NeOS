@@ -6,3 +6,6 @@ description = "Rust-based validator for NeOS Archiso profile manifests"
 license = "MIT"
 
 [dependencies]
+
+[dev-dependencies]
+tempfile = "3.10"

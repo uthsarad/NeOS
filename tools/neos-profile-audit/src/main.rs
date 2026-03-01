@@ -56,6 +56,7 @@ fn parse_root_arg() -> PathBuf {
 fn run_audit(root: &Path) -> Result<String, String> {
     assert_required_files(root)?;
     assert_mirrorlists_have_servers(root)?;
+    assert_profiledef_properties(root)?;
 
     let mut parsed_files: Vec<(String, BTreeSet<String>)> = Vec::new();
     for relative in PACKAGE_FILES {
@@ -68,6 +69,68 @@ fn run_audit(root: &Path) -> Result<String, String> {
     assert_arch_specific_expectations(&parsed_files)?;
 
     Ok(build_summary(&parsed_files))
+}
+
+fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
+    let path = root.join("profiledef.sh");
+    let content = fs::read_to_string(&path)
+        .map_err(|err| format!("unable to read {}: {err}", path.display()))?;
+
+    let valid_bootmodes = [
+        "uefi.grub",
+        "uefi.systemd-boot",
+        "bios.syslinux",
+        "bios.syslinux.mbr",
+        "bios.syslinux.eltorito",
+        "uefi-ia32.grub.esp",
+        "uefi-x64.grub.esp",
+        "uefi-x64.grub.eltorito",
+    ];
+
+    let mut pacman_conf_found = false;
+    let mut bootmodes_found = false;
+
+    // TODO(bolt): Consider optimizing this line-by-line regex-free parsing logic if profiling shows it's a bottleneck.
+    // TODO(palette): Ensure these error messages are easily understandable by end users fixing their configuration.
+    // TODO(sentinel): Validate that the parsed values do not introduce command injection risks if used downstream.
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("pacman_conf=") {
+            pacman_conf_found = true;
+            let val = trimmed.trim_start_matches("pacman_conf=").trim_matches(|c| c == '"' || c == '\'');
+            if val.is_empty() {
+                return Err("pacman_conf is set to an empty string in profiledef.sh".to_string());
+            }
+            let conf_path = root.join(val);
+            if !conf_path.exists() {
+                return Err(format!("pacman config referenced in profiledef.sh does not exist: {}", conf_path.display()));
+            }
+            let conf_content = fs::read_to_string(&conf_path).map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
+            if !conf_content.contains("DatabaseOptional") {
+                return Err(format!("pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional", conf_path.display()));
+            }
+        } else if trimmed.starts_with("bootmodes=(") {
+            bootmodes_found = true;
+            let val = trimmed.trim_start_matches("bootmodes=(").trim_end_matches(')');
+            // Note: simple splitting by whitespace works because valid bootmodes don't contain spaces.
+            for mode_str in val.split_whitespace() {
+                let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
+                if !valid_bootmodes.contains(&mode) {
+                    return Err(format!("Invalid bootmode in profiledef.sh: '{}'. Valid modes are: {}", mode, valid_bootmodes.join(", ")));
+                }
+            }
+        }
+    }
+
+    if !pacman_conf_found {
+        return Err("pacman_conf is NOT set in profiledef.sh (mkarchiso will fail with realpath error)".to_string());
+    }
+
+    if !bootmodes_found {
+        return Err("bootmodes array is missing in profiledef.sh".to_string());
+    }
+
+    Ok(())
 }
 
 fn assert_required_files(root: &Path) -> Result<(), String> {
@@ -215,4 +278,79 @@ fn build_summary(parsed_files: &[(String, BTreeSet<String>)]) -> String {
     }
 
     lines.join("\n")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use tempfile::tempdir;
+
+    #[test]
+    fn test_valid_profiledef() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="my_pacman.conf"
+        bootmodes=('uefi.grub' 'bios.syslinux')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let pacman_conf_content = "DatabaseOptional";
+        fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
+
+        assert!(assert_profiledef_properties(root).is_ok());
+    }
+
+    #[test]
+    fn test_missing_pacman_conf_file() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="missing.conf"
+        bootmodes=('uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("does not exist"));
+    }
+
+    #[test]
+    fn test_invalid_bootmode() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="my_pacman.conf"
+        bootmodes=('uefi.grub' 'invalid.mode')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let pacman_conf_content = "DatabaseOptional";
+        fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("Invalid bootmode"));
+    }
+
+    #[test]
+    fn test_missing_database_optional() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="my_pacman.conf"
+        bootmodes=('uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let pacman_conf_content = "SigLevel = Required";
+        fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("does not use DatabaseOptional"));
+    }
 }
