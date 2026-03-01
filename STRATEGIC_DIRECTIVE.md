@@ -2,47 +2,48 @@
 
 **Date:** 2026-03-01
 **Author:** Maestro (Strategic Engineering Director AI)
-**Phase:** 5 (Tooling Reliability & Rust Adoption)
+**Phase:** 5 (Tooling Reliability & Security Auditing)
 
 ## Phase 1: Product Alignment Check
 **What is the product trying to become?**
 NeOS is a curated, snapshot-based Arch Linux desktop distribution targeting predictable behavior, low breakage, and a Windows-familiar KDE Plasma experience. It prioritizes stability and clear UX over DIY flexibility.
 
 **Are we building toward that?**
-Yes. Core ISO profile hardening and validation have improved. The next reliability gain is in pre-build/profile verification so breakage is caught before full ISO creation or release.
+Mostly yes. The core infrastructure is solidifying. However, security debt from unsigned repositories continues to pose a supply chain risk, and pre-build CI testing is incomplete.
 
 **Are we solving the highest leverage problem?**
-The highest leverage problem now is reducing configuration drift and fragile validation logic in build-critical manifests (`profiledef.sh`).
+The highest leverage problem now is ensuring the build process does not silently introduce supply chain vulnerabilities, while fixing known missing CI checks outlined in the Deep Audit.
 
 ## Phase 2: Technical Posture Review
 **Is the system stable?**
-Build stability is improving, but several checks in `tests/verify_build_profile.sh` are still string-parsing heavy (e.g., using `grep` and `sed` to extract values from bash arrays/variables). This increases maintenance cost and missed edge cases.
+Yes, but the build process has a known security gap (`alci_repo` using `SigLevel = Optional`).
 
 **Is tech debt increasing?**
-Yes, slightly. Validation logic is fragmented and brittle across multiple scripts with inconsistent error handling.
+Yes, security debt is persisting. The `Deep Audit` flagged missing pre-build test runs in CI (e.g., `tests/verify_*.sh` are only run *after* the expensive build process or skipped entirely).
 
 **Are we overbuilding?**
-No. The right move is focused hardening of validation tooling—not feature expansion.
+No. We are pivoting to hardening and CI refinement.
 
 ## Phase 3: Priority Selection
-**Selected Priority:** Infrastructure improvement (Tooling hardening with modest Rust integration).
+**Selected Priority:** Stabilization / hardening (Fixing CI test execution order and addressing the unsigned `alci_repo` vulnerability).
 
 ## Phase 4: Controlled Scope Definition (Architect)
-Architect must focus *only* on build/profile validation reliability and tooling consistency.
-- **Goal:** Keep Rust adoption around **3-5%** of project code by concentrating Rust in validation CLIs and preserving shell wrappers for workflow compatibility.
+Architect must focus on CI test execution and repository security.
+- **Goal 1:** Update `.github/workflows/build-iso.yml` to run all `tests/verify_*.sh` scripts (except `verify_iso_smoketest.sh`, `verify_iso_grub.sh`, and `verify_iso_size.sh` which require a built ISO) *before* the `mkarchiso` build step. This matches the recommendation in `docs/DEEP_AUDIT.md`.
+- **Goal 2:** Address the `alci_repo` unsigned package issue in `pacman.conf`. Since we don't have an internal mirror yet, we must either document a concrete path forward or enforce `SigLevel = Required` if the upstream supports it (Arch Linux standards). Let's attempt to enforce `SigLevel = Required DatabaseOptional` for `alci_repo` in `pacman.conf` to close the security gap, assuming upstream ALCI signs their packages.
+
 - **Constraints:**
-  - Do not rewrite installer/UI flows in Rust.
-  - Do not change desktop UX or release branding.
-  - Prefer incremental replacement of brittle parsing checks with typed Rust validation. Specifically, migrate `profiledef.sh` parsing logic from `tests/verify_build_profile.sh` to `tools/neos-profile-audit/src/main.rs`.
+  - Do not modify the actual build logic (`mkarchiso` command).
+  - Do not change the `DatabaseOptional` requirement for the root config, as builds still need it.
 
 ## Phase 5: Delegation Strategy
-- **Architect:** Expand `tools/neos-profile-audit` to parse and validate `profiledef.sh` properties (like `pacman_conf` and `bootmodes`). Update `tests/verify_build_profile.sh` to remove the brittle `grep`/`sed` checks that the Rust tool now handles.
-- **Bolt:** Ensure the new Rust regex parsing is performant and doesn't significantly slow down the CI validation steps.
-- **Palette:** Ensure the Rust CLI outputs user-friendly error messages when a `profiledef.sh` validation fails (e.g., clear indications of what is missing or malformed).
-- **Sentinel:** Ensure the parsed configurations reflect the intended security posture, even when parsed by a new tool.
+- **Architect:**
+    1. Update `.github/workflows/build-iso.yml` to add a `test` job or step *before* `Build ISO` that executes the pre-build verification scripts.
+    2. Modify `pacman.conf` to change `[alci_repo]` `SigLevel` to `Required DatabaseOptional`.
+- **Bolt:** Ensure the new CI test step is efficient and runs quickly before the main build.
+- **Palette:** (No UX changes required for this backend CI/Security task).
+- **Sentinel:** Verify that the `alci_repo` signature enforcement mitigates the supply chain risk identified in the `SENTINEL_REPORT.md`.
 
 ## Phase 6: Execution Notes for AI Agents
-1. Treat `tools/neos-profile-audit` as the primary typed validator for build profile integrity.
-2. Keep entry points simple (`tests/verify_*.sh`) so existing CI jobs remain stable.
-3. When adding new validation rules, pair them with clear failure messages and include them in CI.
-4. Track Rust footprint pragmatically: target ~3-5% by LOC, focused on tooling and reliability hotspots.
+1. Prioritize failing fast in CI. If a `verify_*.sh` script fails, the ISO should not be built.
+2. Ensure the `test` step has necessary dependencies (like `python3-yaml` for `verify_build_profile.sh` if needed, though it gracefully degrades).
