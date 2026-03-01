@@ -30,31 +30,6 @@ if [ ! -f "$PROFILE_FILE" ]; then
     exit 1
 fi
 
-# Verify pacman_conf is set (prevents realpath: '' error in mkarchiso)
-if grep -q 'pacman_conf=' "$PROFILE_FILE"; then
-    echo "✅ pacman_conf is set in $PROFILE_FILE"
-else
-    echo "❌ pacman_conf is NOT set in $PROFILE_FILE (mkarchiso will fail with realpath error)"
-    exit 1
-fi
-
-# Verify the referenced pacman.conf file exists
-PACMAN_CONF=$(grep 'pacman_conf=' "$PROFILE_FILE" | head -1 | sed "s/.*pacman_conf=[\"']\{0,1\}\([^\"']*\)[\"']\{0,1\}/\1/")
-if [ -n "$PACMAN_CONF" ] && [ -f "$PACMAN_CONF" ]; then
-    echo "✅ Referenced pacman config '$PACMAN_CONF' exists"
-else
-    echo "❌ Referenced pacman config '$PACMAN_CONF' does not exist"
-    exit 1
-fi
-
-# Verify pacman.conf uses DatabaseOptional (Required for mirrors without .db.sig)
-if grep -q 'DatabaseOptional' "$PACMAN_CONF"; then
-    echo "✅ $PACMAN_CONF uses DatabaseOptional"
-else
-    echo "❌ $PACMAN_CONF does not use DatabaseOptional"
-    exit 1
-fi
-
 # Verify packages file exists for x86_64
 if [ -f "packages.x86_64" ]; then
     echo "✅ packages.x86_64 exists"
@@ -83,25 +58,6 @@ else
     echo "⚠️ bootstrap_packages.aarch64 file does not exist (recommended for aarch64 support)"
 fi
 
-# Verify boot modes are valid (extract quoted values from bootmodes= lines)
-VALID_MODES="uefi.grub uefi.systemd-boot bios.syslinux bios.syslinux.mbr bios.syslinux.eltorito uefi-ia32.grub.esp uefi-x64.grub.esp uefi-x64.grub.eltorito"
-if grep -q 'bootmodes=' "$PROFILE_FILE"; then
-    for mode in $(grep 'bootmodes=' "$PROFILE_FILE" | grep -o '"[^"]*"' | tr -d '"'); do
-        FOUND=false
-        for valid in $VALID_MODES; do
-            if [ "$mode" = "$valid" ]; then
-                FOUND=true
-                break
-            fi
-        done
-        if [ "$FOUND" = true ]; then
-            echo "✅ Boot mode '$mode' is valid"
-        else
-            echo "❌ Boot mode '$mode' is NOT valid (valid: $VALID_MODES)"
-            exit 1
-        fi
-    done
-fi
 
 # Verify grub/grub.cfg exists (required for uefi.grub boot mode)
 if grep -q 'uefi.grub' "$PROFILE_FILE"; then

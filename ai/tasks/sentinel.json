@@ -1,8 +1,10 @@
 {
-  "focus": "Security and Reliability",
-  "tasks": [
-    "Verify that `airootfs/usr/local/bin/neos-autoupdate.sh` checks for safe file permissions on its log and lock files, mitigating any local denial of service or symlink attacks.",
-    "Ensure the installed system's `airootfs/etc/pacman.conf` maintains strict `SigLevel = Required DatabaseRequired`.",
-    "Review the risk of the unsigned `alci_repo` in the build process `pacman.conf` and document paths to securely mirror or sign these packages."
+  "role": "Sentinel",
+  "task": "Review Rust configuration parsing security",
+  "context": "Architect implemented parsing of profiledef.sh variables in tools/neos-profile-audit/src/main.rs.",
+  "action_items": [
+    "Verify that the extracted 'pacman_conf' and 'bootmodes' values do not introduce command injection risks if printed to shell.",
+    "Verify that malicious string quotes or newlines do not break the file path resolution when checking if pacman_conf exists.",
+    "Ensure path traversal is reasonably bounded or safe in this build context."
   ]
 }

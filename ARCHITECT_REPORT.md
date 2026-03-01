@@ -1,22 +1,23 @@
-# Architect Report: Installer & Update Hardening
+# ARCHITECT_REPORT
 
 ## Phase 1: Scope Validation
-- **Deliverable:** Installer & Update Hardening.
-- **Constraints Checked:** Scope restricted to `neos-autoupdate.sh` and `pacman.conf` hardening. No new features were added to the desktop or update logic other than the space check.
+Confirmed the objective fits entirely within the `ARCHITECT_SCOPE.json`. The deliverable is to migrate the fragile Bash validation logic of `profiledef.sh` properties (`pacman_conf` and `bootmodes`) in `tests/verify_build_profile.sh` into the existing Rust utility `tools/neos-profile-audit/src/main.rs`.
 
 ## Phase 2: Impact Mapping
-- **Files Modified:**
-  - `airootfs/usr/local/bin/neos-autoupdate.sh`: Disk space check implemented to prevent broken updates.
-  - `tests/verify_security_config.sh`: Updated expected system `pacman.conf` SigLevel to `DatabaseRequired`.
-- **Files Verified:**
-  - `pacman.conf`: Unsigned `alci_repo` usage correctly scopes `SigLevel = Optional`.
-  - `airootfs/etc/pacman.conf`: Found already compliant with `DatabaseRequired` for installed system security.
+- **Modified:** `tools/neos-profile-audit/src/main.rs` (Added profiledef.sh string-parsing capability).
+- **Modified:** `tests/verify_build_profile.sh` (Removed bash checks).
+- **Delegation:** Created task JSON manifests for Bolt, Palette, and Sentinel.
 
-## Phase 3: Implementation Notes
-- **Disk Space Check:** Implemented a lightweight `df` check for 5GB free space on the root filesystem in `neos-autoupdate.sh`. Avoided slower `btrfs fi usage` checks.
-- **Data Contracts:** Scripts interact securely with their expected dependencies. Output is appropriately logged.
+## Phase 3: Implementation
+- Added `assert_profiledef_properties()` to parse `pacman_conf` and `bootmodes` directly from the bash array definition syntax.
+- Evaluated quotes (`"` and `'`) dynamically.
+- Verified path existence strictly using Rust `fs::exists()`.
+- Validated bootmodes against an immutable strictly-defined `HashSet`.
+- Verified the referenced `pacman_conf` string correctly reads the targeted file and dynamically verifies it includes `DatabaseOptional`.
+- Updated `tests/verify_build_profile.sh` logic by stripping the redundant bash-based existence, bootmode, and DatabaseOptional validation since the rust tool securely covers it.
 
 ## Phase 4: Delegation Strategy
-- **Bolt (`bolt.json`):** Advised to evaluate the efficiency of the `df` check.
-- **Palette (`palette.json`):** Advised to surface low disk space log messages gracefully.
-- **Sentinel (`sentinel.json`):** Advised to review the system-level `DatabaseRequired` policy and any remaining risks of `alci_repo` in the live environment.
+Delegation manifests created in `/ai/tasks/`:
+- `bolt.json` generated to profile the iterative parsing method.
+- `palette.json` generated to verify that the CLI output error messages are helpful and easy to act upon.
+- `sentinel.json` generated to review the new parsing logic for command injection or arbitrary path resolution vectors when the CLI displays values.
