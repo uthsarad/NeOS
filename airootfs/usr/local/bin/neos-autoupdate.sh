@@ -7,6 +7,7 @@
 set -euo pipefail
 
 LOG_FILE="/var/log/neos-autoupdate.log"
+LOCK_FILE="/run/neos-autoupdate.lock"
 
 # SECURITY: Prevent symlink attacks on log file
 if [ -L "$LOG_FILE" ]; then
@@ -18,6 +19,25 @@ fi
 if [ ! -f "$LOG_FILE" ]; then
     (umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true
     chmod 600 "$LOG_FILE"
+fi
+
+# SECURITY: Prevent symlink attacks on lock file
+if [ -L "$LOCK_FILE" ]; then
+    echo "Security error: $LOCK_FILE is a symlink. Aborting." >&2
+    exit 1
+fi
+
+# Ensure lock file exists with secure permissions
+if [ ! -f "$LOCK_FILE" ]; then
+    (umask 077; set -C; > "$LOCK_FILE") 2>/dev/null || true
+    chmod 600 "$LOCK_FILE"
+fi
+
+# Apply flock
+exec 9> "$LOCK_FILE"
+if ! flock -n 9; then
+    echo "Another instance of neos-autoupdate is already running." >&2
+    exit 1
 fi
 
 log() {
