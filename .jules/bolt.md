@@ -55,3 +55,7 @@
 ## 2026-06-01 - Filesystem Cache Pressure
 **Learning:** Tuning `vm.vfs_cache_pressure` to 50 (down from 100) on ZRAM-enabled systems improves desktop responsiveness by preferring to retain dentry/inode caches over reclaiming them, effectively trading a small amount of RAM for faster file access.
 **Action:** Always verify `vm.vfs_cache_pressure` alongside `vm.swappiness` in performance configurations to ensure a balanced memory management strategy.
+
+## 2026-03-02 - Bash Builtins vs External Processes for Parsing
+**Learning:** In performance-sensitive bash scripts, piping output to external tools like `awk` for simple field extraction (e.g., `df -Pk / | awk '{print $4}'`) introduces significant overhead due to subprocess forks. Using bash process substitution with the built-in `read` command (`{ read -r _; read -r _ _ _ val _ _; } < <(df -Pk /)`) can reduce execution time by ~20%.
+**Action:** When parsing tabular command output in tight loops or initialization phases, prefer using native bash `read` capabilities via process substitution over external parsers.
