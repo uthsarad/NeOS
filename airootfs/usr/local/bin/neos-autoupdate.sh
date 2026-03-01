@@ -51,7 +51,20 @@ check_disk_space() {
 
     if [ "$available_space" -lt "$min_space" ]; then
         # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
-        log "Error: Insufficient disk space for update. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB."
+        local err_msg="Insufficient disk space for update. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB. Please free up some space and try again."
+        log "Error: $err_msg"
+
+        # Surface error to active graphical users
+        if command -v loginctl >/dev/null 2>&1; then
+            for uid in $(loginctl list-sessions --no-legend | awk '{print $2}' | sort -u); do
+                local user_name
+                user_name=$(id -nu "$uid")
+                # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
+                # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
+                su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send 'System Update Failed' '$err_msg' --icon=dialog-error --urgency=critical" || true
+            done
+        fi
+
         exit 1
     fi
 }
