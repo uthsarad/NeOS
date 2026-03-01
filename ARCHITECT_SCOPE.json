@@ -1,24 +1,23 @@
 {
-  "deliverable": "Profile Tooling Migration",
+  "deliverable": "CI Test Optimization and Security Hardening",
   "files": [
-    "tools/neos-profile-audit/src/main.rs",
-    "tests/verify_build_profile.sh"
+    ".github/workflows/build-iso.yml",
+    "pacman.conf"
   ],
   "tasks": [
     {
-      "file": "tools/neos-profile-audit/src/main.rs",
-      "action": "Parse and validate `profiledef.sh` properties in Rust",
-      "details": "Expand the Rust validation logic to parse `profiledef.sh` and verify that `pacman_conf` is defined and resolves to a file that exists, and that all `bootmodes` are valid (from the list: `uefi.grub`, `uefi.systemd-boot`, `bios.syslinux`, `bios.syslinux.mbr`, `bios.syslinux.eltorito`, `uefi-ia32.grub.esp`, `uefi-x64.grub.esp`, `uefi-x64.grub.eltorito`). Handle missing or malformed configuration gracefully with clear user output."
+      "file": ".github/workflows/build-iso.yml",
+      "action": "Add pre-build test execution step",
+      "details": "Insert a step before the 'Build ISO' step to run all `tests/verify_*.sh` scripts. Exclude scripts that require the built ISO: `verify_iso_smoketest.sh`, `verify_iso_grub.sh`, and `verify_iso_size.sh`."
     },
     {
-      "file": "tests/verify_build_profile.sh",
-      "action": "Remove redundant shell checks",
-      "details": "Remove the brittle `grep`/`sed` checks for `pacman_conf` and `bootmodes` from `tests/verify_build_profile.sh` since the Rust audit tool now covers these verifications."
+      "file": "pacman.conf",
+      "action": "Enforce signature checking on alci_repo",
+      "details": "Change the `SigLevel` for `[alci_repo]` from `Optional` to `Required DatabaseOptional` to mitigate supply chain risks during the build."
     }
   ],
   "constraints": [
-    "Keep Rust parsing robust and user-friendly (do not panic on bad files).",
-    "Do not rewrite unrelated logic in `verify_build_profile.sh`.",
-    "Do not add new external Rust dependencies if they are not strictly necessary; use the standard library where possible."
+    "Do not break the `mkarchiso` build process.",
+    "Ensure pre-build tests fail the workflow if they fail."
   ]
 }
