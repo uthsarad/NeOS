@@ -64,3 +64,32 @@
 
 -   **Medium Risks Resolved**: 1 (TOCTOU race condition)
 -   **Security Validations Passed**: 1 (Verified `airootfs/etc/pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on the installed system).
+
+## Sentinel Report - Autoupdate Concurrency and Signature Review
+
+### Risks Found
+
+1. **High Priority - `neos-autoupdate.sh` Denial of Service & Race Condition Vulnerability**
+   - **File**: `airootfs/usr/local/bin/neos-autoupdate.sh`
+   - **Vulnerability**: The script previously did not enforce single execution using a lock file, which could result in concurrent runs attempting overlapping pacman updates and Btrfs snapshot operations, leading to DB locks or corrupted states. Also, missing lock file protection meant a local user could potentially create symlink-based DOS or exploit race conditions in shared directories like `/run/` or `/tmp/` if a lock mechanism was naively added.
+
+2. **Medium Priority - Unsigned `alci_repo` in the build process `pacman.conf`**
+   - **File**: `pacman.conf`
+   - **Vulnerability**: The `alci_repo` configured in `pacman.conf` has `SigLevel = Optional`, which removes signature verification for packages retrieved from this repository during the ISO build. If the source repository or transport is compromised, malicious packages could be injected into the built image without detection.
+
+### Fixes Applied
+
+1. **Secure Lock File in `neos-autoupdate.sh`**
+   - **Fix**: Implemented a secure lock file (`/run/neos-autoupdate.lock`). This includes first verifying the lock file is not a symlink, atomically creating the lock file with `set -C` and a `077` umask, enforcing a strict `600` permission mask, and safely executing `flock -n 9` to guarantee exclusivity.
+
+### Mitigations Documented
+
+1. **Unsigned `alci_repo` Mitigation Paths**
+   - **Mirror & Sign Locally:** Clone the `alci_repo` to an internally hosted mirror, audit the packages, and sign them with a trusted internal GPG key. Change `SigLevel` to `Required`.
+   - **Upstream Collaboration:** Work with the maintainers of the `alci_repo` to implement database and package signing using standard Arch Linux GPG keychain practices.
+   - **Checksum Verification:** Download packages independently of pacman, verify cryptographic hashes against known-good manifests, and perform offline installation via `pacman -U`.
+
+### Severity Summary
+
+-   **High Risks Resolved**: 1 (Concurrency and DoS vulnerability)
+-   **Medium Risks Documented**: 1 (Unsigned `alci_repo`)
