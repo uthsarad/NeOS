@@ -103,7 +103,7 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             // ⚡ Bolt: Use slicing instead of trim_start_matches to avoid redundant string searching
             let val = trimmed[12..].trim_matches(|c| c == '"' || c == '\'');
             if val.is_empty() {
-                return Err("pacman_conf is set to an empty string in profiledef.sh".to_string());
+                return Err("pacman_conf is set to an empty string in profiledef.sh. Please provide a valid file path.".to_string());
             }
 
             if val.starts_with('/') || val.contains("..") || val.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-') {
@@ -112,11 +112,11 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
 
             let conf_path = root.join(val);
             if !conf_path.exists() {
-                return Err(format!("pacman config referenced in profiledef.sh does not exist: {}", conf_path.display()));
+                return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}. Please verify the path is correct.", conf_path.display()));
             }
             let conf_content = fs::read_to_string(&conf_path).map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
             if !conf_content.contains("DatabaseOptional") {
-                return Err(format!("pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional", conf_path.display()));
+                return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional. Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display()));
             }
         } else if !bootmodes_found && trimmed.starts_with("bootmodes=(") {
             bootmodes_found = true;
@@ -131,18 +131,18 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
                 }
 
                 if !valid_bootmodes.contains(&mode) {
-                    return Err(format!("Invalid bootmode in profiledef.sh: '{}'. Valid modes are: {}", mode, valid_bootmodes.join(", ")));
+                    return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
                 }
             }
         }
     }
 
     if !pacman_conf_found {
-        return Err("pacman_conf is NOT set in profiledef.sh (mkarchiso will fail with realpath error)".to_string());
+        return Err("pacman_conf is NOT set in profiledef.sh. This property is required by mkarchiso to build the image.".to_string());
     }
 
     if !bootmodes_found {
-        return Err("bootmodes array is missing in profiledef.sh".to_string());
+        return Err("The bootmodes array is missing in profiledef.sh. Please define an array of valid bootmodes.".to_string());
     }
 
     Ok(())
