@@ -67,3 +67,7 @@
 ## 2025-05-24 - Calamares Accessibility
 **Learning:** Calamares QML modules need explicit `Accessible.role` and `Keys.onPressed` handlers. Standard QML items are often invisible to screen readers and keyboard navigation.
 **Action:** Added `activeFocusOnTab: true`, `Accessible.role: Accessible.Button`, and explicit focus visualizations (scale/border) to all interactive slideshow elements.
+
+## 2024-05-20 - CLI Error Clarity
+**Learning:** Terminal output needs the same level of care as visual UI when errors occur, ensuring error messages instruct users on how to recover rather than simply stating what failed. Users fixing CLI configs benefit tremendously from bullet points (`-`) instead of comma-separated strings when an array constraint fails.
+**Action:** When validating internal tools via Rust (like `neos-profile-audit`), structure error messages into multi-line outputs when listing expected parameters (like bootmodes), and explicitly describe what value the build depends on (e.g. `mkarchiso` dependency on `pacman_conf`).
