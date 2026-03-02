@@ -93,3 +93,29 @@
 
 -   **High Risks Resolved**: 1 (Concurrency and DoS vulnerability)
 -   **Medium Risks Documented**: 1 (Unsigned `alci_repo`)
+
+## Sentinel Report - Rust Configuration Parsing Security Review
+
+### Risks Found
+
+1. **Medium Priority - Path Traversal & Arbitrary File Read in Configuration Parsing**
+   - **File**: `tools/neos-profile-audit/src/main.rs`
+   - **Vulnerability**: The Rust-based profile validation utility parsed the `pacman_conf` variable directly from `profiledef.sh` and resolved it using `root.join(val)`. It did not check for `..` segments or absolute paths (which `PathBuf::join` would treat as the new root). A maliciously crafted repository configuration could point the validation logic at sensitive build-host files.
+   - **Impact**: Arbitrary file read during the build validation phase, potentially leaking information about the CI environment or host machine depending on where the `pacman_conf` validation logic prints its error state.
+
+2. **Low Priority - Possible Command Injection / Terminal Escape via Bootmode Error Output**
+   - **File**: `tools/neos-profile-audit/src/main.rs`
+   - **Vulnerability**: The validation utility parsed `bootmodes` and immediately injected the untrusted, unvalidated string directly into a terminal-facing `format!` error message when an invalid mode was detected (`Err(format!("Invalid bootmode in profiledef.sh: '{}'...", mode))`). If the output of this utility is used directly in a naive bash shell script `echo` or evaluation without proper quoting, or if the string contains terminal control sequences, it could lead to code execution or terminal corruption.
+
+### Fixes Applied
+
+1. **Path Traversal Mitigation in `pacman_conf` Parsing**
+   - **Fix**: Added explicit validation ensuring `val` does not start with `/`, does not contain `..`, and consists strictly of alphanumeric characters alongside `.`, `/`, `_`, and `-`. If violated, the parser cleanly exits with an error before any `PathBuf` manipulation occurs.
+
+2. **Character Restriction for `bootmodes`**
+   - **Fix**: Implemented validation before format string insertion, ensuring `mode` characters are strictly alphanumeric or `.` / `-` / `_`. This strips the ability to inject spaces, backticks, dollar signs, or terminal control codes into the resulting error message, comprehensively stopping downstream shell injection vectors.
+
+### Severity Summary
+
+-   **Medium Risks Resolved**: 1 (Path traversal in Rust audit tool)
+-   **Low Risks Resolved**: 1 (Command injection risk in error output)
