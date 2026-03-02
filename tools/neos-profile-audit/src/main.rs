@@ -101,6 +101,11 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             if val.is_empty() {
                 return Err("pacman_conf is set to an empty string in profiledef.sh".to_string());
             }
+
+            if val.starts_with('/') || val.contains("..") || val.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-') {
+                return Err("pacman_conf contains invalid characters or path traversal".to_string());
+            }
+
             let conf_path = root.join(val);
             if !conf_path.exists() {
                 return Err(format!("pacman config referenced in profiledef.sh does not exist: {}", conf_path.display()));
@@ -115,6 +120,11 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             // Note: simple splitting by whitespace works because valid bootmodes don't contain spaces.
             for mode_str in val.split_whitespace() {
                 let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
+
+                if mode.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_') {
+                    return Err("bootmodes contains invalid characters (possible command injection)".to_string());
+                }
+
                 if !valid_bootmodes.contains(&mode) {
                     return Err(format!("Invalid bootmode in profiledef.sh: '{}'. Valid modes are: {}", mode, valid_bootmodes.join(", ")));
                 }
@@ -352,5 +362,53 @@ mod tests {
 
         let err = assert_profiledef_properties(root).unwrap_err();
         assert!(err.contains("does not use DatabaseOptional"));
+    }
+
+    #[test]
+    fn test_path_traversal() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="../etc/pacman.conf"
+        bootmodes=('uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("invalid characters or path traversal"));
+    }
+
+    #[test]
+    fn test_absolute_path() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="/etc/pacman.conf"
+        bootmodes=('uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("invalid characters or path traversal"));
+    }
+
+    #[test]
+    fn test_bootmode_command_injection() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="my_pacman.conf"
+        bootmodes=('uefi.grub' '`echo malicious`')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let pacman_conf_content = "DatabaseOptional";
+        fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("bootmodes contains invalid characters (possible command injection)"));
     }
 }
