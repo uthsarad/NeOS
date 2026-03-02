@@ -1,21 +1,16 @@
 {
-  "bolt": {
-    "focus": "CI Pipeline Performance",
-    "tasks": [
-      "Ensure the new pre-build CI test step is efficient and runs quickly before the main build, minimizing any additional CI minute overhead."
-    ]
-  },
-  "palette": {
-    "focus": "N/A",
-    "tasks": [
-      "No UX changes required for this backend CI/Security task."
-    ]
-  },
-  "sentinel": {
-    "focus": "Supply Chain Security Validation",
-    "tasks": [
-      "Verify that the `alci_repo` signature enforcement (`SigLevel = Required DatabaseOptional`) successfully mitigates the supply chain risk identified in the prior `SENTINEL_REPORT.md`.",
-      "Ensure no new unsigned repositories are introduced into the build process."
-    ]
+  "specialists": {
+    "bolt": {
+      "focus_area": "CI Execution Time",
+      "guidance": "Review the ISO size validation step in the CI workflow. Ensure it uses O(1) metadata checks like `stat -c%s` instead of reading the entire file or using expensive disk-usage calculations. Avoid introducing new dependencies."
+    },
+    "palette": {
+      "focus_area": "CI Developer Experience (DX)",
+      "guidance": "Design the error output for the ISO size limit failure. It must be explicit, showing the developer exactly what the size was, what the limit is (in human-readable formats like GiB/MiB), and explaining that GitHub Releases enforces this limit."
+    },
+    "sentinel": {
+      "focus_area": "Supply Chain & System Integrity",
+      "guidance": "Verify that downgrading `DatabaseRequired` to `DatabaseOptional` in the root `pacman.conf` does not bleed into the final built image. Confirm that `airootfs/etc/pacman.conf` remains completely untouched and strictly enforces database signatures for the end user."
+    }
   }
 }

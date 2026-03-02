@@ -1,49 +1,38 @@
-# Strategic Directive
+# STRATEGIC DIRECTIVE ✒️
 
-**Date:** 2026-03-01
-**Author:** Maestro (Strategic Engineering Director AI)
-**Phase:** 5 (Tooling Reliability & Security Auditing)
+**Date:** 2026-03-02
+**Phase:** 1 - Stabilization & Build Reliability
+**Primary Focus:** Unblocking ISO Delivery & CI Validation
 
-## Phase 1: Product Alignment Check
-**What is the product trying to become?**
-NeOS is a curated, snapshot-based Arch Linux desktop distribution targeting predictable behavior, low breakage, and a Windows-familiar KDE Plasma experience. It prioritizes stability and clear UX over DIY flexibility.
+## 1. Product Alignment Check
+The NeOS mission prioritizes a stable, predictable rolling release model and a reliable staging pipeline. Currently, our core delivery mechanism—the ISO build process—is critically blocked by a configuration error identified in the `DEEP_AUDIT.md` report. A broken build prevents any downstream validation, QA, or feature delivery, representing a fundamental misalignment with our reliability goals.
 
-**Are we building toward that?**
-Mostly yes. The core infrastructure is solidifying. However, security debt from unsigned repositories continues to pose a supply chain risk, and pre-build CI testing is incomplete.
+## 2. Technical Posture Review
+While recent efforts to migrate configuration validation to robust Rust tooling (`neos-profile-audit`) have improved stability and security, the underlying build environment configuration remains compromised. Specifically, the root `pacman.conf` requires database signatures that do not exist during the build stage. Furthermore, the CI pipeline lacks automated safeguards against bloated ISO artifacts, risking deployment failures to GitHub Releases (2 GiB limit).
 
-**Are we solving the highest leverage problem?**
-The highest leverage problem now is ensuring the build process does not silently introduce supply chain vulnerabilities, while fixing known missing CI checks outlined in the Deep Audit.
+## 3. Priority Selection
+**Selection: Stabilization / hardening**
 
-## Phase 2: Technical Posture Review
-**Is the system stable?**
-Yes, but the build process has a known security gap (`alci_repo` using `SigLevel = Optional`).
+We are taking a strategic pause on new feature development (such as Calamares installer UX or desktop environment tweaks). The absolute highest leverage action is restoring the integrity of the CI/CD pipeline and preventing future regressions in release artifact size.
 
-**Is tech debt increasing?**
-Yes, security debt is persisting. The `Deep Audit` flagged missing pre-build test runs in CI (e.g., `tests/verify_*.sh` are only run *after* the expensive build process or skipped entirely).
+## 4. Controlled Scope Definition
+The Architect is tasked with a single, highly constrained deliverable: **ISO Build Infrastructure Stabilization**.
 
-**Are we overbuilding?**
-No. We are pivoting to hardening and CI refinement.
+### Exact Files Impacted:
+- `pacman.conf` (Root directory only)
+- `.github/workflows/build-iso.yml`
 
-## Phase 3: Priority Selection
-**Selected Priority:** Stabilization / hardening (Fixing CI test execution order and addressing the unsigned `alci_repo` vulnerability).
+### Maximum Allowed Surface Area:
+- Modification of the `SigLevel` configuration in the root `pacman.conf` file.
+- Addition of an ISO size verification step within the existing GitHub Actions workflow.
 
-## Phase 4: Controlled Scope Definition (Architect)
-Architect must focus on CI test execution and repository security.
-- **Goal 1:** Update `.github/workflows/build-iso.yml` to run all `tests/verify_*.sh` scripts (except `verify_iso_smoketest.sh`, `verify_iso_grub.sh`, and `verify_iso_size.sh` which require a built ISO) *before* the `mkarchiso` build step. This matches the recommendation in `docs/DEEP_AUDIT.md`.
-- **Goal 2:** Address the `alci_repo` unsigned package issue in `pacman.conf`. Since we don't have an internal mirror yet, we must either document a concrete path forward or enforce `SigLevel = Required` if the upstream supports it (Arch Linux standards). Let's attempt to enforce `SigLevel = Required DatabaseOptional` for `alci_repo` in `pacman.conf` to close the security gap, assuming upstream ALCI signs their packages.
+### Constraints Architect Must Obey:
+- **STRICT PROHIBITION:** Do NOT modify `airootfs/etc/pacman.conf`. The installed system must retain strict `DatabaseRequired` security.
+- The ISO size limit must be set precisely to 2 GiB (2 * 1024 * 1024 * 1024 bytes).
+- Do not introduce new third-party actions to the GitHub workflow for the size check; use standard POSIX utilities (e.g., `stat`).
 
-- **Constraints:**
-  - Do not modify the actual build logic (`mkarchiso` command).
-  - Do not change the `DatabaseOptional` requirement for the root config, as builds still need it.
-
-## Phase 5: Delegation Strategy
-- **Architect:**
-    1. Update `.github/workflows/build-iso.yml` to add a `test` job or step *before* `Build ISO` that executes the pre-build verification scripts.
-    2. Modify `pacman.conf` to change `[alci_repo]` `SigLevel` to `Required DatabaseOptional`.
-- **Bolt:** Ensure the new CI test step is efficient and runs quickly before the main build.
-- **Palette:** (No UX changes required for this backend CI/Security task).
-- **Sentinel:** Verify that the `alci_repo` signature enforcement mitigates the supply chain risk identified in the `SENTINEL_REPORT.md`.
-
-## Phase 6: Execution Notes for AI Agents
-1. Prioritize failing fast in CI. If a `verify_*.sh` script fails, the ISO should not be built.
-2. Ensure the `test` step has necessary dependencies (like `python3-yaml` for `verify_build_profile.sh` if needed, though it gracefully degrades).
+## 5. Delegation Strategy
+- **Architect:** Implement the `pacman.conf` fix and the GitHub Actions YAML size check.
+- **Bolt (Performance):** Ensure the CI size check utilizes lightweight, built-in system tools (`stat`) rather than spinning up heavy containers or complex scripts.
+- **Palette (UX):** Guarantee that if the CI size check fails, the terminal output is highly actionable for developers (displaying current size, limit, and human-readable formats).
+- **Sentinel (Security):** Audit the pipeline to verify that relaxing the root `pacman.conf` signature requirements does not inadvertently compromise the target system's package manager (`airootfs/etc/pacman.conf`).

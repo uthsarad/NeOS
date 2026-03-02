@@ -1,27 +1,30 @@
-# Risk & Priority Report
+# RISK & PRIORITY REPORT 🛡️
 
-**Date:** 2026-03-01
-**Author:** Maestro
+**Date:** 2026-03-02
+**Author:** Maestro (Strategic Engineering Director)
 
-## Identified Risks
+## 1. System Health & Drift Assessment
+- **Product Drift:** Low. The team is correctly focusing on core infrastructure and configuration rather than extraneous features.
+- **Tech Debt:** Decreasing, thanks to recent Rust-based profile validation tools. However, a residual configuration error from previous architectural changes is currently breaking the build.
+- **System Stability:** **CRITICAL**. The automated ISO generation pipeline is broken due to the root `pacman.conf` signature enforcement.
 
-### 1. Supply Chain Attack via Unsigned Packages (High Severity)
-- **Description:** The `pacman.conf` used during the ISO build process defines the `alci_repo` with `SigLevel = Optional`. If the mirror or network traffic is compromised, malicious packages could be injected into the live ISO.
-- **Likelihood:** Medium
-- **Impact:** High (Full compromise of the live environment, potentially cascading to installed systems).
-- **Mitigation:** The build environment must enforce `SigLevel = Required DatabaseOptional` for `alci_repo`.
+## 2. Identified Risks
 
-### 2. Failing CI Tests Masked by Late Execution (Medium Severity)
-- **Description:** Several validation scripts (`tests/verify_*.sh`) in the `.github/workflows/build-iso.yml` are currently executed only *after* the computationally expensive and time-consuming `mkarchiso` build process. If a pre-build requirement is invalid, the build fails late, wasting CI minutes, or worse, the build succeeds but the validations fail.
-- **Likelihood:** High (As contributors add or modify build parameters over time).
-- **Impact:** Medium (Wasted CI resources, slower feedback loop).
-- **Mitigation:** Add a pre-build CI step to run validations *before* building the ISO.
+### High Risk: Broken CI/CD Pipeline
+- **Description:** The root `pacman.conf` enforces `DatabaseRequired`, which fails during the mkarchiso build phase for repositories without signed databases (e.g., `alci_repo`).
+- **Impact:** Complete blockage of artifact generation. No QA, testing, or feature verification can proceed until an ISO can be successfully built.
+- **Mitigation:** Imminent deployment of a fix to change the build-time configuration to `DatabaseOptional`.
 
-### 3. Architecture Fragmentation & User Confusion (Low Severity)
-- **Description:** The project unofficially builds for `i686` and `aarch64` (evident via `bootstrap_packages.*` files), but `x86_64` is the only supported architecture.
-- **Likelihood:** Medium (Users attempting to install on unsupported hardware).
-- **Impact:** Low (Support burden and poor user experience).
-- **Mitigation:** Continue ensuring documentation explicitly states these architectures are experimental.
+### Medium Risk: Uncaught ISO Bloat
+- **Description:** The project targets a maximum ISO size of 2 GiB to comply with GitHub Releases limitations. Currently, there is no automated check preventing a bloated image from successfully building but failing deployment.
+- **Impact:** Wasted CI cycles and late-stage deployment failures if an update inadvertently pulls in massive dependencies.
+- **Mitigation:** Implementation of a hard size check in the CI workflow prior to artifact upload.
 
-## Next Steps
-The immediate priority is to address **Risk 1** and **Risk 2** by hardening the CI configuration in `build-iso.yml` and modifying `pacman.conf` for the unsigned `alci_repo` vulnerability.
+### Monitored Risk: Supply Chain Integrity
+- **Description:** Relaxing the build environment's `pacman.conf` to `DatabaseOptional` slightly increases the risk of undetected database tampering during the ISO build process.
+- **Mitigation:** The installed system's `airootfs/etc/pacman.conf` correctly maintains strict `DatabaseRequired` enforcement. Sentinel will monitor this boundary closely. Long-term, mirroring and signing the upstream repositories is advised.
+
+## 3. Immediate Priorities
+1. **Unblock the build:** Execute the `ARCHITECT_SCOPE.json` to fix `pacman.conf`.
+2. **Prevent size regressions:** Implement the CI guardrail for the 2 GiB limit.
+3. **Strategic Pause:** No new features until the pipeline is green and reliable.
