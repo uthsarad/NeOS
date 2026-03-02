@@ -1,23 +1,29 @@
 {
-  "deliverable": "CI Test Optimization and Security Hardening",
-  "files": [
-    ".github/workflows/build-iso.yml",
-    "pacman.conf"
-  ],
-  "tasks": [
+  "deliverable": "ISO Build Infrastructure Stabilization",
+  "rationale": "The CI/CD pipeline is currently blocked by a critical pacman.conf misconfiguration, preventing ISO generation. Additionally, there are no CI guardrails to prevent ISO bloat beyond release limits.",
+  "scope": {
+    "files_allowed": [
+      "pacman.conf",
+      ".github/workflows/build-iso.yml"
+    ],
+    "files_forbidden": [
+      "airootfs/etc/pacman.conf",
+      "build.sh"
+    ]
+  },
+  "implementation_steps": [
     {
-      "file": ".github/workflows/build-iso.yml",
-      "action": "Add pre-build test execution step",
-      "details": "Insert a step before the 'Build ISO' step to run all `tests/verify_*.sh` scripts. Exclude scripts that require the built ISO: `verify_iso_smoketest.sh`, `verify_iso_grub.sh`, and `verify_iso_size.sh`."
+      "step": 1,
+      "description": "Modify root pacman.conf to change SigLevel from 'Required DatabaseRequired' to 'Required DatabaseOptional' to fix the build blocker."
     },
     {
-      "file": "pacman.conf",
-      "action": "Enforce signature checking on alci_repo",
-      "details": "Change the `SigLevel` for `[alci_repo]` from `Optional` to `Required DatabaseOptional` to mitigate supply chain risks during the build."
+      "step": 2,
+      "description": "Append a bash-based step in .github/workflows/build-iso.yml to assert the generated ISO file is under 2 GiB."
     }
   ],
   "constraints": [
-    "Do not break the `mkarchiso` build process.",
-    "Ensure pre-build tests fail the workflow if they fail."
+    "Do not touch the installed system's pacman configuration (airootfs/etc/pacman.conf).",
+    "Use standard tools like `stat` for size calculation in CI.",
+    "Fail the CI step immediately if the size exceeds 2147483648 bytes."
   ]
 }
