@@ -90,14 +90,18 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
     let mut pacman_conf_found = false;
     let mut bootmodes_found = false;
 
-    // TODO(bolt): Consider optimizing this line-by-line regex-free parsing logic if profiling shows it's a bottleneck.
     // TODO(palette): Ensure these error messages are easily understandable by end users fixing their configuration.
     // TODO(sentinel): Validate that the parsed values do not introduce command injection risks if used downstream.
     for line in content.lines() {
+        if pacman_conf_found && bootmodes_found {
+            break; // ⚡ Bolt: Early exit once all required properties are parsed to avoid processing the rest of the file
+        }
+
         let trimmed = line.trim();
-        if trimmed.starts_with("pacman_conf=") {
+        if !pacman_conf_found && trimmed.starts_with("pacman_conf=") {
             pacman_conf_found = true;
-            let val = trimmed.trim_start_matches("pacman_conf=").trim_matches(|c| c == '"' || c == '\'');
+            // ⚡ Bolt: Use slicing instead of trim_start_matches to avoid redundant string searching
+            let val = trimmed[12..].trim_matches(|c| c == '"' || c == '\'');
             if val.is_empty() {
                 return Err("pacman_conf is set to an empty string in profiledef.sh".to_string());
             }
@@ -109,9 +113,10 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             if !conf_content.contains("DatabaseOptional") {
                 return Err(format!("pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional", conf_path.display()));
             }
-        } else if trimmed.starts_with("bootmodes=(") {
+        } else if !bootmodes_found && trimmed.starts_with("bootmodes=(") {
             bootmodes_found = true;
-            let val = trimmed.trim_start_matches("bootmodes=(").trim_end_matches(')');
+            // ⚡ Bolt: Use slicing instead of trim_start_matches to avoid redundant string searching
+            let val = trimmed[11..].trim_end_matches(')');
             // Note: simple splitting by whitespace works because valid bootmodes don't contain spaces.
             for mode_str in val.split_whitespace() {
                 let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
