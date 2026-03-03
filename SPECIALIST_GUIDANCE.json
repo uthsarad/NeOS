@@ -1,16 +1,16 @@
 {
   "specialists": {
     "bolt": {
-      "focus_area": "CI Execution Time",
-      "guidance": "Review the ISO size validation step in the CI workflow. Ensure it uses O(1) metadata checks like `stat -c%s` instead of reading the entire file or using expensive disk-usage calculations. Avoid introducing new dependencies."
+      "focus_area": "Runtime Script Performance",
+      "guidance": "Review the newly added Btrfs filesystem check in `neos-autoupdate.sh`. Ensure that standard POSIX utilities like `findmnt` are utilized efficiently and don't introduce performance regressions or extra execution overhead before the update runs."
     },
     "palette": {
-      "focus_area": "CI Developer Experience (DX)",
-      "guidance": "Design the error output for the ISO size limit failure. It must be explicit, showing the developer exactly what the size was, what the limit is (in human-readable formats like GiB/MiB), and explaining that GitHub Releases enforces this limit."
+      "focus_area": "Update Failure Communication",
+      "guidance": "Review the error message logic related to the Btrfs check in `neos-autoupdate.sh`. Ensure that any warnings or notifications triggered are clearly understood by the end user, with unambiguous explanations of what it means when an update fails or skips snapshots."
     },
     "sentinel": {
-      "focus_area": "Supply Chain & System Integrity",
-      "guidance": "Verify that downgrading `DatabaseRequired` to `DatabaseOptional` in the root `pacman.conf` does not bleed into the final built image. Confirm that `airootfs/etc/pacman.conf` remains completely untouched and strictly enforces database signatures for the end user."
+      "focus_area": "Systemd Sandboxing Constraints",
+      "guidance": "Verify the integrity of the new sandboxing rules in `airootfs/etc/systemd/system/neos-driver-manager.service`. Ensure that `ProtectSystem=full`, `ProtectHome=yes`, `PrivateTmp=yes`, and `NoNewPrivileges=yes` correctly limit root privileges without compromising the service's legitimate need to scan PCI devices."
     }
   }
 }

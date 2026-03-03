@@ -1,38 +1,38 @@
 # STRATEGIC DIRECTIVE ✒️
 
-**Date:** 2026-03-02
+**Date:** 2026-03-03
 **Phase:** 1 - Stabilization & Build Reliability
-**Primary Focus:** Unblocking ISO Delivery & CI Validation
+**Primary Focus:** System Hardening and Service Sandboxing
 
 ## 1. Product Alignment Check
-The NeOS mission prioritizes a stable, predictable rolling release model and a reliable staging pipeline. Currently, our core delivery mechanism—the ISO build process—is critically blocked by a configuration error identified in the `DEEP_AUDIT.md` report. A broken build prevents any downstream validation, QA, or feature delivery, representing a fundamental misalignment with our reliability goals.
+The NeOS mission prioritizes a stable, predictable rolling release model and a reliable staging pipeline. With the build pipeline now unblocked and ISO artifact sizes properly constrained, our next highest leverage problem is runtime system stability and security. Currently, several core services and background scripts run with unsandboxed root privileges and lack necessary system dependencies before execution. This misalignment with our reliability goals exposes the system to unnecessary risk and silent failures.
 
 ## 2. Technical Posture Review
-While recent efforts to migrate configuration validation to robust Rust tooling (`neos-profile-audit`) have improved stability and security, the underlying build environment configuration remains compromised. Specifically, the root `pacman.conf` requires database signatures that do not exist during the build stage. Furthermore, the CI pipeline lacks automated safeguards against bloated ISO artifacts, risking deployment failures to GitHub Releases (2 GiB limit).
+The system is currently stable enough to produce artifacts, but our technical debt in systemd service definitions is high. Crucial custom services like `neos-driver-manager.service` are running as root without any systemd privilege restrictions (e.g., `ProtectSystem`, `PrivateTmp`). Furthermore, our automated update scripts (`neos-autoupdate.sh`) lack basic validation to ensure the root filesystem is Btrfs, risking silent execution failures if dependencies are removed post-install. We are not overbuilding; we are missing fundamental guardrails.
 
 ## 3. Priority Selection
 **Selection: Stabilization / hardening**
 
-We are taking a strategic pause on new feature development (such as Calamares installer UX or desktop environment tweaks). The absolute highest leverage action is restoring the integrity of the CI/CD pipeline and preventing future regressions in release artifact size.
+We will continue the strategic pause on new feature development. The focus shifts entirely to hardening the existing infrastructure. Implementing proper systemd sandboxing and dependency checks will significantly reduce the attack surface and prevent critical runtime failures.
 
 ## 4. Controlled Scope Definition
-The Architect is tasked with a single, highly constrained deliverable: **ISO Build Infrastructure Stabilization**.
+The Architect is tasked with a highly constrained deliverable: **Service Hardening and Runtime Validation**.
 
 ### Exact Files Impacted:
-- `pacman.conf` (Root directory only)
-- `.github/workflows/build-iso.yml`
+- `airootfs/etc/systemd/system/neos-driver-manager.service`
+- `airootfs/usr/local/bin/neos-autoupdate.sh`
 
 ### Maximum Allowed Surface Area:
-- Modification of the `SigLevel` configuration in the root `pacman.conf` file.
-- Addition of an ISO size verification step within the existing GitHub Actions workflow.
+- Creation of `neos-driver-manager.service` to apply `ProtectSystem=full`, `ProtectHome=yes`, `PrivateTmp=yes`, and `NoNewPrivileges=yes`.
+- Addition of a Btrfs filesystem check in `neos-autoupdate.sh` to ensure `snapper` operates correctly.
 
 ### Constraints Architect Must Obey:
-- **STRICT PROHIBITION:** Do NOT modify `airootfs/etc/pacman.conf`. The installed system must retain strict `DatabaseRequired` security.
-- The ISO size limit must be set precisely to 2 GiB (2 * 1024 * 1024 * 1024 bytes).
-- Do not introduce new third-party actions to the GitHub workflow for the size check; use standard POSIX utilities (e.g., `stat`).
+- **STRICT PROHIBITION:** Do NOT modify other systemd services or scripts outside the specified scope.
+- Ensure the Btrfs check in `neos-autoupdate.sh` exits gracefully (exit 0) if the filesystem is not Btrfs, as documented in the audit.
+- Do not introduce new dependencies; utilize existing tools (e.g., `findmnt`).
 
 ## 5. Delegation Strategy
-- **Architect:** Implement the `pacman.conf` fix and the GitHub Actions YAML size check.
-- **Bolt (Performance):** Ensure the CI size check utilizes lightweight, built-in system tools (`stat`) rather than spinning up heavy containers or complex scripts.
-- **Palette (UX):** Guarantee that if the CI size check fails, the terminal output is highly actionable for developers (displaying current size, limit, and human-readable formats).
-- **Sentinel (Security):** Audit the pipeline to verify that relaxing the root `pacman.conf` signature requirements does not inadvertently compromise the target system's package manager (`airootfs/etc/pacman.conf`).
+- **Architect:** Implement the systemd sandboxing rules and the Btrfs filesystem check.
+- **Bolt (Performance):** Ensure the Btrfs check (`findmnt`) is executed efficiently without introducing noticeable delays to the update process.
+- **Palette (UX):** Ensure any warning messages regarding the disabled snapshots (due to non-Btrfs filesystems) are clear and actionable if surfaced to the user.
+- **Sentinel (Security):** Audit the newly applied systemd directives to verify they effectively sandbox the driver manager without breaking its core functionality (PCI access).
