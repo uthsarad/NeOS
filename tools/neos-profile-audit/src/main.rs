@@ -1,6 +1,7 @@
 use std::collections::{BTreeSet, HashSet};
 use std::env;
-use std::fs;
+use std::fs::{self, File};
+use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
@@ -166,12 +167,19 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
     ];
 
     for path in mirrorlists {
-        let content = fs::read_to_string(&path)
-            .map_err(|err| format!("unable to read {}: {err}", path.display()))?;
+        let file = File::open(&path)
+            .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
+        let reader = BufReader::new(file);
 
-        let has_server = content.lines().map(str::trim).any(|line| {
-            !line.is_empty() && !line.starts_with('#') && line.starts_with("Server")
-        });
+        let mut has_server = false;
+        for line_res in reader.lines() {
+            let line = line_res.map_err(|err| format!("unable to read {}: {err}", path.display()))?;
+            let trimmed = line.trim();
+            if !trimmed.is_empty() && !trimmed.starts_with('#') && trimmed.starts_with("Server") {
+                has_server = true;
+                break; // ⚡ Bolt: Early exit once we find an active server entry
+            }
+        }
 
         if !has_server {
             return Err(format!(
@@ -185,13 +193,15 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
 }
 
 fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
-    let content =
-        fs::read_to_string(path).map_err(|err| format!("unable to read {}: {err}", path.display()))?;
+    let file = File::open(path)
+        .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
+    let reader = BufReader::new(file);
 
     let mut packages = BTreeSet::new();
     let mut duplicates = HashSet::new();
 
-    for (index, raw_line) in content.lines().enumerate() {
+    for (index, raw_line_res) in reader.lines().enumerate() {
+        let raw_line = raw_line_res.map_err(|err| format!("unable to read {}: {err}", path.display()))?;
         let trimmed = raw_line.trim();
         if trimmed.is_empty() || trimmed.starts_with('#') {
             continue;
