@@ -59,3 +59,7 @@
 ## 2026-03-02 - Bash Builtins vs External Processes for Parsing
 **Learning:** In performance-sensitive bash scripts, piping output to external tools like `awk` for simple field extraction (e.g., `df -Pk / | awk '{print $4}'`) introduces significant overhead due to subprocess forks. Using bash process substitution with the built-in `read` command (`{ read -r _; read -r _ _ _ val _ _; } < <(df -Pk /)`) can reduce execution time by ~20%.
 **Action:** When parsing tabular command output in tight loops or initialization phases, prefer using native bash `read` capabilities via process substitution over external parsers.
+
+## 2026-03-03 - Stream-Based Parsing for Unbounded List Files
+**Learning:** In Rust tooling processing potentially large configuration files (like extensive package lists or massive mirrorlists), using `fs::read_to_string` loads the entire file into memory as a single string before iteration, which is highly inefficient for files scaling to thousands of lines. This is especially true when searching for the *first* occurrence of a string, as `read_to_string` unnecessarily reads and allocates memory for the rest of the file.
+**Action:** When parsing list-like files in Rust where size may be unbounded or large, utilize `File::open` paired with `io::BufReader::new().lines()` for memory-efficient, incremental line-by-line streaming, and combine this with an early loop exit (`break`) once the desired condition is met to minimize I/O and processing overhead.
