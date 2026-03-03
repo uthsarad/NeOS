@@ -1,10 +1,8 @@
 {
-  "role": "Bolt",
-  "task": "Review Rust parsing performance",
-  "context": "Architect replaced bash parsing with line-by-line iterative matching in tools/neos-profile-audit/src/main.rs.",
-  "action_items": [
-    "Profile the execution of assert_profiledef_properties().",
-    "Determine if the current `.starts_with()` string matching creates a bottleneck for large configuration files.",
-    "Evaluate if standard library functions are sufficient or if regex compilation is strictly necessary for performance."
+  "task": "Ensure the CI size check utilizes lightweight, built-in system tools (stat) rather than spinning up heavy containers or complex scripts.",
+  "context": "The Architect has updated the ISO size limit in `.github/workflows/build-iso.yml` to exactly 2 GiB.",
+  "action": "Review the `Validate ISO Size` step in `.github/workflows/build-iso.yml` to confirm no performance regressions or bloated operations were introduced.",
+  "files": [
+    ".github/workflows/build-iso.yml"
   ]
 }
