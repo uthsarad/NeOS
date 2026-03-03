@@ -119,3 +119,20 @@
 
 -   **Medium Risks Resolved**: 1 (Path traversal in Rust audit tool)
 -   **Low Risks Resolved**: 1 (Command injection risk in error output)
+
+## Sentinel Report - Package Name Parsing Validation
+
+### Risks Found
+
+1. **Medium Priority - Terminal Escape Sequence Injection in Error Output**
+   - **File**: `tools/neos-profile-audit/src/main.rs`
+   - **Vulnerability**: The `parse_package_file` function read line entries and, if invalid whitespace was detected, formatted the untrusted string into an error message that could be printed to standard error. This exposed a vulnerability where terminal escape sequences (such as `\x1b`) could be injected via maliciously crafted package list files. If an administrator runs the audit tool on a tampered repository, the escape sequences would execute, potentially resulting in UI redress or arbitrary terminal command execution depending on the terminal emulator.
+
+### Fixes Applied
+
+1. **Strict Alphanumeric Validation on Package Names**
+   - **Fix**: Added explicit validation to `parse_package_file` ensuring that every trimmed package name string strictly contains only alphanumeric characters along with allowed package symbols (`-`, `_`, `.`, `@`, `+`). If an invalid character is detected, the function safely aborts and returns an error message that explicitly omits the untrusted string, preventing any terminal injection while still alerting the user to the anomaly.
+
+### Severity Summary
+
+-   **Medium Risks Resolved**: 1 (Terminal escape sequence injection risk in package file parsing output)

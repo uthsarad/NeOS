@@ -197,12 +197,11 @@ fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
             continue;
         }
 
-        if trimmed.contains(char::is_whitespace) {
+        if trimmed.chars().any(|c| !c.is_alphanumeric() && c != '-' && c != '_' && c != '.' && c != '@' && c != '+') {
             return Err(format!(
-                "{}:{} contains invalid whitespace in package entry `{}`",
+                "{}:{} contains invalid characters or whitespace in package entry (possible terminal injection)",
                 path.display(),
-                index + 1,
-                trimmed
+                index + 1
             ));
         }
 
@@ -415,5 +414,20 @@ mod tests {
 
         let err = assert_profiledef_properties(root).unwrap_err();
         assert!(err.contains("bootmodes contains invalid characters (possible command injection)"));
+    }
+
+    #[test]
+    fn test_package_file_terminal_injection() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        let path = root.join("packages.x86_64");
+
+        // Write a package name that contains an escape sequence to simulate terminal injection
+        // \x1b is the escape character
+        let package_content = "valid-package\n\x1b[31mmalicious-package\x1b[0m\nanother-valid";
+        fs::write(&path, package_content).unwrap();
+
+        let err = parse_package_file(&path).unwrap_err();
+        assert!(err.contains("contains invalid characters or whitespace in package entry (possible terminal injection)"));
     }
 }
