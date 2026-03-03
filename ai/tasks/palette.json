@@ -1,10 +1,8 @@
 {
-  "role": "Palette",
-  "task": "Review CLI error messages",
-  "context": "Architect implemented rust validation for profiledef.sh bootmodes and pacman_conf variables.",
-  "action_items": [
-    "Review the string error formats returned by tools/neos-profile-audit/src/main.rs (assert_profiledef_properties).",
-    "Ensure they are intuitive and provide clear user action (e.g. valid bootmodes list).",
-    "Suggest or implement formatting adjustments for terminal readability."
+  "task": "Guarantee that if the CI size check fails, the terminal output is highly actionable for developers (displaying current size, limit, and human-readable formats).",
+  "context": "The Architect has updated the ISO size limit in `.github/workflows/build-iso.yml` to exactly 2 GiB and left a comment regarding Palette's responsibilities.",
+  "action": "Review the error message in the `Validate ISO Size` step of `.github/workflows/build-iso.yml` and improve its UX to help developers fix size regressions quickly.",
+  "files": [
+    ".github/workflows/build-iso.yml"
   ]
 }

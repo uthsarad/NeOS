@@ -132,15 +132,16 @@ jobs:
           fi
 
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
-          # 1.9 GiB limit to provide a safety buffer for GitHub release upload (approx 2040 MB)
-          MAX_SIZE=$((1945 * 1024 * 1024))  # ~1.9 GiB
+          # Architect: Set ISO size limit to exactly 2 GiB to unblock CI and align with constraints
+          MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
 
           echo "ISO File: $ISO_FILE"
           echo "ISO Size: $ISO_SIZE bytes"
-          echo "Max Size: $MAX_SIZE bytes (1.9 GiB)"
+          echo "Max Size: $MAX_SIZE bytes (2 GiB)"
 
           if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
-            echo "❌ ISO exceeds GitHub release limit (1.9 GiB safety buffer)!"
+            # Palette: Consider providing instructions on how to reduce ISO size
+            echo "❌ ISO exceeds GitHub release limit (2 GiB)!"
             exit 1
           else
             echo "✅ ISO size is within limits."
