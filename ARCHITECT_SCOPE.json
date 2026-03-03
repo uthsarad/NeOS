@@ -1,29 +1,26 @@
 {
-  "deliverable": "ISO Build Infrastructure Stabilization",
-  "rationale": "The CI/CD pipeline is currently blocked by a critical pacman.conf misconfiguration, preventing ISO generation. Additionally, there are no CI guardrails to prevent ISO bloat beyond release limits.",
+  "deliverable": "Service Hardening and Runtime Validation",
+  "rationale": "Several core systemd services and scripts are currently unsandboxed or lacking runtime validation, presenting unacceptable stability risks and potential silent failures on updates.",
   "scope": {
     "files_allowed": [
-      "pacman.conf",
-      ".github/workflows/build-iso.yml"
+      "airootfs/etc/systemd/system/neos-driver-manager.service",
+      "airootfs/usr/local/bin/neos-autoupdate.sh"
     ],
-    "files_forbidden": [
-      "airootfs/etc/pacman.conf",
-      "build.sh"
-    ]
+    "files_forbidden": []
   },
   "implementation_steps": [
     {
       "step": 1,
-      "description": "Modify root pacman.conf to change SigLevel from 'Required DatabaseRequired' to 'Required DatabaseOptional' to fix the build blocker."
+      "description": "Create airootfs/etc/systemd/system/neos-driver-manager.service with sandboxing directives: ProtectSystem=full, ProtectHome=yes, PrivateTmp=yes, and NoNewPrivileges=yes."
     },
     {
       "step": 2,
-      "description": "Append a bash-based step in .github/workflows/build-iso.yml to assert the generated ISO file is under 2 GiB."
+      "description": "Add a dependency check in airootfs/usr/local/bin/neos-autoupdate.sh to verify the root filesystem is Btrfs. If not Btrfs, the script should exit gracefully (exit 0) without performing snapshots."
     }
   ],
   "constraints": [
-    "Do not touch the installed system's pacman configuration (airootfs/etc/pacman.conf).",
-    "Use standard tools like `stat` for size calculation in CI.",
-    "Fail the CI step immediately if the size exceeds 2147483648 bytes."
+    "Do not modify other systemd services or scripts outside the specified scope.",
+    "Use standard tools like `findmnt` for the Btrfs filesystem check in `neos-autoupdate.sh`.",
+    "The `neos-autoupdate.sh` check must exit gracefully if the filesystem is not Btrfs, preventing false failures."
   ]
 }

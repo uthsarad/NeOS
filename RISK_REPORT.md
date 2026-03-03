@@ -1,30 +1,30 @@
 # RISK & PRIORITY REPORT 🛡️
 
-**Date:** 2026-03-02
+**Date:** 2026-03-03
 **Author:** Maestro (Strategic Engineering Director)
 
 ## 1. System Health & Drift Assessment
-- **Product Drift:** Low. The team is correctly focusing on core infrastructure and configuration rather than extraneous features.
-- **Tech Debt:** Decreasing, thanks to recent Rust-based profile validation tools. However, a residual configuration error from previous architectural changes is currently breaking the build.
-- **System Stability:** **CRITICAL**. The automated ISO generation pipeline is broken due to the root `pacman.conf` signature enforcement.
+- **Product Drift:** Low. The team is strictly focusing on infrastructure and system hardening, aligning perfectly with the goal of creating a reliable rolling release.
+- **Tech Debt:** Moderate. While build issues are resolved, several foundational security and dependency checks identified in the initial deep audit remain unaddressed.
+- **System Stability:** **DEGRADED**. Essential automated maintenance scripts and background hardware services run with unconstrained privileges or missing prerequisites.
 
 ## 2. Identified Risks
 
-### High Risk: Broken CI/CD Pipeline
-- **Description:** The root `pacman.conf` enforces `DatabaseRequired`, which fails during the mkarchiso build phase for repositories without signed databases (e.g., `alci_repo`).
-- **Impact:** Complete blockage of artifact generation. No QA, testing, or feature verification can proceed until an ISO can be successfully built.
-- **Mitigation:** Imminent deployment of a fix to change the build-time configuration to `DatabaseOptional`.
+### High Risk: Unsandboxed Root Services
+- **Description:** `neos-driver-manager.service` runs as root and accesses hardware devices but entirely lacks systemd security directives (`ProtectSystem`, `PrivateTmp`, `NoNewPrivileges`).
+- **Impact:** Any vulnerability in the python-based driver manager could lead to full system compromise. If compromised, it has write access to sensitive filesystem locations.
+- **Mitigation:** Enforce stringent sandboxing within the service definition to heavily restrict what paths the process can modify.
 
-### Medium Risk: Uncaught ISO Bloat
-- **Description:** The project targets a maximum ISO size of 2 GiB to comply with GitHub Releases limitations. Currently, there is no automated check preventing a bloated image from successfully building but failing deployment.
-- **Impact:** Wasted CI cycles and late-stage deployment failures if an update inadvertently pulls in massive dependencies.
-- **Mitigation:** Implementation of a hard size check in the CI workflow prior to artifact upload.
+### Medium Risk: Missing Runtime Dependency Validations
+- **Description:** `neos-autoupdate.sh` heavily relies on `snapper` and requires a Btrfs filesystem to create pre/post update snapshots, but fails to verify the filesystem type before execution.
+- **Impact:** If a user configures a system without Btrfs, the script will silently fail during updates, or generate noisy errors, potentially skipping vital security updates altogether.
+- **Mitigation:** Implement a lightweight `findmnt` check to exit the snapshot logic gracefully if Btrfs is not detected.
 
-### Monitored Risk: Supply Chain Integrity
-- **Description:** Relaxing the build environment's `pacman.conf` to `DatabaseOptional` slightly increases the risk of undetected database tampering during the ISO build process.
-- **Mitigation:** The installed system's `airootfs/etc/pacman.conf` correctly maintains strict `DatabaseRequired` enforcement. Sentinel will monitor this boundary closely. Long-term, mirroring and signing the upstream repositories is advised.
+### Monitored Risk: CI Pipeline
+- **Description:** Following the recent size limit constraints and `pacman.conf` adjustments, the build pipeline is stable.
+- **Mitigation:** Continue to monitor artifact generation times and sizes. Any failures in test validation must fail the workflow instantly.
 
 ## 3. Immediate Priorities
-1. **Unblock the build:** Execute the `ARCHITECT_SCOPE.json` to fix `pacman.conf`.
-2. **Prevent size regressions:** Implement the CI guardrail for the 2 GiB limit.
-3. **Strategic Pause:** No new features until the pipeline is green and reliable.
+1. **System Hardening:** Implement systemd service sandboxing for the driver manager.
+2. **Runtime Resilience:** Add filesystem dependency checks to the autoupdater.
+3. **Strategic Pause:** Strict moratorium on UI/UX tweaks or new packages until core security debt is paid down.
