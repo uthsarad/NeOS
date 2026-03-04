@@ -136,3 +136,50 @@
 ### Severity Summary
 
 -   **Medium Risks Resolved**: 1 (Terminal escape sequence injection risk in package file parsing output)
+
+## Sentinel Report - pacman.conf Signature Requirement Audit
+
+### Risks Found
+
+1. **Information Verification - pacman.conf Relaxed Signature Model**
+   - **Files audited**: `pacman.conf`, `airootfs/etc/pacman.conf`
+   - **Context**: The build-time `pacman.conf` signature requirement was relaxed to `SigLevel = Required DatabaseOptional` to accommodate the `alci_repo` lacking database signatures during the Archiso build phase. This introduces a potential risk of compromising the final ISO image.
+   - **Vulnerability Audit Check**: Verified if the relaxed requirement unintentionally propagated to the target system's package manager configuration located in `airootfs/etc/pacman.conf`.
+
+### Fixes Applied / Validation Done
+
+1. **Target System Retains Strict Security Policies**
+   - **Action**: Confirmed that `airootfs/etc/pacman.conf` maintains the correct and strict `SigLevel = Required DatabaseRequired` rule.
+   - **Result**: The relaxed build-time constraints effectively isolate the configuration to the ISO creation phase, without leaving the target system vulnerable to replay attacks or tampered database synchronization issues.
+
+### Remaining Attack Surface
+
+- As noted previously, the unsigned `alci_repo` with `SigLevel = Optional` continues to act as a weak link during the ISO build process. Any modifications via MITM attacks targeting this repository during the ISO generation could inject compromised artifacts into the installation media.
+- The `pacman.conf` file for the root build has `DatabaseOptional`, which leaves the build process vulnerable to tampered sync databases for otherwise signed packages, potentially enabling downgrade attacks.
+
+### Severity Summary
+
+- **Medium Risks Resolved / Mitigated (By isolation)**: 1 (Confirmed isolation of `DatabaseOptional` to build-time config only)
+
+## Sentinel Report - Build-Time pacman.conf Repository Hardening
+
+### Risks Found
+
+1. **Medium Priority - Broad Relaxation of Signature Requirements in Build Process**
+   - **File**: `pacman.conf`
+   - **Vulnerability**: To accommodate the unsigned `alci_repo` database during the ISO build, the global `SigLevel` in the root `pacman.conf` was set to `Required DatabaseOptional`. This effectively relaxed the database signature checks for *all* configured repositories, including the official Arch Linux repositories (`[core]`, `[extra]`, `[multilib]`).
+   - **Impact**: While the packages themselves still required signatures (`Required`), the lack of database verification (`DatabaseOptional`) allows a malicious or compromised mirror to serve stale or tampered sync databases. This could be leveraged to execute downgrade attacks by tricking the package manager into believing an older, vulnerable version of a package is the latest available.
+
+### Fixes Applied
+
+1. **Targeted Signature Enforcement for Core Repositories**
+   - **Fix**: Added `SigLevel = Required DatabaseRequired` explicitly to the `[core]`, `[extra]`, and `[multilib]` repository sections in the root `pacman.conf`.
+   - **Reasoning**: This overrides the relaxed global configuration, enforcing strict database signature verification for the critical, official Arch Linux repositories while still allowing the ISO build to proceed by keeping the global and `alci_repo`-specific configurations relaxed.
+
+### Remaining Attack Surface
+
+- The global `DatabaseOptional` and `alci_repo`'s `Optional` signature levels remain in place as necessary build compromises. The `alci_repo` itself is still completely vulnerable to MITM attacks, tampered packages, and tampered databases during the build phase. The system remains dependent on the security of the `arch-linux-calamares-installer.github.io` infrastructure.
+
+### Severity Summary
+
+-   **Medium Risks Resolved**: 1 (Secured core Arch Linux sync databases during ISO build)
