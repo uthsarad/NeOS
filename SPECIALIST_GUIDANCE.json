@@ -1,16 +1,16 @@
 {
   "specialists": {
     "bolt": {
-      "focus_area": "Runtime Script Performance",
-      "guidance": "Review the newly added Btrfs filesystem check in `neos-autoupdate.sh`. Ensure that standard POSIX utilities like `findmnt` are utilized efficiently and don't introduce performance regressions or extra execution overhead before the update runs."
+      "focus_area": "CI/CD Pipeline Optimization",
+      "guidance": "Review the new `.github/workflows/build-iso.yml` changes. Ensure file discovery logic utilizes native bash globbing instead of slow subprocesses (like `find` or `awk`) where possible. Ensure the overall CI execution time is not adversely impacted."
     },
     "palette": {
-      "focus_area": "Update Failure Communication",
-      "guidance": "Review the error message logic related to the Btrfs check in `neos-autoupdate.sh`. Ensure that any warnings or notifications triggered are clearly understood by the end user, with unambiguous explanations of what it means when an update fails or skips snapshots."
+      "focus_area": "CI Error Messages",
+      "guidance": "Review any echo or error statements within `.github/workflows/build-iso.yml` or the test scripts. Size limit failures must clearly communicate human-readable byte values (e.g., MiB) and provide actionable multi-line remediation instructions."
     },
     "sentinel": {
-      "focus_area": "Systemd Sandboxing Constraints",
-      "guidance": "Verify the integrity of the new sandboxing rules in `airootfs/etc/systemd/system/neos-driver-manager.service`. Ensure that `ProtectSystem=full`, `ProtectHome=yes`, `PrivateTmp=yes`, and `NoNewPrivileges=yes` correctly limit root privileges without compromising the service's legitimate need to scan PCI devices."
+      "focus_area": "Build Constraints and Database Trust",
+      "guidance": "Ensure that `pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on official repositories (`[core]`, `[extra]`, `[multilib]`) even if the global level is reduced to `DatabaseOptional` for build compatibility with unsigned repos (like `alci_repo`). Ensure GitHub action permissions remain tightly constrained."
     }
   }
 }
