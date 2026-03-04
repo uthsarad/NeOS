@@ -90,3 +90,8 @@
 **Vulnerability:** Checking for file existence before creation (`if [ ! -f "$LOG_FILE" ]; then touch "$LOG_FILE"; chmod 600 "$LOG_FILE"; fi`) in root-privileged shell scripts introduces a Time-of-Check Time-of-Use (TOCTOU) race condition. An attacker can create a file between `touch` and `chmod`.
 **Learning:** Atomic creation requires using `set -C` (noclobber) with redirection or a secure utility like `mktemp` to guarantee exclusive creation and strict permissions.
 **Prevention:** Use `(umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true` and enforce `chmod 600 "$LOG_FILE"` to handle the case where the file might already exist.
+
+## 2026-03-04 - Targeted Database Signature Requirements
+**Vulnerability:** A global relaxation of signature requirements (`SigLevel = Required DatabaseOptional`) in the build-time `pacman.conf` to accommodate an unsigned custom repository left the official core repositories vulnerable to downgrade attacks via tampered databases.
+**Learning:** Global security configurations should never be reduced to accommodate a single weak link. Doing so unnecessarily expands the attack surface to otherwise secure components.
+**Prevention:** Always use targeted, repository-specific security overrides. Maintain strict global defaults and explicitly loosen them only where absolutely necessary (e.g., configuring `SigLevel = Optional` specifically for the unsigned repository while explicitly enforcing `SigLevel = Required DatabaseRequired` on all others).
