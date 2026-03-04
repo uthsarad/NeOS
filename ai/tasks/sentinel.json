@@ -1,9 +1,8 @@
 {
-  "task": "Audit the pipeline to verify that relaxing the root pacman.conf signature requirements does not inadvertently compromise the target system's package manager (airootfs/etc/pacman.conf).",
-  "context": "The `SigLevel` configuration in the root `pacman.conf` has been set to `Required DatabaseOptional` to fix the build blocker.",
-  "action": "Ensure that `airootfs/etc/pacman.conf` still retains strict `DatabaseRequired` security and verify no security regressions have occurred.",
+  "task": "Verify the integrity of the new sandboxing rules in neos-driver-manager.service.",
+  "context": "The Architect added ProtectSystem=full, ProtectHome=yes, PrivateTmp=yes, and NoNewPrivileges=yes to the driver manager service.",
+  "action": "Ensure these directives correctly limit root privileges without compromising the service's legitimate need to scan PCI devices.",
   "files": [
-    "pacman.conf",
-    "airootfs/etc/pacman.conf"
+    "airootfs/etc/systemd/system/neos-driver-manager.service"
   ]
 }

@@ -61,6 +61,17 @@ check_dependencies() {
     done
 }
 
+check_btrfs() {
+    # Bolt: Verify root is Btrfs using fast findmnt
+    # Palette: If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.
+    local fstype
+    fstype=$(findmnt -n -o FSTYPE / || true)
+    if [ "$fstype" != "btrfs" ]; then
+        log "Root filesystem is not Btrfs ($fstype). Skipping snapshots and updates."
+        exit 0
+    fi
+}
+
 check_disk_space() {
     # Bolt: Using lightweight 'df' instead of 'btrfs fi usage' to minimize performance overhead during update initialization.
     # Minimum required space: 5GB (5242880 KB)
@@ -117,6 +128,7 @@ perform_update() {
 main() {
     check_root
     check_dependencies
+    check_btrfs
     check_disk_space
     perform_update
 }
