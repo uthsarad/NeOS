@@ -1,26 +1,33 @@
 {
-  "deliverable": "Service Hardening and Runtime Validation",
-  "rationale": "Several core systemd services and scripts are currently unsandboxed or lacking runtime validation, presenting unacceptable stability risks and potential silent failures on updates.",
+  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "rationale": "The build pipeline is currently blocked due to a configuration bug, and there are critical gaps in ISO size validation. Implementing a pre-build validation job prevents costly CI resource waste.",
   "scope": {
     "files_allowed": [
-      "airootfs/etc/systemd/system/neos-driver-manager.service",
-      "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "pacman.conf",
+      ".github/workflows/build-iso.yml"
     ],
-    "files_forbidden": []
+    "files_forbidden": [
+      "airootfs/*",
+      "profiledef.sh"
+    ]
   },
   "implementation_steps": [
     {
       "step": 1,
-      "description": "Create airootfs/etc/systemd/system/neos-driver-manager.service with sandboxing directives: ProtectSystem=full, ProtectHome=yes, PrivateTmp=yes, and NoNewPrivileges=yes."
+      "description": "Fix the `DatabaseRequired` build blocker in `pacman.conf` by setting the global `SigLevel` to `Required DatabaseOptional`."
     },
     {
       "step": 2,
-      "description": "Add a dependency check in airootfs/usr/local/bin/neos-autoupdate.sh to verify the root filesystem is Btrfs. If not Btrfs, the script should exit gracefully (exit 0) without performing snapshots."
+      "description": "Add a `test` job to `.github/workflows/build-iso.yml` that executes all pre-build scripts (`tests/verify_*.sh`), explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`)."
+    },
+    {
+      "step": 3,
+      "description": "Ensure the `build` job depends on (`needs:`) the new `test` job."
     }
   ],
   "constraints": [
-    "Do not modify other systemd services or scripts outside the specified scope.",
-    "Use standard tools like `findmnt` for the Btrfs filesystem check in `neos-autoupdate.sh`.",
-    "The `neos-autoupdate.sh` check must exit gracefully if the filesystem is not Btrfs, preventing false failures."
+    "Do not modify the installed system's configuration (`airootfs/etc/pacman.conf`).",
+    "Pre-build validation scripts must execute before the main ISO build step.",
+    "Do not alter ISO compression settings in `profiledef.sh`."
   ]
 }
