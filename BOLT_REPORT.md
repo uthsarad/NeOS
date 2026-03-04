@@ -1,15 +1,13 @@
-# Bolt Performance Report: Rust Stream-based Parsing
+# BOLT_REPORT.md
 
-## What was optimized
-The file parsing logic in `parse_package_file()` and `assert_mirrorlists_have_servers()` located in `tools/neos-profile-audit/src/main.rs`. Replaced `fs::read_to_string` with `std::io::BufReader`.
+## Optimization: Remove subprocess forks in CI ISO size validation
 
-## Before/After Reasoning
-### Before
-The original implementation used `fs::read_to_string()` to read the entire content of package list files (`packages.x86_64`, etc.) and mirrorlist files into memory as a single large String. It then processed these strings line-by-line using `.lines()`. For potentially large lists (like a mirrorlist with thousands of servers or an extensive package list), this resulted in unnecessary memory allocations and peak RAM usage during the parsing phase. In `assert_mirrorlists_have_servers()`, we only needed to find the *first* active server entry, meaning loading the entire file was particularly wasteful.
+### What
+Replaced the `find out -maxdepth 1 -name "*.iso" -type f | head -1` pipeline in `.github/workflows/build-iso.yml` with native bash globbing (`shopt -s nullglob; iso_files=(out/*.iso); ISO_FILE="${iso_files[0]:-}"`).
 
-### After
-- **Stream-based processing:** By using `File::open` paired with `io::BufReader::new(file).lines()`, files are now read incrementally line-by-line. This reduces the application's memory footprint to essentially the size of the longest single line in the file plus a small buffer.
-- **Early exit optimization:** In `assert_mirrorlists_have_servers()`, I added a `break` to exit the loop immediately once an active `Server` line is found. Combined with the streaming reader, this means we avoid reading and processing the remainder of the file entirely, significantly reducing I/O and CPU time for long mirrorlists where the active server might be near the top.
+### Before/After Reasoning
+- **Before:** To locate the compiled ISO file for size validation and release preparation, the workflow utilized a pipeline spawning two distinct subprocesses (`find` and `head`). Spinning up subprocesses incurs a measurable execution and memory overhead compared to shell builtins.
+- **After:** By leveraging native bash globbing features, the workflow now resolves the ISO file directly within the executing shell's context without any additional forks. This reduces overhead during CI operations, upholding Bolt's performance ethos in automation and scripting.
 
-## Remaining Performance Risks
-The `assert_profiledef_properties()` function currently still uses `fs::read_to_string` because `profiledef.sh` is generally very small (< 2 KB) and loading it into memory once is likely fast enough. Additionally, the `pacman.conf` check within `assert_profiledef_properties` also uses `read_to_string` because it relies on a whole-file `.contains("DatabaseOptional")` check. If these configurations were to grow exceptionally large, converting them to use a `BufReader` could be a beneficial next step.
+### Remaining Performance Risks
+The performance improvement is isolated to small script operations within CI. The time to compress and package the ISO will still dominate the workflow runtime; however, eliminating unnecessary subprocess forks remains a best practice.

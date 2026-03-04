@@ -63,3 +63,7 @@
 ## 2026-03-03 - Stream-Based Parsing for Unbounded List Files
 **Learning:** In Rust tooling processing potentially large configuration files (like extensive package lists or massive mirrorlists), using `fs::read_to_string` loads the entire file into memory as a single string before iteration, which is highly inefficient for files scaling to thousands of lines. This is especially true when searching for the *first* occurrence of a string, as `read_to_string` unnecessarily reads and allocates memory for the rest of the file.
 **Action:** When parsing list-like files in Rust where size may be unbounded or large, utilize `File::open` paired with `io::BufReader::new().lines()` for memory-efficient, incremental line-by-line streaming, and combine this with an early loop exit (`break`) once the desired condition is met to minimize I/O and processing overhead.
+
+## 2026-03-04 - Native Bash Globbing vs Subprocesses
+**Learning:** In simple file discovery and automation scripts, using `find ... | head` creates a subshell and process forks, adding unnecessary execution overhead compared to native shell tools.
+**Action:** When finding a single file dynamically in bash scripts (like CI workflows), prefer using native features like `shopt -s nullglob; files=(dir/*.ext); FILE="${files[0]:-}"` to avoid subprocess overhead.
