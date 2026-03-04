@@ -124,8 +124,10 @@ jobs:
         run: |
           set -euo pipefail
           cd "$GITHUB_WORKSPACE"
-          # Find the ISO file safely without relying on ls
-          ISO_FILE=$(find out -maxdepth 1 -name "*.iso" -type f | head -1)
+          # Find the ISO file safely using native bash globbing to avoid subshell forks
+          shopt -s nullglob
+          iso_files=(out/*.iso)
+          ISO_FILE="${iso_files[0]:-}"
           if [ -z "$ISO_FILE" ]; then
              echo "❌ No ISO file found to validate"
              exit 1
@@ -153,8 +155,10 @@ jobs:
         run: |
           set -euo pipefail
           cd "$GITHUB_WORKSPACE"
-          # Find the ISO file safely without relying on ls
-          ISO_FILE=$(find out -maxdepth 1 -name "*.iso" -type f | head -1)
+          # Find the ISO file safely using native bash globbing to avoid subshell forks
+          shopt -s nullglob
+          iso_files=(out/*.iso)
+          ISO_FILE="${iso_files[0]:-}"
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
           echo "ISO size: $ISO_SIZE bytes"
           ls -lh out/
