@@ -1,8 +1,8 @@
 {
-  "task": "Ensure the CI size check utilizes lightweight, built-in system tools (stat) rather than spinning up heavy containers or complex scripts.",
-  "context": "The Architect has updated the ISO size limit in `.github/workflows/build-iso.yml` to exactly 2 GiB.",
-  "action": "Review the `Validate ISO Size` step in `.github/workflows/build-iso.yml` to confirm no performance regressions or bloated operations were introduced.",
+  "task": "Review the newly added Btrfs filesystem check in neos-autoupdate.sh.",
+  "context": "The Architect has added a dependency check using findmnt to verify the root filesystem is Btrfs.",
+  "action": "Ensure that findmnt is utilized efficiently and doesn't introduce performance regressions before the update runs.",
   "files": [
-    ".github/workflows/build-iso.yml"
+    "airootfs/usr/local/bin/neos-autoupdate.sh"
   ]
 }

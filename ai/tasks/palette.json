@@ -1,8 +1,8 @@
 {
-  "task": "Guarantee that if the CI size check fails, the terminal output is highly actionable for developers (displaying current size, limit, and human-readable formats).",
-  "context": "The Architect has updated the ISO size limit in `.github/workflows/build-iso.yml` to exactly 2 GiB and left a comment regarding Palette's responsibilities.",
-  "action": "Review the error message in the `Validate ISO Size` step of `.github/workflows/build-iso.yml` and improve its UX to help developers fix size regressions quickly.",
+  "task": "Review the error message logic related to the Btrfs check in neos-autoupdate.sh.",
+  "context": "The script currently exits gracefully without user warnings if the filesystem is not Btrfs.",
+  "action": "Ensure that any future warnings or notifications triggered are clearly understood by the end user if the logic is updated.",
   "files": [
-    ".github/workflows/build-iso.yml"
+    "airootfs/usr/local/bin/neos-autoupdate.sh"
   ]
 }
