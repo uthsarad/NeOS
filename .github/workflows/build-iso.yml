@@ -135,13 +135,21 @@ jobs:
           # Architect: Set ISO size limit to exactly 2 GiB to unblock CI and align with constraints
           MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
 
+          ISO_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $ISO_SIZE / 1024 / 1024}")
+          MAX_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $MAX_SIZE / 1024 / 1024}")
+
           echo "ISO File: $ISO_FILE"
-          echo "ISO Size: $ISO_SIZE bytes"
-          echo "Max Size: $MAX_SIZE bytes (2 GiB)"
+          echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
+          echo "Max Size: $MAX_SIZE bytes (${MAX_SIZE_MB} MiB)"
 
           if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
             # Palette: Consider providing instructions on how to reduce ISO size
-            echo "❌ ISO exceeds GitHub release limit (2 GiB)!"
+            echo "❌ ISO exceeds GitHub release limit!"
+            echo ""
+            echo "💡 How to reduce ISO size:"
+            echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
+            echo "   - Utilize 'NoExtract' rules in 'pacman.conf' for large unused documentation or locale files."
+            echo "   - Check for large unintended assets in 'airootfs/'."
             exit 1
           else
             echo "✅ ISO size is within limits."
