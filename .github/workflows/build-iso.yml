@@ -13,7 +13,48 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+      options: --privileged
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pacman -Sy --noconfirm git wget awk grep syslinux python rust
+
+      - name: Run pre-build validations
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+
+          # ⚡ Bolt: Use native bash globbing for fast file discovery
+          shopt -s nullglob
+          for script in tests/verify_*.sh; do
+            # Exclude tests that require a built ISO
+            if [[ "$script" == "tests/verify_iso_smoketest.sh" ]] || \
+               [[ "$script" == "tests/verify_iso_grub.sh" ]] || \
+               [[ "$script" == "tests/verify_iso_size.sh" ]]; then
+              continue
+            fi
+
+            echo "Running $script..."
+            if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
+              # Non-blocking tests with timeout
+              timeout 60s bash "$script" || echo "⚠️ $script failed or timed out (skipping)"
+            else
+              bash "$script"
+            fi
+          done
+
   build:
+    needs: test
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
@@ -112,12 +153,6 @@ jobs:
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_size.sh
           bash tests/verify_iso_smoketest.sh
-          # Updated performance config verification
-          bash tests/verify_performance_config.sh
-          # Additional non-blocking checks as requested
-          timeout 60s bash tests/verify_mkinitcpio.sh || echo "⚠️ verify_mkinitcpio.sh failed or timed out (skipping)"
-          timeout 60s bash tests/verify_qml_enhancements.sh || echo "⚠️ verify_qml_enhancements.sh failed or timed out (skipping)"
-          bash tests/verify_rust_profile_audit.sh
 
       - name: Validate ISO Size
         if: github.ref == 'refs/heads/main'
