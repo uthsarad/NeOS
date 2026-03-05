@@ -2,15 +2,15 @@
   "specialists": {
     "bolt": {
       "focus_area": "CI/CD Pipeline Optimization",
-      "guidance": "Review the new `.github/workflows/build-iso.yml` changes. Ensure file discovery logic utilizes native bash globbing instead of slow subprocesses (like `find` or `awk`) where possible. Ensure the overall CI execution time is not adversely impacted."
+      "guidance": "No direct performance optimizations required for this specific permissions fix. Ensure any future workflow additions maintain fast execution times and rely on minimal environments."
     },
     "palette": {
-      "focus_area": "CI Error Messages",
-      "guidance": "Review any echo or error statements within `.github/workflows/build-iso.yml` or the test scripts. Size limit failures must clearly communicate human-readable byte values (e.g., MiB) and provide actionable multi-line remediation instructions."
+      "focus_area": "CI Error Messages and Documentation",
+      "guidance": "Ensure that the project's documentation (like CONTRIBUTING.md) clearly states that the auto-merge bot handles PR approvals for the core maintainer team and trusted bots."
     },
     "sentinel": {
-      "focus_area": "Build Constraints and Database Trust",
-      "guidance": "Ensure that `pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on official repositories (`[core]`, `[extra]`, `[multilib]`) even if the global level is reduced to `DatabaseOptional` for build compatibility with unsigned repos (like `alci_repo`). Ensure GitHub action permissions remain tightly constrained."
+      "focus_area": "Workflow Action Permissions and Constraints",
+      "guidance": "Verify that granting the `workflows: write` permission in `.github/workflows/jules-auto-merge.yml` is strictly coupled with the existing actor verification logic (`if: github.actor == ...`) to prevent untrusted pull requests from executing unauthorized merges or altering repository configurations."
     }
   }
 }
