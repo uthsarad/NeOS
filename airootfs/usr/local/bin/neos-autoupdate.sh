@@ -62,10 +62,10 @@ check_dependencies() {
 }
 
 check_btrfs() {
-    # Bolt: Verify root is Btrfs using fast findmnt
+    # Bolt: Verify root is Btrfs using stat instead of findmnt to avoid parsing mount files
     # Palette: If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.
     local fstype
-    fstype=$(findmnt -n -o FSTYPE / || true)
+    fstype=$(stat -f -c %T / || true)
     if [ "$fstype" != "btrfs" ]; then
         log "Root filesystem is not Btrfs ($fstype). Skipping snapshots and updates."
         exit 0
