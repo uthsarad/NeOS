@@ -67,7 +67,7 @@ check_btrfs() {
     local fstype
     fstype=$(findmnt -n -o FSTYPE / || true)
     if [ "$fstype" != "btrfs" ]; then
-        log "Root filesystem is not Btrfs ($fstype). Skipping snapshots and updates."
+        log "Auto-update skipped: Root filesystem is '$fstype'. Btrfs is required for safe rollback snapshots."
         exit 0
     fi
 }
