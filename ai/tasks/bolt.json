@@ -1,8 +1,5 @@
 {
-  "task": "Review the newly added Btrfs filesystem check in neos-autoupdate.sh.",
-  "context": "The Architect has added a dependency check using findmnt to verify the root filesystem is Btrfs.",
-  "action": "Ensure that findmnt is utilized efficiently and doesn't introduce performance regressions before the update runs.",
-  "files": [
-    "airootfs/usr/local/bin/neos-autoupdate.sh"
-  ]
+  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "focus_area": "CI/CD Pipeline Optimization",
+  "guidance": "Review the new `.github/workflows/build-iso.yml` changes. Ensure file discovery logic utilizes native bash globbing instead of slow subprocesses (like `find` or `awk`) where possible. Ensure the overall CI execution time is not adversely impacted."
 }

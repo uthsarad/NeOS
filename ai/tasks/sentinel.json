@@ -1,8 +1,5 @@
 {
-  "task": "Verify the integrity of the new sandboxing rules in neos-driver-manager.service.",
-  "context": "The Architect added ProtectSystem=full, ProtectHome=yes, PrivateTmp=yes, and NoNewPrivileges=yes to the driver manager service.",
-  "action": "Ensure these directives correctly limit root privileges without compromising the service's legitimate need to scan PCI devices.",
-  "files": [
-    "airootfs/etc/systemd/system/neos-driver-manager.service"
-  ]
+  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "focus_area": "Build Constraints and Database Trust",
+  "guidance": "Ensure that `pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on official repositories (`[core]`, `[extra]`, `[multilib]`) even if the global level is reduced to `DatabaseOptional` for build compatibility with unsigned repos (like `alci_repo`). Ensure GitHub action permissions remain tightly constrained."
 }

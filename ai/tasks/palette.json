@@ -1,8 +1,5 @@
 {
-  "task": "Review the error message logic related to the Btrfs check in neos-autoupdate.sh.",
-  "context": "The script currently exits gracefully without user warnings if the filesystem is not Btrfs.",
-  "action": "Ensure that any future warnings or notifications triggered are clearly understood by the end user if the logic is updated.",
-  "files": [
-    "airootfs/usr/local/bin/neos-autoupdate.sh"
-  ]
+  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "focus_area": "CI Error Messages",
+  "guidance": "Review any echo or error statements within `.github/workflows/build-iso.yml` or the test scripts. Size limit failures must clearly communicate human-readable byte values (e.g., MiB) and provide actionable multi-line remediation instructions."
 }
