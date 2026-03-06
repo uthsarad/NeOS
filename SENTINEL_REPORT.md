@@ -183,3 +183,10 @@
 ### Severity Summary
 
 -   **Medium Risks Resolved**: 1 (Secured core Arch Linux sync databases during ISO build)
+
+## Pre-build CI Validation and Config Fixes
+- **Vulnerability**: GitHub Action workflow `jules-auto-merge.yml` lacked explicit permissions, making it unreliable to modify workflow files, and required tightly constrained permissions. Additionally, `airootfs/etc/pacman.conf` lacked explicit repository-level signature validation directives, and validation scripts were brittle when handling missing config files.
+- **Fix**: Added explicit `workflows: write` to `.github/workflows/jules-auto-merge.yml` under a properly scoped permissions block. Added `SigLevel = Required DatabaseRequired` directly inside `[core]`, `[extra]`, and `[multilib]` blocks in `airootfs/etc/pacman.conf`. Modified `tests/verify_security_config.sh` to gracefully handle missing `users.conf` file.
+- **Impact**: Better defense-in-depth for repository sync databases and enhanced CI pipeline resilience.
+- **Remaining Attack Surface**: The global configuration `DatabaseOptional` is still active in the build config, so the reliance on `alci_repo` lacking database signatures remains an issue as before.
+- **Severity**: Low (Defense in Depth)

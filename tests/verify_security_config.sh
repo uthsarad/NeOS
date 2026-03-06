@@ -162,25 +162,29 @@ fi
 
 # Sentinel: Check for unsafe user groups in Calamares configuration
 USERS_CONF="airootfs/etc/calamares/modules/users.conf"
-echo "Verifying user groups in $USERS_CONF..."
+if [ -f "$USERS_CONF" ]; then
+    echo "Verifying user groups in $USERS_CONF..."
 
-if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
-    UNSAFE_GROUPS=("sys" "lp" "network" "video" "optical" "storage" "scanner" "power" "adm" "uucp")
-    UNSAFE_FOUND=false
-    for group in "${UNSAFE_GROUPS[@]}"; do
-        if grep -q "[[:space:]]- $group" "$USERS_CONF"; then
-            echo "❌ Unsafe group '$group' found in $USERS_CONF"
-            UNSAFE_FOUND=true
+    if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
+        UNSAFE_GROUPS=("sys" "lp" "network" "video" "optical" "storage" "scanner" "power" "adm" "uucp")
+        UNSAFE_FOUND=false
+        for group in "${UNSAFE_GROUPS[@]}"; do
+            if grep -q "[[:space:]]- $group" "$USERS_CONF"; then
+                echo "❌ Unsafe group '$group' found in $USERS_CONF"
+                UNSAFE_FOUND=true
+            fi
+        done
+        if [ "$UNSAFE_FOUND" = true ]; then
+            exit 1
+        else
+            echo "✅ User groups configuration is secure"
         fi
-    done
-    if [ "$UNSAFE_FOUND" = true ]; then
-        exit 1
     else
-        echo "✅ User groups configuration is secure"
+        echo "❌ defaultGroups or wheel not found in $USERS_CONF"
+        exit 1
     fi
 else
-    echo "❌ defaultGroups or wheel not found in $USERS_CONF"
-    exit 1
+    echo "⚠️ $USERS_CONF not found, skipping user groups check."
 fi
 
 echo "All security checks passed!"

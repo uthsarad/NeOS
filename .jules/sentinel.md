@@ -95,3 +95,8 @@
 **Vulnerability:** A global relaxation of signature requirements (`SigLevel = Required DatabaseOptional`) in the build-time `pacman.conf` to accommodate an unsigned custom repository left the official core repositories vulnerable to downgrade attacks via tampered databases.
 **Learning:** Global security configurations should never be reduced to accommodate a single weak link. Doing so unnecessarily expands the attack surface to otherwise secure components.
 **Prevention:** Always use targeted, repository-specific security overrides. Maintain strict global defaults and explicitly loosen them only where absolutely necessary (e.g., configuring `SigLevel = Optional` specifically for the unsigned repository while explicitly enforcing `SigLevel = Required DatabaseRequired` on all others).
+
+## $(date +%Y-%m-%d) - CI Job Permissions and Database Require Validation
+**Vulnerability:** CI job permissions in `jules-auto-merge.yml` lacked required granularity. Additionally, test scripts were prone to hard failure when verifying external configurations that don't exist.
+**Learning:** Hardcoding paths in bash tests without checking file existence leads to brittle pipelines. Always specify the least privilege permission block for GitHub Actions to avoid potential misuse by automated actors.
+**Prevention:** Ensure explicit `workflows: write` is only given where strictly necessary, and explicitly check for file existence `[ -f "$FILE" ]` before running `grep` scans in validation scripts.
