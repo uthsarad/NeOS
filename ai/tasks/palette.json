@@ -1,5 +1,9 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
-  "focus_area": "CI Error Messages",
-  "guidance": "Review any echo or error statements within `.github/workflows/build-iso.yml` or the test scripts. Size limit failures must clearly communicate human-readable byte values (e.g., MiB) and provide actionable multi-line remediation instructions."
+  "role": "Palette",
+  "focus_area": "CI Error Messages and Documentation",
+  "task": "Ensure that the project's documentation (like CONTRIBUTING.md) clearly states that the auto-merge bot handles PR approvals for the core maintainer team and trusted bots.",
+  "files": [
+    "CONTRIBUTING.md",
+    ".github/workflows/jules-auto-merge.yml"
+  ]
 }
