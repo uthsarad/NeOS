@@ -1,13 +1,14 @@
 {
-  "deliverable": "Enable Auto-Merge for Workflow Updates",
-  "rationale": "The auto-merge bot currently fails when pull requests include modifications to GitHub Actions workflows because it lacks the necessary GraphQL API permissions, creating a bottleneck in infrastructure continuous integration.",
+  "deliverable": "Build Stabilization and CI Guardrails",
+  "rationale": "The build pipeline is currently failing due to strict signature requirements in the build-time `pacman.conf` that conflict with unsigned repositories like `alci_repo`. Additionally, the CI workflow lacks ISO size validation, risking silent failures during GitHub Release deployments which enforce a 2 GiB asset limit.",
   "scope": {
     "files_allowed": [
-      ".github/workflows/jules-auto-merge.yml"
+      "pacman.conf",
+      ".github/workflows/build-iso.yml"
     ],
     "files_forbidden": [
-      ".github/workflows/build-iso.yml",
-      "airootfs/*",
+      "airootfs/etc/pacman.conf",
+      "profiledef.sh",
       "tests/*",
       "tools/*"
     ]
@@ -15,11 +16,17 @@
   "implementation_steps": [
     {
       "step": 1,
-      "description": "Modify `.github/workflows/jules-auto-merge.yml` to explicitly include the `workflows: write` permission."
+      "description": "Modify the global `SigLevel` in the root `pacman.conf` to `Required DatabaseOptional` to allow the build process to proceed with the unsigned `alci_repo`."
+    },
+    {
+      "step": 2,
+      "description": "Add an ISO size validation step in `.github/workflows/build-iso.yml` that explicitly checks the generated ISO size against a 2 GiB limit before deployment, providing clear output upon failure."
     }
   ],
   "constraints": [
-    "Do not alter the `if` condition that verifies the actor (`github.repository_owner` or `google-labs-jules[bot]`).",
-    "Do not add any other permissions beyond `workflows: write`."
+    "Strictly enforce `SigLevel = Required DatabaseRequired` on the official Arch Linux repositories (`[core]`, `[extra]`, `[multilib]`) within the root `pacman.conf`.",
+    "Do not modify the target system's package manager configuration (`airootfs/etc/pacman.conf`).",
+    "Use native bash globbing for file discovery in the CI workflow, avoiding slow subprocesses.",
+    "Ensure error messages from the CI size validation are human-readable and actionable."
   ]
 }
