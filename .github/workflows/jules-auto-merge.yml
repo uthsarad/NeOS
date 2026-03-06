@@ -11,6 +11,10 @@ permissions:
 jobs:
   approve-and-merge:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      workflows: write
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
       - name: Checkout
