@@ -1,11 +1,11 @@
-# PALETTE_REPORT
+# Palette Report
 
-## Accessibility Fixes
-- None applicable for this script logic enhancement.
+## Scope
+Modified pre-build validation error messages for ISO size optimizations.
 
-## UX Improvements
-- **Log Messaging Clarity:** Improved the silent exit message in `neos-autoupdate.sh` when the system is not using a Btrfs root filesystem. Instead of simply stating "Root filesystem is not Btrfs. Skipping...", the log now clearly explains *why* the auto-update is skipped: "Auto-update skipped: Root filesystem is 'ext4' (Btrfs is required for safe rollback snapshots)." This transforms a cryptic system log into an actionable explanation, ensuring that users diagnosing missing updates understand that Btrfs snapshots are a hard dependency for this specific script's safe execution.
-- We maintained the silent `exit 0` behavior to prevent spamming warnings to users who intentionally choose alternate filesystems (expected environment variation).
+## Accessibility / UX Fixes
+- **Improved Error Messaging:** Updated `tests/verify_iso_size.sh` to output clear, multi-line remediation instructions when `profiledef.sh` compression settings or `pacman.conf` `NoExtract` settings fail validation.
+- **Actionability:** Error states now clearly point to the specific file and provide exact instructions on how to resolve the error rather than generic "found/not found" logging.
 
 ## Remaining Usability Risks
-- Users without `notify-send` functionality or those not running supported graphical sessions (e.g. headless setups without system mail) may still miss critical out-of-space warnings during auto-updates.
+- The GitHub action workflow itself already outputs actionable UI errors with human-readable MiB sizes for the global 2GiB ISO limit, but other CI tests might still rely on terse single-line exit 1 statements.
