@@ -2,35 +2,40 @@
 
 **Date:** 2026-03-03
 **Phase:** 1 - Foundations & Stabilization
-**Primary Focus:** Workflow Automation and Continuous Delivery
+**Primary Focus:** Build Stabilization and Automated Verification
 
-## 1. Product Alignment Check
-The NeOS mission prioritizes a stable, predictable rolling release model supported by an automated, reliable staging pipeline. Currently, we are drifting from this product goal because our automated merge bot lacks the necessary permissions to merge pull requests that modify GitHub Actions workflows. This creates a bottleneck in our CI/CD pipeline, requiring manual intervention for critical infrastructure updates. Our highest leverage problem is unblocking the automation pipeline to restore velocity.
+## PHASE 1 — Product Alignment Check
+The NeOS mission emphasizes a predictable, snapshot-based rolling release that bridges the gap between Arch Linux flexibility and consumer OS reliability. The product must have a reliable, automated build pipeline (as detailed in the roadmap for Phase 1 and 2) to successfully generate staging and release ISOs.
+Currently, the primary build pipeline is broken due to a rigid signature check in the build environment's `pacman.conf`, preventing ISO generation. Additionally, there is a lack of enforcement for the GitHub Release asset size limit (2 GiB), risking silent deployment failures. Our highest leverage problem is resolving the build block and adding CI safety rails to ensure continuous delivery aligns with product goals.
 
-## 2. Technical Posture Review
-The system's build-time stability has improved with the recent addition of pre-build tests, but technical debt is surfacing in our automation tooling. We are not overbuilding; we are under-automating. The `jules-auto-merge.yml` workflow is functionally incomplete because it cannot process workflow updates, which is a common occurrence during infrastructure improvements.
+## PHASE 2 — Technical Posture Review
+The system is currently failing its automated builds (`verify_build_profile.sh` is failing). This represents a severe degradation in system stability at the infrastructure level. We are not overbuilding; we are missing essential configuration pragmatism during the build phase and lack critical CI validation for our deployment constraints. The technical debt in our build configuration is actively blocking progress.
 
-## 3. Priority Selection
-**Selection: Infrastructure improvement / Stabilization**
+## PHASE 3 — Priority Selection
+**Selection: Stabilization / hardening**
 
-We will fix the auto-merge bot permissions to ensure seamless, automated integration of all pull requests, particularly those that refine our CI pipeline.
+We must execute an immediate stabilization operation. The focus is to unblock the ISO build process by rectifying the build-time `pacman.conf` signature requirements and to harden our CI/CD pipeline by explicitly validating ISO size constraints to proactively prevent deployment failures.
 
-## 4. Controlled Scope Definition
-The Architect is tasked with a highly constrained deliverable: **Enable Auto-Merge for Workflow Updates**.
+## PHASE 4 — Controlled Scope Definition
+The Architect is tasked with a highly constrained deliverable: **Build Stabilization and CI Guardrails**.
 
-### Exact Files Impacted:
-- `.github/workflows/jules-auto-merge.yml`
+### Exact Files Likely Impacted:
+- `pacman.conf` (root level, used for ISO build)
+- `.github/workflows/build-iso.yml`
 
 ### Maximum Allowed Surface Area:
-- Add the `workflows: write` permission to the `approve-and-merge` job (or globally in the workflow).
-- Do not modify the existing condition that restricts the auto-merge bot to specific actors (`github.repository_owner` or `google-labs-jules[bot]`).
+- Modify `SigLevel` in the root `pacman.conf` to accommodate unsigned repositories during the build phase.
+- Add an ISO size validation step in the CI workflow, enforcing a strict 2 GiB limit using fast, native metadata checks.
 
 ### Constraints Architect Must Obey:
-- **STRICT PROHIBITION:** Do NOT modify any other workflows or application code.
-- Maintain the strict actor verification to prevent unauthorized merges.
+- **STRICT PROHIBITION:** Do NOT modify `airootfs/etc/pacman.conf`. The target system must retain its strict `DatabaseRequired` security posture.
+- Do NOT introduce slow subprocesses (like `find` or `awk`) for file discovery in the CI workflow.
+- Ensure the size validation failure output is human-readable and provides actionable remediation instructions.
+- Ensure targeted signature enforcement remains active for core repositories.
 
-## 5. Delegation Strategy
-- **Architect:** Implement the permission fix in the auto-merge workflow.
-- **Bolt (Performance):** No direct performance optimizations required for this specific task; focus on ensuring any future workflow additions maintain fast execution times.
-- **Palette (UX):** No direct UX changes required; however, ensure any new PR templates or documentation clearly communicate the bot's capabilities.
-- **Sentinel (Security):** Ensure that granting `workflows: write` is strictly coupled with the existing actor verification (`if: github.actor == ...`) to prevent privilege escalation via malicious PRs.
+## PHASE 5 — Delegation Strategy
+
+- **Architect (Implementation Lead):** Implement the `DatabaseOptional` fix in the root `pacman.conf` and integrate the ISO size validation step into `.github/workflows/build-iso.yml`.
+- **Bolt (Performance):** Ensure that the CI file discovery logic utilizes fast, native bash globbing instead of subprocesses, maintaining pipeline speed.
+- **Palette (UX):** Ensure any error messages generated by the CI validation script are clear, use human-readable byte values (e.g., MiB), and provide actionable, multi-line recovery instructions.
+- **Sentinel (Security):** Ensure that while the global `SigLevel` is relaxed for the build, official repositories (`[core]`, `[extra]`, `[multilib]`) retain strict `DatabaseRequired` enforcement, and verify the target system's security posture remains unaffected.
