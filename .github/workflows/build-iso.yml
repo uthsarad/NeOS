@@ -205,7 +205,8 @@ jobs:
           files=(out/*.iso)
           ISO_FILE="${files[0]:-}"
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
-          echo "ISO size: $ISO_SIZE bytes"
+          ISO_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $ISO_SIZE / 1024 / 1024}")
+          echo "ISO size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           ls -lh out/
 
       - name: Generate release tag
