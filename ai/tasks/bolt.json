@@ -1,5 +1,5 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "deliverable": "Build Stabilization and CI Guardrails",
   "focus_area": "CI/CD Pipeline Optimization",
-  "guidance": "Review the new `.github/workflows/build-iso.yml` changes. Ensure file discovery logic utilizes native bash globbing instead of slow subprocesses (like `find` or `awk`) where possible. Ensure the overall CI execution time is not adversely impacted."
+  "guidance": "Review the modifications to `.github/workflows/build-iso.yml`. Verify that the new ISO size validation step utilizes fast O(1) metadata checks like `stat -c%s` and native bash globbing for file discovery (e.g., `shopt -s nullglob; files=(out/*.iso); ISO_FILE=\"${files[0]:-}\"`) to prevent the introduction of slow subprocess-heavy pipelines (like `find ... | head -1`)."
 }
