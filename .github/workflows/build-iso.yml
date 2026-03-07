@@ -173,8 +173,9 @@ jobs:
           # Architect: Set ISO size limit to exactly 2 GiB to unblock CI and align with constraints
           MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
 
-          ISO_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $ISO_SIZE / 1024 / 1024}")
-          MAX_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $MAX_SIZE / 1024 / 1024}")
+          # ⚡ Bolt: Compute MiB values using native bash integer arithmetic to avoid awk subprocesses
+          printf -v ISO_SIZE_MB "%d.%02d" "$((ISO_SIZE / 1048576))" "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
+          printf -v MAX_SIZE_MB "%d.%02d" "$((MAX_SIZE / 1048576))" "$(((MAX_SIZE % 1048576) * 100 / 1048576))"
 
           echo "ISO File: $ISO_FILE"
           echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
@@ -205,7 +206,8 @@ jobs:
           files=(out/*.iso)
           ISO_FILE="${files[0]:-}"
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
-          ISO_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $ISO_SIZE / 1024 / 1024}")
+          # ⚡ Bolt: Compute MiB using native bash integer arithmetic to avoid awk subprocesses
+          printf -v ISO_SIZE_MB "%d.%02d" "$((ISO_SIZE / 1048576))" "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
           echo "ISO size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           ls -lh out/
 

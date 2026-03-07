@@ -67,3 +67,7 @@
 ## 2026-03-05 - File System Identification Overhead
 **Learning:** Using `findmnt -n -o FSTYPE /` to check the root filesystem type in a bash script incurs measurable overhead because it requires parsing system mount tables (`/proc/self/mountinfo`).
 **Action:** In performance-sensitive bash scripts, prefer `stat -f -c %T <path>` over `findmnt` for filesystem type checks. `stat` directly calls the `statfs` syscall, resulting in a ~20-30% faster execution without parsing overhead.
+
+## 2026-06-15 - Bash Builtins vs Subprocesses in CI Logic
+**Learning:** In GitHub Action shell scripts (`.github/workflows/build-iso.yml`) and validation scripts (`tests/verify_iso_smoketest.sh`), using `awk` for simple math (like MB conversion) or `find` piped to `wc -l` to count files in a single directory spawns unnecessary subprocesses. These can be optimized entirely using native bash integer arithmetic (`printf -v var "%d.%02d" "$((bytes/1048576))" "$(((bytes%1048576)*100/1048576))"`) and bash array globbing (`shopt -s nullglob; files=(dir/*.iso); count=${#files[@]}`).
+**Action:** Default to using native bash globbing and arithmetic expansions for simple file discovery and math formatting within performance-sensitive bash contexts to eliminate external binary execution overhead.
