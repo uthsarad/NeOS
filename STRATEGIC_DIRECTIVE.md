@@ -1,41 +1,48 @@
-# STRATEGIC DIRECTIVE ✒️
+# Strategic Directive
 
-**Date:** 2026-03-03
-**Phase:** 1 - Foundations & Stabilization
-**Primary Focus:** Build Stabilization and Automated Verification
+## Phase 1 — Product Alignment Check
+**What is the product trying to become?**
+NeOS is a curated, snapshot-based Arch Linux desktop distribution delivering Windows-level usability with Linux-level power. It bridges the gap between Arch flexibility and consumer reliability.
 
-## PHASE 1 — Product Alignment Check
-The NeOS mission emphasizes a predictable, snapshot-based rolling release that bridges the gap between Arch Linux flexibility and consumer OS reliability. The product must have a reliable, automated build pipeline (as detailed in the roadmap for Phase 1 and 2) to successfully generate staging and release ISOs.
-Currently, the primary build pipeline is broken due to a rigid signature check in the build environment's `pacman.conf`, preventing ISO generation. Additionally, there is a lack of enforcement for the GitHub Release asset size limit (2 GiB), risking silent deployment failures. Our highest leverage problem is resolving the build block and adding CI safety rails to ensure continuous delivery aligns with product goals.
+**Are we building toward that?**
+Yes, but the foundation needs to accurately reflect our architecture limits to avoid user frustration. The "Windows-familiar experience" is fully realized on x86_64, but our experimental i686 and aarch64 architectures lack core features like the GUI installer and snapshots.
 
-## PHASE 2 — Technical Posture Review
-The system is currently failing its automated builds (`verify_build_profile.sh` is failing). This represents a severe degradation in system stability at the infrastructure level. We are not overbuilding; we are missing essential configuration pragmatism during the build phase and lack critical CI validation for our deployment constraints. The technical debt in our build configuration is actively blocking progress.
+**Are we solving the highest leverage problem?**
+The highest leverage problem now is expectation management and code maintainability. With critical build blockers and core service hardening (like `neos-autoupdate.sh` and `neos-driver-manager.service`) already addressed, we must clarify our architecture support model and improve the maintainability of our core package lists.
 
-## PHASE 3 — Priority Selection
-**Selection: Stabilization / hardening**
+## Phase 2 — Technical Posture Review
+**Is the system stable?**
+Yes. The ISO builds successfully, size validation is active, and critical system services have been hardened with systemd sandboxing and dependency checks.
 
-We must execute an immediate stabilization operation. The focus is to unblock the ISO build process by rectifying the build-time `pacman.conf` signature requirements and to harden our CI/CD pipeline by explicitly validating ISO size constraints to proactively prevent deployment failures.
+**Is tech debt increasing?**
+Yes, in our documentation and package manifests. `packages.x86_64` lacks structural comments, making it hard to maintain compared to other architectures. Documentation still points to incorrect repository URLs and claims features on architectures that don't support them.
 
-## PHASE 4 — Controlled Scope Definition
-The Architect is tasked with a highly constrained deliverable: **Build Stabilization and CI Guardrails**.
+**Are we overbuilding?**
+No, but we risk overpromising. We must explicitly document that i686 and aarch64 are experimental and do not feature the full NeOS GUI experience.
 
-### Exact Files Likely Impacted:
-- `pacman.conf` (root level, used for ISO build)
-- `.github/workflows/build-iso.yml`
+## Phase 3 — Priority Selection
+**Selection:** Refinement of recent feature (Documentation & Architecture Definitions)
 
-### Maximum Allowed Surface Area:
-- Modify `SigLevel` in the root `pacman.conf` to accommodate unsigned repositories during the build phase.
-- Add an ISO size validation step in the CI workflow, enforcing a strict 2 GiB limit using fast, native metadata checks.
+**Justification:** The system is functionally stable. We must address High and Medium priority audit items related to documentation and package maintainability (Items 3, 5, 6, and 10 from `DEEP_AUDIT.md`) to prepare for a public beta release.
 
-### Constraints Architect Must Obey:
-- **STRICT PROHIBITION:** Do NOT modify `airootfs/etc/pacman.conf`. The target system must retain its strict `DatabaseRequired` security posture.
-- Do NOT introduce slow subprocesses (like `find` or `awk`) for file discovery in the CI workflow.
-- Ensure the size validation failure output is human-readable and provides actionable remediation instructions.
-- Ensure targeted signature enforcement remains active for core repositories.
+## Phase 4 — Controlled Scope Definition
+**Targeted Files:**
+- `README.md`
+- `docs/HANDBOOK.md`
+- `CONTRIBUTING.md`
+- `packages.x86_64`
 
-## PHASE 5 — Delegation Strategy
+**Maximum Allowed Surface Area:**
+Modifications are strictly limited to updating URLs, adding explicit architecture limitations, and adding structural comments to the package manifest. No new features or system configuration changes are permitted.
 
-- **Architect (Implementation Lead):** Implement the `DatabaseOptional` fix in the root `pacman.conf` and integrate the ISO size validation step into `.github/workflows/build-iso.yml`.
-- **Bolt (Performance):** Ensure that the CI file discovery logic utilizes fast, native bash globbing instead of subprocesses, maintaining pipeline speed.
-- **Palette (UX):** Ensure any error messages generated by the CI validation script are clear, use human-readable byte values (e.g., MiB), and provide actionable, multi-line recovery instructions.
-- **Sentinel (Security):** Ensure that while the global `SigLevel` is relaxed for the build, official repositories (`[core]`, `[extra]`, `[multilib]`) retain strict `DatabaseRequired` enforcement, and verify the target system's security posture remains unaffected.
+**Constraints for Architect:**
+- Do not modify `.github/workflows` or test scripts.
+- Do not modify `profiledef.sh` or `pacman.conf`.
+- Follow the exact comment structure defined in `DEEP_AUDIT.md` for `packages.x86_64`.
+- Ensure all URLs point to `https://github.com/uthsarad/NeOS`.
+
+## Phase 5 — Delegation Strategy
+- **Architect:** Implement the documentation fixes and package manifest structure.
+- **Bolt:** Ensure package manifest structural changes do not impact build parsing speed (though minimal impact is expected, `tests/verify_build_profile.sh` should still run quickly).
+- **Palette:** Review the updated documentation for readability and ensure the architecture limitations are presented clearly to the user without causing alarm.
+- **Sentinel:** Verify that the updated URLs point to the correct, trusted repository and do not introduce malicious links.
