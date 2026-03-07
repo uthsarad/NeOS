@@ -1,5 +1,5 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "deliverable": "Build Stabilization and CI Guardrails",
   "focus_area": "Build Constraints and Database Trust",
-  "guidance": "Ensure that `pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on official repositories (`[core]`, `[extra]`, `[multilib]`) even if the global level is reduced to `DatabaseOptional` for build compatibility with unsigned repos (like `alci_repo`). Ensure GitHub action permissions remain tightly constrained."
+  "guidance": "Review the `pacman.conf` modifications. Ensure that while the global `SigLevel` is relaxed to `Required DatabaseOptional` to accommodate the build process, the official repositories (`[core]`, `[extra]`, `[multilib]`) are strictly and explicitly hardened with `SigLevel = Required DatabaseRequired` to prevent downgrade attacks via tampered databases during the ISO build."
 }
