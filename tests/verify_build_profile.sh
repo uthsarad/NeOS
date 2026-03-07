@@ -17,6 +17,10 @@ with open('$WORKFLOW_FILE') as f:
             echo "✅ $WORKFLOW_FILE is valid YAML"
         else
             echo "❌ $WORKFLOW_FILE has YAML syntax errors (CI will fail with 0 jobs)"
+            echo ""
+            echo "💡 How to fix:"
+            echo "   - Review $WORKFLOW_FILE for indentation errors."
+            echo "   - Ensure strings are properly quoted and lists are formatted correctly."
             exit 1
         fi
     else
@@ -27,6 +31,10 @@ fi
 # Verify profiledef.sh exists
 if [ ! -f "$PROFILE_FILE" ]; then
     echo "❌ Missing $PROFILE_FILE"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Ensure $PROFILE_FILE exists in the repository root."
+    echo "   - Check if you are running this script from the correct directory."
     exit 1
 fi
 
@@ -35,6 +43,10 @@ if [ -f "packages.x86_64" ]; then
     echo "✅ packages.x86_64 exists"
 else
     echo "❌ packages.x86_64 does not exist"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Create the packages.x86_64 file."
+    echo "   - Ensure it contains a list of packages to install on the x86_64 architecture."
     exit 1
 fi
 
@@ -43,6 +55,10 @@ if [ -f "bootstrap_packages.x86_64" ]; then
     echo "✅ bootstrap_packages.x86_64 file exists"
 else
     echo "❌ bootstrap_packages.x86_64 file does not exist"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Create the bootstrap_packages.x86_64 file."
+    echo "   - This file is required by mkarchiso to bootstrap the base system."
     exit 1
 fi
 
@@ -65,6 +81,10 @@ if grep -q 'uefi.grub' "$PROFILE_FILE"; then
         echo "✅ grub/grub.cfg exists (required for uefi.grub)"
     else
         echo "❌ grub/grub.cfg missing (required for uefi.grub boot mode)"
+        echo ""
+        echo "💡 How to fix:"
+        echo "   - Provide grub/grub.cfg if you plan to support uefi.grub boot mode."
+        echo "   - Remove 'uefi.grub' from bootmodes in $PROFILE_FILE if you do not."
         exit 1
     fi
 fi
