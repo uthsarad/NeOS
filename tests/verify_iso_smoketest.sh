@@ -9,7 +9,9 @@ if [ ! -d "$OUT_DIR" ]; then
     exit 1
 fi
 
-ISO_COUNT=$(find "$OUT_DIR" -maxdepth 1 -type f -name "*.iso" | wc -l)
+shopt -s nullglob
+files=("$OUT_DIR"/*.iso)
+ISO_COUNT=${#files[@]}
 
 if [ "$ISO_COUNT" -eq 0 ]; then
     echo "❌ No ISO found in $OUT_DIR"
@@ -18,6 +20,11 @@ if [ "$ISO_COUNT" -eq 0 ]; then
 fi
 
 echo "✅ Found $ISO_COUNT ISO file(s) in $OUT_DIR"
-find "$OUT_DIR" -maxdepth 1 -type f -name "*.iso" -printf "%f (%s bytes)\n"
+for file in "${files[@]}"; do
+    # Bolt: Use native bash globbing and stat instead of slow find subprocesses
+    size=$(stat -c%s "$file")
+    name=$(basename "$file")
+    echo "$name ($size bytes)"
+done
 
 echo "ISO smoke test passed."
