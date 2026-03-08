@@ -71,3 +71,7 @@
 ## 2026-06-15 - Bash Builtins vs Subprocesses in CI Logic
 **Learning:** In GitHub Action shell scripts (`.github/workflows/build-iso.yml`) and validation scripts (`tests/verify_iso_smoketest.sh`), using `awk` for simple math (like MB conversion) or `find` piped to `wc -l` to count files in a single directory spawns unnecessary subprocesses. These can be optimized entirely using native bash integer arithmetic (`printf -v var "%d.%02d" "$((bytes/1048576))" "$(((bytes%1048576)*100/1048576))"`) and bash array globbing (`shopt -s nullglob; files=(dir/*.iso); count=${#files[@]}`).
 **Action:** Default to using native bash globbing and arithmetic expansions for simple file discovery and math formatting within performance-sensitive bash contexts to eliminate external binary execution overhead.
+
+## 2026-06-16 - Subprocess Overhead in CI String Slicing
+**Learning:** Common CI patterns like slicing a Git SHA via `$(echo ${{ github.sha }} | cut -c1-7)` launch multiple unnecessary subprocesses (`echo`, `cut`). This incurs measurable shell overhead inside GitHub Actions.
+**Action:** Always prefer native bash parameter expansion (e.g., `${GITHUB_SHA:0:7}`) for simple string slicing in CI/CD pipelines to eliminate process forking delays.
