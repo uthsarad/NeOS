@@ -1,17 +1,18 @@
 {
-  "focus_area": "Documentation Updates and Architecture Limitations",
-  "priority_selection": "Refinement of recent feature",
+  "focus_area": "CI/CD Pipeline Stabilization and Test Hardening",
+  "priority_selection": "Stabilization / hardening",
   "files_impacted": [
-    "README.md",
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md",
-    "packages.x86_64"
+    ".github/workflows/build-iso.yml",
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh",
+    ".gitignore"
   ],
-  "maximum_surface_area": "Only text files and package manifests listed above. No code, configuration, or CI pipeline modifications are permitted.",
+  "maximum_surface_area": "Only the specified workflow file, test scripts, and gitignore. No code, configuration, or architectural shifts are permitted.",
   "constraints": [
-    "Do not modify `.github/workflows` or test scripts.",
-    "Do not modify `profiledef.sh` or `pacman.conf`.",
-    "Follow the exact comment structure defined in `DEEP_AUDIT.md` for `packages.x86_64` (e.g., `# Base System`, `# Desktop Environment`, `# Drivers (x86_64 specific)`).",
-    "Ensure all documentation URLs point to `https://github.com/uthsarad/NeOS` instead of `neos-project/neos`."
+    "In `.github/workflows/build-iso.yml`, the `test` job must execute inside an `archlinux:latest` container with `--privileged` and `bash` as the default shell.",
+    "Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
+    "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking.",
+    "Ensure error messages in the modified test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
+    "Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`)."
   ]
 }
