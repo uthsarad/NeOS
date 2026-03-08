@@ -183,9 +183,12 @@ jobs:
 
           if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
             # Palette: Consider providing instructions on how to reduce ISO size
-            echo "❌ ISO exceeds GitHub release limit!"
+            EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
+            printf -v EXCESS_SIZE_MB "%d.%02d" "$((EXCESS_SIZE / 1048576))" "$(((EXCESS_SIZE % 1048576) * 100 / 1048576))"
+
+            echo "❌ ISO exceeds GitHub release limit by ${EXCESS_SIZE_MB} MiB!"
             echo ""
-            echo "💡 How to reduce ISO size:"
+            echo "💡 How to fix:"
             echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
             echo "   - Utilize 'NoExtract' rules in 'pacman.conf' for large unused documentation or locale files."
             echo "   - Check for large unintended assets in 'airootfs/'."
