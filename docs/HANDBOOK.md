@@ -22,7 +22,7 @@ Unlike a standard Arch Linux installation which is "Do It Yourself" (DIY), NeOS 
 ## Prerequisites
 
 ### For Users (Installing NeOS)
-*   **Hardware**: A 64-bit (x86_64) computer. (x86_64 is the only officially supported architecture; i686 and aarch64 are experimental).
+*   **Hardware**: A 64-bit (x86_64) computer. (x86_64 is the only officially supported architecture; i686 and aarch64 are experimental and lack the Calamares installer, snapshots, and full GUI experience).
 *   **Storage**: At least 20GB of free disk space (SSD recommended).
 *   **Memory**: At least 4GB RAM (8GB+ recommended).
 *   **Boot Mode**: UEFI (recommended) or Legacy BIOS.
@@ -37,7 +37,7 @@ Unlike a standard Arch Linux installation which is "Do It Yourself" (DIY), NeOS 
 ## Getting Started (User Guide)
 
 ### 1. Download the ISO
-Grab the latest release from our [Releases page](https://github.com/neos-project/neos/releases).
+Grab the latest release from our [Releases page](https://github.com/uthsarad/NeOS/releases).
 
 ### 2. Create Bootable Media
 Flash the ISO to your USB drive using a tool like:
@@ -64,8 +64,8 @@ If you want to modify NeOS or build your own ISO, follow these steps.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/neos-project/neos.git
-cd neos
+git clone https://github.com/uthsarad/NeOS.git
+cd NeOS
 ```
 
 ### 2. Install Dependencies

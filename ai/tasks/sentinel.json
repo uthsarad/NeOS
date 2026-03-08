@@ -1,5 +1,9 @@
 {
-  "deliverable": "Build Stabilization and CI Guardrails",
-  "focus_area": "Build Constraints and Database Trust",
-  "guidance": "Review the `pacman.conf` modifications. Ensure that while the global `SigLevel` is relaxed to `Required DatabaseOptional` to accommodate the build process, the official repositories (`[core]`, `[extra]`, `[multilib]`) are strictly and explicitly hardened with `SigLevel = Required DatabaseRequired` to prevent downgrade attacks via tampered databases during the ISO build."
+  "focus_area": "Trust and Verification",
+  "guidance": "Verify that all updated documentation URLs explicitly point to `https://github.com/uthsarad/NeOS` and do not inadvertently introduce malicious links or path traversal concepts. The project organization must be correct.",
+  "files_impacted": [
+    "README.md",
+    "docs/HANDBOOK.md",
+    "CONTRIBUTING.md"
+  ]
 }

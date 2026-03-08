@@ -20,9 +20,9 @@ This repository serves as the **official Archiso profile** for building the NeOS
 
 | Architecture | Tier | Status |
 | :--- | :--- | :--- |
-| **x86_64** | **Primary** | Officially supported. CI verified. Release blocker. |
-| **i686** | **Community** | Experimental. Best-effort support. No guarantees. |
-| **aarch64** | **Community** | Experimental. Best-effort support. No guarantees. |
+| **x86_64** | **Primary** | Officially supported. CI verified. Release blocker. The only tier delivering the full GUI experience (including Calamares installer and snapshots). |
+| **i686** | **Community** | Experimental. Best-effort support. No guarantees. Lacks full GUI experience. |
+| **aarch64** | **Community** | Experimental. Best-effort support. No guarantees. Lacks full GUI experience. |
 
 ## Documentation
 - **[NeOS Mission & Identity](docs/MISSION.md)** - Core philosophy and target audience.
