@@ -162,9 +162,9 @@ fi
 
 # Sentinel: Check for unsafe user groups in Calamares configuration
 USERS_CONF="airootfs/etc/calamares/modules/users.conf"
-if [ -f "$USERS_CONF" ]; then
-    echo "Verifying user groups in $USERS_CONF..."
+echo "Verifying user groups in $USERS_CONF..."
 
+if [ -f "$USERS_CONF" ]; then
     if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
         UNSAFE_GROUPS=("sys" "lp" "network" "video" "optical" "storage" "scanner" "power" "adm" "uucp")
         UNSAFE_FOUND=false
@@ -184,7 +184,7 @@ if [ -f "$USERS_CONF" ]; then
         exit 1
     fi
 else
-    echo "⚠️ $USERS_CONF not found, skipping user groups check."
+    echo "⚠️ $USERS_CONF not found, skipping check."
 fi
 
 echo "All security checks passed!"

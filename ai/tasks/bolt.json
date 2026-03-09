@@ -1,5 +1,8 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
+  "role": "Bolt",
   "focus_area": "CI/CD Pipeline Optimization",
-  "guidance": "Review the new `.github/workflows/build-iso.yml` changes. Ensure file discovery logic utilizes native bash globbing instead of slow subprocesses (like `find` or `awk`) where possible. Ensure the overall CI execution time is not adversely impacted."
+  "task": "No direct performance optimization needed for this permissions fix. Ensure any future workflow additions maintain fast execution times and rely on minimal environments.",
+  "files": [
+    ".github/workflows/jules-auto-merge.yml"
+  ]
 }

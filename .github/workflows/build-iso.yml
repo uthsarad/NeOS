@@ -15,6 +15,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Sentinel: Review if --privileged execution in archlinux:latest container introduces unintended security risks for pre-build validation.
     container:
       image: archlinux:latest
       options: --privileged
@@ -47,7 +48,8 @@ jobs:
             echo "Running $script..."
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               # Non-blocking tests with timeout
-              timeout 60s bash "$script" || echo "⚠️ $script failed or timed out (skipping)"
+              # Palette: Ensure terminal output errors from scripts correctly format as actionable errors.
+              timeout 60s bash "$script" || { echo "⚠️ $script failed or timed out (skipping)"; true; }
             else
               bash "$script"
             fi
@@ -173,8 +175,9 @@ jobs:
           # Architect: Set ISO size limit to exactly 2 GiB to unblock CI and align with constraints
           MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
 
-          ISO_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $ISO_SIZE / 1024 / 1024}")
-          MAX_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $MAX_SIZE / 1024 / 1024}")
+          # ⚡ Bolt: Compute MiB values using native bash integer arithmetic to avoid awk subprocesses
+          printf -v ISO_SIZE_MB "%d.%02d" "$((ISO_SIZE / 1048576))" "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
+          printf -v MAX_SIZE_MB "%d.%02d" "$((MAX_SIZE / 1048576))" "$(((MAX_SIZE % 1048576) * 100 / 1048576))"
 
           echo "ISO File: $ISO_FILE"
           echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
@@ -182,9 +185,12 @@ jobs:
 
           if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
             # Palette: Consider providing instructions on how to reduce ISO size
-            echo "❌ ISO exceeds GitHub release limit!"
+            EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
+            printf -v EXCESS_SIZE_MB "%d.%02d" "$((EXCESS_SIZE / 1048576))" "$(((EXCESS_SIZE % 1048576) * 100 / 1048576))"
+
+            echo "❌ ISO exceeds GitHub release limit by ${EXCESS_SIZE_MB} MiB!"
             echo ""
-            echo "💡 How to reduce ISO size:"
+            echo "💡 How to fix:"
             echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
             echo "   - Utilize 'NoExtract' rules in 'pacman.conf' for large unused documentation or locale files."
             echo "   - Check for large unintended assets in 'airootfs/'."
@@ -205,13 +211,15 @@ jobs:
           files=(out/*.iso)
           ISO_FILE="${files[0]:-}"
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
-          echo "ISO size: $ISO_SIZE bytes"
+          # ⚡ Bolt: Compute MiB using native bash integer arithmetic to avoid awk subprocesses
+          printf -v ISO_SIZE_MB "%d.%02d" "$((ISO_SIZE / 1048576))" "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
+          echo "ISO size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           ls -lh out/
 
       - name: Generate release tag
         id: tag
         if: github.ref == 'refs/heads/main'
-        run: echo "value=v$(date +%Y.%m.%d)-$(echo ${{ github.sha }} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+        run: echo "value=v$(date +%Y.%m.%d)-${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO to Release
         uses: softprops/action-gh-release@v2

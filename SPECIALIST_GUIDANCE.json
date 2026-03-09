@@ -1,16 +1,14 @@
 {
-  "specialists": {
-    "bolt": {
-      "focus_area": "CI/CD Pipeline Optimization",
-      "guidance": "No direct performance optimizations required for this specific permissions fix. Ensure any future workflow additions maintain fast execution times and rely on minimal environments."
-    },
-    "palette": {
-      "focus_area": "CI Error Messages and Documentation",
-      "guidance": "Ensure that the project's documentation (like CONTRIBUTING.md) clearly states that the auto-merge bot handles PR approvals for the core maintainer team and trusted bots."
-    },
-    "sentinel": {
-      "focus_area": "Workflow Action Permissions and Constraints",
-      "guidance": "Verify that granting the `workflows: write` permission in `.github/workflows/jules-auto-merge.yml` is strictly coupled with the existing actor verification logic (`if: github.actor == ...`) to prevent untrusted pull requests from executing unauthorized merges or altering repository configurations."
-    }
+  "Bolt": {
+    "focus_area": "Performance Script Optimization",
+    "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) and the CI workflow (`.github/workflows/build-iso.yml`) to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Ensure that globbing or parameter expansion is used effectively."
+  },
+  "Palette": {
+    "focus_area": "Terminal UX and Actionable Errors",
+    "guidance": "Review the terminal error messages in the modified test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`). Ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and bulleted actionable steps to minimize developer cognitive load."
+  },
+  "Sentinel": {
+    "focus_area": "Privileged Execution Review",
+    "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation."
   }
 }

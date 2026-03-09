@@ -26,6 +26,10 @@ else
     echo "Expected: airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')"
     echo "Found:"
     grep "airootfs_image_tool_options" "$PROFILE_FILE" || true
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Open '$PROFILE_FILE'."
+    echo "   - Update 'airootfs_image_tool_options' to match the expected value."
     exit 1
 fi
 
@@ -58,6 +62,13 @@ done
 
 if [ "$MISSING" = true ]; then
     echo "❌ Some required NoExtract patterns are missing"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Open '$PACMAN_CONF'."
+    echo "   - Ensure all of the following are listed in the 'NoExtract' array under [options]:"
+    for p in "${REQUIRED_EXCLUDES[@]}"; do
+        echo "     - $p"
+    done
     exit 1
 fi
 

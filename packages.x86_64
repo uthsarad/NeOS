@@ -1,4 +1,6 @@
+# Base System
 base
+linux
 linux-zen
 linux-firmware
 mkinitcpio
@@ -11,8 +13,16 @@ git
 curl
 wget
 sudo
+zsh
+
+# Desktop Environment
+# Note: x86_64 is the primary GUI tier.
+# Plasma/Calamares components are configured in the full live environment setup.
+
+# Drivers (x86_64 specific)
+# Note: Add specific driver packages here.
+
+# Bootloader
 grub
 efibootmgr
-zsh
 syslinux
-linux

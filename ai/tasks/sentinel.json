@@ -1,5 +1,8 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
-  "focus_area": "Build Constraints and Database Trust",
-  "guidance": "Ensure that `pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on official repositories (`[core]`, `[extra]`, `[multilib]`) even if the global level is reduced to `DatabaseOptional` for build compatibility with unsigned repos (like `alci_repo`). Ensure GitHub action permissions remain tightly constrained."
+  "role": "Sentinel",
+  "focus_area": "Workflow Action Permissions and Constraints",
+  "task": "Verify that granting the `workflows: write` permission in `.github/workflows/jules-auto-merge.yml` is strictly coupled with the existing actor verification logic (`if: github.actor == ...`) to prevent untrusted pull requests from executing unauthorized merges or altering repository configurations.",
+  "files": [
+    ".github/workflows/jules-auto-merge.yml"
+  ]
 }
