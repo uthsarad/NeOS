@@ -75,3 +75,7 @@
 ## 2026-06-16 - Subprocess Overhead in CI String Slicing
 **Learning:** Common CI patterns like slicing a Git SHA via `$(echo ${{ github.sha }} | cut -c1-7)` launch multiple unnecessary subprocesses (`echo`, `cut`). This incurs measurable shell overhead inside GitHub Actions.
 **Action:** Always prefer native bash parameter expansion (e.g., `${GITHUB_SHA:0:7}`) for simple string slicing in CI/CD pipelines to eliminate process forking delays.
+
+## 2026-03-05 - Stream Parsing Buffer Reuse in Rust
+**Learning:** While `BufReader::lines()` in Rust offers an ergonomic way to parse files incrementally, it inherently allocates a new `String` for every single line. When parsing extensive list-like files (e.g., package lists or mirrorlists) or frequently skipping commented sections, this per-line allocation introduces measurable memory overhead.
+**Action:** For performance-critical file parsing loops in Rust, replace the `.lines()` iterator with a `while reader.read_line(&mut raw_line)` construct using a single, reused `String` buffer (clearing it between iterations). This prevents repeated heap allocations and significantly improves stream parsing performance.

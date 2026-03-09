@@ -168,16 +168,20 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
     for path in mirrorlists {
         let file = File::open(&path)
             .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
-        let reader = BufReader::new(file);
+        let mut reader = BufReader::new(file);
 
         let mut has_server = false;
-        for line_res in reader.lines() {
-            let line = line_res.map_err(|err| format!("unable to read {}: {err}", path.display()))?;
-            let trimmed = line.trim();
+
+        // ⚡ Bolt: Reusing a single String buffer prevents per-line memory allocations when scanning
+        // potentially massive mirrorlists, significantly improving stream parsing performance.
+        let mut raw_line = String::new();
+        while reader.read_line(&mut raw_line).map_err(|err| format!("unable to read {}: {err}", path.display()))? > 0 {
+            let trimmed = raw_line.trim();
             if !trimmed.is_empty() && !trimmed.starts_with('#') && trimmed.starts_with("Server") {
                 has_server = true;
                 break; // ⚡ Bolt: Early exit once we find an active server entry
             }
+            raw_line.clear();
         }
 
         if !has_server {
@@ -194,13 +198,21 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
 fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
     let file = File::open(path)
         .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
-    let reader = BufReader::new(file);
+    let mut reader = BufReader::new(file);
 
     let mut packages = BTreeSet::new();
     let mut duplicates = HashSet::new();
 
-    for (index, raw_line_res) in reader.lines().enumerate() {
-        let raw_line = raw_line_res.map_err(|err| format!("unable to read {}: {err}", path.display()))?;
+    // ⚡ Bolt: Reusing a single String buffer across the loop prevents per-line memory allocations,
+    // which is critical for performance when parsing large package lists or skipping numerous comment sections.
+    let mut raw_line = String::new();
+
+    for index in 0.. {
+        raw_line.clear();
+        if reader.read_line(&mut raw_line).map_err(|err| format!("unable to read {}: {err}", path.display()))? == 0 {
+            break;
+        }
+
         let trimmed = raw_line.trim();
         if trimmed.is_empty() || trimmed.starts_with('#') {
             continue;
