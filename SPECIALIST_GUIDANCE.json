@@ -1,14 +1,14 @@
 {
   "Bolt": {
-    "focus_area": "Performance Script Optimization",
-    "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) and the CI workflow (`.github/workflows/build-iso.yml`) to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Ensure that globbing or parameter expansion is used effectively."
+    "focus_area": "Build Pipeline Awareness",
+    "guidance": "No specific performance tasks required for a one-line config change, but maintain awareness of build times. Ensure that any future related scripts rely on native bash tools where applicable."
   },
   "Palette": {
-    "focus_area": "Terminal UX and Actionable Errors",
-    "guidance": "Review the terminal error messages in the modified test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`). Ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and bulleted actionable steps to minimize developer cognitive load."
+    "focus_area": "Developer UX",
+    "guidance": "No specific UX tasks required for this config change. Maintain awareness that any future terminal output errors must be formatted as actionable errors."
   },
   "Sentinel": {
-    "focus_area": "Privileged Execution Review",
-    "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation."
+    "focus_area": "Pacman Signature Security",
+    "guidance": "Verify that the `DatabaseOptional` change in the root `pacman.conf` does not compromise the security of the installed system's `airootfs/etc/pacman.conf`, which must remain as `DatabaseRequired`."
   }
 }
