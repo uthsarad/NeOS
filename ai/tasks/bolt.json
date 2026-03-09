@@ -1,8 +1,8 @@
 {
-  "task": "Ensure the CI size check utilizes lightweight, built-in system tools (stat) rather than spinning up heavy containers or complex scripts.",
-  "context": "The Architect has updated the ISO size limit in `.github/workflows/build-iso.yml` to exactly 2 GiB.",
-  "action": "Review the `Validate ISO Size` step in `.github/workflows/build-iso.yml` to confirm no performance regressions or bloated operations were introduced.",
-  "files": [
-    ".github/workflows/build-iso.yml"
+  "focus_area": "Performance Script Optimization",
+  "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) to ensure native bash operations are preferred over subprocess-heavy pipelines (like grep or sed) where applicable, maintaining fast execution.",
+  "files_impacted": [
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh"
   ]
 }

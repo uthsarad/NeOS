@@ -1,9 +1,7 @@
 {
-  "task": "Audit the pipeline to verify that relaxing the root pacman.conf signature requirements does not inadvertently compromise the target system's package manager (airootfs/etc/pacman.conf).",
-  "context": "The `SigLevel` configuration in the root `pacman.conf` has been set to `Required DatabaseOptional` to fix the build blocker.",
-  "action": "Ensure that `airootfs/etc/pacman.conf` still retains strict `DatabaseRequired` security and verify no security regressions have occurred.",
-  "files": [
-    "pacman.conf",
-    "airootfs/etc/pacman.conf"
+  "focus_area": "Privileged Execution Review",
+  "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation.",
+  "files_impacted": [
+    ".github/workflows/build-iso.yml"
   ]
 }

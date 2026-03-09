@@ -11,10 +11,15 @@ if [ ! -f "$QML_FILE" ]; then
 fi
 
 # Check for Space key binding
+# Bolt: Consider replacing grep with native bash reading or a faster match if file is large.
 if grep -q "Keys.onSpacePressed: presentation.advance()" "$QML_FILE"; then
     echo "✅ Space key binding found."
 else
     echo "❌ Space key binding missing!"
+    echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
+    echo "💡 How to fix:"
+    echo "   - Add 'Keys.onSpacePressed: presentation.advance()' to $QML_FILE."
     exit 1
 fi
 
@@ -23,6 +28,9 @@ if grep -q "border.width: presentation.activeFocus" "$QML_FILE"; then
     echo "✅ Focus border logic found (Slide Background)."
 else
     echo "❌ Focus border logic missing (Slide Background)!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'border.width: presentation.activeFocus' to $QML_FILE."
     exit 1
 fi
 
@@ -31,6 +39,9 @@ if grep -q "text: \"⏸ \" + qsTr(\"Paused\")" "$QML_FILE"; then
     echo "✅ Enhanced Pause indicator found."
 else
     echo "❌ Enhanced Pause indicator missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to $QML_FILE."
     exit 1
 fi
 
@@ -39,6 +50,9 @@ if grep -q "cursorShape: Qt.PointingHandCursor" "$QML_FILE"; then
     echo "✅ Cursor shape enhancement found."
 else
     echo "❌ Cursor shape enhancement missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'cursorShape: Qt.PointingHandCursor' to $QML_FILE."
     exit 1
 fi
 
@@ -47,6 +61,9 @@ if grep -q "Accessible.role: Accessible.StaticText" "$QML_FILE"; then
     echo "✅ Accessible roles found."
 else
     echo "❌ Accessible roles missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'Accessible.role: Accessible.StaticText' to $QML_FILE."
     exit 1
 fi
 
@@ -55,6 +72,9 @@ if grep -q "Accessible.role: Accessible.Button" "$QML_FILE"; then
     echo "✅ Next Button accessibility role found."
 else
     echo "❌ Next Button accessibility role missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'Accessible.role: Accessible.Button' to $QML_FILE."
     exit 1
 fi
 
@@ -62,6 +82,9 @@ if grep -q "Accessible.name: qsTr(\"Next Slide\")" "$QML_FILE"; then
     echo "✅ Next Button accessible name found."
 else
     echo "❌ Next Button accessible name missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'Accessible.name: qsTr(\"Next Slide\")' to $QML_FILE."
     exit 1
 fi
 
@@ -70,6 +93,9 @@ if grep -q "Behavior on scale" "$QML_FILE"; then
     echo "✅ Scale animation found."
 else
     echo "❌ Scale animation missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'Behavior on scale' to $QML_FILE."
     exit 1
 fi
 
@@ -80,6 +106,9 @@ if grep -q "property int pauseLocks: 0" "$QML_FILE"; then
     echo "✅ Pause Locks property found."
 else
     echo "❌ Pause Locks property missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'property int pauseLocks: 0' to $QML_FILE."
     exit 1
 fi
 
@@ -87,6 +116,9 @@ if grep -q "presentation.pauseLocks++" "$QML_FILE"; then
     echo "✅ Pause Locks increment logic found."
 else
     echo "❌ Pause Locks increment logic missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'presentation.pauseLocks++' to $QML_FILE."
     exit 1
 fi
 
@@ -95,6 +127,9 @@ if grep -q "activeFocusOnTab: true" "$QML_FILE"; then
     echo "✅ Keyboard focus enabled (activeFocusOnTab) found."
 else
     echo "❌ Keyboard focus enabled (activeFocusOnTab) missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'activeFocusOnTab: true' to $QML_FILE."
     exit 1
 fi
 
@@ -103,6 +138,9 @@ if grep -q "border.color: \"#3daee9\"" "$QML_FILE"; then
     echo "✅ Visual focus indicator (blue border) found."
 else
     echo "❌ Visual focus indicator (blue border) missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'border.color: \"#3daee9\"' to $QML_FILE."
     exit 1
 fi
 
@@ -111,6 +149,9 @@ if grep -q "Keys.onReturnPressed: presentation.advance()" "$QML_FILE"; then
     echo "✅ Return key activation found."
 else
     echo "❌ Return key activation missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'Keys.onReturnPressed: presentation.advance()' to $QML_FILE."
     exit 1
 fi
 
@@ -119,6 +160,9 @@ if grep -q "style: Text.Outline" "$QML_FILE"; then
     echo "✅ Text Outline style found."
 else
     echo "❌ Text Outline style missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'style: Text.Outline' to $QML_FILE."
     exit 1
 fi
 
@@ -127,6 +171,9 @@ if grep -q "Keys.onLeftPressed: presentation.advance()" "$QML_FILE"; then
     echo "✅ Left Arrow navigation binding found."
 else
     echo "❌ Left Arrow navigation binding missing!"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to $QML_FILE."
     exit 1
 fi
 
