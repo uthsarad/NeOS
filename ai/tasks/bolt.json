@@ -1,5 +1,8 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
-  "focus_area": "CI/CD Pipeline Optimization",
-  "guidance": "Review the new `.github/workflows/build-iso.yml` changes. Ensure file discovery logic utilizes native bash globbing instead of slow subprocesses (like `find` or `awk`) where possible. Ensure the overall CI execution time is not adversely impacted."
+  "focus_area": "Performance Script Optimization",
+  "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) to ensure native bash operations are preferred over subprocess-heavy pipelines (like grep or sed) where applicable, maintaining fast execution.",
+  "files_impacted": [
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh"
+  ]
 }

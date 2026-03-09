@@ -1,5 +1,9 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
-  "focus_area": "CI Error Messages",
-  "guidance": "Review any echo or error statements within `.github/workflows/build-iso.yml` or the test scripts. Size limit failures must clearly communicate human-readable byte values (e.g., MiB) and provide actionable multi-line remediation instructions."
+  "focus_area": "Terminal UX and Actionable Errors",
+  "guidance": "Review the terminal error messages in the modified test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) and the GitHub workflow (`.github/workflows/build-iso.yml`). Ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and bulleted actionable steps to minimize developer cognitive load.",
+  "files_impacted": [
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh",
+    ".github/workflows/build-iso.yml"
+  ]
 }

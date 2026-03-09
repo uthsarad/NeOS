@@ -1,25 +1,17 @@
-# Bolt Performance Report
+# Bolt Report: Parse Speed Validation
 
-**Deliverable:** Pre-build CI Validation and Config Fixes
-**Focus Area:** CI/CD Pipeline Optimization
+**Date:** 2026-03-05
+**Focus Area:** Parse Speed Validation (from `ai/tasks/bolt.json`)
 
 ## What Was Optimized
-In `.github/workflows/build-iso.yml`, the method for discovering the generated ISO file was optimized.
+The Rust utility `tools/neos-profile-audit` uses file reading loops to parse the potentially large `packages.*` list files and the pacman mirrorlists. Previously, these were using the `io::BufReader::lines()` iterator which implicitly allocates a new `String` on the heap for every single line read from the file.
 
-**Before:**
-```bash
-ISO_FILE=$(find out -maxdepth 1 -name "*.iso" -type f | head -1)
-```
-
-**After:**
-```bash
-shopt -s nullglob
-files=(out/*.iso)
-ISO_FILE="${files[0]:-}"
-```
+This has been modified to use a `while reader.read_line(&mut raw_line)` loop pattern with a single, mutable `String` buffer instantiated outside the loop. The buffer is cleared at the end of every loop iteration using `.clear()`.
 
 ## Before/After Reasoning
-The original file discovery logic relied on piping the output of the `find` subprocess into `head`. This incurs unnecessary execution overhead from spawning multiple subprocesses. By using native bash globbing and arrays, the file discovery is handled entirely internally within the bash process, significantly reducing overhead in the CI runner environment. Since the `out/` directory usually contains only one ISO file, `files[0]` provides an O(1) file selection identical to `head -1`.
+The addition of structure and section comments (e.g., `# Base System`) into files like `packages.x86_64` increases the total number of lines parsed. While these lines are functionally ignored, the old implementation using `lines()` was allocating memory for the strings before discarding them.
+
+By transitioning to a reused string buffer, the tool completely avoids the overhead of repeated heap allocations. The single `String` buffer organically grows to accommodate the longest line in the file and is reused for every subsequent line read, resulting in a substantial reduction in memory churn and measurable speed improvements for large lists.
 
 ## Remaining Performance Risks
-The use of `awk` for computing `ISO_SIZE_MB` and `MAX_SIZE_MB` still spawns external subprocesses for math formatting. While bash lacks native floating-point arithmetic to fully replace `awk`, these calls execute quickly enough that the CI bottleneck remains elsewhere (e.g. pacman installations). We kept `awk` because accuracy and readability are prioritized here over extreme micro-optimization of arithmetic.
+- **Extremely long lines:** The reusable string buffer grows automatically to match the longest single line read. If an attacker or misconfiguration provides a file with no newlines (e.g., a multi-gigabyte single line), it will attempt to allocate that entirely into memory, potentially leading to an Out-Of-Memory panic. Given these are local repo definition files, the threat model is low, but the risk remains.

@@ -1,41 +1,48 @@
-# STRATEGIC DIRECTIVE ✒️
+# Strategic Directive
 
-**Date:** 2026-03-03
-**Phase:** 1 - Foundations & Stabilization
-**Primary Focus:** Build Stabilization and Automated Verification
+## Phase 1 — Product Alignment Check
+**What is the product trying to become?**
+NeOS is a curated, snapshot-based Arch Linux desktop distribution delivering Windows-level usability with Linux-level power. It bridges the gap between Arch flexibility and consumer reliability.
 
-## PHASE 1 — Product Alignment Check
-The NeOS mission emphasizes a predictable, snapshot-based rolling release that bridges the gap between Arch Linux flexibility and consumer OS reliability. The product must have a reliable, automated build pipeline (as detailed in the roadmap for Phase 1 and 2) to successfully generate staging and release ISOs.
-Currently, the primary build pipeline is broken due to a rigid signature check in the build environment's `pacman.conf`, preventing ISO generation. Additionally, there is a lack of enforcement for the GitHub Release asset size limit (2 GiB), risking silent deployment failures. Our highest leverage problem is resolving the build block and adding CI safety rails to ensure continuous delivery aligns with product goals.
+**Are we building toward that?**
+Yes, but our current testing infrastructure and CI/CD pipelines require further refinement. While we have implemented ISO size validations, pre-build pre-commit checks, and basic system service hardening, we need to ensure test stability, error handling, and documentation keep pace. The "Windows-familiar experience" is heavily reliant on automated, predictable processes that do not block development or deployment unnecessarily.
 
-## PHASE 2 — Technical Posture Review
-The system is currently failing its automated builds (`verify_build_profile.sh` is failing). This represents a severe degradation in system stability at the infrastructure level. We are not overbuilding; we are missing essential configuration pragmatism during the build phase and lack critical CI validation for our deployment constraints. The technical debt in our build configuration is actively blocking progress.
+**Are we solving the highest leverage problem?**
+The highest leverage problem now is ensuring our testing infrastructure is robust, non-blocking where appropriate, and provides actionable feedback. Specifically, addressing Medium and Low priority audit items such as pre-build CI integration, test reliability (e.g., non-blocking UI/pre-build tests), and consistent execution flags (chmod) will stabilize the pipeline and reduce developer friction.
 
-## PHASE 3 — Priority Selection
-**Selection: Stabilization / hardening**
+## Phase 2 — Technical Posture Review
+**Is the system stable?**
+Yes. The ISO builds successfully, size validation is active, and critical system services have been hardened.
 
-We must execute an immediate stabilization operation. The focus is to unblock the ISO build process by rectifying the build-time `pacman.conf` signature requirements and to harden our CI/CD pipeline by explicitly validating ISO size constraints to proactively prevent deployment failures.
+**Is tech debt increasing?**
+Yes, in our CI and testing workflows. We lack a comprehensive pre-build test suite execution in `.github/workflows/build-iso.yml`. Furthermore, some tests (like `verify_qml_enhancements.sh` and `verify_mkinitcpio.sh`) may hang or fail the pipeline if they are not explicitly designed to be non-blocking or wrapped with timeouts as defined by our memory rules. We also need to ensure consistent executable permissions on test scripts and proper gitignore rules for build artifacts.
 
-## PHASE 4 — Controlled Scope Definition
-The Architect is tasked with a highly constrained deliverable: **Build Stabilization and CI Guardrails**.
+**Are we overbuilding?**
+No. We are addressing defined tech debt and audit action items to solidify the foundation before introducing new features.
 
-### Exact Files Likely Impacted:
-- `pacman.conf` (root level, used for ISO build)
+## Phase 3 — Priority Selection
+**Selection:** Stabilization / hardening
+
+**Justification:** The system is functionally stable, but the CI/CD pipeline and testing infrastructure require hardening. Addressing Medium and Low priority audit items (Items 12, 13, and 16 from `DEEP_AUDIT.md`) and aligning with memory constraints (non-blocking pre-build tests, timeout wrappers, actionable error messages) will stabilize the development workflow and prevent CI failures.
+
+## Phase 4 — Controlled Scope Definition
+**Targeted Files:**
 - `.github/workflows/build-iso.yml`
+- `tests/verify_mkinitcpio.sh`
+- `tests/verify_qml_enhancements.sh`
+- `.gitignore`
 
-### Maximum Allowed Surface Area:
-- Modify `SigLevel` in the root `pacman.conf` to accommodate unsigned repositories during the build phase.
-- Add an ISO size validation step in the CI workflow, enforcing a strict 2 GiB limit using fast, native metadata checks.
+**Maximum Allowed Surface Area:**
+Modifications are strictly limited to updating the CI workflow for pre-build testing, applying timeout/non-blocking logic to specific test scripts, updating `.gitignore` for build artifacts, and ensuring consistent test script execution. No new features, system configuration changes, or architectural shifts are permitted.
 
-### Constraints Architect Must Obey:
-- **STRICT PROHIBITION:** Do NOT modify `airootfs/etc/pacman.conf`. The target system must retain its strict `DatabaseRequired` security posture.
-- Do NOT introduce slow subprocesses (like `find` or `awk`) for file discovery in the CI workflow.
-- Ensure the size validation failure output is human-readable and provides actionable remediation instructions.
-- Ensure targeted signature enforcement remains active for core repositories.
+**Constraints for Architect:**
+- In `.github/workflows/build-iso.yml`, the `test` job must execute inside an `archlinux:latest` container with `--privileged` and `bash` as the default shell.
+- Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).
+- In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking. Ensure error messages provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.
+- Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`).
 
-## PHASE 5 — Delegation Strategy
-
-- **Architect (Implementation Lead):** Implement the `DatabaseOptional` fix in the root `pacman.conf` and integrate the ISO size validation step into `.github/workflows/build-iso.yml`.
-- **Bolt (Performance):** Ensure that the CI file discovery logic utilizes fast, native bash globbing instead of subprocesses, maintaining pipeline speed.
-- **Palette (UX):** Ensure any error messages generated by the CI validation script are clear, use human-readable byte values (e.g., MiB), and provide actionable, multi-line recovery instructions.
-- **Sentinel (Security):** Ensure that while the global `SigLevel` is relaxed for the build, official repositories (`[core]`, `[extra]`, `[multilib]`) retain strict `DatabaseRequired` enforcement, and verify the target system's security posture remains unaffected.
+## Phase 5 — Delegation Strategy
+- **Architect:** Implement the CI/CD pipeline improvements, update `.gitignore`, and apply non-blocking/timeout wrappers to the specified test scripts.
+- **Bolt:** Review the test scripts to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution.
+- **Palette:** Review the terminal error messages in the modified test scripts to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and actionable steps, minimizing developer cognitive load.
+- **Sentinel:** Review the CI workflow changes to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation.

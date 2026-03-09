@@ -1,5 +1,7 @@
 {
-  "deliverable": "Pre-build CI Validation and Config Fixes",
-  "focus_area": "Build Constraints and Database Trust",
-  "guidance": "Ensure that `pacman.conf` correctly enforces `SigLevel = Required DatabaseRequired` on official repositories (`[core]`, `[extra]`, `[multilib]`) even if the global level is reduced to `DatabaseOptional` for build compatibility with unsigned repos (like `alci_repo`). Ensure GitHub action permissions remain tightly constrained."
+  "focus_area": "Privileged Execution Review",
+  "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation.",
+  "files_impacted": [
+    ".github/workflows/build-iso.yml"
+  ]
 }
