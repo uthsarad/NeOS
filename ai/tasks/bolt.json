@@ -1,8 +1,8 @@
 {
-  "focus_area": "Performance Script Optimization",
-  "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) to ensure native bash operations are preferred over subprocess-heavy pipelines (like grep or sed) where applicable, maintaining fast execution.",
-  "files_impacted": [
-    "tests/verify_mkinitcpio.sh",
-    "tests/verify_qml_enhancements.sh"
+  "role": "Bolt",
+  "focus_area": "CI/CD Pipeline Optimization",
+  "task": "No direct performance optimization needed for this permissions fix. Ensure any future workflow additions maintain fast execution times and rely on minimal environments.",
+  "files": [
+    ".github/workflows/jules-auto-merge.yml"
   ]
 }
