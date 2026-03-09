@@ -91,7 +91,6 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
     let mut pacman_conf_found = false;
     let mut bootmodes_found = false;
 
-    // TODO(palette): Ensure these error messages are easily understandable by end users fixing their configuration.
     // TODO(sentinel): Validate that the parsed values do not introduce command injection risks if used downstream.
     for line in content.lines() {
         if pacman_conf_found && bootmodes_found {
@@ -104,20 +103,20 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             // ⚡ Bolt: Use slicing instead of trim_start_matches to avoid redundant string searching
             let val = trimmed[12..].trim_matches(|c| c == '"' || c == '\'');
             if val.is_empty() {
-                return Err("pacman_conf is set to an empty string in profiledef.sh. Please provide a valid file path.".to_string());
+                return Err("pacman_conf is set to an empty string in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Provide a valid file path for 'pacman_conf'.".to_string());
             }
 
             if val.starts_with('/') || val.contains("..") || val.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-') {
-                return Err("pacman_conf contains invalid characters or path traversal".to_string());
+                return Err("pacman_conf contains invalid characters or path traversal.\n\n💡 How to fix:\n  - Ensure 'pacman_conf' in 'profiledef.sh' only contains alphanumeric characters, '.', '_', '-', and '/' without path traversal ('..') or absolute paths ('/').".to_string());
             }
 
             let conf_path = root.join(val);
             if !conf_path.exists() {
-                return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}. Please verify the path is correct.", conf_path.display()));
+                return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}.\n\n💡 How to fix:\n  - Verify the path provided for 'pacman_conf' in 'profiledef.sh' is correct and the file exists.", conf_path.display()));
             }
             let conf_content = fs::read_to_string(&conf_path).map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
             if !conf_content.contains("DatabaseOptional") {
-                return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional. Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display()));
+                return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional.\n\n💡 How to fix:\n  - Open '{}'\n  - Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display(), conf_path.display()));
             }
         } else if !bootmodes_found && trimmed.starts_with("bootmodes=(") {
             bootmodes_found = true;
@@ -128,22 +127,22 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
                 let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
 
                 if mode.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_') {
-                    return Err("bootmodes contains invalid characters (possible command injection)".to_string());
+                    return Err("bootmodes contains invalid characters (possible command injection).\n\n💡 How to fix:\n  - Ensure 'bootmodes' in 'profiledef.sh' only contains alphanumeric characters, '.', '-', and '_'.".to_string());
                 }
 
                 if !valid_bootmodes.contains(&mode) {
-                    return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
+                    return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Update 'bootmodes' to only include valid modes.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
                 }
             }
         }
     }
 
     if !pacman_conf_found {
-        return Err("pacman_conf is NOT set in profiledef.sh. This property is required by mkarchiso to build the image.".to_string());
+        return Err("pacman_conf is NOT set in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Set 'pacman_conf' to the path of your pacman configuration file. This property is required by mkarchiso to build the image.".to_string());
     }
 
     if !bootmodes_found {
-        return Err("The bootmodes array is missing in profiledef.sh. Please define an array of valid bootmodes.".to_string());
+        return Err("The bootmodes array is missing in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Define an array of valid 'bootmodes' (e.g., bootmodes=('uefi.grub' 'bios.syslinux')).".to_string());
     }
 
     Ok(())
@@ -169,16 +168,20 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
     for path in mirrorlists {
         let file = File::open(&path)
             .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
-        let reader = BufReader::new(file);
+        let mut reader = BufReader::new(file);
 
         let mut has_server = false;
-        for line_res in reader.lines() {
-            let line = line_res.map_err(|err| format!("unable to read {}: {err}", path.display()))?;
-            let trimmed = line.trim();
+
+        // ⚡ Bolt: Reusing a single String buffer prevents per-line memory allocations when scanning
+        // potentially massive mirrorlists, significantly improving stream parsing performance.
+        let mut raw_line = String::new();
+        while reader.read_line(&mut raw_line).map_err(|err| format!("unable to read {}: {err}", path.display()))? > 0 {
+            let trimmed = raw_line.trim();
             if !trimmed.is_empty() && !trimmed.starts_with('#') && trimmed.starts_with("Server") {
                 has_server = true;
                 break; // ⚡ Bolt: Early exit once we find an active server entry
             }
+            raw_line.clear();
         }
 
         if !has_server {
@@ -195,13 +198,21 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
 fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
     let file = File::open(path)
         .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
-    let reader = BufReader::new(file);
+    let mut reader = BufReader::new(file);
 
     let mut packages = BTreeSet::new();
     let mut duplicates = HashSet::new();
 
-    for (index, raw_line_res) in reader.lines().enumerate() {
-        let raw_line = raw_line_res.map_err(|err| format!("unable to read {}: {err}", path.display()))?;
+    // ⚡ Bolt: Reusing a single String buffer across the loop prevents per-line memory allocations,
+    // which is critical for performance when parsing large package lists or skipping numerous comment sections.
+    let mut raw_line = String::new();
+
+    for index in 0.. {
+        raw_line.clear();
+        if reader.read_line(&mut raw_line).map_err(|err| format!("unable to read {}: {err}", path.display()))? == 0 {
+            break;
+        }
+
         let trimmed = raw_line.trim();
         if trimmed.is_empty() || trimmed.starts_with('#') {
             continue;
