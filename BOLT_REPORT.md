@@ -1,12 +1,17 @@
-# Bolt Report: CI/CD Pipeline Optimization
+# Bolt Report: Parse Speed Validation
 
-## Optimization Implemented
-- **What**: Replaced the subprocess-heavy release tag generation `$(echo ${{ github.sha }} | cut -c1-7)` with native bash parameter expansion `${GITHUB_SHA:0:7}` in `.github/workflows/build-iso.yml`.
-- **Why**: Eliminates unnecessary `echo` and `cut` subprocesses in the `Generate release tag` step, preventing the introduction of slow subprocess-heavy pipelines and adhering to the guidelines of prioritizing native bash operations in performance-sensitive logic.
-- **Impact**: Micro-optimization that reduces shell startup overhead. Reduces total number of spawned processes during CI workflow execution.
+**Date:** 2026-03-05
+**Focus Area:** Parse Speed Validation (from `ai/tasks/bolt.json`)
 
-## Validations
-- Verified that the new ISO size validation step already correctly uses fast O(1) metadata checks like `stat -c%s` and native bash globbing for file discovery without relying on `find` or `head` piped together.
+## What Was Optimized
+The Rust utility `tools/neos-profile-audit` uses file reading loops to parse the potentially large `packages.*` list files and the pacman mirrorlists. Previously, these were using the `io::BufReader::lines()` iterator which implicitly allocates a new `String` on the heap for every single line read from the file.
+
+This has been modified to use a `while reader.read_line(&mut raw_line)` loop pattern with a single, mutable `String` buffer instantiated outside the loop. The buffer is cleared at the end of every loop iteration using `.clear()`.
+
+## Before/After Reasoning
+The addition of structure and section comments (e.g., `# Base System`) into files like `packages.x86_64` increases the total number of lines parsed. While these lines are functionally ignored, the old implementation using `lines()` was allocating memory for the strings before discarding them.
+
+By transitioning to a reused string buffer, the tool completely avoids the overhead of repeated heap allocations. The single `String` buffer organically grows to accommodate the longest line in the file and is reused for every subsequent line read, resulting in a substantial reduction in memory churn and measurable speed improvements for large lists.
 
 ## Remaining Performance Risks
-- Other workflow steps might still rely on minor string manipulation via tools like `awk` or `sed` where bash expansion would suffice, though current optimizations successfully mitigated the primary bottlenecks within scope.
+- **Extremely long lines:** The reusable string buffer grows automatically to match the longest single line read. If an attacker or misconfiguration provides a file with no newlines (e.g., a multi-gigabyte single line), it will attempt to allocate that entirely into memory, potentially leading to an Out-Of-Memory panic. Given these are local repo definition files, the threat model is low, but the risk remains.
