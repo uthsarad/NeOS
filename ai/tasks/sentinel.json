@@ -1,9 +1,7 @@
 {
-  "focus_area": "Trust and Verification",
-  "guidance": "Verify that all updated documentation URLs explicitly point to `https://github.com/uthsarad/NeOS` and do not inadvertently introduce malicious links or path traversal concepts. The project organization must be correct.",
+  "focus_area": "Privileged Execution Review",
+  "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation.",
   "files_impacted": [
-    "README.md",
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md"
+    ".github/workflows/build-iso.yml"
   ]
 }

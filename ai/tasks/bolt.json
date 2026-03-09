@@ -1,8 +1,8 @@
 {
-  "focus_area": "Parse Speed Validation",
-  "guidance": "Review `packages.x86_64` to ensure the introduction of section comments (`# Base System`) does not degrade the Rust tooling's stream-based parsing performance. Ensure `tools/neos-profile-audit` skips commented lines early without allocating.",
+  "focus_area": "Performance Script Optimization",
+  "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) to ensure native bash operations are preferred over subprocess-heavy pipelines (like grep or sed) where applicable, maintaining fast execution.",
   "files_impacted": [
-    "packages.x86_64",
-    "tools/neos-profile-audit/src/main.rs"
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh"
   ]
 }
