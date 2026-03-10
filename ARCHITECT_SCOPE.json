@@ -13,6 +13,7 @@
     "Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
     "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking.",
     "Ensure error messages in the modified test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
-    "Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`)."
+    "Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`).",
+    "All test validation scripts in the `tests/` directory must be explicitly marked as executable (`chmod +x`)."
   ]
 }
