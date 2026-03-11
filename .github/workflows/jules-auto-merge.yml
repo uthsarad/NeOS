@@ -13,9 +13,6 @@ jobs:
       workflows: write
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Auto-merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
