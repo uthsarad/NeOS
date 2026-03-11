@@ -8,7 +8,8 @@ if [ ! -f "$MKINITCPIO_CONF" ]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Ensure mkinitcpio.conf is located at $MKINITCPIO_CONF."
+    echo "   - Open terminal.
+   - Ensure mkinitcpio.conf is located at $MKINITCPIO_CONF."
     exit 1
 fi
 
@@ -20,7 +21,8 @@ if [ -z "$HOOKS_LINE" ]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add a 'HOOKS=(...)' array to $MKINITCPIO_CONF."
+    echo "   - Open the file in an editor.
+   - Add a 'HOOKS=(...)' array to $MKINITCPIO_CONF."
     exit 1
 fi
 
@@ -33,7 +35,8 @@ if [[ "$HOOKS_LINE" != *"$REQUIRED_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add '$REQUIRED_HOOK' to the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open the file in an editor.
+   - Add '$REQUIRED_HOOK' to the HOOKS array in $MKINITCPIO_CONF."
     exit 1
 fi
 
@@ -44,7 +47,8 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open the file in an editor.
+   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
     exit 1
 fi
 
@@ -54,7 +58,8 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open the file in an editor.
+   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
     exit 1
 fi
 
@@ -67,7 +72,8 @@ if [[ "$MODULES_SECTION" != *"$REQUIRED_MODULE"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add '$REQUIRED_MODULE' to the MODULES array in $MKINITCPIO_CONF."
+    echo "   - Open the file in an editor.
+   - Add '$REQUIRED_MODULE' to the MODULES array in $MKINITCPIO_CONF."
     exit 1
 fi
 
