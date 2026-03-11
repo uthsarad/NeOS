@@ -11,6 +11,9 @@ jobs:
       contents: write
       pull-requests: write
       workflows: write
+    # SECURITY: The `workflows: write` permission is granted here to allow auto-merging PRs that modify workflow files.
+    # It is strictly coupled with this `if` condition to prevent untrusted actors from leveraging the auto-merge bot
+    # to execute unauthorized merges or alter repository configurations. Do NOT remove this condition.
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
       - name: Checkout
