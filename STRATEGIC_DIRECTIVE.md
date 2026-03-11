@@ -31,6 +31,8 @@ No. We are addressing defined tech debt and audit action items to solidify the f
 - `tests/verify_mkinitcpio.sh`
 - `tests/verify_qml_enhancements.sh`
 - `.gitignore`
+- `tests/verify_security_config.sh`
+- `tests/verify_iso_size.sh`
 
 **Maximum Allowed Surface Area:**
 Modifications are strictly limited to updating the CI workflow for pre-build testing, applying timeout/non-blocking logic to specific test scripts, updating `.gitignore` for build artifacts, and ensuring consistent test script execution. No new features, system configuration changes, or architectural shifts are permitted.
@@ -40,9 +42,12 @@ Modifications are strictly limited to updating the CI workflow for pre-build tes
 - Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).
 - In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking. Ensure error messages provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.
 - Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`).
+- Ensure `tests/verify_security_config.sh` conditionally checks for optional security files using `[ -f "$FILE" ]` before asserting contents.
+- In `tests/verify_iso_size.sh`, validate specific `airootfs_image_tool_options` (`xz`, `BCJ`) in `profiledef.sh` and `NoExtract` patterns in `pacman.conf`, outputting multi-line instructions.
+- Mark all scripts in `tests/` as executable.
 
 ## Phase 5 — Delegation Strategy
-- **Architect:** Implement the CI/CD pipeline improvements, update `.gitignore`, and apply non-blocking/timeout wrappers to the specified test scripts.
-- **Bolt:** Review the test scripts to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution.
-- **Palette:** Review the terminal error messages in the modified test scripts to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and actionable steps, minimizing developer cognitive load.
-- **Sentinel:** Review the CI workflow changes to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation.
+- **Architect:** Implement the CI/CD pipeline improvements, update `.gitignore`, and apply non-blocking/timeout wrappers to the specified test scripts. Generate delegation task files `ai/tasks/bolt.json`, `ai/tasks/palette.json`, `ai/tasks/sentinel.json`. Generate `ARCHITECT_REPORT.md`.
+- **Bolt:** Review the test scripts and workflow files to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Document optimizations in `BOLT_REPORT.md`. Append to `.jules/bolt.md`.
+- **Palette:** Review the terminal error messages in the modified test scripts to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and nested bulleted actionable steps, minimizing developer cognitive load. Append to `.jules/palette.md`.
+- **Sentinel:** Review the CI workflow changes to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation. Keep fixes self-contained (< 50 lines). Document risks in `SENTINEL_REPORT.md`. Append to `.jules/sentinel.md`.
