@@ -78,3 +78,7 @@
 ## 2024-05-20 - Multi-line Error Instructions
 **Learning:** Dense strings with implicit instructions force developers to extract recovery procedures from diagnostics. Bulleted "How to fix" blocks drastically reduce developer cognitive load during failed build investigations.
 **Action:** When validating internal tools or CI pipelines, always append clear multi-line formatting indicating a '💡 How to fix:' procedure to help direct developers towards successful recovery.
+
+## 2026-06-27 - Bot Visibility in Contribution Flows
+**Learning:** Undocumented auto-merge bots create a confusing UX for new contributors, who might wait unnecessarily for human reviews or misinterpret automated actions.
+**Action:** Always explicitly document automation bots (like auto-merge capabilities) in contributor guidelines (e.g. `CONTRIBUTING.md`) using nested lists for clarity, setting clear expectations for the PR lifecycle.
