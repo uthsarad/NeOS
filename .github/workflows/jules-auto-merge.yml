@@ -11,11 +11,9 @@ jobs:
       contents: write
       pull-requests: write
       workflows: write
+    # Security: Only allow the repository owner and trusted bots to execute the auto-merge workflow
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Auto-merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
