@@ -1,14 +1,27 @@
 # Risk & Priority Report
 
-## Current System Risk
-**Medium**. While functional, the system's testing pipeline lacks automated execution, leaving room for regressions to slip into the main branch unseen. Specific test scripts, such as `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh`, do not currently implement timeout wrappers. This is a significant risk as these tests could hang indefinitely during automated CI execution if they encounter unexpected states, thereby blocking the entire deployment pipeline.
+## Date: 2026-02-17
 
-## Tech Debt Assessment
-The repository suffers from technical debt in its CI/CD and testing infrastructure:
-1. **No Automated Testing in CI:** The `.github/workflows/build-iso.yml` workflow lacks a comprehensive pre-build validation step. Tests should execute before the ISO build to catch failures early, but currently, they are either missing or not correctly sequenced.
-2. **Missing Timeout Wrappers:** Pre-build CI tests like `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh` are designed to be non-blocking. However, they lack the necessary `timeout 60s` wrapper and `|| true` fallback, increasing the risk of pipeline hangs.
-3. **Incomplete .gitignore:** The `.gitignore` file is missing common entries (e.g., `*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`), leading to potential repository pollution with build artifacts.
-4. **Suboptimal Error Messaging:** Error messages in test scripts often lack clear, actionable remediation steps. They need to be formatted as multi-line outputs incorporating a clear '💡 How to fix:' block with bulleted instructions.
+### 1. Current Risk Posture
 
-## Why This Step is the Highest Leverage
-As we move toward a stable release, ensuring the reliability and speed of the CI/CD pipeline is paramount. Unreliable tests or hanging pipelines will significantly hamper development velocity. By introducing a pre-build validation step in an `archlinux:latest` container (with `--privileged` and `bash`), we can catch configuration and dependency errors before initiating the resource-intensive ISO build process. Implementing timeout wrappers on specific tests ensures the pipeline remains non-blocking even if edge-case failures occur. Furthermore, improving the UX of terminal errors directly reduces developer cognitive load and troubleshooting time. This aligns squarely with the "Stabilization / hardening" priority.
+The deep audit (`docs/DEEP_AUDIT.md`) and action plan (`docs/AUDIT_ACTION_PLAN.md`) have identified several risks. The most critical release-blocking issues (pacman config and ISO size limits) have been addressed previously. The remaining high-priority risks we are targeting in this sprint are:
+
+-   **Silent Autoupdate Failures**: The `neos-autoupdate.sh` script currently lacks sufficient dependency validation (specifically for `snapper`). If `snapper` is removed or missing, the script will silently fail to create system snapshots, putting users at risk of data loss or an inability to rollback if an update breaks the system.
+-   **User Confusion regarding Architecture Limitations**: The documentation (`README.md` and `docs/HANDBOOK.md`) currently lists `i686` and `aarch64` as experimental, but fails to explicitly state that they lack the Calamares GUI installer, snapshots, and ZRAM support. This can lead to frustration and wasted time for community members attempting to test these platforms.
+
+### 2. Mitigation Strategy
+
+The work delegated to the Architect in this sprint directly addresses these risks:
+
+-   **Adding Dependency Validation**: By explicitly checking for `snapper` in `neos-autoupdate.sh` and exiting gracefully with a clear log message, we eliminate the silent failure mode. If the dependency is missing, the system will not proceed with an update that cannot be safely rolled back.
+-   **Clarifying Documentation**: By updating `README.md` and `docs/HANDBOOK.md` to explicitly list the missing features for `i686` and `aarch64`, we set clear expectations for the community.
+
+### 3. Execution Risks
+
+-   **Overbuilding**: There is a risk that the Architect may attempt to refactor the entire `neos-autoupdate.sh` script or introduce complex new features. To mitigate this, the `ARCHITECT_SCOPE.json` explicitly restricts the scope to the narrowest possible interpretation of adding the missing check.
+-   **Performance Overhead**: Adding checks to a script run frequently (like an auto-updater) can introduce overhead. To mitigate this, Bolt is instructed to ensure the checks are efficient and use native bash features.
+-   **Security Vulnerabilities**: Bash scripts are prone to command injection. Sentinel is instructed to review the new code for any security implications.
+
+### 4. Long-Term Maintenance
+
+This sprint prioritizes stabilization over new feature development. By implementing these safeguards, we ensure the system behaves predictably in edge cases and that documentation accurately reflects the system's capabilities.
