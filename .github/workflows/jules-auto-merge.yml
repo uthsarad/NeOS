@@ -11,6 +11,8 @@ jobs:
       contents: write
       pull-requests: write
       workflows: write
+    # SECURITY: The `workflows: write` permission above allows this job to modify repository configurations and workflows.
+    # It MUST ALWAYS be coupled with this strict actor verification to prevent unauthorized PRs from executing malicious merges.
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
       - name: Checkout
