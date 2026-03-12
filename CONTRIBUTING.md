@@ -8,6 +8,7 @@ Thanks for your interest in improving NeOS! This guide covers how to propose cha
 2. Make sure your changes are focused and documented.
 3. Run any relevant checks for the area you touched.
 4. Open a pull request with a clear summary and testing notes.
+   - *Note: The auto-merge bot automatically handles PR approvals for the core maintainer team and trusted bots.*
 
 ## Development tips
 
