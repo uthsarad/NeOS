@@ -1,8 +1,7 @@
 {
-  "role": "Sentinel",
-  "focus_area": "Workflow Action Permissions and Constraints",
-  "task": "Verify that granting the `workflows: write` permission in `.github/workflows/jules-auto-merge.yml` is strictly coupled with the existing actor verification logic (`if: github.actor == ...`) to prevent untrusted pull requests from executing unauthorized merges or altering repository configurations.",
-  "files": [
-    ".github/workflows/jules-auto-merge.yml"
+  "focus_area": "Security review of CI/CD pipeline",
+  "guidance": "Review the use of `--privileged` execution within the archlinux:latest container for the pre-build 'test' job in .github/workflows/build-iso.yml to ensure it does not introduce unintended security risks.",
+  "affected_files": [
+    ".github/workflows/build-iso.yml"
   ]
 }
