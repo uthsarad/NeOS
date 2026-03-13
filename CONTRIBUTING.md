@@ -24,6 +24,14 @@ Please include:
 - Expected vs. actual behavior.
 - Any logs or screenshots that help illustrate the issue.
 
+## PR Reviews and Approvals
+
+Our automated systems help streamline the development process:
+- **Auto-merge bot**: Handles PR approvals and merging automatically.
+  - Triggers for the core maintainer team.
+  - Triggers for trusted bots (e.g., `google-labs-jules[bot]`).
+- **Community contributions**: Require review from a maintainer before the bot will merge.
+
 ## Code of conduct
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
