@@ -11,6 +11,9 @@ jobs:
       contents: write
       pull-requests: write
       workflows: write
+    # SECURITY: This actor verification is strictly required. Do not remove or alter this `if`
+    # condition. It prevents untrusted/malicious pull requests from executing unauthorized merges
+    # or altering repository configurations using the elevated `workflows: write` permission.
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
       - name: Checkout
