@@ -29,6 +29,7 @@ if grep -q "border.width: presentation.activeFocus" "$QML_FILE"; then
 else
     echo "❌ Focus border logic missing (Slide Background)!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'border.width: presentation.activeFocus' to $QML_FILE."
     exit 1
@@ -40,6 +41,7 @@ if grep -q "text: \"⏸ \" + qsTr(\"Paused\")" "$QML_FILE"; then
 else
     echo "❌ Enhanced Pause indicator missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to $QML_FILE."
     exit 1
@@ -51,6 +53,7 @@ if grep -q "cursorShape: Qt.PointingHandCursor" "$QML_FILE"; then
 else
     echo "❌ Cursor shape enhancement missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'cursorShape: Qt.PointingHandCursor' to $QML_FILE."
     exit 1
@@ -62,6 +65,7 @@ if grep -q "Accessible.role: Accessible.StaticText" "$QML_FILE"; then
 else
     echo "❌ Accessible roles missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'Accessible.role: Accessible.StaticText' to $QML_FILE."
     exit 1
@@ -73,6 +77,7 @@ if grep -q "Accessible.role: Accessible.Button" "$QML_FILE"; then
 else
     echo "❌ Next Button accessibility role missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'Accessible.role: Accessible.Button' to $QML_FILE."
     exit 1
@@ -83,6 +88,7 @@ if grep -q "Accessible.name: qsTr(\"Next Slide\")" "$QML_FILE"; then
 else
     echo "❌ Next Button accessible name missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'Accessible.name: qsTr(\"Next Slide\")' to $QML_FILE."
     exit 1
@@ -94,6 +100,7 @@ if grep -q "Behavior on scale" "$QML_FILE"; then
 else
     echo "❌ Scale animation missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'Behavior on scale' to $QML_FILE."
     exit 1
@@ -107,6 +114,7 @@ if grep -q "property int pauseLocks: 0" "$QML_FILE"; then
 else
     echo "❌ Pause Locks property missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'property int pauseLocks: 0' to $QML_FILE."
     exit 1
@@ -117,6 +125,7 @@ if grep -q "presentation.pauseLocks++" "$QML_FILE"; then
 else
     echo "❌ Pause Locks increment logic missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'presentation.pauseLocks++' to $QML_FILE."
     exit 1
@@ -128,6 +137,7 @@ if grep -q "activeFocusOnTab: true" "$QML_FILE"; then
 else
     echo "❌ Keyboard focus enabled (activeFocusOnTab) missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'activeFocusOnTab: true' to $QML_FILE."
     exit 1
@@ -139,6 +149,7 @@ if grep -q "border.color: \"#3daee9\"" "$QML_FILE"; then
 else
     echo "❌ Visual focus indicator (blue border) missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'border.color: \"#3daee9\"' to $QML_FILE."
     exit 1
@@ -150,6 +161,7 @@ if grep -q "Keys.onReturnPressed: presentation.advance()" "$QML_FILE"; then
 else
     echo "❌ Return key activation missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'Keys.onReturnPressed: presentation.advance()' to $QML_FILE."
     exit 1
@@ -161,6 +173,7 @@ if grep -q "style: Text.Outline" "$QML_FILE"; then
 else
     echo "❌ Text Outline style missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'style: Text.Outline' to $QML_FILE."
     exit 1
@@ -172,6 +185,7 @@ if grep -q "Keys.onLeftPressed: presentation.advance()" "$QML_FILE"; then
 else
     echo "❌ Left Arrow navigation binding missing!"
     echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to $QML_FILE."
     exit 1
