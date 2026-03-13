@@ -197,3 +197,25 @@
 
 ### Severity Summary
 - **Severity**: Low (CI Pipeline issue leading to potential security theater)
+
+## Sentinel Report - jules-auto-merge.yml Security Documentation
+
+### Risks Found
+
+1. **Medium Priority - Lack of Documentation on Critical Security Control**
+   - **File**: `.github/workflows/jules-auto-merge.yml`
+   - **Vulnerability**: The workflow was granted the `workflows: write` permission to allow automatic merging of workflow changes. However, there was no explicit documentation indicating that the actor check (`if: github.actor == ...`) was the sole mechanism preventing untrusted PRs from abusing these elevated privileges.
+   - **Impact**: Future maintainers could unknowingly remove or relax the `if` condition during refactoring or troubleshooting, inadvertently exposing the repository to unauthorized workflow modifications or unauthorized merges.
+
+### Fixes Applied
+
+1. **Explicit Security Comments**
+   - **Fix**: Added a `SECURITY` comment immediately above the `if:` condition in `.github/workflows/jules-auto-merge.yml`. This comment explicitly states that the actor verification must be strictly preserved to prevent unauthorized merges and configurations, coupling the permission grant directly to the security constraint in developer understanding.
+
+### Remaining Attack Surface
+
+-   The workflow relies on GitHub's built-in actor identification. The attack surface is minimal provided the actor check remains in place and the authorized accounts (`github.repository_owner` and the Jules bot) are not compromised.
+
+### Severity Summary
+
+-   **Medium Risks Resolved**: 1 (Addressed risk of accidental security regression by adding mandatory documentation).
