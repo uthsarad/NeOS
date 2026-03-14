@@ -24,6 +24,12 @@ Please include:
 - Expected vs. actual behavior.
 - Any logs or screenshots that help illustrate the issue.
 
+## Automated Bots
+
+The NeOS project uses automated bots to help maintain the repository:
+
+- **jules-auto-merge**: This bot automatically approves and merges pull requests created by the core maintainer team and trusted bots (like `google-labs-jules[bot]`). This streamlines our workflow for trusted changes.
+
 ## Code of conduct
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
