@@ -79,3 +79,8 @@
 ## 2026-03-05 - Stream Parsing Buffer Reuse in Rust
 **Learning:** While `BufReader::lines()` in Rust offers an ergonomic way to parse files incrementally, it inherently allocates a new `String` for every single line. When parsing extensive list-like files (e.g., package lists or mirrorlists) or frequently skipping commented sections, this per-line allocation introduces measurable memory overhead.
 **Action:** For performance-critical file parsing loops in Rust, replace the `.lines()` iterator with a `while reader.read_line(&mut raw_line)` construct using a single, reused `String` buffer (clearing it between iterations). This prevents repeated heap allocations and significantly improves stream parsing performance.
+
+## 2024-05-25 - API-Driven Workflow Optimization
+
+**Learning:** GitHub Actions workflows that solely utilize API-driven tools like the `gh` CLI (e.g., `gh pr merge "$PR_URL"`) do not require local repository context. The `actions/checkout` step in these cases adds unnecessary execution time and consumes runner resources.
+**Action:** Always omit the `actions/checkout` step in workflows that only perform remote API operations.
