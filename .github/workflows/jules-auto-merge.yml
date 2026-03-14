@@ -11,11 +11,9 @@ jobs:
       contents: write
       pull-requests: write
       workflows: write
+    # Security comment: Restrict workflow execution to the repository owner or the authorized jules auto-merge bot to prevent unauthorized workflow execution and modifications.
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Auto-merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
