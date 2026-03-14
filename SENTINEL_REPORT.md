@@ -197,3 +197,17 @@
 
 ### Severity Summary
 - **Severity**: Low (CI Pipeline issue leading to potential security theater)
+
+## Sentinel Report - Workflow Action Permissions and Constraints
+
+### Risks Found
+- **Missing Explicit Security Documentation**: The `.github/workflows/jules-auto-merge.yml` workflow was updated to include the `workflows: write` permission to allow the auto-merge bot to update workflow files. However, this permission is extremely powerful and could be abused if not strictly coupled with actor verification logic. While the `if` condition enforcing this logic existed, its critical security purpose was not explicitly documented, increasing the risk of it being accidentally removed or modified in future updates.
+
+### Fixes Applied
+- **Added Explicit Security Comment**: Added an explicit comment directly above the `if: github.actor == ...` condition in `.github/workflows/jules-auto-merge.yml`. This comment documents that the strict actor verification is a mandatory security constraint necessary to prevent untrusted pull requests from executing unauthorized merges or altering repository configurations with the `workflows: write` permission.
+
+### Remaining Attack Surface
+- The auto-merge workflow relies on GitHub's built-in actor verification mechanism. As long as the `if` condition remains intact and the `google-labs-jules[bot]` token is secure, the attack surface is minimal.
+
+### Severity Summary
+- **Severity**: Low (Documentation and Future-proofing)
