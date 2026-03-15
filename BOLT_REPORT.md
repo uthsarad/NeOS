@@ -1,17 +1,13 @@
-# Bolt Report: Parse Speed Validation
+# BOLT REPORT ⚡
 
-**Date:** 2026-03-05
-**Focus Area:** Parse Speed Validation (from `ai/tasks/bolt.json`)
+## 1. What was optimized
+Removed the `actions/checkout@v4` step from the `jules-auto-merge` GitHub Actions workflow.
 
-## What Was Optimized
-The Rust utility `tools/neos-profile-audit` uses file reading loops to parse the potentially large `packages.*` list files and the pacman mirrorlists. Previously, these were using the `io::BufReader::lines()` iterator which implicitly allocates a new `String` on the heap for every single line read from the file.
+## 2. Before/After Reasoning
+**Before:** The auto-merge workflow was checking out the entire repository before running a simple `gh pr merge` command.
+**After:** The checkout step has been eliminated. The `gh` CLI operates entirely via the GitHub API and does not require local repository context to merge a PR.
+**Reasoning:** `actions/checkout` introduces unnecessary execution time and runner resource usage for workflows that don't need local files. Removing it streamlines the CI/CD pipeline and improves efficiency. Also added inline comments to explain the reasoning, which improves maintainability.
 
-This has been modified to use a `while reader.read_line(&mut raw_line)` loop pattern with a single, mutable `String` buffer instantiated outside the loop. The buffer is cleared at the end of every loop iteration using `.clear()`.
-
-## Before/After Reasoning
-The addition of structure and section comments (e.g., `# Base System`) into files like `packages.x86_64` increases the total number of lines parsed. While these lines are functionally ignored, the old implementation using `lines()` was allocating memory for the strings before discarding them.
-
-By transitioning to a reused string buffer, the tool completely avoids the overhead of repeated heap allocations. The single `String` buffer organically grows to accommodate the longest line in the file and is reused for every subsequent line read, resulting in a substantial reduction in memory churn and measurable speed improvements for large lists.
-
-## Remaining Performance Risks
-- **Extremely long lines:** The reusable string buffer grows automatically to match the longest single line read. If an attacker or misconfiguration provides a file with no newlines (e.g., a multi-gigabyte single line), it will attempt to allocate that entirely into memory, potentially leading to an Out-Of-Memory panic. Given these are local repo definition files, the threat model is low, but the risk remains.
+## 3. Remaining Performance Risks
+- **Network Dependency:** The execution time of this job still relies on GitHub API responsiveness. However, by removing the checkout, the total runtime is strictly dependent on the API calls.
+- **Other CI Workflows:** Other workflows (like `build-iso.yml`) should be audited to ensure `actions/checkout` isn't used unnecessarily when only API interaction is needed, but that falls outside the current scope.
