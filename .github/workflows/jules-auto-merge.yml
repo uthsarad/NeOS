@@ -1,8 +1,8 @@
 name: Auto-merge Jules
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   approve-and-merge:
@@ -10,16 +10,18 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      workflows: write
-    if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
+    if: >-
+      github.event.pull_request.user.login == 'google-labs-jules[bot]' ||
+      github.actor == github.repository_owner
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Auto-merge
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
+          gh pr review "$PR_URL" --approve || true
           gh pr ready "$PR_URL" || true
           gh pr merge "$PR_URL" --auto --squash --delete-branch
