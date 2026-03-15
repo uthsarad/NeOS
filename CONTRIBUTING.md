@@ -24,6 +24,14 @@ Please include:
 - Expected vs. actual behavior.
 - Any logs or screenshots that help illustrate the issue.
 
+## Automated Bots
+
+To streamline our workflow and ensure timely updates, this repository uses automated bots:
+- **Jules Auto-Merge Bot (`google-labs-jules[bot]`)**:
+  - Automatically merges pull requests that have been approved.
+  - Acts exclusively on pull requests opened by the core maintainer team or trusted bots.
+  - Ensures that CI workflows (like `.github/workflows/build-iso.yml` and `.github/workflows/jules-auto-merge.yml`) can be updated securely and automatically.
+
 ## Code of conduct
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).

@@ -17,3 +17,15 @@ This report documents the UX and accessibility improvements made to the NeOS doc
 ## Remaining Usability Risks
 *   **Documentation Discoverability:** While the content is now easier to read, users must still find these documents. We rely on users reading the `README.md` or `docs/HANDBOOK.md` before attempting an installation on an unsupported architecture.
 *   **Visual Hierarchy in Markdown:** Markdown's visual hierarchy is limited by the platform rendering it (e.g., GitHub). We are assuming the rendered output will provide sufficient visual distinction for the nested lists.
+
+## PR Auto-Merge Documentation
+### UX Improvements
+- **Transparency in Automation:** Added clear, scannable documentation in `CONTRIBUTING.md` explaining the role, permissions, and behavior of the `jules-auto-merge` bot.
+- **Cognitive Load Reduction:** Used structured, nested bullet points to break down the bot's capabilities instead of dense paragraphs, making it easier for new contributors to understand the CI/CD pipeline immediately upon reading the contributing guidelines.
+
+### Accessibility Fixes
+- None applicable for this pure-documentation update, though using bullet points improves semantic structure and screen-reader parsing for documentation consumers.
+
+### Remaining Usability Risks
+- Contributors may still be confused if a bot's actions fail silently without commenting on the PR.
+- While documented here, there is no direct feedback loop in the PR UI itself explaining *why* the bot did or did not merge a specific PR (which would be handled at the GitHub Actions/bot comment level).
