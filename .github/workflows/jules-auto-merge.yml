@@ -3,12 +3,6 @@ name: Auto-merge Jules
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
-    inputs:
-      pr_url:
-        description: 'Pull request URL to auto-merge (required for manual runs)'
-        required: true
-        type: string
 
 jobs:
   approve-and-merge:
@@ -26,15 +20,10 @@ jobs:
       - name: Auto-merge
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
-          PR_URL: ${{ github.event.pull_request.html_url || inputs.pr_url }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           HAS_PAT: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' }}
         run: |
           set -euo pipefail
-
-          if [[ -z "${PR_URL:-}" ]]; then
-            echo "PR_URL is required. For manual runs, set workflow_dispatch input 'pr_url'." >&2
-            exit 1
-          fi
 
           # If the PR changes workflow files, GitHub may reject merge operations from GITHUB_TOKEN
           # because app tokens do not have workflow scope. Use JULES_AUTO_MERGE_TOKEN for these PRs.
