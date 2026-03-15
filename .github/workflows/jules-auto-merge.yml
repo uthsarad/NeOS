@@ -11,12 +11,11 @@ jobs:
       contents: write
       pull-requests: write
       workflows: write
+    # Security: explicit actor validation prevents unauthorized workflow execution
     if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Auto-merge
+        # Bolt: Removed actions/checkout as the gh CLI is API-driven and does not need local repo context
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
