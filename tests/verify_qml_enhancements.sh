@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# Wrapper to ensure script does not block indefinitely
+if [ "$1" != "--wrapped" ]; then
+    timeout 60s bash "$0" --wrapped "$@" || { exit_code=$?; echo "⚠️ $0 failed or timed out"; exit $exit_code; }
+    exit 0
+fi
+shift
+
 QML_FILE="airootfs/etc/calamares/branding/neos/show.qml"
 
 echo "Verifying QML enhancements in $QML_FILE..."
