@@ -1,18 +1,17 @@
 {
-  "focus_area": "CI/CD Pipeline Stabilization and Test Hardening",
-  "priority_selection": "Stabilization / hardening",
-  "files_impacted": [
+  "focus_area": "CI/CD Pipeline and Testing Infrastructure Hardening",
+  "affected_files": [
     ".github/workflows/build-iso.yml",
     "tests/verify_mkinitcpio.sh",
     "tests/verify_qml_enhancements.sh",
     ".gitignore"
   ],
-  "maximum_surface_area": "Only the specified workflow file, test scripts, and gitignore. No code, configuration, or architectural shifts are permitted.",
+  "maximum_allowed_surface_area": "Modifications are strictly limited to updating the CI workflow for pre-build testing, applying timeout/non-blocking logic to specific test scripts, updating `.gitignore` for build artifacts, and ensuring consistent test script execution. No new features, system configuration changes, or architectural shifts are permitted.",
   "constraints": [
-    "In `.github/workflows/build-iso.yml`, the `test` job must execute inside an `archlinux:latest` container with `--privileged` and `bash` as the default shell.",
-    "Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
-    "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking.",
-    "Ensure error messages in the modified test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
-    "Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`)."
+    "In `.github/workflows/build-iso.yml`, update the `test` job to ensure the `archlinux:latest` container runs with `--privileged` and `bash` as the default shell.",
+    "Ensure pre-build validation scripts execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
+    "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper that explicitly captures and propagates the underlying command's exit code (e.g., `timeout 60s bash \"$script\" || { exit_code=$?; echo 'failed'; exit $exit_code; }`).",
+    "Ensure error messages in these test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
+    "Add missing entries to `.gitignore` (build directories `out/`, `work/`, ISO artifacts `*.iso`, and CI-generated configuration files `pacman-build.conf`, as well as `*.log`, `.DS_Store`, `*~`)."
   ]
 }

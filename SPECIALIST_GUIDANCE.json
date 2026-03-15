@@ -1,14 +1,35 @@
 {
   "Bolt": {
-    "focus_area": "Performance Script Optimization",
-    "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) and the CI workflow (`.github/workflows/build-iso.yml`) to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Ensure that globbing or parameter expansion is used effectively."
+    "focus_area": "Performance optimizations in CI shell scripts",
+    "affected_files": [
+      ".github/workflows/build-iso.yml",
+      "tests/verify_mkinitcpio.sh",
+      "tests/verify_qml_enhancements.sh"
+    ],
+    "guidance": [
+      "Review the CI shell scripts and ensure native bash operations are utilized.",
+      "Replace subprocess-heavy string slicing, repeated `id -nu` calls, or `awk` usage where native parameter expansion, process substitution with `loginctl`, or native bash integer arithmetic are more performant."
+    ]
   },
   "Palette": {
-    "focus_area": "Terminal UX and Actionable Errors",
-    "guidance": "Review the terminal error messages in the modified test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`). Ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and bulleted actionable steps to minimize developer cognitive load."
+    "focus_area": "UX enhancements in CI error messages",
+    "affected_files": [
+      "tests/verify_mkinitcpio.sh",
+      "tests/verify_qml_enhancements.sh"
+    ],
+    "guidance": [
+      "Review terminal error messages in the updated test scripts.",
+      "Ensure all error messages are formatted as multi-line outputs incorporating a clear '💡 How to fix:' block with bulleted actionable remediation steps to minimize developer cognitive load."
+    ]
   },
   "Sentinel": {
-    "focus_area": "Privileged Execution Review",
-    "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation."
+    "focus_area": "Security review of CI workflow changes",
+    "affected_files": [
+      ".github/workflows/build-iso.yml"
+    ],
+    "guidance": [
+      "Review the CI workflow changes, specifically focusing on the privileged execution (`--privileged`) of the `test` job.",
+      "Ensure that this execution mode does not introduce unintended security risks outside the intended scope of pre-build validation."
+    ]
   }
 }

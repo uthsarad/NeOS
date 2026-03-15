@@ -38,7 +38,7 @@ Modifications are strictly limited to updating the CI workflow for pre-build tes
 **Constraints for Architect:**
 - In `.github/workflows/build-iso.yml`, the `test` job must execute inside an `archlinux:latest` container with `--privileged` and `bash` as the default shell.
 - Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).
-- In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking. Ensure error messages provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.
+- In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| { exit_code=$?; echo 'failed'; exit $exit_code; }`) to ensure they are non-blocking where appropriate but preserve exit codes, and fix any previous masking. Ensure error messages provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.
 - Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`).
 
 ## Phase 5 — Delegation Strategy
