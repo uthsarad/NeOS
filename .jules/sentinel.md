@@ -100,3 +100,8 @@
 **Vulnerability:** `verify_security_config.sh` unconditionally enforced the presence of `airootfs/etc/calamares/modules/users.conf` and explicitly failed if missing. This forces developers to potentially stub out security files just to pass tests, which introduces risky security theater.
 **Learning:** Test scripts must respect the contextual bounds of the files they check. If a security configuration file is not present, enforcing its contents is logically flawed and creates false failures.
 **Prevention:** Security verification scripts should use `[ -f "$FILE" ]` existence checks before asserting file contents, securely skipping the test instead of failing unless the file is an absolute system requirement.
+
+## 2026-10-27 - Unnecessary Privileged Execution in CI Pre-build Validations
+**Vulnerability:** The `test` job in `.github/workflows/build-iso.yml` ran its bash validation scripts inside an `archlinux:latest` container configured with `options: --privileged`.
+**Learning:** While the primary `build` job needs full capabilities for `mkarchiso`, simple syntax or configuration validation scripts do not. Blindly copying the container configuration across jobs unnecessarily breaks isolation and broadens the attack surface for the CI pipeline.
+**Prevention:** Always restrict `--privileged` container executions strictly to the jobs and steps that absolutely require full system access (like loop device mounting).

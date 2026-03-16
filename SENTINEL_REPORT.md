@@ -197,3 +197,20 @@
 
 ### Severity Summary
 - **Severity**: Low (CI Pipeline issue leading to potential security theater)
+
+## Sentinel Report - CI Privileged Execution Review
+
+### Risks Found
+
+1. **Low Priority - Unnecessary Privileged Container Execution for Test Job**
+   - **File**: `.github/workflows/build-iso.yml`
+   - **Vulnerability**: The pre-build validation `test` job was running in an `archlinux:latest` container with `options: --privileged`. While `--privileged` is necessary for the `build` job because it executes `mkarchiso` (which requires loop devices, mount capabilities, and full system access), the `test` job only runs simple, non-destructive bash scripts (`tests/verify_*.sh`). Running these checks with full container privileges removes isolation without a valid use case, granting the scripts unnecessary capabilities that expand the attack surface if any pre-build step were to be compromised or run malicious code.
+
+### Fixes Applied
+
+1. **Reduced Capabilities for Test Job**
+   - **Fix**: Removed `options: --privileged` from the `test` job in `.github/workflows/build-iso.yml`. The `test` job now executes the bash scripts within the standard security boundaries of the `archlinux:latest` container, adhering to the principle of least privilege.
+
+### Severity Summary
+
+-   **Low Risks Resolved**: 1 (Removed unnecessary `--privileged` execution for pre-build testing)
