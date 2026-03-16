@@ -26,7 +26,8 @@ else
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add 'Keys.onSpacePressed: presentation.advance()' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Keys.onSpacePressed: presentation.advance()' to enable keyboard navigation via the Space key."
     exit 1
 fi
 
@@ -37,7 +38,8 @@ else
     echo "❌ Focus border logic missing (Slide Background)!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'border.width: presentation.activeFocus' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'border.width: presentation.activeFocus' to provide visual feedback for keyboard focus."
     exit 1
 fi
 
@@ -48,7 +50,8 @@ else
     echo "❌ Enhanced Pause indicator missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to clearly indicate the paused state."
     exit 1
 fi
 
@@ -59,7 +62,8 @@ else
     echo "❌ Cursor shape enhancement missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'cursorShape: Qt.PointingHandCursor' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'cursorShape: Qt.PointingHandCursor' to signal interactivity on hover."
     exit 1
 fi
 
@@ -70,7 +74,8 @@ else
     echo "❌ Accessible roles missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'Accessible.role: Accessible.StaticText' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Accessible.role: Accessible.StaticText' to improve screen reader compatibility."
     exit 1
 fi
 
@@ -81,7 +86,8 @@ else
     echo "❌ Next Button accessibility role missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'Accessible.role: Accessible.Button' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Accessible.role: Accessible.Button' to ensure the element is recognized as a button by assistive technologies."
     exit 1
 fi
 
@@ -91,7 +97,8 @@ else
     echo "❌ Next Button accessible name missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'Accessible.name: qsTr(\"Next Slide\")' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Accessible.name: qsTr(\"Next Slide\")' to provide a descriptive name for screen readers."
     exit 1
 fi
 
@@ -102,7 +109,8 @@ else
     echo "❌ Scale animation missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'Behavior on scale' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Behavior on scale' to create smooth visual transitions."
     exit 1
 fi
 
@@ -115,7 +123,8 @@ else
     echo "❌ Pause Locks property missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'property int pauseLocks: 0' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'property int pauseLocks: 0' to initialize the pause state management logic."
     exit 1
 fi
 
@@ -125,7 +134,8 @@ else
     echo "❌ Pause Locks increment logic missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'presentation.pauseLocks++' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'presentation.pauseLocks++' to increment the pause lock counter."
     exit 1
 fi
 
@@ -136,7 +146,8 @@ else
     echo "❌ Keyboard focus enabled (activeFocusOnTab) missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'activeFocusOnTab: true' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'activeFocusOnTab: true' to allow keyboard users to focus the element via the Tab key."
     exit 1
 fi
 
@@ -147,7 +158,8 @@ else
     echo "❌ Visual focus indicator (blue border) missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'border.color: \"#3daee9\"' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'border.color: \"#3daee9\"' to provide a clear visual indicator when the element has focus."
     exit 1
 fi
 
@@ -158,7 +170,8 @@ else
     echo "❌ Return key activation missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'Keys.onReturnPressed: presentation.advance()' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Keys.onReturnPressed: presentation.advance()' to allow activation via the Return key."
     exit 1
 fi
 
@@ -169,7 +182,8 @@ else
     echo "❌ Text Outline style missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'style: Text.Outline' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'style: Text.Outline' to improve text readability against varying backgrounds."
     exit 1
 fi
 
@@ -180,7 +194,8 @@ else
     echo "❌ Left Arrow navigation binding missing!"
     echo ""
     echo "💡 How to fix:"
-    echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to $QML_FILE."
+    echo "   - Open $QML_FILE."
+    echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to enable backwards navigation."
     exit 1
 fi
 
