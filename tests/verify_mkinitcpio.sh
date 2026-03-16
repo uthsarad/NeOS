@@ -19,8 +19,24 @@ if [ ! -f "$MKINITCPIO_CONF" ]; then
     exit 1
 fi
 
-# Bolt: Consider using native bash or a more performant search for HOOKS to avoid grep subprocess.
-HOOKS_LINE=$(grep "^HOOKS=" "$MKINITCPIO_CONF")
+# Bolt: Read file once using native bash to extract HOOKS and MODULES efficiently, avoiding grep/sed subprocesses.
+HOOKS_LINE=""
+MODULES_SECTION=""
+IN_MODULES=0
+
+while IFS= read -r line || [ -n "$line" ]; do
+    if [[ "$line" == HOOKS=* ]]; then
+        HOOKS_LINE="$line"
+    elif [[ "$line" == MODULES=* ]]; then
+        IN_MODULES=1
+        MODULES_SECTION="$line"$'\n'
+    elif [[ $IN_MODULES -eq 1 ]]; then
+        MODULES_SECTION+="$line"$'\n'
+        if [[ "$line" == *")"* ]]; then
+            IN_MODULES=0
+        fi
+    fi
+done < "$MKINITCPIO_CONF"
 
 if [ -z "$HOOKS_LINE" ]; then
     echo "❌ HOOKS line not found in $MKINITCPIO_CONF"
@@ -67,8 +83,6 @@ fi
 
 # Check for required modules
 REQUIRED_MODULE="btrfs"
-# Bolt: Consider using native bash or a more performant search to find MODULES array to avoid sed subprocess.
-MODULES_SECTION=$(sed -n '/^MODULES=/,/)/p' "$MKINITCPIO_CONF")
 if [[ "$MODULES_SECTION" != *"$REQUIRED_MODULE"* ]]; then
     echo "❌ Missing required module: $REQUIRED_MODULE"
     echo ""
