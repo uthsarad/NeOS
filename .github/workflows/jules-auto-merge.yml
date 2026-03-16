@@ -10,13 +10,11 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      workflows: write
     if: >-
       github.event.pull_request.user.login == 'google-labs-jules[bot]' ||
       github.actor == github.repository_owner
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Auto-merge
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
