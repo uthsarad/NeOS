@@ -1,17 +1,14 @@
 {
-  "focus_area": "CI/CD Pipeline and Testing Infrastructure Hardening",
+  "focus_area": "Build Pipeline Stabilization and Validation Hardening",
   "affected_files": [
-    ".github/workflows/build-iso.yml",
-    "tests/verify_mkinitcpio.sh",
-    "tests/verify_qml_enhancements.sh",
-    ".gitignore"
+    "pacman.conf",
+    ".github/workflows/build-iso.yml"
   ],
-  "maximum_allowed_surface_area": "Modifications are strictly limited to updating the CI workflow for pre-build testing, applying timeout/non-blocking logic to specific test scripts, updating `.gitignore` for build artifacts, and ensuring consistent test script execution. No new features, system configuration changes, or architectural shifts are permitted.",
+  "maximum_allowed_surface_area": "Modifications are strictly limited to fixing the build-blocking signature check in the root `pacman.conf` and adding an ISO size validation step to the `.github/workflows/build-iso.yml` workflow. No new features, configuration files, or architectural shifts are permitted.",
   "constraints": [
-    "In `.github/workflows/build-iso.yml`, update the `test` job to ensure the `archlinux:latest` container runs with `--privileged` and `bash` as the default shell.",
-    "Ensure pre-build validation scripts execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
-    "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper that explicitly captures and propagates the underlying command's exit code (e.g., `timeout 60s bash \"$script\" || { exit_code=$?; echo 'failed'; exit $exit_code; }`).",
-    "Ensure error messages in these test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
-    "Add missing entries to `.gitignore` (build directories `out/`, `work/`, ISO artifacts `*.iso`, and CI-generated configuration files `pacman-build.conf`, as well as `*.log`, `.DS_Store`, `*~`)."
+    "In `pacman.conf` (root level), change `SigLevel` to `Required DatabaseOptional`. Do NOT modify `airootfs/etc/pacman.conf`.",
+    "In `.github/workflows/build-iso.yml`, add an ISO size validation step that fails if the ISO exceeds 2 GiB (2 * 1024 * 1024 * 1024 bytes).",
+    "In `.github/workflows/build-iso.yml`, ensure the `test` job executing pre-build validations does NOT use the `--privileged` flag for container execution, adhering to the principle of least privilege.",
+    "If text replacements are necessary, carefully verify the surrounding text using `sed` or targeted `grep` to ensure exact matches."
   ]
 }

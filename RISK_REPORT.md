@@ -1,20 +1,33 @@
 # Risk & Priority Report
 
-## Current Risks
+## Current System Risks
 
-### 1. Security Risks
-- **Privileged CI Execution:** Running pre-build tests in a container with `--privileged` can expose the host CI environment if tests contain malicious code or vulnerabilities. This risk is acceptable for early-stage validation but requires Sentinel review to ensure tests don't exploit this privilege.
-- **Unvalidated Test Scripts:** If test scripts (e.g., `verify_mkinitcpio.sh`) lack robust error handling or timeout configurations, they could result in pipeline hangs, consuming CI minutes and blocking other pull requests. Using `timeout` with correct exit code propagation mitigates this.
+**1. Critical Build Blocker (pacman.conf)**
+- **Risk Level:** Critical (Active Failure)
+- **Impact:** All ISO builds currently fail due to the `DatabaseRequired` signature check in the build environment's `pacman.conf`. The product cannot be distributed until this is resolved.
+- **Mitigation Strategy:** Switch the root-level `pacman.conf` to `DatabaseOptional` while strictly enforcing `DatabaseRequired` in the target system's (`airootfs`) configuration. This is the immediate priority for the Architect.
 
-### 2. Performance Risks
-- **Subprocess Overhead in CI:** While bash scripts orchestrating tests are generally fast, excessive use of subprocesses (`awk`, `cut`, `find`) in critical paths can slightly slow down validation. Bolt's optimizations (native bash features) will keep test overhead minimal.
-- **ISO Size Limitations:** If dependencies are not carefully managed, the ISO could easily exceed the 2 GiB GitHub Release limit. The CI checks are correctly in place, but developers must adhere to the provided remediation steps if limits are hit.
+**2. Missing ISO Size Validation in CI/CD**
+- **Risk Level:** High
+- **Impact:** The GitHub Releases API enforces a hard 2 GiB limit per asset. Without automated validation in the CI pipeline, the build may succeed but the automated release process will fail silently or abort during upload, leading to missing releases and broken delivery pipelines.
+- **Mitigation Strategy:** Implement a strict size constraint check in `.github/workflows/build-iso.yml` immediately following the build phase.
 
-### 3. Complexity Risks
-- **Testing Architecture Debt:** Integrating more pre-build tests without a clear structure increases the complexity of `.github/workflows/build-iso.yml`. The risk is mitigated by maintaining a clear distinction between pre-build tests and ISO-dependent tests.
-- **Actionable Feedback:** As the testing suite grows, developer cognitive load increases if error messages are vague. Palette's requirement for clear, actionable remediation blocks ensures this complexity is manageable.
+**3. Incomplete Architecture Support & Documentation Mismatch**
+- **Risk Level:** Medium
+- **Impact:** The documentation promises a "Windows-familiar experience," but this is entirely reliant on the Calamares installer, ZRAM generators, and Snapper integrations that currently only exist in the `x86_64` configurations. `i686` and `aarch64` builds will result in broken or vastly degraded user experiences.
+- **Mitigation Strategy:** Explicitly document the experimental nature of non-x86_64 architectures in `README.md` and `HANDBOOK.md`. (Deferred to future sprints).
 
-## Priorities for Next Iteration
-1. **Consolidate Pre-Build CI:** Ensure the test job is stable, reports failures accurately without hanging, and does not mask underlying test errors.
-2. **Standardize Test Output:** Ensure all test scripts output a standardized error format (the '💡 How to fix:' pattern).
-3. **Repository Hygiene:** Complete basic housekeeping (like updating `.gitignore`) to keep the development environment clean and reproducible.
+**4. Fragile Dependency Handling in Core Services**
+- **Risk Level:** Medium
+- **Impact:** Critical scripts such as `neos-autoupdate.sh` rely on external dependencies (like `snapper`) but do not validate their presence before execution. If a user removes a dependency, the service fails silently, potentially leading to data loss (e.g., missing rollback snapshots).
+- **Mitigation Strategy:** Implement pre-execution dependency validation in all core bash scripts. (Deferred to future sprints).
+
+## Technical Debt
+
+- **Missing Systemd Sandboxing:** Custom services currently lack security hardening directives (`User=`, `DynamicUser=`, `ProtectSystem=`).
+- **Inconsistent Error Handling:** Several custom bash scripts lack strict execution constraints (`set -euo pipefail`) or logging mechanisms.
+- **Stale Documentation URLs:** Documentation references legacy paths (e.g., `neos-project/neos`) rather than the active repository.
+
+## Areas of Concern
+
+The immediate concern is the stabilization of the build and release pipeline. All feature development or architectural improvements must be paused until the product can be reliably and consistently built, verified against size constraints, and distributed. The strategy prioritizes the "Critical" and "High" risks defined above.
