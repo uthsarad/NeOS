@@ -15,6 +15,7 @@ if [ ! -f "$MKINITCPIO_CONF" ]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
+    echo "   - Create the missing configuration file."
     echo "   - Ensure mkinitcpio.conf is located at $MKINITCPIO_CONF."
     exit 1
 fi
@@ -43,7 +44,8 @@ if [ -z "$HOOKS_LINE" ]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add a 'HOOKS=(...)' array to $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Add a 'HOOKS=(...)' array to define the required initialization hooks."
     exit 1
 fi
 
@@ -56,7 +58,9 @@ if [[ "$HOOKS_LINE" != *"$REQUIRED_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add '$REQUIRED_HOOK' to the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the HOOKS array."
+    echo "   - Add '$REQUIRED_HOOK' to ensure the ISO boots correctly."
     exit 1
 fi
 
@@ -67,7 +71,9 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the HOOKS array."
+    echo "   - Remove the forbidden '$FORBIDDEN_HOOK' hook to prevent generic ISO boot failures."
     exit 1
 fi
 
@@ -77,7 +83,9 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the HOOKS array."
+    echo "   - Remove the forbidden '$FORBIDDEN_HOOK' hook to prevent live ISO boot failures."
     exit 1
 fi
 
@@ -88,7 +96,9 @@ if [[ "$MODULES_SECTION" != *"$REQUIRED_MODULE"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add '$REQUIRED_MODULE' to the MODULES array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the MODULES array."
+    echo "   - Add the required '$REQUIRED_MODULE' module."
     exit 1
 fi
 
