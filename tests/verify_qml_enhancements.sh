@@ -17,9 +17,12 @@ if [ ! -f "$QML_FILE" ]; then
     exit 0
 fi
 
+# Read entire file into a variable to avoid repeated disk I/O and subprocesses
+QML_CONTENT=$(<"$QML_FILE")
+
 # Check for Space key binding
-# Bolt: Consider replacing grep with native bash reading or a faster match if file is large.
-if grep -q "Keys.onSpacePressed: presentation.advance()" "$QML_FILE"; then
+# Bolt: Replaced grep with native bash reading for faster match
+if [[ "$QML_CONTENT" == *"Keys.onSpacePressed: presentation.advance()"* ]]; then
     echo "✅ Space key binding found."
 else
     echo "❌ Space key binding missing!"
@@ -31,7 +34,7 @@ else
 fi
 
 # Check for Focus Border (checking one instance is enough to verify intent, but let's check count if possible, or just presence)
-if grep -q "border.width: presentation.activeFocus" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"border.width: presentation.activeFocus"* ]]; then
     echo "✅ Focus border logic found (Slide Background)."
 else
     echo "❌ Focus border logic missing (Slide Background)!"
@@ -42,7 +45,7 @@ else
 fi
 
 # Check for Pause Indicator (enhanced)
-if grep -q "text: \"⏸ \" + qsTr(\"Paused\")" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"text: \"⏸ \" + qsTr(\"Paused\")"* ]]; then
     echo "✅ Enhanced Pause indicator found."
 else
     echo "❌ Enhanced Pause indicator missing!"
@@ -53,7 +56,7 @@ else
 fi
 
 # Check for Cursor Shape
-if grep -q "cursorShape: Qt.PointingHandCursor" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"cursorShape: Qt.PointingHandCursor"* ]]; then
     echo "✅ Cursor shape enhancement found."
 else
     echo "❌ Cursor shape enhancement missing!"
@@ -64,7 +67,7 @@ else
 fi
 
 # Check for Accessibility Roles on new elements (optional but good)
-if grep -q "Accessible.role: Accessible.StaticText" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"Accessible.role: Accessible.StaticText"* ]]; then
     echo "✅ Accessible roles found."
 else
     echo "❌ Accessible roles missing!"
@@ -75,7 +78,7 @@ else
 fi
 
 # Check for Next Button Accessibility
-if grep -q "Accessible.role: Accessible.Button" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"Accessible.role: Accessible.Button"* ]]; then
     echo "✅ Next Button accessibility role found."
 else
     echo "❌ Next Button accessibility role missing!"
@@ -85,7 +88,7 @@ else
     exit 1
 fi
 
-if grep -q "Accessible.name: qsTr(\"Next Slide\")" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"Accessible.name: qsTr(\"Next Slide\")"* ]]; then
     echo "✅ Next Button accessible name found."
 else
     echo "❌ Next Button accessible name missing!"
@@ -96,7 +99,7 @@ else
 fi
 
 # Check for Scale Animation
-if grep -q "Behavior on scale" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"Behavior on scale"* ]]; then
     echo "✅ Scale animation found."
 else
     echo "❌ Scale animation missing!"
@@ -109,7 +112,7 @@ fi
 # --- NEW CHECKS ---
 
 # Check for Pause Locks Logic
-if grep -q "property int pauseLocks: 0" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"property int pauseLocks: 0"* ]]; then
     echo "✅ Pause Locks property found."
 else
     echo "❌ Pause Locks property missing!"
@@ -119,7 +122,7 @@ else
     exit 1
 fi
 
-if grep -q "presentation.pauseLocks++" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"presentation.pauseLocks++"* ]]; then
     echo "✅ Pause Locks increment logic found."
 else
     echo "❌ Pause Locks increment logic missing!"
@@ -130,7 +133,7 @@ else
 fi
 
 # Check for Keyboard Focus Enablement
-if grep -q "activeFocusOnTab: true" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"activeFocusOnTab: true"* ]]; then
     echo "✅ Keyboard focus enabled (activeFocusOnTab) found."
 else
     echo "❌ Keyboard focus enabled (activeFocusOnTab) missing!"
@@ -141,7 +144,7 @@ else
 fi
 
 # Check for Visual Focus Indicator on Button
-if grep -q "border.color: \"#3daee9\"" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"border.color: \"#3daee9\""* ]]; then
     echo "✅ Visual focus indicator (blue border) found."
 else
     echo "❌ Visual focus indicator (blue border) missing!"
@@ -152,7 +155,7 @@ else
 fi
 
 # Check for Keyboard Activation
-if grep -q "Keys.onReturnPressed: presentation.advance()" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"Keys.onReturnPressed: presentation.advance()"* ]]; then
     echo "✅ Return key activation found."
 else
     echo "❌ Return key activation missing!"
@@ -163,7 +166,7 @@ else
 fi
 
 # Check for Text Outline (Readability enhancement)
-if grep -q "style: Text.Outline" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"style: Text.Outline"* ]]; then
     echo "✅ Text Outline style found."
 else
     echo "❌ Text Outline style missing!"
@@ -174,7 +177,7 @@ else
 fi
 
 # Check for Left Arrow Navigation
-if grep -q "Keys.onLeftPressed: presentation.advance()" "$QML_FILE"; then
+if [[ "$QML_CONTENT" == *"Keys.onLeftPressed: presentation.advance()"* ]]; then
     echo "✅ Left Arrow navigation binding found."
 else
     echo "❌ Left Arrow navigation binding missing!"
