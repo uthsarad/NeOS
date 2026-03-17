@@ -3,7 +3,15 @@ set -e
 
 # Wrapper to ensure script does not block indefinitely
 if [ "$1" != "--wrapped" ]; then
-    timeout 60s bash "$0" --wrapped "$@" || { exit_code=$?; echo "⚠️ $0 failed or timed out"; exit $exit_code; }
+    timeout 60s bash "$0" --wrapped "$@" || {
+        exit_code=$?
+        echo "❌ $0 failed or timed out"
+        echo ""
+        echo "💡 How to fix:"
+        echo "   - Check the test script logic for infinite loops."
+        echo "   - Ensure required resources are available and responding."
+        exit $exit_code
+    }
     exit 0
 fi
 shift
