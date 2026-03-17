@@ -1,18 +1,14 @@
 {
-  "focus_area": "CI/CD Pipeline Stabilization and Test Hardening",
-  "priority_selection": "Stabilization / hardening",
-  "files_impacted": [
-    ".github/workflows/build-iso.yml",
-    "tests/verify_mkinitcpio.sh",
-    "tests/verify_qml_enhancements.sh",
-    ".gitignore"
+  "focus_area": "Build Pipeline Stabilization and Validation Hardening",
+  "affected_files": [
+    "pacman.conf",
+    ".github/workflows/build-iso.yml"
   ],
-  "maximum_surface_area": "Only the specified workflow file, test scripts, and gitignore. No code, configuration, or architectural shifts are permitted.",
+  "maximum_allowed_surface_area": "Modifications are strictly limited to fixing the build-blocking signature check in the root `pacman.conf` and adding an ISO size validation step to the `.github/workflows/build-iso.yml` workflow. No new features, configuration files, or architectural shifts are permitted.",
   "constraints": [
-    "In `.github/workflows/build-iso.yml`, the `test` job must execute inside an `archlinux:latest` container with `--privileged` and `bash` as the default shell.",
-    "Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
-    "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking.",
-    "Ensure error messages in the modified test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
-    "Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`)."
+    "In `pacman.conf` (root level), change `SigLevel` to `Required DatabaseOptional`. Do NOT modify `airootfs/etc/pacman.conf`.",
+    "In `.github/workflows/build-iso.yml`, add an ISO size validation step that fails if the ISO exceeds 2 GiB (2 * 1024 * 1024 * 1024 bytes).",
+    "In `.github/workflows/build-iso.yml`, ensure the `test` job executing pre-build validations does NOT use the `--privileged` flag for container execution, adhering to the principle of least privilege.",
+    "If text replacements are necessary, carefully verify the surrounding text using `sed` or targeted `grep` to ensure exact matches."
   ]
 }

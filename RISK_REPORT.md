@@ -1,14 +1,33 @@
 # Risk & Priority Report
 
-## Current System Risk
-**Medium**. While functional, the system's testing pipeline lacks automated execution, leaving room for regressions to slip into the main branch unseen. Specific test scripts, such as `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh`, do not currently implement timeout wrappers. This is a significant risk as these tests could hang indefinitely during automated CI execution if they encounter unexpected states, thereby blocking the entire deployment pipeline.
+## Current System Risks
 
-## Tech Debt Assessment
-The repository suffers from technical debt in its CI/CD and testing infrastructure:
-1. **No Automated Testing in CI:** The `.github/workflows/build-iso.yml` workflow lacks a comprehensive pre-build validation step. Tests should execute before the ISO build to catch failures early, but currently, they are either missing or not correctly sequenced.
-2. **Missing Timeout Wrappers:** Pre-build CI tests like `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh` are designed to be non-blocking. However, they lack the necessary `timeout 60s` wrapper and `|| true` fallback, increasing the risk of pipeline hangs.
-3. **Incomplete .gitignore:** The `.gitignore` file is missing common entries (e.g., `*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`), leading to potential repository pollution with build artifacts.
-4. **Suboptimal Error Messaging:** Error messages in test scripts often lack clear, actionable remediation steps. They need to be formatted as multi-line outputs incorporating a clear '💡 How to fix:' block with bulleted instructions.
+**1. Critical Build Blocker (pacman.conf)**
+- **Risk Level:** Critical (Active Failure)
+- **Impact:** All ISO builds currently fail due to the `DatabaseRequired` signature check in the build environment's `pacman.conf`. The product cannot be distributed until this is resolved.
+- **Mitigation Strategy:** Switch the root-level `pacman.conf` to `DatabaseOptional` while strictly enforcing `DatabaseRequired` in the target system's (`airootfs`) configuration. This is the immediate priority for the Architect.
 
-## Why This Step is the Highest Leverage
-As we move toward a stable release, ensuring the reliability and speed of the CI/CD pipeline is paramount. Unreliable tests or hanging pipelines will significantly hamper development velocity. By introducing a pre-build validation step in an `archlinux:latest` container (with `--privileged` and `bash`), we can catch configuration and dependency errors before initiating the resource-intensive ISO build process. Implementing timeout wrappers on specific tests ensures the pipeline remains non-blocking even if edge-case failures occur. Furthermore, improving the UX of terminal errors directly reduces developer cognitive load and troubleshooting time. This aligns squarely with the "Stabilization / hardening" priority.
+**2. Missing ISO Size Validation in CI/CD**
+- **Risk Level:** High
+- **Impact:** The GitHub Releases API enforces a hard 2 GiB limit per asset. Without automated validation in the CI pipeline, the build may succeed but the automated release process will fail silently or abort during upload, leading to missing releases and broken delivery pipelines.
+- **Mitigation Strategy:** Implement a strict size constraint check in `.github/workflows/build-iso.yml` immediately following the build phase.
+
+**3. Incomplete Architecture Support & Documentation Mismatch**
+- **Risk Level:** Medium
+- **Impact:** The documentation promises a "Windows-familiar experience," but this is entirely reliant on the Calamares installer, ZRAM generators, and Snapper integrations that currently only exist in the `x86_64` configurations. `i686` and `aarch64` builds will result in broken or vastly degraded user experiences.
+- **Mitigation Strategy:** Explicitly document the experimental nature of non-x86_64 architectures in `README.md` and `HANDBOOK.md`. (Deferred to future sprints).
+
+**4. Fragile Dependency Handling in Core Services**
+- **Risk Level:** Medium
+- **Impact:** Critical scripts such as `neos-autoupdate.sh` rely on external dependencies (like `snapper`) but do not validate their presence before execution. If a user removes a dependency, the service fails silently, potentially leading to data loss (e.g., missing rollback snapshots).
+- **Mitigation Strategy:** Implement pre-execution dependency validation in all core bash scripts. (Deferred to future sprints).
+
+## Technical Debt
+
+- **Missing Systemd Sandboxing:** Custom services currently lack security hardening directives (`User=`, `DynamicUser=`, `ProtectSystem=`).
+- **Inconsistent Error Handling:** Several custom bash scripts lack strict execution constraints (`set -euo pipefail`) or logging mechanisms.
+- **Stale Documentation URLs:** Documentation references legacy paths (e.g., `neos-project/neos`) rather than the active repository.
+
+## Areas of Concern
+
+The immediate concern is the stabilization of the build and release pipeline. All feature development or architectural improvements must be paused until the product can be reliably and consistently built, verified against size constraints, and distributed. The strategy prioritizes the "Critical" and "High" risks defined above.
