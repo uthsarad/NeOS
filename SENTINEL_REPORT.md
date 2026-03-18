@@ -197,3 +197,23 @@
 
 ### Severity Summary
 - **Severity**: Low (CI Pipeline issue leading to potential security theater)
+
+## Sentinel Report - CI Privileged Execution Review
+
+### Risks Found
+- **Medium Priority - Excessive Privileges in CI Containers**
+  - **File**: `.github/workflows/build-iso.yml`
+  - **Vulnerability**: The `test` job executing within `archlinux:latest` containers used the `options: --privileged` flag. While required to work around `clone3` system call restrictions blocked by standard Docker seccomp profiles on older GitHub Ubuntu runners, `--privileged` exposes the host environment to the container, breaking the principle of least privilege.
+  - **Impact**: Grants unnecessary capabilities, such as raw device access or network namespace manipulation, which are not required for simple CI validation, potentially increasing the attack surface if the CI process or base container is compromised.
+
+### Fixes Applied
+- **Targeted Security Options**
+  - **Fix**: Replaced `--privileged` with `--security-opt seccomp=unconfined` for the `test` job in `.github/workflows/build-iso.yml`.
+  - **Reasoning**: This fix adheres to the principle of least privilege by unblocking the specific Arch Linux system calls (`clone3`) needed to run the container on the older GitHub Ubuntu runners, without granting full root equivalence or raw device access.
+
+### Remaining Attack Surface
+- The CI environment still executes code and validations directly on the underlying runner via the unconfined seccomp profile for the `test` job. However, this is significantly safer than using full `--privileged` mode. Future updates to the underlying Ubuntu runner kernel and standard seccomp profiles may eventually eliminate the need for `--security-opt seccomp=unconfined` altogether.
+- The `build` job inherently requires elevated privileges (like `CAP_SYS_ADMIN`) for `mkarchiso` to perform system-level operations such as mounting loopback devices (`/dev/loop*`), creating bind mounts, and managing chroot environments. Therefore, it continues to run with `--privileged`.
+
+### Severity Summary
+- **Severity**: Medium (Privilege escalation vector in CI reduced to targeted syscall unblocking)
