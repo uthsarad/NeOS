@@ -1,5 +1,5 @@
 {
   "focus": "Deferred",
-  "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+  "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the auto-merge pipeline.",
   "allowed_files": []
 }

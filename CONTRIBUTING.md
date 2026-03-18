@@ -27,3 +27,7 @@ Please include:
 ## Code of conduct
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Automated Bots
+
+- **jules-auto-merge**: This bot automatically approves and merges PRs when invoked by authorized actors. It triggers on pull request open, synchronize, reopen, or ready for review events. When operating, it is specifically exempted from requiring the `JULES_AUTO_MERGE_TOKEN` Personal Access Token (PAT) for modifying workflow files, as it utilizes its own authorized workflow execution context.

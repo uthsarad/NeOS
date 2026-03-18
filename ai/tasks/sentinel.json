@@ -1,7 +1,8 @@
 {
   "focus": "Security Posture Verification",
-  "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly documented as a build-time requirement and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`), which must remain 'DatabaseRequired'.",
+  "guidance": "Verify that the Architect's bot exemption in `.github/workflows/jules-auto-merge.yml` and its documentation in `CONTRIBUTING.md` do not unintentionally degrade the security of the pipeline.",
   "allowed_files": [
-    "pacman.conf"
+    ".github/workflows/jules-auto-merge.yml",
+    "CONTRIBUTING.md"
   ]
 }

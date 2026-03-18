@@ -156,23 +156,6 @@ jobs:
           bash tests/verify_iso_size.sh
           bash tests/verify_iso_smoketest.sh
 
-      - name: Prepare ISO for upload
-        id: iso
-        if: github.ref == 'refs/heads/main'
-        run: |
-          set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-          # Find the ISO file safely without relying on ls
-          # ⚡ Bolt: Use native bash globbing instead of slow find/head subprocesses
-          shopt -s nullglob
-          files=(out/*.iso)
-          ISO_FILE="${files[0]:-}"
-          ISO_SIZE=$(stat -c%s "$ISO_FILE")
-          # ⚡ Bolt: Compute MiB using native bash integer arithmetic to avoid awk subprocesses
-          printf -v ISO_SIZE_MB "%d.%02d" "$((ISO_SIZE / 1048576))" "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
-          echo "ISO size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
-          ls -lh out/
-
       - name: Validate ISO Size
         if: github.ref == 'refs/heads/main'
         run: |
@@ -215,6 +198,23 @@ jobs:
           else
             echo "✅ ISO size is within limits."
           fi
+
+      - name: Prepare ISO for upload
+        id: iso
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          # Find the ISO file safely without relying on ls
+          # ⚡ Bolt: Use native bash globbing instead of slow find/head subprocesses
+          shopt -s nullglob
+          files=(out/*.iso)
+          ISO_FILE="${files[0]:-}"
+          ISO_SIZE=$(stat -c%s "$ISO_FILE")
+          # ⚡ Bolt: Compute MiB using native bash integer arithmetic to avoid awk subprocesses
+          printf -v ISO_SIZE_MB "%d.%02d" "$((ISO_SIZE / 1048576))" "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
+          echo "ISO size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
+          ls -lh out/
 
       - name: Generate release tag
         id: tag
