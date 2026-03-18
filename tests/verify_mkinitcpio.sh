@@ -7,6 +7,7 @@ if [[ "$1" != "--wrapped" ]]; then
         exit_code=$?
         echo "❌ $0 failed or timed out"
         echo ""
+        # Palette: Multi-line actionable formatting with bulleted list
         echo "💡 How to fix:"
         echo "   - Check the test script logic for infinite loops."
         echo "   - Ensure required resources are available and responding."
