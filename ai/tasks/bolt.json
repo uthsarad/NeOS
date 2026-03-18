@@ -1,8 +1,5 @@
 {
-  "focus_area": "Test Script Performance Optimization",
-  "guidance": "Review the test scripts `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Avoid subprocesses like `grep` and `sed` if native parameter expansion or bash file reading can achieve the same result faster.",
-  "files_impacted": [
-    "tests/verify_mkinitcpio.sh",
-    "tests/verify_qml_enhancements.sh"
-  ]
+  "focus": "Deferred",
+  "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+  "allowed_files": []
 }

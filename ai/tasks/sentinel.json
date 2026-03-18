@@ -1,7 +1,7 @@
 {
-  "focus_area": "CI Privileged Execution Review",
-  "guidance": "Review the CI workflow changes in `.github/workflows/build-iso.yml` to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation.",
-  "files_impacted": [
-    ".github/workflows/build-iso.yml"
+  "focus": "Security Posture Verification",
+  "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly documented as a build-time requirement and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`), which must remain 'DatabaseRequired'.",
+  "allowed_files": [
+    "pacman.conf"
   ]
 }
