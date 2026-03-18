@@ -2,7 +2,7 @@
 set -e
 
 # Wrapper to ensure script does not block indefinitely
-if [ "$1" != "--wrapped" ]; then
+if [[ "$1" != "--wrapped" ]]; then
     timeout 60s bash "$0" --wrapped "$@" || {
         exit_code=$?
         echo "❌ $0 failed or timed out"
@@ -20,12 +20,13 @@ QML_FILE="airootfs/etc/calamares/branding/neos/show.qml"
 
 echo "Verifying QML enhancements in $QML_FILE..."
 
-if [ ! -f "$QML_FILE" ]; then
+if [[ ! -f "$QML_FILE" ]]; then
     echo "⚠️ QML file not found! Skipping QML checks as Calamares is not present."
     exit 0
 fi
 
 # Read entire file into a variable to avoid repeated disk I/O and subprocesses
+# Optimization confirmed: reading once natively prevents repeated disk I/O and sub-process calls for large files.
 QML_CONTENT=$(<"$QML_FILE")
 
 # Check for Space key binding

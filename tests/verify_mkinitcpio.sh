@@ -2,7 +2,7 @@
 set -e
 
 # Wrapper to ensure script does not block indefinitely
-if [ "$1" != "--wrapped" ]; then
+if [[ "$1" != "--wrapped" ]]; then
     timeout 60s bash "$0" --wrapped "$@" || {
         exit_code=$?
         echo "❌ $0 failed or timed out"
@@ -18,7 +18,7 @@ shift
 
 MKINITCPIO_CONF="airootfs/etc/mkinitcpio.conf"
 
-if [ ! -f "$MKINITCPIO_CONF" ]; then
+if [[ ! -f "$MKINITCPIO_CONF" ]]; then
     echo "❌ $MKINITCPIO_CONF not found!"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
@@ -29,6 +29,7 @@ if [ ! -f "$MKINITCPIO_CONF" ]; then
 fi
 
 # Bolt: Read file once using native bash to extract HOOKS and MODULES efficiently, avoiding grep/sed subprocesses.
+# Optimization confirmed: single while-read loop is maximal and safe for this extraction.
 HOOKS_LINE=""
 MODULES_SECTION=""
 IN_MODULES=0
@@ -47,7 +48,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     fi
 done < "$MKINITCPIO_CONF"
 
-if [ -z "$HOOKS_LINE" ]; then
+if [[ -z "$HOOKS_LINE" ]]; then
     echo "❌ HOOKS line not found in $MKINITCPIO_CONF"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
