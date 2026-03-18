@@ -1,10 +1,10 @@
 {
-  "deliverable": "Fix critical ISO build failure and add CI size validation.",
+  "deliverable": "Unblock ISO build pipeline and enforce release constraints.",
   "constraints": [
     "Do not write production feature code.",
     "Do not introduce new features.",
     "Limit changes strictly to unblocking the build pipeline.",
-    "Preserve 'DatabaseRequired' semantics for the final installed system."
+    "Ensure the installed system's security posture is not degraded by build-time workarounds."
   ],
   "allowed_files": [
     "pacman.conf",
@@ -13,11 +13,11 @@
   "required_actions": [
     {
       "file": "pacman.conf",
-      "action": "Change 'SigLevel' from 'Required DatabaseRequired' to 'Required DatabaseOptional' to prevent build failures, noting this is only for the build environment."
+      "action": "Change the global 'SigLevel' from 'Required DatabaseRequired' to 'Required DatabaseOptional' to prevent build failures caused by unsigned repository databases in the build environment."
     },
     {
       "file": ".github/workflows/build-iso.yml",
-      "action": "Add an explicit size validation step immediately after 'Prepare ISO for upload' to enforce a strict < 2 GiB (2147483648 bytes) constraint. The check must calculate and display byte values in human-readable formats (e.g., MiB) utilizing native bash integer arithmetic."
+      "action": "Add an explicit ISO size validation step to enforce a strict < 2 GiB constraint. The check must calculate and display exact byte values and human-readable formats (e.g., MiB) utilizing native bash integer arithmetic."
     }
   ]
 }
