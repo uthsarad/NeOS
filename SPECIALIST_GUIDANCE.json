@@ -11,7 +11,7 @@
   },
   "Sentinel": {
     "focus": "Security Posture Verification",
-    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly documented as a build-time requirement and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`), which must remain 'DatabaseRequired'.",
+    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
     "allowed_files": [
       "pacman.conf"
     ]
