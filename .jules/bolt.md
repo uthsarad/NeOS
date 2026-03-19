@@ -80,7 +80,10 @@
 **Learning:** While `BufReader::lines()` in Rust offers an ergonomic way to parse files incrementally, it inherently allocates a new `String` for every single line. When parsing extensive list-like files (e.g., package lists or mirrorlists) or frequently skipping commented sections, this per-line allocation introduces measurable memory overhead.
 **Action:** For performance-critical file parsing loops in Rust, replace the `.lines()` iterator with a `while reader.read_line(&mut raw_line)` construct using a single, reused `String` buffer (clearing it between iterations). This prevents repeated heap allocations and significantly improves stream parsing performance.
 
-## 2026-06-16 - Subprocess Overhead in CI String Slicing
+## 2026-06-17 - Subprocess Overhead in CI Script File Parsing
+**Learning:** Using repeated `grep -q` or `sed` commands to search for strings in files within bash validation scripts introduces measurable performance degradation due to rapid fork/exec cycles.
+**Action:** When parsing or checking for string existence in files from bash, load the entire file into a variable `CONTENT=$(<"$FILE")` once, and use native bash parameter expansion `[[ "$CONTENT" == *"pattern"* ]]`, or use a single native `while read` loop for structured extraction to eliminate subprocess overhead.
 
-**Learning:** In GitHub Actions workflows, the `actions/checkout` step is redundant and introduces unnecessary overhead (typically 2-5 seconds per execution) when the workflow purely interacts via API-driven tools like the `gh` CLI (e.g., `gh pr merge "$PR_URL"`), which do not rely on local repository files.
-**Action:** When creating or optimizing API-only CI workflows, omit the `actions/checkout` step to conserve execution time and runner resources.
+## 2026-06-18 - POSIX vs Native Bash Conditional Evaluation
+**Learning:** In bash scripts, POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
+**Action:** Always prefer native bash double brackets `[[ ... ]]` over POSIX single brackets for conditional evaluations in bash scripts. They are a shell keyword rather than a command, and bypass standard pathname expansion and word splitting entirely, resulting in faster and safer evaluations, especially within tight loops.
