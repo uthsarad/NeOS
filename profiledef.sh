@@ -19,4 +19,8 @@ airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')
 file_permissions=(
   ["/etc/shadow"]="0:0:400"
   ["/root"]="0:0:750"
+  ["/usr/local/bin/neos-driver-manager"]="0:0:755"
+  ["/usr/local/bin/neos-autoupdate.sh"]="0:0:755"
+  ["/usr/local/bin/neos-installer-partition.sh"]="0:0:755"
+  ["/usr/local/bin/neos-liveuser-setup"]="0:0:755"
 )
