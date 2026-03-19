@@ -100,3 +100,8 @@
 **Vulnerability:** `verify_security_config.sh` unconditionally enforced the presence of `airootfs/etc/calamares/modules/users.conf` and explicitly failed if missing. This forces developers to potentially stub out security files just to pass tests, which introduces risky security theater.
 **Learning:** Test scripts must respect the contextual bounds of the files they check. If a security configuration file is not present, enforcing its contents is logically flawed and creates false failures.
 **Prevention:** Security verification scripts should use `[ -f "$FILE" ]` existence checks before asserting file contents, securely skipping the test instead of failing unless the file is an absolute system requirement.
+
+## 2026-10-27 - Danger of Unconditional Write Permissions in CI
+**Vulnerability:** Assigning `workflows: write` to CI jobs without explicit, strict constraints creates a severe risk where untrusted code or automated pull requests could modify repository workflows and configuration, potentially leading to unauthorized automated merges or credential exfiltration.
+**Learning:** Elevated permissions within GitHub Actions workflows (especially `workflows: write` or `contents: write`) must always be tightly coupled with actor verification (`github.actor` checks) to ensure they are only executed by highly trusted entities or authorized bots.
+**Prevention:** Explicitly document the required coupling of `permissions` blocks and `if` conditions with a security comment when adding elevated access, preventing future regressions or misunderstandings by other contributors.

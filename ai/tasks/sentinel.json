@@ -1,7 +1,7 @@
 {
-  "focus_area": "Security review of CI/CD pipeline",
-  "guidance": "Review the use of `--privileged` execution within the archlinux:latest container for the pre-build 'test' job in .github/workflows/build-iso.yml to ensure it does not introduce unintended security risks.",
-  "affected_files": [
+  "focus_area": "CI Privileged Execution Review",
+  "guidance": "Review the CI workflow changes in `.github/workflows/build-iso.yml` to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation.",
+  "files_impacted": [
     ".github/workflows/build-iso.yml"
   ]
 }

@@ -1,26 +1,61 @@
 #!/bin/bash
 set -e
 
+# Wrapper to ensure script does not block indefinitely
+if [[ "$1" != "--wrapped" ]]; then
+    timeout 60s bash "$0" --wrapped "$@" || {
+        exit_code=$?
+        echo "❌ $0 failed or timed out"
+        echo ""
+        # Palette: Multi-line actionable formatting with bulleted list
+        echo "💡 How to fix:"
+        echo "   - Check the test script logic for infinite loops."
+        echo "   - Ensure required resources are available and responding."
+        exit $exit_code
+    }
+    exit 0
+fi
+shift
+
 MKINITCPIO_CONF="airootfs/etc/mkinitcpio.conf"
 
-if [ ! -f "$MKINITCPIO_CONF" ]; then
+if [[ ! -f "$MKINITCPIO_CONF" ]]; then
     echo "❌ $MKINITCPIO_CONF not found!"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
+    echo "   - Create the missing configuration file."
     echo "   - Ensure mkinitcpio.conf is located at $MKINITCPIO_CONF."
     exit 1
 fi
 
-# Bolt: Consider using native bash or a more performant search for HOOKS to avoid grep subprocess.
-HOOKS_LINE=$(grep "^HOOKS=" "$MKINITCPIO_CONF")
+# Bolt: Read file once using native bash to extract HOOKS and MODULES efficiently, avoiding grep/sed subprocesses.
+# Optimization confirmed: single while-read loop is maximal and safe for this extraction.
+HOOKS_LINE=""
+MODULES_SECTION=""
+IN_MODULES=0
 
-if [ -z "$HOOKS_LINE" ]; then
+while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" == HOOKS=* ]]; then
+        HOOKS_LINE="$line"
+    elif [[ "$line" == MODULES=* ]]; then
+        IN_MODULES=1
+        MODULES_SECTION="$line"$'\n'
+    elif [[ $IN_MODULES -eq 1 ]]; then
+        MODULES_SECTION+="$line"$'\n'
+        if [[ "$line" == *")"* ]]; then
+            IN_MODULES=0
+        fi
+    fi
+done < "$MKINITCPIO_CONF"
+
+if [[ -z "$HOOKS_LINE" ]]; then
     echo "❌ HOOKS line not found in $MKINITCPIO_CONF"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add a 'HOOKS=(...)' array to $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Add a 'HOOKS=(...)' array to define the required initialization hooks."
     exit 1
 fi
 
@@ -33,7 +68,9 @@ if [[ "$HOOKS_LINE" != *"$REQUIRED_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add '$REQUIRED_HOOK' to the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the HOOKS array."
+    echo "   - Add '$REQUIRED_HOOK' to ensure the ISO boots correctly."
     exit 1
 fi
 
@@ -44,7 +81,9 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the HOOKS array."
+    echo "   - Remove the forbidden '$FORBIDDEN_HOOK' hook to prevent generic ISO boot failures."
     exit 1
 fi
 
@@ -54,20 +93,22 @@ if [[ "$HOOKS_LINE" == *"$FORBIDDEN_HOOK"* ]]; then
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Remove '$FORBIDDEN_HOOK' from the HOOKS array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the HOOKS array."
+    echo "   - Remove the forbidden '$FORBIDDEN_HOOK' hook to prevent live ISO boot failures."
     exit 1
 fi
 
 # Check for required modules
 REQUIRED_MODULE="btrfs"
-# Bolt: Consider using native bash or a more performant search to find MODULES array to avoid sed subprocess.
-MODULES_SECTION=$(sed -n '/^MODULES=/,/)/p' "$MKINITCPIO_CONF")
 if [[ "$MODULES_SECTION" != *"$REQUIRED_MODULE"* ]]; then
     echo "❌ Missing required module: $REQUIRED_MODULE"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
-    echo "   - Add '$REQUIRED_MODULE' to the MODULES array in $MKINITCPIO_CONF."
+    echo "   - Open $MKINITCPIO_CONF."
+    echo "   - Locate the MODULES array."
+    echo "   - Add the required '$REQUIRED_MODULE' module."
     exit 1
 fi
 

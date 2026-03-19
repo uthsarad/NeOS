@@ -1,7 +1,13 @@
 {
-  "focus_area": "Performance optimizations in pre-build validation scripts",
-  "guidance": "Review verify_mkinitcpio.sh and verify_qml_enhancements.sh for subprocess usage (e.g., grep, sed) and replace with native bash operations where possible to reduce execution time.",
-  "affected_files": [
+  "focus_area": "Performance Script Optimization",
+  "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) and the CI workflow (`.github/workflows/build-iso.yml`) to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Ensure that globbing or parameter expansion is used effectively.",
+  "files": [
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh",
+    ".github/workflows/build-iso.yml"
+  "focus_area": "Test Script Performance Optimization",
+  "guidance": "Review the test scripts `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Avoid subprocesses like `grep` and `sed` if native parameter expansion or bash file reading can achieve the same result faster.",
+  "files_impacted": [
     "tests/verify_mkinitcpio.sh",
     "tests/verify_qml_enhancements.sh"
   ]
