@@ -1,14 +1,19 @@
 {
   "Bolt": {
-    "focus_area": "Performance Optimization",
-    "guidance": "Ensure that the added dependency checks in `airootfs/usr/local/bin/neos-autoupdate.sh` are efficient and do not introduce unnecessary subprocess overhead. Favor native bash builtins where possible."
+    "focus": "Deferred",
+    "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Palette": {
-    "focus_area": "UX & Accessibility",
-    "guidance": "Ensure any errors logged or surfaced by `airootfs/usr/local/bin/neos-autoupdate.sh` are clear, actionable, and user-friendly. In `README.md` and `docs/HANDBOOK.md`, ensure the updated architecture limitations are formatted clearly, using bulleted lists for readability."
+    "focus": "Deferred",
+    "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Sentinel": {
-    "focus_area": "Security Audit",
-    "guidance": "Verify that the added dependency checks in `airootfs/usr/local/bin/neos-autoupdate.sh` do not introduce any command injection vulnerabilities or unexpected side effects."
+    "focus": "Security Posture Verification",
+    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
+    "allowed_files": [
+      "pacman.conf"
+    ]
   }
 }

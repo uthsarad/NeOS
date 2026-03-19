@@ -1,14 +1,23 @@
 {
-  "focus_area": "Stabilization and Documentation Refinement",
-  "affected_files": [
-    "airootfs/usr/local/bin/neos-autoupdate.sh",
-    "README.md",
-    "docs/HANDBOOK.md"
+  "deliverable": "Unblock ISO build pipeline and enforce release constraints.",
+  "constraints": [
+    "Do not write production feature code.",
+    "Do not introduce new features.",
+    "Limit changes strictly to unblocking the build pipeline.",
+    "Ensure the installed system's security posture is not degraded by build-time workarounds."
   ],
-  "guidance": [
-    "1. In `airootfs/usr/local/bin/neos-autoupdate.sh`, implement dependency validation for `snapper`. Ensure that if `snapper` is missing, the script gracefully logs and exits to prevent silent data loss during system updates. (Reference Audit Action Plan step 4)",
-    "2. In `README.md`, under 'Supported Architectures', explicitly list that x86_64 is the primary tier supporting the full GUI experience (Calamares installer, snapshots, ZRAM), and that i686/aarch64 are experimental, lack the full GUI experience, and do not support the Calamares installer, snapshots, or ZRAM.",
-    "3. In `docs/HANDBOOK.md`, under 'Prerequisites -> For Users (Installing NeOS) -> Architecture Limitations', update the section to explicitly list that i686 and aarch64 do not support the Calamares installer, snapshots, or ZRAM.",
-    "4. Adhere strictly to the requested scope; do not modify other scripts or add new features."
+  "allowed_files": [
+    "pacman.conf",
+    ".github/workflows/build-iso.yml"
+  ],
+  "required_actions": [
+    {
+      "file": "pacman.conf",
+      "action": "Change the global 'SigLevel' from 'Required DatabaseRequired' to 'Required DatabaseOptional' to prevent build failures caused by unsigned repository databases in the build environment."
+    },
+    {
+      "file": ".github/workflows/build-iso.yml",
+      "action": "Add an explicit ISO size validation step to enforce a strict < 2 GiB constraint. The check must calculate and display exact byte values and human-readable formats (e.g., MiB) utilizing native bash integer arithmetic."
+    }
   ]
 }

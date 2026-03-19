@@ -1,27 +1,27 @@
 # Risk & Priority Report
+**Date:** 2024-05-18
+**From:** Maestro
 
-## Date: 2026-02-17
+## 1. Executive Summary
+The NeOS repository has sound architectural foundations but is facing critical failures in its core delivery mechanism (the ISO build pipeline). A strategic pause on new features is declared until this pipeline is unblocked, stabilized, and secured.
 
-### 1. Current Risk Posture
+## 2. Identified Risks
 
-The deep audit (`docs/DEEP_AUDIT.md`) and action plan (`docs/AUDIT_ACTION_PLAN.md`) have identified several risks. The most critical release-blocking issues (pacman config and ISO size limits) have been addressed previously. The remaining high-priority risks we are targeting in this sprint are:
+### 🔴 Critical Risk: Build-Blocking `pacman.conf` Configuration
+- **Description:** The root `pacman.conf` specifies `SigLevel = Required DatabaseRequired`. The build environment uses an unsigned repository (`alci_repo`), causing the Archiso build process to fail with "missing required signature" errors, blocking ISO generation entirely.
+- **Impact:** Halts all QA testing, snapshot promotion, and release processes.
+- **Mitigation:** The Architect is directed to modify the root `pacman.conf` to use `DatabaseOptional` for build compatibility. Sentinel will verify this does not affect the installed system's security.
 
--   **Silent Autoupdate Failures**: The `neos-autoupdate.sh` script currently lacks sufficient dependency validation (specifically for `snapper`). If `snapper` is removed or missing, the script will silently fail to create system snapshots, putting users at risk of data loss or an inability to rollback if an update breaks the system.
--   **User Confusion regarding Architecture Limitations**: The documentation (`README.md` and `docs/HANDBOOK.md`) currently lists `i686` and `aarch64` as experimental, but fails to explicitly state that they lack the Calamares GUI installer, snapshots, and ZRAM support. This can lead to frustration and wasted time for community members attempting to test these platforms.
+### 🟠 High Priority Risk: Missing ISO Size Validation in CI/CD
+- **Description:** The `.github/workflows/build-iso.yml` workflow lacks a reliable validation step to ensure the generated ISO remains under GitHub Releases' strict 2 GiB limit.
+- **Impact:** If an oversized ISO is built, the CI pipeline will succeed, but the upload to GitHub Releases will fail silently, leaving users unable to download the distribution.
+- **Mitigation:** The Architect is directed to add an explicit size validation step in the CI workflow, utilizing native bash arithmetic to calculate and display exact byte values and readable formats, failing the job immediately if the limit is breached.
 
-### 2. Mitigation Strategy
+### 🟡 Medium Priority Risk: Unsigned Repositories in the Build Environment
+- **Description:** Using an unsigned repository (`alci_repo`) in the build environment introduces supply chain risks, as a compromised repository or transport could result in malicious packages being injected into the ISO.
+- **Impact:** Potential compromise of the built ISO.
+- **Mitigation:** This is an accepted risk for the current sprint to unblock the build pipeline, but it must be addressed in future sprints through local mirroring, signing, or upstream collaboration.
 
-The work delegated to the Architect in this sprint directly addresses these risks:
-
--   **Adding Dependency Validation**: By explicitly checking for `snapper` in `neos-autoupdate.sh` and exiting gracefully with a clear log message, we eliminate the silent failure mode. If the dependency is missing, the system will not proceed with an update that cannot be safely rolled back.
--   **Clarifying Documentation**: By updating `README.md` and `docs/HANDBOOK.md` to explicitly list the missing features for `i686` and `aarch64`, we set clear expectations for the community.
-
-### 3. Execution Risks
-
--   **Overbuilding**: There is a risk that the Architect may attempt to refactor the entire `neos-autoupdate.sh` script or introduce complex new features. To mitigate this, the `ARCHITECT_SCOPE.json` explicitly restricts the scope to the narrowest possible interpretation of adding the missing check.
--   **Performance Overhead**: Adding checks to a script run frequently (like an auto-updater) can introduce overhead. To mitigate this, Bolt is instructed to ensure the checks are efficient and use native bash features.
--   **Security Vulnerabilities**: Bash scripts are prone to command injection. Sentinel is instructed to review the new code for any security implications.
-
-### 4. Long-Term Maintenance
-
-This sprint prioritizes stabilization over new feature development. By implementing these safeguards, we ensure the system behaves predictably in edge cases and that documentation accurately reflects the system's capabilities.
+## 3. Priority Action Plan
+1. **Immediate (Today):** Execute the Architect scope to fix `pacman.conf` and implement CI size constraints.
+2. **Next Steps (Future Sprints):** Address the unsigned repository risk, refine documentation, and resume feature development under strict CI stability gates.
