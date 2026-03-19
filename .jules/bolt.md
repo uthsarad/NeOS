@@ -83,3 +83,7 @@
 ## 2026-06-17 - Subprocess Overhead in CI Script File Parsing
 **Learning:** Using repeated `grep -q` or `sed` commands to search for strings in files within bash validation scripts introduces measurable performance degradation due to rapid fork/exec cycles.
 **Action:** When parsing or checking for string existence in files from bash, load the entire file into a variable `CONTENT=$(<"$FILE")` once, and use native bash parameter expansion `[[ "$CONTENT" == *"pattern"* ]]`, or use a single native `while read` loop for structured extraction to eliminate subprocess overhead.
+
+## 2026-06-18 - POSIX vs Native Bash Conditional Evaluation
+**Learning:** In bash scripts, POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
+**Action:** Always prefer native bash double brackets `[[ ... ]]` over POSIX single brackets for conditional evaluations in bash scripts. They are a shell keyword rather than a command, and bypass standard pathname expansion and word splitting entirely, resulting in faster and safer evaluations, especially within tight loops.

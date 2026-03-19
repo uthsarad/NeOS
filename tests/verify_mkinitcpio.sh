@@ -35,7 +35,7 @@ HOOKS_LINE=""
 MODULES_SECTION=""
 IN_MODULES=0
 
-while IFS= read -r line || [ -n "$line" ]; do
+while IFS= read -r line || [[ -n "$line" ]]; do
     if [[ "$line" == HOOKS=* ]]; then
         HOOKS_LINE="$line"
     elif [[ "$line" == MODULES=* ]]; then
