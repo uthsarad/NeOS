@@ -1,31 +1,30 @@
-# STRATEGIC_DIRECTIVE.md
-**Date:** 2024-05-18
-**From:** Maestro (Strategic Engineering Director AI)
+# Strategic Directive: Build Validation and Infrastructure Hardening
 
 ## PHASE 1 — Product Alignment Check
-- **What is the product trying to become?** NeOS aims to be a stable, curated, snapshot-based Arch Linux distribution targeting Windows switchers with a polished KDE Plasma experience.
-- **Are we building toward that?** The foundational architecture and roadmap exist, but current CI/CD pipelines are failing, preventing the delivery of the core OS image.
-- **Are we solving the highest leverage problem?** Yes. A distribution cannot be tested, polished, or released if the ISO build process is broken. Unblocking the pipeline is the highest priority.
+- **What is the product trying to become?** NeOS is striving to be a curated Arch Linux distribution delivering predictable behavior, low breakage, and a stable, Windows-familiar KDE Plasma experience, avoiding the "do-it-yourself" complexity (MISSION.md, ROADMAP.md).
+- **Are we building toward that?** Yes, but stability requires bulletproof infrastructure. Current missing CI constraints and runtime safety checks jeopardize this.
+- **Are we solving the highest leverage problem?** Yes. Addressing silent release failures (ISO size) and silent data loss risks (missing snapshot dependencies) is critical before any new feature work can proceed.
 
 ## PHASE 2 — Technical Posture Review
-- **Is the system stable?** No. The core ISO build is blocked due to strict package signature requirements in the build environment's `pacman.conf`, and there is a risk of generating ISOs that exceed GitHub Release limits.
-- **Is tech debt increasing?** The lack of automated size validation in the CI pipeline represents operational tech debt that needs immediate remediation.
-- **Are we overbuilding?** We must pause all new feature development and UX polish until the fundamental build-and-release loop is reliable.
+- **Is the system stable?** Mostly, but the deep audit (docs/DEEP_AUDIT.md) revealed critical gaps: the CI pipeline lacks validation against GitHub's 2 GiB release asset limit, and core services (like `neos-autoupdate.sh`) lack dependency validation for tools like `snapper`.
+- **Is tech debt increasing?** Yes, deploying scripts without robust error handling or sandboxed services accumulates operational debt.
+- **Are we overbuilding?** No, the proposed mitigations are minimal and explicitly required for stable operations.
 
 ## PHASE 3 — Priority Selection
-**Decision:** Stabilization / hardening
-This is a strategic pause on new feature development. The exclusive focus is on unblocking the ISO build pipeline and enforcing release constraints.
+- **Selected Priority:** Stabilization / hardening
+- **Reasoning:** The risk of producing an un-releasable ISO or experiencing silent data loss on updates is unacceptable. Hardening existing flows must precede new features.
 
 ## PHASE 4 — Controlled Scope Definition
-- **Exact files likely impacted:** `pacman.conf`, `.github/workflows/build-iso.yml`
-- **Maximum allowed surface area:** Changes are strictly limited to the build environment's `pacman.conf` and the CI build workflow.
-- **Constraints Architect must obey:**
-    - Do not write production feature code.
-    - Limit changes strictly to unblocking the build pipeline.
-    - Ensure the installed system's security posture is not degraded by build-time workarounds.
+- **Exact files likely impacted:**
+  - `.github/workflows/build-iso.yml`
+  - `tests/verify_iso_size.sh` (new)
+  - `airootfs/usr/local/bin/neos-autoupdate.sh`
+  - `airootfs/etc/systemd/system/*.service`
+- **Maximum allowed surface area:** Changes are strictly limited to adding CI size validation, creating the associated test, injecting dependency checks into the autoupdate script, and sandboxing existing systemd services. No new features, package additions, or UI changes are permitted.
+- **Constraints Architect must obey:** Implement only the explicit fixes. Do not refactor unrelated logic in the target scripts. Do not attempt to fix the `pacman.conf` database issue, as it is already resolved.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Implement the `pacman.conf` fix and add the exact ISO size validation logic to the CI workflow.
-- **Bolt:** Deferred. No performance optimizations required for this deliverable.
-- **Palette:** Deferred. No UX/UI enhancements required for this deliverable.
-- **Sentinel:** Audit the `pacman.conf` changes to ensure the relaxed build-time signature checks do not inadvertently compromise the target system's package manager configuration (`airootfs/etc/pacman.conf`).
+- **Architect builds:** Implement ISO size validation in `.github/workflows/build-iso.yml`, create the `tests/verify_iso_size.sh` test script, and add explicit dependency checks (snapper, btrfs) to `airootfs/usr/local/bin/neos-autoupdate.sh`.
+- **Bolt optimizes:** Review the new `tests/verify_iso_size.sh` script to ensure it runs efficiently (e.g., using native bash substring matching or avoiding repeated subprocess calls).
+- **Palette enhances:** Ensure any new error messages in `tests/verify_iso_size.sh` include a clear, actionable "💡 How to fix:" block to reduce developer cognitive load.
+- **Sentinel audits:** Implement strict systemd service sandboxing (`ProtectSystem=strict`, `NoNewPrivileges=yes`, etc.) in all `.service` files under `airootfs/etc/systemd/system/`.
