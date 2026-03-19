@@ -1,10 +1,12 @@
-# Bolt Report
+# Bolt Performance Report
 
-## What
-Updated the test scripts (`tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`) to use native bash double brackets (`[[`) instead of standard POSIX single brackets (`[`) for condition evaluations. I also confirmed through comment documentation that the existing native bash reading methods (`while IFS= read` and `$(<"$FILE")`) are the most optimal ways to avoid `grep`/`sed` subprocesses.
+## Optimization Summary
+Replaced POSIX single bracket conditional evaluation `[ -n "$line" ]` with native bash double brackets `[[ -n "$line" ]]` in the `while IFS= read -r line` loop of `tests/verify_mkinitcpio.sh`.
 
-## Why
-Native bash double brackets `[[ ... ]]` evaluate faster in bash than POSIX brackets `[ ... ]` because they are bash keywords that bypass standard pathname expansion and word splitting. Adding explicit comments documenting that current file reading approaches are maximal ensures future contributors do not inadvertently introduce "micro-optimizations" that perform worse or break behavior.
+## Before/After Reasoning
+**Before:** The script used `[ -n "$line" ]` to handle potential missing trailing newlines when reading files in a bash loop. POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
 
-## Remaining Risks
-None. The code functionally behaves identical to its prior version while strictly adhering to performance objectives and safety boundaries.
+**After:** The script now uses `[[ -n "$line" ]]`. Native bash double brackets `[[ ... ]]` are a shell keyword rather than a command. They bypass standard pathname expansion and word splitting entirely, resulting in faster and safer conditional evaluations within tight file-reading loops.
+
+## Remaining Performance Risks
+The tests in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` are already well-optimized by using single memory reads and native bash manipulations over repeated subprocesses (e.g., `grep`, `sed`). No significant performance risks remain for these specific file parsing tasks.

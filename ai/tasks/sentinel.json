@@ -1,7 +1,8 @@
 {
-  "focus_area": "CI Privileged Execution Review",
-  "guidance": "Review the CI workflow changes in `.github/workflows/build-iso.yml` to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation.",
-  "files_impacted": [
-    ".github/workflows/build-iso.yml"
+  "focus": "Security Posture Verification",
+  "guidance": "Verify that the Architect's bot exemption in `.github/workflows/jules-auto-merge.yml` and its documentation in `CONTRIBUTING.md` do not unintentionally degrade the security of the pipeline.",
+  "allowed_files": [
+    ".github/workflows/jules-auto-merge.yml",
+    "CONTRIBUTING.md"
   ]
 }
