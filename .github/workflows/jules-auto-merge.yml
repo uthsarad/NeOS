@@ -1,8 +1,8 @@
 name: Auto-merge Jules
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   approve-and-merge:
@@ -10,19 +10,27 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      workflows: write
-    # SECURITY: The `workflows: write` permission is granted here to allow auto-merging PRs that modify workflow files.
-    # It is strictly coupled with this `if` condition to prevent untrusted actors from leveraging the auto-merge bot
-    # to execute unauthorized merges or alter repository configurations. Do NOT remove this condition.
-    if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'
+    if: >-
+      github.event.pull_request.user.login == 'google-labs-jules[bot]' ||
+      github.actor == github.repository_owner
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Auto-merge
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
+          HAS_PAT: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' }}
         run: |
+          set -euo pipefail
+
+          # If the PR changes workflow files, GitHub may reject merge operations from GITHUB_TOKEN
+          # because app tokens do not have workflow scope. Use JULES_AUTO_MERGE_TOKEN for these PRs.
+          if gh pr view "$PR_URL" --json files --jq '.files[].path' | grep -q '^.github/workflows/'; then
+            if [[ "$HAS_PAT" != "true" ]]; then
+              echo "PR modifies .github/workflows/* and requires secret JULES_AUTO_MERGE_TOKEN (repo + workflow scopes) for auto-merge." >&2
+              exit 1
+            fi
+          fi
+
+          gh pr review "$PR_URL" --approve || true
           gh pr ready "$PR_URL" || true
           gh pr merge "$PR_URL" --auto --squash --delete-branch
