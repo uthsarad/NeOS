@@ -1,7 +1,7 @@
 {
-  "focus_area": "Terminal UX and Actionable Errors",
-  "guidance": "Review the terminal error messages in the modified test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`). Ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and bulleted actionable steps to minimize developer cognitive load.",
-  "files": [
+  "focus_area": "Test Script Error Message UX Formatting",
+  "guidance": "Review the terminal error messages in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and actionable steps, minimizing developer cognitive load.",
+  "files_impacted": [
     "tests/verify_mkinitcpio.sh",
     "tests/verify_qml_enhancements.sh"
   ]
