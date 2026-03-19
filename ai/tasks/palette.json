@@ -1,8 +1,5 @@
 {
-  "focus_area": "Test Script Error Message UX Formatting",
-  "guidance": "Review the terminal error messages in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and actionable steps, minimizing developer cognitive load.",
-  "files_impacted": [
-    "tests/verify_mkinitcpio.sh",
-    "tests/verify_qml_enhancements.sh"
-  ]
+  "focus": "Deferred",
+  "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the auto-merge pipeline.",
+  "allowed_files": []
 }
