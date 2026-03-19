@@ -1,9 +1,11 @@
-# Palette Report 🎨
+# PALETTE_REPORT
 
-## UX/Accessibility Improvements Made
-- **Documentation Clarity**: Added a "PR Reviews and Approvals" section to `CONTRIBUTING.md`.
-- **Cognitive Load Reduction**: Used a nested bulleted list to clearly outline how the auto-merge bot behaves for core maintainers, trusted bots, and community contributions. This helps new contributors immediately understand what to expect when opening a PR without having to decipher dense paragraphs.
+## Accessibility Fixes
+- None required for test scripts.
+
+## UX Improvements
+- Improved test script terminal error messages in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to be consistently formatted as multi-line outputs.
+- Annotated all '💡 How to fix:' blocks with `# Palette: Multi-line actionable formatting with bulleted list` to standardise the actionable error messaging pattern, minimizing developer cognitive load when tests fail.
 
 ## Remaining Usability Risks
-- The `CONTRIBUTING.md` file lacks an explicit table of contents or quick links at the top, which might become an issue if the file grows longer.
-- "Trusted bots" are mentioned but we only give one example (`google-labs-jules[bot]`). It may be helpful in the future to link to a comprehensive list if there are more.
+- Test outputs may still be slightly overwhelming depending on terminal width or color support, but the multi-line format significantly mitigates this.

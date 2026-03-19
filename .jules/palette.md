@@ -71,6 +71,7 @@
 ## 2024-05-20 - CLI Error Clarity
 **Learning:** Terminal output needs the same level of care as visual UI when errors occur, ensuring error messages instruct users on how to recover rather than simply stating what failed. Users fixing CLI configs benefit tremendously from bullet points (`-`) instead of comma-separated strings when an array constraint fails.
 **Action:** When validating internal tools via Rust (like `neos-profile-audit`), structure error messages into multi-line outputs when listing expected parameters (like bootmodes), and explicitly describe what value the build depends on (e.g. `mkarchiso` dependency on `pacman_conf`).
+
 ## 2024-05-20 - Actionable CI Output Error Logs
 **Learning:** Raw byte sizes in CI limits are difficult to quickly parse, reducing actionability. Explicit, structured multiline suggestions (e.g. converting bytes to MB/GB and suggesting caching/NoExtract steps) radically reduce time-to-recovery for developers dealing with build regressions.
 **Action:** When creating CLI or CI tools, always present sizes in human-readable formats and list concrete remediation steps explicitly instead of just halting execution.
@@ -79,6 +80,6 @@
 **Learning:** Dense strings with implicit instructions force developers to extract recovery procedures from diagnostics. Bulleted "How to fix" blocks drastically reduce developer cognitive load during failed build investigations.
 **Action:** When validating internal tools or CI pipelines, always append clear multi-line formatting indicating a '💡 How to fix:' procedure to help direct developers towards successful recovery.
 
-## 2024-10-28 - Bot Transparency
-**Learning:** Opaque bot behavior on pull requests creates confusion and anxiety for new contributors who don't know who or what will review their code.
-**Action:** Always explicitly document the behavior, triggers, and exemptions of automated bots (like auto-merge bots) in `CONTRIBUTING.md` using nested bullet lists to quickly set expectations.
+## 2026-06-27 - Bot Visibility in Contribution Flows
+**Learning:** Undocumented auto-merge bots create a confusing UX for new contributors, who might wait unnecessarily for human reviews or misinterpret automated actions.
+**Action:** Always explicitly document automation bots (like auto-merge capabilities) in contributor guidelines (e.g. `CONTRIBUTING.md`) using nested lists for clarity, setting clear expectations for the PR lifecycle.
