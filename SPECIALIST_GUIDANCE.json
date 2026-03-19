@@ -1,14 +1,19 @@
 {
   "Bolt": {
-    "focus_area": "Build Pipeline Awareness",
-    "guidance": "No specific performance tasks required for a one-line config change, but maintain awareness of build times. Ensure that any future related scripts rely on native bash tools where applicable."
+    "focus": "Deferred",
+    "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Palette": {
-    "focus_area": "Developer UX",
-    "guidance": "No specific UX tasks required for this config change. Maintain awareness that any future terminal output errors must be formatted as actionable errors."
+    "focus": "Deferred",
+    "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Sentinel": {
-    "focus_area": "Pacman Signature Security",
-    "guidance": "Verify that the `DatabaseOptional` change in the root `pacman.conf` does not compromise the security of the installed system's `airootfs/etc/pacman.conf`, which must remain as `DatabaseRequired`."
+    "focus": "Security Posture Verification",
+    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
+    "allowed_files": [
+      "pacman.conf"
+    ]
   }
 }

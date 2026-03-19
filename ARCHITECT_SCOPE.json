@@ -1,12 +1,23 @@
 {
-  "focus_area": "Build-Blocking pacman.conf Configuration Fix",
-  "priority_selection": "Stabilization / hardening",
-  "files_impacted": [
-    "pacman.conf"
-  ],
-  "maximum_surface_area": "Modifications are strictly limited to updating the global `SigLevel` in the root `pacman.conf` to `Required DatabaseOptional`. Official repositories (`[core]`, `[extra]`, `[multilib]`) must maintain their explicit overrides to `Required DatabaseRequired`.",
+  "deliverable": "Unblock ISO build pipeline and enforce release constraints.",
   "constraints": [
-    "Change only the global `SigLevel` line in the root `pacman.conf`.",
-    "Do not modify `airootfs/etc/pacman.conf` (the installed system's configuration)."
+    "Do not write production feature code.",
+    "Do not introduce new features.",
+    "Limit changes strictly to unblocking the build pipeline.",
+    "Ensure the installed system's security posture is not degraded by build-time workarounds."
+  ],
+  "allowed_files": [
+    "pacman.conf",
+    ".github/workflows/build-iso.yml"
+  ],
+  "required_actions": [
+    {
+      "file": "pacman.conf",
+      "action": "Change the global 'SigLevel' from 'Required DatabaseRequired' to 'Required DatabaseOptional' to prevent build failures caused by unsigned repository databases in the build environment."
+    },
+    {
+      "file": ".github/workflows/build-iso.yml",
+      "action": "Add an explicit ISO size validation step to enforce a strict < 2 GiB constraint. The check must calculate and display exact byte values and human-readable formats (e.g., MiB) utilizing native bash integer arithmetic."
+    }
   ]
 }

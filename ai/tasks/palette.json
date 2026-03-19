@@ -1,9 +1,8 @@
 {
-  "role": "Palette",
-  "focus_area": "CI Error Messages and Documentation",
-  "task": "Ensure that the project's documentation (like CONTRIBUTING.md) clearly states that the auto-merge bot handles PR approvals for the core maintainer team and trusted bots.",
-  "files": [
-    "CONTRIBUTING.md",
-    ".github/workflows/jules-auto-merge.yml"
+  "focus_area": "Test Script Error Message UX Formatting",
+  "guidance": "Review the terminal error messages in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and actionable steps, minimizing developer cognitive load.",
+  "files_impacted": [
+    "tests/verify_mkinitcpio.sh",
+    "tests/verify_qml_enhancements.sh"
   ]
 }
