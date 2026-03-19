@@ -1,13 +1,12 @@
-# BOLT REPORT ⚡
+# Bolt Performance Report
 
-## 1. What was optimized
-Removed the `actions/checkout@v4` step from the `jules-auto-merge` GitHub Actions workflow.
+## Optimization Summary
+Replaced POSIX single bracket conditional evaluation `[ -n "$line" ]` with native bash double brackets `[[ -n "$line" ]]` in the `while IFS= read -r line` loop of `tests/verify_mkinitcpio.sh`.
 
-## 2. Before/After Reasoning
-**Before:** The auto-merge workflow was checking out the entire repository before running a simple `gh pr merge` command.
-**After:** The checkout step has been eliminated. The `gh` CLI operates entirely via the GitHub API and does not require local repository context to merge a PR.
-**Reasoning:** `actions/checkout` introduces unnecessary execution time and runner resource usage for workflows that don't need local files. Removing it streamlines the CI/CD pipeline and improves efficiency. Also added inline comments to explain the reasoning, which improves maintainability.
+## Before/After Reasoning
+**Before:** The script used `[ -n "$line" ]` to handle potential missing trailing newlines when reading files in a bash loop. POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
 
-## 3. Remaining Performance Risks
-- **Network Dependency:** The execution time of this job still relies on GitHub API responsiveness. However, by removing the checkout, the total runtime is strictly dependent on the API calls.
-- **Other CI Workflows:** Other workflows (like `build-iso.yml`) should be audited to ensure `actions/checkout` isn't used unnecessarily when only API interaction is needed, but that falls outside the current scope.
+**After:** The script now uses `[[ -n "$line" ]]`. Native bash double brackets `[[ ... ]]` are a shell keyword rather than a command. They bypass standard pathname expansion and word splitting entirely, resulting in faster and safer conditional evaluations within tight file-reading loops.
+
+## Remaining Performance Risks
+The tests in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` are already well-optimized by using single memory reads and native bash manipulations over repeated subprocesses (e.g., `grep`, `sed`). No significant performance risks remain for these specific file parsing tasks.
