@@ -1,36 +1,31 @@
-# Strategic Directive
+# STRATEGIC_DIRECTIVE.md
+**Date:** 2024-05-18
+**From:** Maestro (Strategic Engineering Director AI)
 
-## Phase 1 — Product Alignment Check
-- **What is the product trying to become?** NeOS is a curated, snapshot-based Arch Linux desktop distribution that delivers a Windows-familiar KDE Plasma experience while prioritizing predictable behavior and low breakage.
-- **Are we building toward that?** Yes. However, our CI/CD pipeline and automated testing lack completeness, risking stability. A robust pre-build test suite is necessary to ensure developers get fast, actionable feedback.
-- **Are we solving the highest leverage problem?** Yes. Addressing stability in the build pipeline directly reduces tech debt and ensures that our primary architectural foundation remains stable as we approach beta.
+## PHASE 1 — Product Alignment Check
+- **What is the product trying to become?** NeOS aims to be a stable, curated, snapshot-based Arch Linux distribution targeting Windows switchers with a polished KDE Plasma experience.
+- **Are we building toward that?** The foundational architecture and roadmap exist, but current CI/CD pipelines are failing, preventing the delivery of the core OS image.
+- **Are we solving the highest leverage problem?** Yes. A distribution cannot be tested, polished, or released if the ISO build process is broken. Unblocking the pipeline is the highest priority.
 
-## Phase 2 — Technical Posture Review
-- **Is the system stable?** Functionally yes, but the automated CI infrastructure lacks a comprehensive pre-build test validation step, creating a blind spot. Test scripts have inconsistent execution permissions.
-- **Is tech debt increasing?** Minor tech debt exists due to incomplete CI pipeline stages, hanging test risks, and unmanaged artifacts in `.gitignore`.
-- **Are we overbuilding?** No, prioritizing test stability and pipeline integration is foundational hardening, not feature creep.
+## PHASE 2 — Technical Posture Review
+- **Is the system stable?** No. The core ISO build is blocked due to strict package signature requirements in the build environment's `pacman.conf`, and there is a risk of generating ISOs that exceed GitHub Release limits.
+- **Is tech debt increasing?** The lack of automated size validation in the CI pipeline represents operational tech debt that needs immediate remediation.
+- **Are we overbuilding?** We must pause all new feature development and UX polish until the fundamental build-and-release loop is reliable.
 
-## Phase 3 — Priority Selection
-- **Selection:** Stabilization / hardening
+## PHASE 3 — Priority Selection
+**Decision:** Stabilization / hardening
+This is a strategic pause on new feature development. The exclusive focus is on unblocking the ISO build pipeline and enforcing release constraints.
 
-## Phase 4 — Controlled Scope Definition
-- **Exact files likely impacted:**
-  - `.github/workflows/build-iso.yml`
-  - `tests/verify_mkinitcpio.sh`
-  - `tests/verify_qml_enhancements.sh`
-  - `.gitignore`
-- **Maximum allowed surface area:**
-  Only the specified workflow file, test scripts, and `.gitignore`. No code, configuration, or architectural shifts are permitted.
+## PHASE 4 — Controlled Scope Definition
+- **Exact files likely impacted:** `pacman.conf`, `.github/workflows/build-iso.yml`
+- **Maximum allowed surface area:** Changes are strictly limited to the build environment's `pacman.conf` and the CI build workflow.
 - **Constraints Architect must obey:**
-  - In `.github/workflows/build-iso.yml`, the `test` job must execute inside an `archlinux:latest` container with `--privileged` and `bash` as the default shell.
-  - Pre-build validation scripts must execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).
-  - In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper with a fallback (`|| true`) to ensure they are non-blocking. Ensure error messages provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.
-  - Add missing common entries to `.gitignore` (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`).
-  - Explicit statement: No test execution is needed as a distinct plan step before the formal pre-commit verification step, because we are strictly modifying CI definitions and tests themselves, and there are no appropriate test execution environments available locally.
-  - All test validation scripts in the `tests/` directory must be explicitly marked as executable (`chmod +x`).
+    - Do not write production feature code.
+    - Limit changes strictly to unblocking the build pipeline.
+    - Ensure the installed system's security posture is not degraded by build-time workarounds.
 
-## Phase 5 — Delegation Strategy
-- **Architect builds:** Implement the CI workflow improvements for pre-build testing, update `.gitignore`, apply `timeout 60s` wrappers to test scripts, and fix execution permissions (`chmod +x`). No test execution is needed before pre-commit verification.
-- **Bolt optimizes:** Review the modified CI/CD workflows and tests to ensure native bash globbing/arithmetic is used over subprocess-heavy pipelines (e.g., using `${GITHUB_SHA:0:7}`, or `shopt -s nullglob` for array globbing).
-- **Palette enhances:** Review test script terminal output to ensure dense strings are structured into multi-line '💡 How to fix:' blocks with bulleted actionable remediation steps to reduce developer cognitive load.
-- **Sentinel audits:** Review the CI workflow changes to ensure `--privileged` container execution is scoped strictly to pre-build validation without risking host environment escape. Validate the test scripts (`verify_security_config.sh`) for existence checks before grep assertions.
+## PHASE 5 — Delegation Strategy
+- **Architect:** Implement the `pacman.conf` fix and add the exact ISO size validation logic to the CI workflow.
+- **Bolt:** Deferred. No performance optimizations required for this deliverable.
+- **Palette:** Deferred. No UX/UI enhancements required for this deliverable.
+- **Sentinel:** Audit the `pacman.conf` changes to ensure the relaxed build-time signature checks do not inadvertently compromise the target system's package manager configuration (`airootfs/etc/pacman.conf`).
