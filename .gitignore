@@ -71,3 +71,6 @@ Thumbs.db
 work/
 out/
 pacman-build.conf
+
+# Architect: CI/CD test hardening specific
+tests/*.log
