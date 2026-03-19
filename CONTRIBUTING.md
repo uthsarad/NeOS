@@ -14,6 +14,8 @@ Thanks for your interest in improving NeOS! This guide covers how to propose cha
 - Keep commits small and descriptive.
 - Update documentation whenever behavior changes.
 - Include sample commands or screenshots for user-facing changes.
+- Auto-Merge Bot:
+  - Automatically handles PR approvals for the core maintainer team and trusted bots.
 
 ## Reporting issues
 

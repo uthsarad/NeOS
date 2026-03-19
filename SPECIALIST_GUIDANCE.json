@@ -1,30 +1,19 @@
 {
   "Bolt": {
-    "focus": "Performance Optimization",
-    "guidance": "Review the test scripts and workflow files to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution.",
-    "files": [
-      "tests/verify_mkinitcpio.sh",
-      "tests/verify_qml_enhancements.sh",
-      "tests/verify_security_config.sh",
-      "tests/verify_iso_size.sh",
-      ".github/workflows/build-iso.yml"
-    ]
+    "focus": "Deferred",
+    "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Palette": {
-    "focus": "UX and Accessibility Improvement",
-    "guidance": "Review the terminal error messages in the modified test scripts to ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and nested bulleted actionable steps, minimizing developer cognitive load.",
-    "files": [
-      "tests/verify_mkinitcpio.sh",
-      "tests/verify_qml_enhancements.sh",
-      "tests/verify_security_config.sh",
-      "tests/verify_iso_size.sh"
-    ]
+    "focus": "Deferred",
+    "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Sentinel": {
-    "focus": "Security Audit",
-    "guidance": "Review the CI workflow changes to ensure the privileged execution of the `test` job does not introduce unintended security risks outside the intended scope of pre-build validation. Keep fixes self-contained (< 50 lines).",
-    "files": [
-      ".github/workflows/build-iso.yml"
+    "focus": "Security Posture Verification",
+    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
+    "allowed_files": [
+      "pacman.conf"
     ]
   }
 }
