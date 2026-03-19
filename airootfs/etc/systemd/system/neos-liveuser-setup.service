@@ -1,0 +1,9 @@
+[Unit]
+Description=NeOS Liveuser Setup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/neos-liveuser-setup
+
+[Install]
+WantedBy=multi-user.target

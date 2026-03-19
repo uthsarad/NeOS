@@ -1,0 +1,9 @@
+[Unit]
+Description=NeOS Autoupdate Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/neos-autoupdate.sh
+
+[Install]
+WantedBy=multi-user.target
