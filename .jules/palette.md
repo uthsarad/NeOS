@@ -80,6 +80,6 @@
 **Learning:** Dense strings with implicit instructions force developers to extract recovery procedures from diagnostics. Bulleted "How to fix" blocks drastically reduce developer cognitive load during failed build investigations.
 **Action:** When validating internal tools or CI pipelines, always append clear multi-line formatting indicating a '💡 How to fix:' procedure to help direct developers towards successful recovery.
 
-## 2024-10-28 - Explicit Auto-Merge Documentation
-**Learning:** Lack of clear documentation around automated PR behaviors (like auto-merge for core team/bots) leads to confusion and unnecessary waiting for contributors.
-**Action:** Ensure that automated PR lifecycle events are explicitly documented in `CONTRIBUTING.md` to set clear expectations and improve contributor experience.
+## 2026-06-27 - Bot Visibility in Contribution Flows
+**Learning:** Undocumented auto-merge bots create a confusing UX for new contributors, who might wait unnecessarily for human reviews or misinterpret automated actions.
+**Action:** Always explicitly document automation bots (like auto-merge capabilities) in contributor guidelines (e.g. `CONTRIBUTING.md`) using nested lists for clarity, setting clear expectations for the PR lifecycle.

@@ -1,19 +1,11 @@
-# Palette UX Report 🎨
+# PALETTE_REPORT
 
-## Overview
+## Accessibility Fixes
+- None required for test scripts.
 
-This report documents the UX improvements made to the project's documentation and CI workflow files to enhance clarity and reduce developer confusion.
-
-## Improvements
-
-### Documentation Clarity (`CONTRIBUTING.md`)
-*   **UX Enhancement:** Added an explicit note in the "Getting started" section clarifying that the auto-merge bot automatically handles PR approvals for the core maintainer team and trusted bots.
-*   **Why:** Developers and contributors need clear expectations regarding the pull request lifecycle. Without this note, contributors might wait unnecessarily for manual reviews or be confused by automated approvals.
-
-### Workflow Optimization (`.github/workflows/jules-auto-merge.yml`)
-*   **UX Enhancement:** Removed the unnecessary `actions/checkout` step from the auto-merge workflow and added an explicit security comment above the conditional check.
-*   **Why:** Since the workflow strictly utilizes the `gh` CLI for API interactions (`gh pr ready`, `gh pr merge`), local repository context is not required. Removing the checkout step slightly speeds up workflow execution. The added security comment clarifies the actor verification check, improving the developer experience (DX) for maintainers auditing workflow security.
+## UX Improvements
+- Improved test script terminal error messages in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` to be consistently formatted as multi-line outputs.
+- Annotated all '💡 How to fix:' blocks with `# Palette: Multi-line actionable formatting with bulleted list` to standardise the actionable error messaging pattern, minimizing developer cognitive load when tests fail.
 
 ## Remaining Usability Risks
-
-*   **Further Documentation Needs:** While the PR approval process is clarified, other automated bot behaviors (like issue triaging or stale PR handling, if they exist) should also be documented to provide a comprehensive contributor experience.
+- Test outputs may still be slightly overwhelming depending on terminal width or color support, but the multi-line format significantly mitigates this.
