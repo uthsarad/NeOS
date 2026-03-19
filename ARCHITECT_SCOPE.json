@@ -1,17 +1,23 @@
 {
-  "focus_area": "CI/CD Pipeline and Testing Infrastructure Hardening",
-  "affected_files": [
-    ".github/workflows/build-iso.yml",
-    "tests/verify_mkinitcpio.sh",
-    "tests/verify_qml_enhancements.sh",
-    ".gitignore"
-  ],
-  "maximum_allowed_surface_area": "Modifications are strictly limited to updating the CI workflow for pre-build testing, applying timeout/non-blocking logic to specific test scripts, updating `.gitignore` for build artifacts, and ensuring consistent test script execution. No new features, system configuration changes, or architectural shifts are permitted.",
+  "deliverable": "Unblock ISO build pipeline and enforce release constraints.",
   "constraints": [
-    "In `.github/workflows/build-iso.yml`, update the `test` job to ensure the `archlinux:latest` container runs with `--privileged` and `bash` as the default shell.",
-    "Ensure pre-build validation scripts execute before the main ISO build step, explicitly excluding ISO-dependent scripts (`verify_iso_smoketest.sh`, `verify_iso_grub.sh`, `verify_iso_size.sh`).",
-    "In `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh`, implement a `timeout 60s` wrapper that explicitly captures and propagates the underlying command's exit code (e.g., `timeout 60s bash \"$script\" || { exit_code=$?; echo 'failed'; exit $exit_code; }`).",
-    "Ensure error messages in these test scripts provide a clear '💡 How to fix:' block with bulleted actionable remediation steps.",
-    "Add missing entries to `.gitignore` (build directories `out/`, `work/`, ISO artifacts `*.iso`, and CI-generated configuration files `pacman-build.conf`, as well as `*.log`, `.DS_Store`, `*~`)."
+    "Do not write production feature code.",
+    "Do not introduce new features.",
+    "Limit changes strictly to unblocking the build pipeline.",
+    "Ensure the installed system's security posture is not degraded by build-time workarounds."
+  ],
+  "allowed_files": [
+    "pacman.conf",
+    ".github/workflows/build-iso.yml"
+  ],
+  "required_actions": [
+    {
+      "file": "pacman.conf",
+      "action": "Change the global 'SigLevel' from 'Required DatabaseRequired' to 'Required DatabaseOptional' to prevent build failures caused by unsigned repository databases in the build environment."
+    },
+    {
+      "file": ".github/workflows/build-iso.yml",
+      "action": "Add an explicit ISO size validation step to enforce a strict < 2 GiB constraint. The check must calculate and display exact byte values and human-readable formats (e.g., MiB) utilizing native bash integer arithmetic."
+    }
   ]
 }

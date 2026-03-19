@@ -16,6 +16,7 @@ jobs:
       github.actor == github.repository_owner
     steps:
       - name: Auto-merge
+        # Bolt: Removed actions/checkout as the gh CLI is API-driven and does not need local repo context
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
