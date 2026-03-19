@@ -1,14 +1,27 @@
 # Risk & Priority Report
+**Date:** 2024-05-18
+**From:** Maestro
 
-## Current System Risk
-**Medium**. While functional, the system's testing pipeline lacks automated execution, leaving room for regressions to slip into the main branch unseen. Specific test scripts, such as `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh`, do not currently implement timeout wrappers. This is a significant risk as these tests could hang indefinitely during automated CI execution if they encounter unexpected states, thereby blocking the entire deployment pipeline.
+## 1. Executive Summary
+The NeOS repository has sound architectural foundations but is facing critical failures in its core delivery mechanism (the ISO build pipeline). A strategic pause on new features is declared until this pipeline is unblocked, stabilized, and secured.
 
-## Tech Debt Assessment
-The repository suffers from technical debt in its CI/CD and testing infrastructure:
-1. **No Automated Testing in CI:** The `.github/workflows/build-iso.yml` workflow lacks a comprehensive pre-build validation step. Tests should execute before the ISO build to catch failures early, but currently, they are either missing or not correctly sequenced.
-2. **Missing Timeout Wrappers:** Pre-build CI tests like `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh` are designed to be non-blocking. However, they lack the necessary `timeout 60s` wrapper and `|| true` fallback, increasing the risk of pipeline hangs.
-3. **Incomplete .gitignore:** The `.gitignore` file is missing common entries (e.g., `*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`), leading to potential repository pollution with build artifacts.
-4. **Suboptimal Error Messaging:** Error messages in test scripts often lack clear, actionable remediation steps. They need to be formatted as multi-line outputs incorporating a clear '💡 How to fix:' block with bulleted instructions.
+## 2. Identified Risks
 
-## Why This Step is the Highest Leverage
-As we move toward a stable release, ensuring the reliability and speed of the CI/CD pipeline is paramount. Unreliable tests or hanging pipelines will significantly hamper development velocity. By introducing a pre-build validation step in an `archlinux:latest` container (with `--privileged` and `bash`), we can catch configuration and dependency errors before initiating the resource-intensive ISO build process. Implementing timeout wrappers on specific tests ensures the pipeline remains non-blocking even if edge-case failures occur. Furthermore, improving the UX of terminal errors directly reduces developer cognitive load and troubleshooting time. This aligns squarely with the "Stabilization / hardening" priority.
+### 🔴 Critical Risk: Build-Blocking `pacman.conf` Configuration
+- **Description:** The root `pacman.conf` specifies `SigLevel = Required DatabaseRequired`. The build environment uses an unsigned repository (`alci_repo`), causing the Archiso build process to fail with "missing required signature" errors, blocking ISO generation entirely.
+- **Impact:** Halts all QA testing, snapshot promotion, and release processes.
+- **Mitigation:** The Architect is directed to modify the root `pacman.conf` to use `DatabaseOptional` for build compatibility. Sentinel will verify this does not affect the installed system's security.
+
+### 🟠 High Priority Risk: Missing ISO Size Validation in CI/CD
+- **Description:** The `.github/workflows/build-iso.yml` workflow lacks a reliable validation step to ensure the generated ISO remains under GitHub Releases' strict 2 GiB limit.
+- **Impact:** If an oversized ISO is built, the CI pipeline will succeed, but the upload to GitHub Releases will fail silently, leaving users unable to download the distribution.
+- **Mitigation:** The Architect is directed to add an explicit size validation step in the CI workflow, utilizing native bash arithmetic to calculate and display exact byte values and readable formats, failing the job immediately if the limit is breached.
+
+### 🟡 Medium Priority Risk: Unsigned Repositories in the Build Environment
+- **Description:** Using an unsigned repository (`alci_repo`) in the build environment introduces supply chain risks, as a compromised repository or transport could result in malicious packages being injected into the ISO.
+- **Impact:** Potential compromise of the built ISO.
+- **Mitigation:** This is an accepted risk for the current sprint to unblock the build pipeline, but it must be addressed in future sprints through local mirroring, signing, or upstream collaboration.
+
+## 3. Priority Action Plan
+1. **Immediate (Today):** Execute the Architect scope to fix `pacman.conf` and implement CI size constraints.
+2. **Next Steps (Future Sprints):** Address the unsigned repository risk, refine documentation, and resume feature development under strict CI stability gates.
