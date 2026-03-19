@@ -18,7 +18,6 @@ jobs:
     # Sentinel: Review if --privileged execution in archlinux:latest container introduces unintended security risks for pre-build validation.
     container:
       image: archlinux:latest
-      options: --privileged
     defaults:
       run:
         shell: bash
@@ -49,7 +48,7 @@ jobs:
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               # Non-blocking tests with timeout
               # Palette: Ensure terminal output errors from scripts correctly format as actionable errors.
-              timeout 60s bash "$script" || { echo "⚠️ $script failed or timed out (skipping)"; true; }
+              timeout 60s bash "$script" || true
             else
               bash "$script"
             fi

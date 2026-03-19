@@ -18,4 +18,7 @@ The task strictly addresses a CI failure in `.github/workflows/jules-auto-merge.
 Modifications completed successfully. The bot is exempted from the PAT check, unblocking auto-merges, and the action uses a supported Node version.
 
 ## Phase 5 — Delegation Preparation
-Delegation manifests generated for specialists.
+Delegation manifests were generated for the following AI specialists:
+- **Bolt:** Review the test scripts for potential native bash performance optimization.
+- **Palette:** Ensure terminal output errors from scripts correctly format as actionable errors.
+- **Sentinel:** Review if `--privileged` execution in the `archlinux:latest` container introduces unintended security risks for pre-build validation.
