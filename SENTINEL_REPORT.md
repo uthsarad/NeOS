@@ -197,3 +197,17 @@
 
 ### Severity Summary
 - **Severity**: Low (CI Pipeline issue leading to potential security theater)
+
+## Sentinel Report - CI Privileged Execution Review
+
+### Risks Found
+- **Medium Priority - Overly Permissive Container Execution in CI**: The `test` job in `.github/workflows/build-iso.yml` ran the `archlinux:latest` container with `--privileged`. While the `build` job requires this for system-level capabilities like `mkarchiso` (mounting loopback devices or chrooting), the `test` job only runs simple pre-build shell script validations. Granting full `--privileged` access unnecessarily violates the principle of least privilege.
+
+### Fixes Applied
+- **Container Options Hardening**: Modified the `test` job to use `--security-opt seccomp=unconfined` instead of `--privileged`. This safely accommodates the new syscalls (like `clone3`) required by Arch's up-to-date `glibc` that standard Docker seccomp profiles block, while avoiding the grant of full root system access to the underlying CI runner.
+
+### Remaining Attack Surface
+- The `build` job inherently requires `--privileged` for `mkarchiso` to function. If a malicious script or dependency is introduced prior to the build phase, it could still potentially compromise the underlying runner.
+
+### Severity Summary
+- **Medium**: 1 (Fixed: Removed unnecessary `--privileged` flag from `test` job).

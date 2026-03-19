@@ -100,3 +100,8 @@
 **Vulnerability:** `verify_security_config.sh` unconditionally enforced the presence of `airootfs/etc/calamares/modules/users.conf` and explicitly failed if missing. This forces developers to potentially stub out security files just to pass tests, which introduces risky security theater.
 **Learning:** Test scripts must respect the contextual bounds of the files they check. If a security configuration file is not present, enforcing its contents is logically flawed and creates false failures.
 **Prevention:** Security verification scripts should use `[ -f "$FILE" ]` existence checks before asserting file contents, securely skipping the test instead of failing unless the file is an absolute system requirement.
+
+## 2026-10-27 - Overly Permissive Archlinux CI Containers
+**Vulnerability:** Running `archlinux:latest` containers with `--privileged` for simple testing tasks introduces unnecessary security risks and violates the principle of least privilege.
+**Learning:** In GitHub Actions environments, `archlinux:latest` containers require specific options because Arch's up-to-date `glibc` relies on newer syscalls (like `clone3`) blocked by standard Docker seccomp profiles on older Ubuntu runners. This often tempts developers to use `--privileged` just to get the container running.
+**Prevention:** Prefer `options: --security-opt seccomp=unconfined` over `--privileged` for non-build jobs (like testing) to fix CI failures while still limiting access. Jobs that inherently require system-level capabilities (e.g., `mkarchiso` for building) must retain `--privileged`.

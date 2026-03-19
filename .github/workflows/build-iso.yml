@@ -18,7 +18,7 @@ jobs:
     # Sentinel: Review if --privileged execution in archlinux:latest container introduces unintended security risks for pre-build validation.
     container:
       image: archlinux:latest
-      options: --privileged
+      options: --security-opt seccomp=unconfined
     defaults:
       run:
         shell: bash
