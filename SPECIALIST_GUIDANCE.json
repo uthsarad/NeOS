@@ -1,14 +1,19 @@
 {
   "Bolt": {
-    "focus_area": "Performance Script Optimization",
-    "guidance": "Review the test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`) and the CI workflow (`.github/workflows/build-iso.yml`) to ensure native bash operations are preferred over subprocess-heavy pipelines where applicable, maintaining fast execution. Ensure that globbing or parameter expansion is used effectively."
+    "focus": "Deferred",
+    "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Palette": {
-    "focus_area": "Terminal UX and Actionable Errors",
-    "guidance": "Review the terminal error messages in the modified test scripts (`tests/verify_mkinitcpio.sh`, `tests/verify_qml_enhancements.sh`). Ensure they are formatted as multi-line outputs with a clear '💡 How to fix:' block and bulleted actionable steps to minimize developer cognitive load."
+    "focus": "Deferred",
+    "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Sentinel": {
-    "focus_area": "Privileged Execution Review",
-    "guidance": "Review the CI workflow (`.github/workflows/build-iso.yml`) changes. Ensure the privileged execution (`--privileged`) of the `test` job running inside the `archlinux:latest` container does not introduce unintended security risks outside the intended scope of pre-build validation."
+    "focus": "Security Posture Verification",
+    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
+    "allowed_files": [
+      "pacman.conf"
+    ]
   }
 }
