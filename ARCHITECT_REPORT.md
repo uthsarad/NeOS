@@ -1,32 +1,25 @@
-# ARCHITECT REPORT 📝
+# Architect Report
 
-## 1. Scope Validation
-Confirmed the request strictly fits within `ARCHITECT_SCOPE.json`.
-- **Objective**: Enable Auto-Merge for Workflow Updates.
-- **Allowed Files**: Only `.github/workflows/jules-auto-merge.yml`.
-- **Constraint Checklist**:
-  - Add `workflows: write` without breaking existing `if` conditional.
-  - Do not add extra permissions not listed.
-  - Do not touch prohibited files (e.g., `build-iso.yml`, `airootfs/*`, `tests/*`, `tools/*`).
+## Phase 1 — Scope Validation
+The task aligns strictly with the `ARCHITECT_SCOPE.json` to stabilize the CI/CD pipeline and harden tests. No new features, configuration, or architectural shifts were introduced.
 
-## 2. Impact Mapping
-- **Affected Module**: `jules-auto-merge.yml` workflow.
-- **New Files**: Task manifests for Bolt, Palette, and Sentinel.
-- **Test Coverage**: No explicit test coverage requirements for workflow config changes beyond basic syntactical correctness, but security validation is paramount (delegated to Sentinel).
+## Phase 2 — Impact Mapping
+**Affected Modules:**
+- `tests/verify_mkinitcpio.sh`
+- `tests/verify_qml_enhancements.sh`
 
-## 3. Implementation Plan
-1. Moved the top-level `permissions` block down to the `approve-and-merge` job level.
-2. Added `workflows: write` to the new job-level `permissions` block.
-3. Kept the existing condition intact (`if: github.actor == github.repository_owner || github.actor == 'google-labs-jules[bot]'`).
-4. Prepared delegation manifests.
+**Note:** No changes were required for `.gitignore` as the specified targets (`*.iso`, `*.log`, `.DS_Store`, `*~`, `pacman-build.conf`) were already present. The `test` job in `.github/workflows/build-iso.yml` already correctly utilized the `archlinux:latest` container with `--privileged` and `bash`, and had the `timeout 60s` wrappers implemented for the loop, but as per memory directives, the scripts themselves needed to implement their own explicit non-blocking wrappers.
 
-## 4. Build
-- Implemented the change in `.github/workflows/jules-auto-merge.yml`.
-- Confirmed correct syntactical placement in the job step.
-- No direct application test steps applicable.
+## Phase 3 — Implementation Plan
+- Add timeout wrapper to `tests/verify_mkinitcpio.sh`.
+- Add timeout wrapper to `tests/verify_qml_enhancements.sh`.
+- Generate AI delegation task JSON manifests.
 
-## 5. Delegation Preparation
-Generated manifests for specialists:
-- **Bolt**: No direct performance optimization required, but mindful of CI times. Documented in `ai/tasks/bolt.json`.
-- **Palette**: Document capabilities of the auto-merge bot. Documented in `ai/tasks/palette.json`.
-- **Sentinel**: Verify the `workflows: write` permission is securely coupled with the actor validation logic. Documented in `ai/tasks/sentinel.json`.
+## Phase 4 — Build
+The wrappers were successfully added to the top of the target test scripts ensuring they are non-blocking and have an explicit timeout of 60 seconds with a clean fallback. Tests executed successfully post-implementation.
+
+## Phase 5 — Delegation Preparation
+Delegation manifests were generated for the following AI specialists:
+- **Bolt:** Review the test scripts for potential native bash performance optimization.
+- **Palette:** Ensure terminal output errors from scripts correctly format as actionable errors.
+- **Sentinel:** Review if `--privileged` execution in the `archlinux:latest` container introduces unintended security risks for pre-build validation.

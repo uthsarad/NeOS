@@ -1,26 +1,27 @@
 # Risk & Priority Report
+**Date:** 2024-05-18
+**From:** Maestro
 
-## Current System Risks
-**1. Pipeline Instability (High Probability, Medium Impact):**
-- Tests like `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh` are currently executed without strict timeout constraints. If a test hangs or fails in an environment without UI/Calamares elements, it could block the entire build pipeline for all developers.
-- Implementing the 60-second timeout and fallback logic (`|| true`) directly mitigates this risk.
+## 1. Executive Summary
+The NeOS repository has sound architectural foundations but is facing critical failures in its core delivery mechanism (the ISO build pipeline). A strategic pause on new features is declared until this pipeline is unblocked, stabilized, and secured.
 
-**2. Cryptic Errors & Developer Friction (High Probability, Low Impact):**
-- Currently, when CI or local testing fails, terminal output does not strictly follow actionable UX guidelines. Without bulleted "How to fix:" instructions, contributors waste time deciphering errors.
-- Enforcing Palette’s multi-line actionable format on errors reduces cognitive load and speeds up resolution.
+## 2. Identified Risks
 
-**3. Test Script Execution Failures (Medium Probability, Low Impact):**
-- Some scripts in `tests/` may not have the executable (`+x`) bit set consistently across environments, causing spurious CI failures when called via `bash ./script.sh`.
-- Standardizing the execution method or permissions ensures consistent runs.
+### 🔴 Critical Risk: Build-Blocking `pacman.conf` Configuration
+- **Description:** The root `pacman.conf` specifies `SigLevel = Required DatabaseRequired`. The build environment uses an unsigned repository (`alci_repo`), causing the Archiso build process to fail with "missing required signature" errors, blocking ISO generation entirely.
+- **Impact:** Halts all QA testing, snapshot promotion, and release processes.
+- **Mitigation:** The Architect is directed to modify the root `pacman.conf` to use `DatabaseOptional` for build compatibility. Sentinel will verify this does not affect the installed system's security.
 
-**4. Privileged Container Execution (Low Probability, High Impact):**
-- Using `--privileged` in the `test` job of `.github/workflows/build-iso.yml` is necessary for pre-build checks requiring lower-level access (e.g., verifying mkinitcpio or filesystem configs), but introduces theoretical security risk if untrusted code runs within the job.
-- This is mitigated by restricting workflow modification via the auto-merge bot and Sentinel's ongoing review.
+### 🟠 High Priority Risk: Missing ISO Size Validation in CI/CD
+- **Description:** The `.github/workflows/build-iso.yml` workflow lacks a reliable validation step to ensure the generated ISO remains under GitHub Releases' strict 2 GiB limit.
+- **Impact:** If an oversized ISO is built, the CI pipeline will succeed, but the upload to GitHub Releases will fail silently, leaving users unable to download the distribution.
+- **Mitigation:** The Architect is directed to add an explicit size validation step in the CI workflow, utilizing native bash arithmetic to calculate and display exact byte values and readable formats, failing the job immediately if the limit is breached.
 
-## Priorities Addressed
-- **Immediate:** Prevent CI hangs by implementing non-blocking timeout wrappers on UI/pre-build scripts.
-- **Immediate:** Standardize terminal UX for errors in the modified scripts.
-- **Short-term:** Clean up `.gitignore` to prevent accidental commits of large ISO or temporary files, directly addressing `DEEP_AUDIT.md` Low Priority Item 13.
+### 🟡 Medium Priority Risk: Unsigned Repositories in the Build Environment
+- **Description:** Using an unsigned repository (`alci_repo`) in the build environment introduces supply chain risks, as a compromised repository or transport could result in malicious packages being injected into the ISO.
+- **Impact:** Potential compromise of the built ISO.
+- **Mitigation:** This is an accepted risk for the current sprint to unblock the build pipeline, but it must be addressed in future sprints through local mirroring, signing, or upstream collaboration.
 
-## Architectural Trade-offs
-- **Fail-open vs. Fail-closed Testing:** By wrapping tests like `verify_qml_enhancements.sh` in `timeout 60s ... || true`, we consciously choose to fail-open (allow the build to proceed) if the test hangs or fails. This assumes these specific tests are non-critical to the underlying OS stability (they verify UX enhancements), preferring pipeline continuity over strict gating for these specific checks.
+## 3. Priority Action Plan
+1. **Immediate (Today):** Execute the Architect scope to fix `pacman.conf` and implement CI size constraints.
+2. **Next Steps (Future Sprints):** Address the unsigned repository risk, refine documentation, and resume feature development under strict CI stability gates.
