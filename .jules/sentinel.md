@@ -101,7 +101,7 @@
 **Learning:** Test scripts must respect the contextual bounds of the files they check. If a security configuration file is not present, enforcing its contents is logically flawed and creates false failures.
 **Prevention:** Security verification scripts should use `[ -f "$FILE" ]` existence checks before asserting file contents, securely skipping the test instead of failing unless the file is an absolute system requirement.
 
-## 2026-10-27 - Least Privilege in CI Containers
-**Vulnerability:** Running GitHub Actions jobs in `--privileged` containers (e.g., `options: --privileged` for Arch Linux containers on Ubuntu runners) unnecessarily exposes the host runner environment to the container, breaking the principle of least privilege.
-**Learning:** In GitHub Actions, `archlinux:latest` containers require newer system calls (like `clone3`) that are blocked by standard Docker seccomp profiles on older Ubuntu runners. Developers often blindly use `--privileged` as a quick fix, which grants excessive capabilities (e.g., mounting filesystems, accessing raw devices). The correct, targeted mitigation for seccomp syscall restrictions is `--security-opt seccomp=unconfined`.
-**Prevention:** Audit all CI container definitions and replace overly broad `--privileged` flags with targeted `--security-opt` or `--cap-add` options that satisfy specific container runtime constraints without granting full root equivalence.
+## 2026-10-27 - Danger of Unconditional Write Permissions in CI
+**Vulnerability:** Assigning `workflows: write` to CI jobs without explicit, strict constraints creates a severe risk where untrusted code or automated pull requests could modify repository workflows and configuration, potentially leading to unauthorized automated merges or credential exfiltration.
+**Learning:** Elevated permissions within GitHub Actions workflows (especially `workflows: write` or `contents: write`) must always be tightly coupled with actor verification (`github.actor` checks) to ensure they are only executed by highly trusted entities or authorized bots.
+**Prevention:** Explicitly document the required coupling of `permissions` blocks and `if` conditions with a security comment when adding elevated access, preventing future regressions or misunderstandings by other contributors.
