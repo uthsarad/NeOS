@@ -1,19 +1,29 @@
 {
   "Bolt": {
-    "focus": "Deferred",
-    "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
-    "allowed_files": []
+    "focus_area": "Performance Optimization",
+    "tasks": [
+      {
+        "description": "Review the newly created `tests/verify_iso_size.sh` script. Replace repeated external subprocess calls (like `grep`) with native bash logic (like substring matching) wherever possible to eliminate fork/exec overhead.",
+        "target_file": "tests/verify_iso_size.sh"
+      }
+    ]
   },
   "Palette": {
-    "focus": "Deferred",
-    "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the build pipeline.",
-    "allowed_files": []
+    "focus_area": "UX and Accessibility",
+    "tasks": [
+      {
+        "description": "Ensure any error messages emitted by `tests/verify_iso_size.sh` are multi-line and feature a clear '💡 How to fix:' block with actionable, bulleted steps to reduce developer cognitive load on failure.",
+        "target_file": "tests/verify_iso_size.sh"
+      }
+    ]
   },
   "Sentinel": {
-    "focus": "Security Posture Verification",
-    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
-    "allowed_files": [
-      "pacman.conf"
+    "focus_area": "Security Hardening",
+    "tasks": [
+      {
+        "description": "Audit all systemd `.service` files under `airootfs/etc/systemd/system/` and implement strict systemd service sandboxing (e.g., `ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit privileges.",
+        "target_folder": "airootfs/etc/systemd/system/"
+      }
     ]
   }
 }

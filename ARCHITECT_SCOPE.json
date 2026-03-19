@@ -1,23 +1,23 @@
 {
-  "deliverable": "Unblock ISO build pipeline and enforce release constraints.",
-  "constraints": [
-    "Do not write production feature code.",
-    "Do not introduce new features.",
-    "Limit changes strictly to unblocking the build pipeline.",
-    "Ensure the installed system's security posture is not degraded by build-time workarounds."
-  ],
-  "allowed_files": [
-    "pacman.conf",
-    ".github/workflows/build-iso.yml"
-  ],
-  "required_actions": [
+  "role": "Architect",
+  "task_description": "Address critical and high-priority build and runtime issues discovered in the deep audit to ensure a reliable release pipeline and stable updates.",
+  "deliverables": [
     {
-      "file": "pacman.conf",
-      "action": "Change the global 'SigLevel' from 'Required DatabaseRequired' to 'Required DatabaseOptional' to prevent build failures caused by unsigned repository databases in the build environment."
+      "description": "Add ISO size validation (must be < 2 GiB) to the `.github/workflows/build-iso.yml` CI pipeline.",
+      "target_file": ".github/workflows/build-iso.yml"
     },
     {
-      "file": ".github/workflows/build-iso.yml",
-      "action": "Add an explicit ISO size validation step to enforce a strict < 2 GiB constraint. The check must calculate and display exact byte values and human-readable formats (e.g., MiB) utilizing native bash integer arithmetic."
+      "description": "Create a new verification script `tests/verify_iso_size.sh` to validate that size optimization settings (compression, NoExtract) are present in the build configuration.",
+      "target_file": "tests/verify_iso_size.sh"
+    },
+    {
+      "description": "Add explicit dependency validation checks for `snapper` and `btrfs` to the beginning of the `airootfs/usr/local/bin/neos-autoupdate.sh` script to prevent silent failures during updates.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
+  ],
+  "constraints": [
+    "Do not refactor unrelated logic in the target scripts.",
+    "Do not implement new features outside the stated deliverables.",
+    "Ensure the `verify_iso_size.sh` script exits cleanly and follows project testing conventions."
   ]
 }
