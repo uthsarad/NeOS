@@ -1,33 +1,27 @@
 # Risk & Priority Report
+**Date:** 2024-05-18
+**From:** Maestro
 
-## Current System Risks
+## 1. Executive Summary
+The NeOS repository has sound architectural foundations but is facing critical failures in its core delivery mechanism (the ISO build pipeline). A strategic pause on new features is declared until this pipeline is unblocked, stabilized, and secured.
 
-**1. Critical Build Blocker (pacman.conf)**
-- **Risk Level:** Critical (Active Failure)
-- **Impact:** All ISO builds currently fail due to the `DatabaseRequired` signature check in the build environment's `pacman.conf`. The product cannot be distributed until this is resolved.
-- **Mitigation Strategy:** Switch the root-level `pacman.conf` to `DatabaseOptional` while strictly enforcing `DatabaseRequired` in the target system's (`airootfs`) configuration. This is the immediate priority for the Architect.
+## 2. Identified Risks
 
-**2. Missing ISO Size Validation in CI/CD**
-- **Risk Level:** High
-- **Impact:** The GitHub Releases API enforces a hard 2 GiB limit per asset. Without automated validation in the CI pipeline, the build may succeed but the automated release process will fail silently or abort during upload, leading to missing releases and broken delivery pipelines.
-- **Mitigation Strategy:** Implement a strict size constraint check in `.github/workflows/build-iso.yml` immediately following the build phase.
+### 🔴 Critical Risk: Build-Blocking `pacman.conf` Configuration
+- **Description:** The root `pacman.conf` specifies `SigLevel = Required DatabaseRequired`. The build environment uses an unsigned repository (`alci_repo`), causing the Archiso build process to fail with "missing required signature" errors, blocking ISO generation entirely.
+- **Impact:** Halts all QA testing, snapshot promotion, and release processes.
+- **Mitigation:** The Architect is directed to modify the root `pacman.conf` to use `DatabaseOptional` for build compatibility. Sentinel will verify this does not affect the installed system's security.
 
-**3. Incomplete Architecture Support & Documentation Mismatch**
-- **Risk Level:** Medium
-- **Impact:** The documentation promises a "Windows-familiar experience," but this is entirely reliant on the Calamares installer, ZRAM generators, and Snapper integrations that currently only exist in the `x86_64` configurations. `i686` and `aarch64` builds will result in broken or vastly degraded user experiences.
-- **Mitigation Strategy:** Explicitly document the experimental nature of non-x86_64 architectures in `README.md` and `HANDBOOK.md`. (Deferred to future sprints).
+### 🟠 High Priority Risk: Missing ISO Size Validation in CI/CD
+- **Description:** The `.github/workflows/build-iso.yml` workflow lacks a reliable validation step to ensure the generated ISO remains under GitHub Releases' strict 2 GiB limit.
+- **Impact:** If an oversized ISO is built, the CI pipeline will succeed, but the upload to GitHub Releases will fail silently, leaving users unable to download the distribution.
+- **Mitigation:** The Architect is directed to add an explicit size validation step in the CI workflow, utilizing native bash arithmetic to calculate and display exact byte values and readable formats, failing the job immediately if the limit is breached.
 
-**4. Fragile Dependency Handling in Core Services**
-- **Risk Level:** Medium
-- **Impact:** Critical scripts such as `neos-autoupdate.sh` rely on external dependencies (like `snapper`) but do not validate their presence before execution. If a user removes a dependency, the service fails silently, potentially leading to data loss (e.g., missing rollback snapshots).
-- **Mitigation Strategy:** Implement pre-execution dependency validation in all core bash scripts. (Deferred to future sprints).
+### 🟡 Medium Priority Risk: Unsigned Repositories in the Build Environment
+- **Description:** Using an unsigned repository (`alci_repo`) in the build environment introduces supply chain risks, as a compromised repository or transport could result in malicious packages being injected into the ISO.
+- **Impact:** Potential compromise of the built ISO.
+- **Mitigation:** This is an accepted risk for the current sprint to unblock the build pipeline, but it must be addressed in future sprints through local mirroring, signing, or upstream collaboration.
 
-## Technical Debt
-
-- **Missing Systemd Sandboxing:** Custom services currently lack security hardening directives (`User=`, `DynamicUser=`, `ProtectSystem=`).
-- **Inconsistent Error Handling:** Several custom bash scripts lack strict execution constraints (`set -euo pipefail`) or logging mechanisms.
-- **Stale Documentation URLs:** Documentation references legacy paths (e.g., `neos-project/neos`) rather than the active repository.
-
-## Areas of Concern
-
-The immediate concern is the stabilization of the build and release pipeline. All feature development or architectural improvements must be paused until the product can be reliably and consistently built, verified against size constraints, and distributed. The strategy prioritizes the "Critical" and "High" risks defined above.
+## 3. Priority Action Plan
+1. **Immediate (Today):** Execute the Architect scope to fix `pacman.conf` and implement CI size constraints.
+2. **Next Steps (Future Sprints):** Address the unsigned repository risk, refine documentation, and resume feature development under strict CI stability gates.

@@ -1,34 +1,19 @@
 {
   "Bolt": {
-    "focus_area": "Performance optimizations in CI ISO size validation script",
-    "affected_files": [
-      ".github/workflows/build-iso.yml"
-    ],
-    "guidance": [
-      "Review the CI shell scripting for the ISO size validation.",
-      "Ensure the script calculates and displays byte values in human-readable formats utilizing native bash integer arithmetic and `printf` (e.g., `printf -v var \"%d.%02d\" \"$((bytes/1048576))\" \"$(((bytes%1048576)*100/1048576))\"`) rather than spawning `awk` or `numfmt` subprocesses."
-    ]
+    "focus": "Deferred",
+    "guidance": "No active performance optimizations for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Palette": {
-    "focus_area": "UX enhancements in CI error messages for ISO size limits",
-    "affected_files": [
-      ".github/workflows/build-iso.yml"
-    ],
-    "guidance": [
-      "Review the terminal output for the ISO size validation.",
-      "Ensure the error message explicitly calculates and displays the exact excess size (e.g., `EXCESS_SIZE_MB`).",
-      "Ensure the error is formatted as a multi-line output incorporating a clear '💡 How to fix:' block with bulleted actionable remediation steps to minimize developer cognitive load."
-    ]
+    "focus": "Deferred",
+    "guidance": "No UX or accessibility enhancements for this sprint. Focus is exclusively on unblocking the build pipeline.",
+    "allowed_files": []
   },
   "Sentinel": {
-    "focus_area": "Security review of CI workflow changes and pacman configuration",
-    "affected_files": [
-      "pacman.conf",
-      ".github/workflows/build-iso.yml"
-    ],
-    "guidance": [
-      "Verify that the modification to `SigLevel = Required DatabaseOptional` is strictly isolated to the root `pacman.conf` and does not leak into the installed system's configuration (`airootfs/etc/pacman.conf`).",
-      "Ensure the `test` job executing pre-build validations in `.github/workflows/build-iso.yml` correctly omits the `--privileged` flag for container execution, adhering to the principle of least privilege."
+    "focus": "Security Posture Verification",
+    "guidance": "Verify that the Architect's change to the root `pacman.conf` ('DatabaseOptional') is properly isolated to the build environment and does not unintentionally degrade the security of the installed system's configuration (`airootfs/etc/pacman.conf`).",
+    "allowed_files": [
+      "pacman.conf"
     ]
   }
 }
