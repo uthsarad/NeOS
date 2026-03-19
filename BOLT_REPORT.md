@@ -1,11 +1,12 @@
-# BOLT REPORT ⚡
+# Bolt Performance Report
 
-## 1. What was optimized
-The `actions/checkout@v4` step was removed from `.github/workflows/jules-auto-merge.yml`.
+## Optimization Summary
+Replaced POSIX single bracket conditional evaluation `[ -n "$line" ]` with native bash double brackets `[[ -n "$line" ]]` in the `while IFS= read -r line` loop of `tests/verify_mkinitcpio.sh`.
 
-## 2. Before/after reasoning
-**Before:** The auto-merge workflow unnecessarily spent time downloading and checking out the entire repository codebase, even though the only actions performed were `gh pr ready` and `gh pr merge`.
-**After:** By using the full `$PR_URL` via the `gh` CLI, these commands do not rely on local Git repository context. Removing the checkout step eliminates the network I/O and disk write overhead of cloning the repo, saving several seconds on every auto-merge workflow execution.
+## Before/After Reasoning
+**Before:** The script used `[ -n "$line" ]` to handle potential missing trailing newlines when reading files in a bash loop. POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
 
-## 3. Remaining performance risks
-None identified for this specific workflow. The `gh` commands will run instantly within the runner environment.
+**After:** The script now uses `[[ -n "$line" ]]`. Native bash double brackets `[[ ... ]]` are a shell keyword rather than a command. They bypass standard pathname expansion and word splitting entirely, resulting in faster and safer conditional evaluations within tight file-reading loops.
+
+## Remaining Performance Risks
+The tests in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` are already well-optimized by using single memory reads and native bash manipulations over repeated subprocesses (e.g., `grep`, `sed`). No significant performance risks remain for these specific file parsing tasks.
