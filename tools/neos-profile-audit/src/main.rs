@@ -269,21 +269,28 @@ fn assert_required_packages(parsed_files: &[(String, BTreeSet<String>)]) -> Resu
 }
 
 fn assert_arch_specific_expectations(parsed_files: &[(String, BTreeSet<String>)]) -> Result<(), String> {
-    let get = |name: &str| -> Result<&BTreeSet<String>, String> {
-        parsed_files
-            .iter()
-            .find(|(n, _)| n == name)
-            .map(|(_, pkgs)| pkgs)
-            .ok_or_else(|| format!("missing package set for {name}"))
-    };
+    let mut x86_opt = None;
+    let mut i686_opt = None;
+    let mut aarch64_opt = None;
 
-    let x86 = get("packages.x86_64")?;
+    // ⚡ Bolt: Single pass iteration avoids multiple linear scans and closure allocations
+    for (name, pkgs) in parsed_files {
+        match name.as_str() {
+            "packages.x86_64" => x86_opt = Some(pkgs),
+            "packages.i686" => i686_opt = Some(pkgs),
+            "packages.aarch64" => aarch64_opt = Some(pkgs),
+            _ => {}
+        }
+    }
+
+    let x86 = x86_opt.ok_or_else(|| "missing package set for packages.x86_64".to_string())?;
+    let i686 = i686_opt.ok_or_else(|| "missing package set for packages.i686".to_string())?;
+    let aarch64 = aarch64_opt.ok_or_else(|| "missing package set for packages.aarch64".to_string())?;
+
     if !(x86.contains("linux") && x86.contains("linux-zen")) {
         return Err("packages.x86_64 must include both linux and linux-zen kernels".to_string());
     }
 
-    let i686 = get("packages.i686")?;
-    let aarch64 = get("packages.aarch64")?;
     if i686.len() < 45 {
         return Err("packages.i686 unexpectedly small (expected at least 45 packages)".to_string());
     }
