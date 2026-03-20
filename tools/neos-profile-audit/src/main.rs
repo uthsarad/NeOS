@@ -273,7 +273,7 @@ fn assert_arch_specific_expectations(parsed_files: &[(String, BTreeSet<String>)]
     let mut i686_opt = None;
     let mut aarch64_opt = None;
 
-    // ⚡ Bolt: Single pass iteration avoids multiple linear scans and closure allocations
+    // Single pass over parsed_files avoids repeated iterator setup and redundant linear scans
     for (name, pkgs) in parsed_files {
         match name.as_str() {
             "packages.x86_64" => x86_opt = Some(pkgs),
