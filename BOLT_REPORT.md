@@ -1,12 +1,20 @@
 # Bolt Performance Report
 
-## Optimization Summary
-Replaced POSIX single bracket conditional evaluation `[ -n "$line" ]` with native bash double brackets `[[ -n "$line" ]]` in the `while IFS= read -r line` loop of `tests/verify_mkinitcpio.sh`.
+## Optimization Focus
+Elimination of subprocess forks during CI script execution.
+
+## What was optimized
+In `.github/workflows/build-iso.yml`, specifically within the "Prepare Build Config" step, two subprocess calls were eliminated:
+- `sed -i` calls used to replace paths within `pacman-build.conf`.
 
 ## Before/After Reasoning
-**Before:** The script used `[ -n "$line" ]` to handle potential missing trailing newlines when reading files in a bash loop. POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
+### Before
+- The CI step used multiple `sed -i` commands to modify a file in-place, causing multiple subprocess forks, which is measurable overhead in CI environments.
 
-**After:** The script now uses `[[ -n "$line" ]]`. Native bash double brackets `[[ ... ]]` are a shell keyword rather than a command. They bypass standard pathname expansion and word splitting entirely, resulting in faster and safer conditional evaluations within tight file-reading loops.
+### After
+- `sed` calls were replaced with reading the file into bash (`PACMAN_CONF_CONTENT=$(<"$GITHUB_WORKSPACE/pacman-build.conf")`) and using native bash string replacement (`${PACMAN_CONF_CONTENT//pattern/replacement}`), before writing back to the file. The original `grep` behavior was left intact as replacing it caused regressions in previous review.
+
+These changes eliminate the need to spawn `sed` binaries, leading to a faster and more efficient execution inside the GitHub Actions runner.
 
 ## Remaining Performance Risks
-The tests in `tests/verify_mkinitcpio.sh` and `tests/verify_qml_enhancements.sh` are already well-optimized by using single memory reads and native bash manipulations over repeated subprocesses (e.g., `grep`, `sed`). No significant performance risks remain for these specific file parsing tasks.
+The tests in `tests/` also invoke `timeout 60s bash "$script"`, which involves subprocesses, but they have already been optimized for internal parsing where possible. There are no remaining significant shell parsing bottlenecks in the modified area. No behavioral or functional changes were introduced by these micro-optimizations.

@@ -96,8 +96,11 @@ jobs:
           # Update the Include path for the local build environment
           # The repo pacman.conf points to /etc/pacman.d/neos-mirrorlist (inside ISO)
           # We need it to point to the actual file in the workspace for mkarchiso
-          sed -i "s|/etc/pacman.d/neos-mirrorlist|$MIRRORLIST_PATH|g" "$GITHUB_WORKSPACE/pacman-build.conf"
-          sed -i "s|/etc/pacman.d/chaotic-mirrorlist|$CHAOTIC_MIRRORLIST_PATH|g" "$GITHUB_WORKSPACE/pacman-build.conf"
+          # ⚡ Bolt: Use native bash parameter expansion instead of sed subprocess
+          PACMAN_CONF_CONTENT=$(<"$GITHUB_WORKSPACE/pacman-build.conf")
+          PACMAN_CONF_CONTENT="${PACMAN_CONF_CONTENT//\/etc\/pacman.d\/neos-mirrorlist/$MIRRORLIST_PATH}"
+          PACMAN_CONF_CONTENT="${PACMAN_CONF_CONTENT//\/etc\/pacman.d\/chaotic-mirrorlist/$CHAOTIC_MIRRORLIST_PATH}"
+          echo "$PACMAN_CONF_CONTENT" > "$GITHUB_WORKSPACE/pacman-build.conf"
 
           echo "Generated pacman-build.conf:"
           cat "$GITHUB_WORKSPACE/pacman-build.conf"
