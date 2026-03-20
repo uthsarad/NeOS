@@ -221,3 +221,30 @@
 ### Severity Summary
 
 - **High Risks Resolved / Mitigated (By validation and documentation)**: 1 (Confirmed security coupling of `workflows: write` and actor validation in `jules-auto-merge.yml`)
+
+## Sentinel Report - GitHub Actions Workflow Exemption Security Validation
+
+### Risks Found
+
+1. **High Priority - Unauthorized Bypass of Workflow Security Boundaries**
+   - **File**: `.github/workflows/jules-auto-merge.yml`, `CONTRIBUTING.md`
+   - **Context**: The task was to verify the Architect's bot exemption for `google-labs-jules[bot]` in the `jules-auto-merge.yml` workflow.
+   - **Vulnerability**: The Architect introduced a bypass in the bash script (`if [[ "$HAS_PAT" != "true" && "${{ github.actor }}" != "google-labs-jules[bot]" ]]`) that exempted the bot from requiring the `JULES_AUTO_MERGE_TOKEN` PAT to auto-merge PRs that modify `.github/workflows/*` files. Furthermore, the `if` condition at the job level was changed from checking `github.actor` to checking `github.event.pull_request.user.login`. This combination degraded pipeline security:
+      1. Evaluating `github.event.pull_request.user.login` instead of `github.actor` allowed any user to trigger the elevated workflow run (since the PR creator could be the bot, but a malicious user could reopen or synchronize it).
+      2. Bypassing the PAT requirement meant the bot would attempt to use the default `GITHUB_TOKEN` for workflow modifications. GitHub explicitly blocks standard tokens from merging workflow file modifications to prevent unauthorized actors from using compromised bots to escalate privileges or exfiltrate secrets via malicious workflow changes. By bypassing the PAT check, the script failed to enforce this critical security boundary, causing failures at the merge step or worse, creating a false sense of security.
+
+### Fixes Applied
+
+1. **Restored Security Boundary and Actor Validation**
+   - **Action**: Removed the `&& "${{ github.actor }}" != "google-labs-jules[bot]"` exemption from the `HAS_PAT` bash check, enforcing the requirement that *any* merge operation modifying workflow files must possess the authorized `JULES_AUTO_MERGE_TOKEN`.
+   - **Action**: Corrected the job-level `if` condition to strictly evaluate `github.actor == 'google-labs-jules[bot]'` instead of the PR user, ensuring only trusted accounts actually trigger the workflow execution.
+   - **Action**: Added an explicit security comment (`# SECURITY: ...`) documenting the necessity of strict actor verification for the `workflows: write` permission.
+   - **Action**: Removed the false documentation from `CONTRIBUTING.md` that claimed the bot was exempted from the PAT requirement.
+
+### Remaining Attack Surface
+
+- The security of the auto-merge pipeline remains dependent on the integrity of the trusted actors' accounts (`google-labs-jules[bot]` and `github.repository_owner`) and the secure management of the `JULES_AUTO_MERGE_TOKEN` PAT.
+
+### Severity Summary
+
+- **High Risks Resolved**: 1 (Fixed unauthorized bypass of workflow security boundaries and restored strict actor evaluation)

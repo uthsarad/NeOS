@@ -105,3 +105,10 @@
 **Vulnerability:** Assigning `workflows: write` to CI jobs without explicit, strict constraints creates a severe risk where untrusted code or automated pull requests could modify repository workflows and configuration, potentially leading to unauthorized automated merges or credential exfiltration.
 **Learning:** Elevated permissions within GitHub Actions workflows (especially `workflows: write` or `contents: write`) must always be tightly coupled with actor verification (`github.actor` checks) to ensure they are only executed by highly trusted entities or authorized bots.
 **Prevention:** Explicitly document the required coupling of `permissions` blocks and `if` conditions with a security comment when adding elevated access, preventing future regressions or misunderstandings by other contributors.
+
+## 2026-10-27 - Unauthorized PAT Exemption in GitHub Actions
+**Vulnerability:** A script in a GitHub Actions workflow conditionally bypassed the requirement for a Personal Access Token (PAT) with `workflow` scope when checking for modifications to `.github/workflows/*` files, explicitly exempting the bot account (`google-labs-jules[bot]`). Also, the workflow execution was gated by `github.event.pull_request.user.login` instead of `github.actor`.
+**Learning:** Bypassing standard GitHub security boundaries (like requiring PATs for workflow file modification) using hardcoded actor names in bash logic creates severe risk and does not override GitHub's internal restrictions. If a bot uses `GITHUB_TOKEN` to modify workflows, GitHub rejects it. Checking `pull_request.user.login` allows any malicious actor to reopen/sync a PR to trigger the elevated workflow, assuming the bot's privileges.
+**Prevention:**
+1. Never bypass intentional security boundaries like PAT checks for privileged operations. If a privileged context is required, the execution context must possess the actual token.
+2. Always use `github.actor` for gating workflow execution blocks involving sensitive write permissions, as it represents the user actively triggering the run, not merely the author of the pull request.
