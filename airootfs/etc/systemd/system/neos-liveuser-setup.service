@@ -4,6 +4,7 @@ Description=NeOS Liveuser Setup
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-liveuser-setup
+# Sentinel: Implement strict systemd service sandboxing (e.g., ProtectSystem=strict, NoNewPrivileges=yes, PrivateTmp=yes) to limit privileges.
 
 [Install]
 WantedBy=multi-user.target
