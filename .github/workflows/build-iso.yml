@@ -218,7 +218,7 @@ jobs:
       - name: Generate release tag
         id: tag
         if: github.ref == 'refs/heads/main'
-        run: echo "value=v$(date +%Y.%m.%d)-${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+        run: echo "value=V${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO to Release
         uses: softprops/action-gh-release@v2
