@@ -52,7 +52,12 @@ check_root() {
 }
 
 check_dependencies() {
-    local dependencies=("snapper" "pacman" "awk" "df")
+    if ! command -v snapper >/dev/null 2>&1; then
+        log "ERROR: snapper not installed. Automatic snapshots disabled."
+        exit 0
+    fi
+
+    local dependencies=("pacman" "awk" "df")
     for cmd in "${dependencies[@]}"; do
         if ! command -v "$cmd" &> /dev/null; then
             log "Error: Required command '$cmd' not found."

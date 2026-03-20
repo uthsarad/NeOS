@@ -1,8 +1,11 @@
 {
-  "focus": "Security Posture Verification",
-  "guidance": "Verify that the Architect's bot exemption in `.github/workflows/jules-auto-merge.yml` and its documentation in `CONTRIBUTING.md` do not unintentionally degrade the security of the pipeline.",
-  "allowed_files": [
-    ".github/workflows/jules-auto-merge.yml",
-    "CONTRIBUTING.md"
-  ]
+  "Sentinel": {
+    "focus_area": "Security Hardening",
+    "tasks": [
+      {
+        "description": "Audit all systemd `.service` files under `airootfs/etc/systemd/system/` and implement strict systemd service sandboxing (e.g., `ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit privileges.",
+        "target_folder": "airootfs/etc/systemd/system/"
+      }
+    ]
+  }
 }

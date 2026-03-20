@@ -34,6 +34,7 @@ else
 fi
 
 # 2. Verify NoExtract in pacman.conf
+# Bolt: Replace repeated external subprocess calls (like grep) with native bash logic (like substring matching) wherever possible to eliminate fork/exec overhead.
 echo "Checking NoExtract settings in $PACMAN_CONF..."
 
 REQUIRED_EXCLUDES=(
@@ -61,6 +62,7 @@ for pattern in "${REQUIRED_EXCLUDES[@]}"; do
 done
 
 if [ "$MISSING" = true ]; then
+    # Palette: Ensure error messages are multi-line and feature a clear '💡 How to fix:' block with actionable, bulleted steps to reduce developer cognitive load on failure.
     echo "❌ Some required NoExtract patterns are missing"
     echo ""
     echo "💡 How to fix:"

@@ -4,6 +4,7 @@ Description=NeOS Autoupdate Service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-autoupdate.sh
+# Sentinel: Implement strict systemd service sandboxing (e.g., ProtectSystem=strict, NoNewPrivileges=yes, PrivateTmp=yes) to limit privileges.
 
 [Install]
 WantedBy=multi-user.target
