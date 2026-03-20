@@ -1,6 +1,6 @@
 {
   "role": "Architect",
-  "task_description": "Address critical and high-priority build and runtime issues discovered in the deep audit to ensure a reliable release pipeline and stable updates.",
+  "task_description": "Address critical build issues to ensure deployment safety, focusing exclusively on ISO size constraints.",
   "deliverables": [
     {
       "description": "Add ISO size validation (must be < 2 GiB) to the `.github/workflows/build-iso.yml` CI pipeline.",
@@ -9,15 +9,12 @@
     {
       "description": "Create a new verification script `tests/verify_iso_size.sh` to validate that size optimization settings (compression, NoExtract) are present in the build configuration.",
       "target_file": "tests/verify_iso_size.sh"
-    },
-    {
-      "description": "Add explicit dependency validation checks for `snapper` and `btrfs` to the beginning of the `airootfs/usr/local/bin/neos-autoupdate.sh` script to prevent silent failures during updates.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ],
   "constraints": [
-    "Do not refactor unrelated logic in the target scripts.",
-    "Do not implement new features outside the stated deliverables.",
-    "Ensure the `verify_iso_size.sh` script exits cleanly and follows project testing conventions."
+    "Limit to the single coherent deliverable of implementing ISO size validation.",
+    "Do not attempt to fix the `pacman.conf` database issue, as it is already resolved.",
+    "Do not make changes to `.github/workflows/build-iso.yml` beyond adding the size validation step.",
+    "Ensure the `tests/verify_iso_size.sh` script exits cleanly and follows project testing conventions."
   ]
 }
