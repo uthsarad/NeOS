@@ -8,11 +8,19 @@ PACMAN_CONF="pacman.conf"
 
 if [ ! -f "$PROFILE_FILE" ]; then
     echo "❌ $PROFILE_FILE not found"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Ensure you are running this script from the root of the repository."
+    echo "   - Verify that '$PROFILE_FILE' exists in the current directory."
     exit 1
 fi
 
 if [ ! -f "$PACMAN_CONF" ]; then
     echo "❌ $PACMAN_CONF not found"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Ensure you are running this script from the root of the repository."
+    echo "   - Verify that '$PACMAN_CONF' exists in the current directory."
     exit 1
 fi
 
