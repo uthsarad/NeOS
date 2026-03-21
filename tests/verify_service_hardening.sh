@@ -5,11 +5,11 @@ SERVICE_FILE="airootfs/etc/systemd/system/neos-driver-manager.service"
 
 echo "Verifying service hardening in $SERVICE_FILE..."
 
-# Check for ProtectSystem=full
-if grep -q "ProtectSystem=full" "$SERVICE_FILE"; then
-    echo "✅ ProtectSystem=full found"
+# Check for ProtectSystem=strict
+if grep -q "ProtectSystem=strict" "$SERVICE_FILE"; then
+    echo "✅ ProtectSystem=strict found"
 else
-    echo "❌ ProtectSystem=full NOT found"
+    echo "❌ ProtectSystem=strict NOT found"
     exit 1
 fi
 

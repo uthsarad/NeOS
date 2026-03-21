@@ -248,3 +248,25 @@
 ### Severity Summary
 
 - **High Risks Resolved**: 1 (Fixed unauthorized bypass of workflow security boundaries and restored strict actor evaluation)
+
+## Sentinel Report - Systemd Service Sandboxing
+
+### Risks Found
+
+1. **Medium Priority - Lack of Systemd Sandboxing in Core Services**
+   - **Files audited**: `airootfs/etc/systemd/system/neos-autoupdate.service`, `airootfs/etc/systemd/system/neos-driver-manager.service`, `airootfs/etc/systemd/system/neos-liveuser-setup.service`
+   - **Vulnerability**: Several core systemd `.service` files were running without strict sandboxing directives (like `ProtectSystem=strict`, `NoNewPrivileges=yes`, and `PrivateTmp=yes`). This violates the principle of least privilege, as these services had unnecessary access to the broader system, which could be leveraged if a service was compromised.
+
+### Fixes Applied
+
+1. **Strict Systemd Sandboxing Implemented**
+   - **Action**: Modified `neos-autoupdate.service`, `neos-driver-manager.service`, and `neos-liveuser-setup.service` to enforce strict systemd sandboxing.
+   - **Details**: Added `ProtectSystem=strict`, `NoNewPrivileges=yes`, and `PrivateTmp=yes` to the affected services. This isolates the services by making the file system read-only (except for specific directories), preventing privilege escalation, and providing a private `/tmp` directory.
+
+### Remaining Attack Surface
+
+- The services are now heavily sandboxed, significantly reducing their attack surface. However, they still run as root (or their respective users) and any vulnerability within their core logic could still be exploited within the confines of the sandbox.
+
+### Severity Summary
+
+- **Medium Risks Resolved**: 1 (Implemented strict systemd service sandboxing in core services)
