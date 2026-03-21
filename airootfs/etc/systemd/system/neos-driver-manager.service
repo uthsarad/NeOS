@@ -5,8 +5,7 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-driver-manager
-# Sentinel: Implement strict systemd service sandboxing (e.g., ProtectSystem=strict, NoNewPrivileges=yes, PrivateTmp=yes) to limit privileges.
-ProtectSystem=full
+ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes
