@@ -1,20 +1,26 @@
 {
-  "role": "Architect",
-  "task_description": "Address critical build issues to ensure deployment safety, focusing exclusively on ISO size constraints.",
-  "deliverables": [
+  "focus_area": "Runtime Script Hardening & Test Consistency",
+  "deliverable": "A single coherent hardening pass on custom bash scripts and test files to ensure runtime reliability and consistent execution.",
+  "tasks": [
     {
-      "description": "Add ISO size validation (must be < 2 GiB) to the `.github/workflows/build-iso.yml` CI pipeline.",
-      "target_file": ".github/workflows/build-iso.yml"
+      "description": "Add dependency validation to `airootfs/usr/local/bin/neos-autoupdate.sh` to explicitly check for `snapper` before proceeding with update operations. If missing, log an error and exit gracefully (exit code 0) to prevent silent data loss without failing the systemd unit.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     },
     {
-      "description": "Create a new verification script `tests/verify_iso_size.sh` to validate that size optimization settings (compression, NoExtract) are present in the build configuration.",
-      "target_file": "tests/verify_iso_size.sh"
+      "description": "Enforce strict bash error handling by ensuring `set -euo pipefail` is active in `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`.",
+      "target_files": [
+        "airootfs/usr/local/bin/neos-liveuser-setup",
+        "airootfs/usr/local/bin/neos-installer-partition.sh"
+      ]
+    },
+    {
+      "description": "Fix inconsistent script permissions by ensuring all `.sh` files in the `tests/` directory are marked as executable (`chmod +x`).",
+      "target_folder": "tests/"
     }
   ],
   "constraints": [
-    "Limit to the single coherent deliverable of implementing ISO size validation.",
-    "Do not attempt to fix the `pacman.conf` database issue, as it is already resolved.",
-    "Do not make changes to `.github/workflows/build-iso.yml` beyond adding the size validation step.",
-    "Ensure the `tests/verify_iso_size.sh` script exits cleanly and follows project testing conventions."
+    "Do not add any new features or capabilities to the scripts.",
+    "Do not modify the ISO build pipeline or configuration.",
+    "Limit changes strictly to error handling, dependency validation, and file permissions."
   ]
 }
