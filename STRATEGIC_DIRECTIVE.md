@@ -1,28 +1,31 @@
-# STRATEGIC_DIRECTIVE
+# NeOS Strategic Directive
 
-## PHASE 1 — Product Alignment Check
-- **What is the product trying to become?** NeOS is aiming to be a curated, snapshot-based Arch Linux desktop distribution that delivers predictable behavior and a Windows-familiar KDE Plasma experience with low breakage.
-- **Are we building toward that?** The deep audit revealed critical and high-priority build and runtime issues. Before we can build new features, we must secure the foundational pipeline and system stability.
-- **Are we solving the highest leverage problem?** Yes. A lack of CI ISO size validation risks silent deployment failures due to GitHub's 2 GiB limit. Securing the automated release pipeline is our highest leverage action. (Note: The `pacman.conf` build blocker is confirmed resolved and is out of scope).
+## PHASE 1: Product Alignment Check
+- **What is the product trying to become?** A stable, curated, rolling-release desktop OS for Windows switchers.
+- **Are we building toward that?** We are laying the critical foundations (Phase 0/1/2). We cannot focus on UX polish (Phase 6) until the underlying build pipelines, system services, and update mechanisms are bulletproof.
+- **Are we solving the highest leverage problem?** Yes. Recent audits uncovered fragile core services (`neos-autoupdate.sh`), missing execution flags in shell scripts, and un-sandboxed root services. Fixing these prevents silent runtime data loss and privilege escalation risks.
 
-## PHASE 2 — Technical Posture Review
-- **Is the system stable?** The system itself has good foundations, but there are gaps in CI safety rails (ISO size) and core service sandboxing that leave the system vulnerable.
-- **Is tech debt increasing?** Deploying and maintaining an unvalidated pipeline creates operational debt. Missing sandboxing for root-level services creates security debt.
-- **Are we overbuilding?** No. Addressing these safety gaps is necessary for any future development to proceed safely and maintain a predictable release cadence.
+## PHASE 2: Technical Posture Review
+- **Is the system stable?** The build pipeline has been significantly stabilized (ISO size checks, pacman signature fixes are in). However, the installed runtime environment is still fragile. Core scripts lack dependency validation (e.g., failing silently if `snapper` is removed) and robust error handling.
+- **Is tech debt increasing?** Yes, slightly. The `tests/` directory contains scripts with inconsistent execution permissions (`chmod +x`), and multiple system services run as unrestricted root.
+- **Are we overbuilding?** No. We are focusing strictly on hardening existing, implemented features rather than adding new ones.
 
-## PHASE 3 — Priority Selection
-- **Selected Priority:** Stabilization / hardening
-- **Reasoning:** The missing ISO size validation in CI could lead to untracked deployment failures due to GitHub's 2 GiB limit. Hardening the build pipeline takes absolute precedence over new features.
+## PHASE 3: Priority Selection
+- **Selected Priority:** Stabilization / hardening.
+We are executing a targeted hardening pass on runtime scripts and systemd services to ensure predictable behavior and enforce least-privilege boundaries before moving to Phase 4 (Hardware & Driver Reliability).
 
-## PHASE 4 — Controlled Scope Definition
+## PHASE 4: Controlled Scope Definition
 - **Exact files likely impacted:**
-  - `.github/workflows/build-iso.yml`
-  - `tests/verify_iso_size.sh`
-- **Maximum allowed surface area:** The Architect is restricted to a single coherent deliverable: adding the ISO size validation to the CI workflow (`.github/workflows/build-iso.yml`), and writing the associated verification test (`tests/verify_iso_size.sh`).
-- **Constraints Architect must obey:** Implement only the explicit fixes for ISO size validation. Do not attempt to fix the `pacman.conf` database issue, as it is already resolved. Do not refactor unrelated workflow steps. Prevent feature creep. Ensure strict adherence to GitHub's 2 GiB limit.
+  - `airootfs/usr/local/bin/neos-autoupdate.sh`
+  - `airootfs/usr/local/bin/neos-liveuser-setup`
+  - `airootfs/usr/local/bin/neos-installer-partition.sh`
+  - `airootfs/etc/systemd/system/*.service`
+  - `tests/*.sh`
+- **Maximum allowed surface area:** Existing custom bash scripts in `airootfs/` and their corresponding systemd service files. Test scripts in `tests/`.
+- **Constraints Architect must obey:** Do not introduce new features or new system services. Do not modify the ISO build pipeline or repository configuration. Focus entirely on script robustness (dependency checks, strict bash flags) and test suite consistency (executable permissions). Limit the deliverable strictly to this hardening scope.
 
-## PHASE 5 — Delegation Strategy
-- **Architect builds:** Implement ISO size validation (must be < 2 GiB) in `.github/workflows/build-iso.yml` and create the accompanying test script `tests/verify_iso_size.sh`.
-- **Bolt optimizes:** Review the new `tests/verify_iso_size.sh` script to ensure it runs efficiently (e.g., using native bash substring matching or avoiding repeated subprocess calls).
-- **Palette enhances:** Ensure any new error messages in `tests/verify_iso_size.sh` include a clear, actionable "💡 How to fix:" block to reduce developer cognitive load.
-- **Sentinel audits:** Implement strict systemd service sandboxing (`ProtectSystem=strict`, `NoNewPrivileges=yes`, etc.) in all `.service` files under `airootfs/etc/systemd/system/`.
+## PHASE 5: Delegation Strategy
+- **Architect builds:** Adds dependency validation (e.g., `snapper` existence check) to `neos-autoupdate.sh` and ensures it exits gracefully. Enforces strict bash error handling (`set -euo pipefail`) in all custom scripts (`neos-liveuser-setup`, `neos-installer-partition.sh`). Fixes executable permissions for all files in `tests/`.
+- **Bolt optimizes:** Reviews `tests/verify_iso_size.sh` to replace repeated external subprocess calls (like `grep`) with native bash substring logic to eliminate fork/exec overhead.
+- **Palette enhances:** Refines error output in `tests/verify_iso_size.sh` to ensure terminal messages are multi-line and feature a clear '💡 How to fix:' block with actionable, bulleted steps.
+- **Sentinel audits:** Audits all systemd `.service` files under `airootfs/etc/systemd/system/` and implements strict sandboxing directives (`ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit privileges.
