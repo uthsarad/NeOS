@@ -1,11 +1,9 @@
 {
-  "Sentinel": {
-    "focus_area": "Security Hardening",
-    "tasks": [
-      {
-        "description": "Audit all systemd `.service` files under `airootfs/etc/systemd/system/` and implement strict systemd service sandboxing (e.g., `ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit privileges.",
-        "target_folder": "airootfs/etc/systemd/system/"
-      }
-    ]
-  }
+  "focus_area": "Security Hardening",
+  "tasks": [
+    {
+      "description": "Audit all systemd `.service` files under `airootfs/etc/systemd/system/` and implement strict systemd service sandboxing (e.g., `ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit root privileges and reduce the attack surface.",
+      "target_folder": "airootfs/etc/systemd/system/"
+    }
+  ]
 }

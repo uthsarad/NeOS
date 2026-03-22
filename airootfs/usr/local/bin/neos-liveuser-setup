@@ -1,2 +1,3 @@
 #!/bin/bash
+set -euo pipefail
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel

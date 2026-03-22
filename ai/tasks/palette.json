@@ -1,11 +1,9 @@
 {
-  "Palette": {
-    "focus_area": "UX and Accessibility",
-    "tasks": [
-      {
-        "description": "Ensure any error messages emitted by `tests/verify_iso_size.sh` are multi-line and feature a clear '💡 How to fix:' block with actionable, bulleted steps to reduce developer cognitive load on failure.",
-        "target_file": "tests/verify_iso_size.sh"
-      }
-    ]
-  }
+  "focus_area": "UX and Accessibility",
+  "tasks": [
+    {
+      "description": "Ensure any error messages emitted by `tests/verify_iso_size.sh` are multi-line and feature a clear '💡 How to fix:' block with actionable, bulleted steps to reduce developer cognitive load on failure.",
+      "target_file": "tests/verify_iso_size.sh"
+    }
+  ]
 }
