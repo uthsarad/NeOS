@@ -35,6 +35,16 @@ Our automated systems help streamline the development process:
   - Triggers for trusted bots (e.g., `google-labs-jules[bot]`).
 - **Community contributions**: Require review from a maintainer before the bot will merge.
 
+## Rust Integration Direction (3-5% target)
+
+NeOS now includes a Rust-based profile validator under `tools/neos-profile-audit`. A practical next step is to keep Rust usage in the tooling layer while preserving shell compatibility in build scripts:
+
+- Keep policy and manifest validation in Rust CLIs (fast, typed parsing, clearer errors).
+- Use shell wrappers in `tests/` to call Rust tools so CI and contributor workflows stay simple.
+- Gradually replace brittle text parsing checks in bash/python with focused Rust subcommands.
+
+This keeps Rust around the 3-5% footprint while strengthening reliability in the parts of the project most prone to configuration drift.
+
 ## Code of conduct
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
