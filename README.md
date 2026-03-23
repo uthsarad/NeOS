@@ -57,19 +57,8 @@ Before building, you can run the Rust-based profile validator to catch duplicate
 bash tests/verify_rust_profile_audit.sh
 ```
 
-
-## Rust Integration Direction (3-5% target)
-
-NeOS now includes a Rust-based profile validator under `tools/neos-profile-audit`. A practical next step is to keep Rust usage in the tooling layer while preserving shell compatibility in build scripts:
-
-- Keep policy and manifest validation in Rust CLIs (fast, typed parsing, clearer errors).
-- Use shell wrappers in `tests/` to call Rust tools so CI and contributor workflows stay simple.
-- Gradually replace brittle text parsing checks in bash/python with focused Rust subcommands.
-
-This keeps Rust around the 3-5% footprint while strengthening reliability in the parts of the project most prone to configuration drift.
-
 ## Contributing
-NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents.
+NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents. Check [CONTRIBUTING](CONTRIBUTING.md) for more details.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
