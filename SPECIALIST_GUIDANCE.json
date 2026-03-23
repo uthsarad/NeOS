@@ -1,29 +1,22 @@
 {
-  "Bolt": {
-    "focus_area": "Performance Optimization",
+  "bolt": {
+    "focus": "Performance Optimization",
     "tasks": [
-      {
-        "description": "Review the `tests/verify_iso_size.sh` script. Replace repeated external subprocess calls (like `grep`) with native bash logic (like substring matching) wherever possible to eliminate fork/exec overhead.",
-        "target_file": "tests/verify_iso_size.sh"
-      }
+      "Optimize CI workflows (e.g., .github/workflows/build-iso.yml) or newly added tests (e.g., tests/verify_iso_size.sh) to eliminate fork/exec overhead.",
+      "Ensure native bash logic is used where possible instead of external subprocesses."
     ]
   },
-  "Palette": {
-    "focus_area": "UX and Accessibility",
+  "palette": {
+    "focus": "Developer UX and Error Messages",
     "tasks": [
-      {
-        "description": "Ensure any error messages emitted by `tests/verify_iso_size.sh` are multi-line and feature a clear '💡 How to fix:' block with actionable, bulleted steps to reduce developer cognitive load on failure.",
-        "target_file": "tests/verify_iso_size.sh"
-      }
+      "Ensure any error messages emitted by new CI validation steps are multi-line and provide actionable '💡 How to fix:' guidance to reduce developer cognitive load.",
+      "Ensure terminal output from tests is clear."
     ]
   },
-  "Sentinel": {
-    "focus_area": "Security Hardening",
+  "sentinel": {
+    "focus": "Security Validation",
     "tasks": [
-      {
-        "description": "Audit all systemd `.service` files under `airootfs/etc/systemd/system/` and implement strict systemd service sandboxing (e.g., `ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit root privileges and reduce the attack surface.",
-        "target_folder": "airootfs/etc/systemd/system/"
-      }
+      "Verify that the build-time pacman.conf changes (relaxing to DatabaseOptional) do not compromise the final installed system's pacman configuration (which must remain DatabaseRequired)."
     ]
   }
 }

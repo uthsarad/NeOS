@@ -2,20 +2,20 @@
 
 ## Current Risk Landscape
 
-### 1. Runtime Reliability Risk (Medium)
-**Observation:** Several core scripts deployed in the live and installed environments lack robust dependency checking and strict error handling boundaries.
-**Impact:** If a user uninstalls a critical dependency (e.g., `snapper`), automated tasks like system updates (`neos-autoupdate.sh`) will fail silently or behave unpredictably, leading to potential data loss or unbootable states during rolling release updates.
-**Mitigation Priority:** Immediate. Architect must add graceful dependency validation and enforce `set -euo pipefail` across all custom deployment scripts.
+### 1. Build Failure Risk (Critical)
+**Observation:** The `pacman.conf` file currently forces `DatabaseRequired`, which prevents the ISO build from succeeding due to unsigned repository dependencies (`alci_repo`). This active failure in the CI pipeline is a complete blocker for any further feature validation or distribution.
+**Impact:** No ISO images can be produced. Developers and users cannot test or consume the current state of NeOS.
+**Mitigation Priority:** Immediate. The Architect must relax the build-time `pacman.conf` to use `DatabaseOptional` for the global `SigLevel`, allowing the build to proceed. The test `tests/verify_build_profile.sh` must be updated to reflect this necessary build environment configuration.
 
-### 2. Privilege Escalation Risk (Medium)
-**Observation:** Custom systemd service units installed to `airootfs/etc/systemd/system/` run as unrestricted root.
-**Impact:** If any of the custom scripts invoked by these services (like driver managers or auto-updaters) are exploited via malicious input or unforeseen edge cases, the attacker gains full, un-sandboxed root access to the host.
-**Mitigation Priority:** Immediate. Sentinel must enforce systemd sandboxing directives (`ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to enforce least-privilege principles.
+### 2. Release Failure Risk (High)
+**Observation:** There is no CI-level enforcement of the ISO size limit (2 GiB) required by the GitHub Releases API.
+**Impact:** The CI pipeline may successfully build an ISO, but the deployment step will fail silently or explicitly during the release creation, preventing users from downloading the distribution.
+**Mitigation Priority:** High. The Architect must implement an explicit size validation step in `.github/workflows/build-iso.yml` that strictly enforces the 2 GiB limit before the release is attempted.
 
-### 3. Developer Experience Risk (Low)
-**Observation:** Inconsistent file execution permissions in the test suite and suboptimal shell performance in validation scripts.
-**Impact:** Increases cognitive load for new contributors navigating the CI pipeline and slows down local build validations.
-**Mitigation Priority:** Low but actionable. Bolt and Palette will refine test script performance and error output readability.
+### 3. Supply Chain Risk (Medium)
+**Observation:** The `alci_repo` configured in `pacman.conf` has `SigLevel = Optional`. This remains an unmitigated supply chain risk, as malicious packages could be injected during the build phase.
+**Impact:** While the installed system correctly requires signatures (`DatabaseRequired`), the build process itself is vulnerable.
+**Mitigation Priority:** Medium (Documented/Accepted for now). This is a known risk from the `SENTINEL_REPORT.md` that requires upstream collaboration or a signed internal mirror. It cannot be resolved in this sprint without significant infrastructure changes.
 
 ## Strategic Outlook
-By prioritizing this hardening pass, we address crucial technical debt identified in the Deep Audit. This stabilizes the foundational layers defined in Roadmap Phase 0-2, ensuring that as we transition focus toward hardware quirks and application UX (Phases 4-5), the underlying deployment mechanics are resilient and secure.
+By prioritizing the immediate resolution of the build-blocking `pacman.conf` issue and implementing CI-level ISO size validation, the team restores the fundamental capability to build and release NeOS (Roadmap Phases 1 and 2). This hardening pass is strictly necessary before pursuing the more complex application UX and hardware reliability goals defined in Phases 4-5. The team has already successfully mitigated several previous critical and high-priority risks, including the persistent live environment autologin, systemd sandboxing deficiencies, and script concurrency issues.

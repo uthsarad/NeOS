@@ -1,26 +1,19 @@
 {
-  "focus_area": "Runtime Script Hardening & Test Consistency",
-  "deliverable": "A single coherent hardening pass on custom bash scripts and test files to ensure runtime reliability and consistent execution.",
-  "tasks": [
-    {
-      "description": "Add dependency validation to `airootfs/usr/local/bin/neos-autoupdate.sh` to explicitly check for `snapper` before proceeding with update operations. If missing, log an error and exit gracefully (exit code 0) to prevent silent data loss without failing the systemd unit.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
-    },
-    {
-      "description": "Enforce strict bash error handling by ensuring `set -euo pipefail` is active in `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`.",
-      "target_files": [
-        "airootfs/usr/local/bin/neos-liveuser-setup",
-        "airootfs/usr/local/bin/neos-installer-partition.sh"
-      ]
-    },
-    {
-      "description": "Fix inconsistent script permissions by ensuring all `.sh` files in the `tests/` directory are marked as executable (`chmod +x`).",
-      "target_folder": "tests/"
-    }
-  ],
-  "constraints": [
-    "Do not add any new features or capabilities to the scripts.",
-    "Do not modify the ISO build pipeline or configuration.",
-    "Limit changes strictly to error handling, dependency validation, and file permissions."
-  ]
+  "objective": "Resolve the build-blocking pacman.conf issue and implement CI-level ISO size validation.",
+  "constraints": {
+    "allowed_files": [
+      "pacman.conf",
+      ".github/workflows/build-iso.yml",
+      "tests/verify_build_profile.sh",
+      "tests/verify_iso_size.sh"
+    ],
+    "max_surface_area": "Limited to CI pipeline scripts, build configuration, and testing.",
+    "architect_must_obey": [
+      "Modify the root pacman.conf to use DatabaseOptional to unblock the build.",
+      "Implement a CI step in build-iso.yml to validate that the built ISO is under 2 GiB.",
+      "Ensure tests/verify_build_profile.sh is updated to expect the correct pacman.conf configuration.",
+      "Do NOT alter installed system configuration (e.g., airootfs/etc/pacman.conf).",
+      "Do NOT implement features from the Deep Audit that have already been resolved (e.g., systemd sandboxing, sudoers fix, Rust path traversal)."
+    ]
+  }
 }
