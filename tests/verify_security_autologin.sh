@@ -32,4 +32,14 @@ else
     echo "WARN: Vulnerable file NOT found in source. Is the fix necessary?"
 fi
 
+
+# 4. Verify display manager autologin uses the live ISO user
+SDDM_AUTOLOGIN="airootfs/etc/sddm.conf.d/autologin.conf"
+if grep -q "^User=liveuser$" "$SDDM_AUTOLOGIN"; then
+    echo "PASS: SDDM autologin user is liveuser in $SDDM_AUTOLOGIN"
+else
+    echo "FAIL: SDDM autologin user is not liveuser in $SDDM_AUTOLOGIN"
+    exit 1
+fi
+
 echo "Security verification passed!"
