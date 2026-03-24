@@ -1,9 +1,13 @@
 {
-  "focus_area": "Security Hardening",
+  "focus_area": "Security Validation",
   "tasks": [
     {
-      "description": "Audit all systemd `.service` files under `airootfs/etc/systemd/system/` and implement strict systemd service sandboxing (e.g., `ProtectSystem=strict`, `NoNewPrivileges=yes`, `PrivateTmp=yes`) to limit root privileges and reduce the attack surface.",
-      "target_folder": "airootfs/etc/systemd/system/"
+      "description": "Verify that the build-time pacman.conf changes (relaxing to DatabaseOptional in root pacman.conf) do not compromise the final installed system's pacman configuration.",
+      "target_file": "pacman.conf"
+    },
+    {
+      "description": "Ensure that airootfs/etc/pacman.conf correctly maintains 'DatabaseRequired' for end-user security.",
+      "target_file": "airootfs/etc/pacman.conf"
     }
   ]
 }
