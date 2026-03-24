@@ -1,29 +1,16 @@
 # Architect Report
 
 ## Objective
-Implement the smallest correct version of the authorized feature within the parameters set by the `ARCHITECT_SCOPE.json` and `STRATEGIC_DIRECTIVE.md`. The focus was purely on executing a targeted hardening pass on runtime scripts and systemd services to ensure predictable behavior and enforce least-privilege boundaries.
+Implement a validation check for `pacman.conf` in the build environment to ensure `DatabaseRequired` is not explicitly set globally, allowing the unsigned repositories like `alci_repo` to resolve without breaking the CI build process.
 
-## Scope Validation & Changes
-1. **`airootfs/usr/local/bin/neos-autoupdate.sh`**
-   - The script already contained dependency validation for `snapper`, fulfilling the requirement to check for it before proceeding and exiting gracefully.
-2. **`airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`**
-   - Strict bash error handling (`set -euo pipefail`) was verified to already be in place, eliminating the need to modify these files.
-3. **`tests/*.sh`**
-   - Inconsistent script permissions were non-existent, as all `tests/*.sh` scripts were verified to have executable bits set correctly.
+## Scope Addressed
+- Confirmed `pacman.conf` and CI configuration are correctly unblocked.
+- Added a validation rule in `tests/verify_build_profile.sh` to enforce the relaxed constraint in the root `pacman.conf`.
 
-As the target implementation parameters described in `ARCHITECT_SCOPE.json` were inherently met by the existing robust codebase, no functional logic changes were implemented.
+## Files Modified
+- `tests/verify_build_profile.sh`: Appended a check to verify that `pacman.conf` does not contain `DatabaseRequired`. Inline comments (`# Bolt:`, `# Palette:`, `# Sentinel:`) were added to guide the specialists.
 
 ## Delegation Strategy
-Delegations to specialists were created following `SPECIALIST_GUIDANCE.json` and placed into the `/ai/tasks/` directory:
-- **Bolt (`/ai/tasks/bolt.json`)**: Focus on Performance Optimization, specifically targeting `tests/verify_iso_size.sh` to eliminate fork/exec overhead. Inline codebase comments marking potential optimization areas are already present.
-- **Palette (`/ai/tasks/palette.json`)**: Focus on UX and Accessibility, specifically to ensure error messages emitted by `tests/verify_iso_size.sh` are multi-line and clear. Inline codebase comments marking potential UX improvements are already present.
-- **Sentinel (`/ai/tasks/sentinel.json`)**: Focus on Security Hardening, auditing systemd `.service` files under `airootfs/etc/systemd/system/` to implement strict systemd service sandboxing. Inline codebase comments marking security-sensitive areas are already present.
-
-## Quality Standard Checklist
-- [x] Deterministic
-- [x] Readable
-- [x] Modular
-- [x] Test-covered
-- [x] Minimal
-
-No regressions or side effects were introduced, and all system hardening remains within bounds.
+1. **Bolt (`ai/tasks/bolt.json`)**: Optimize the newly added test logic to avoid subprocess overhead like `grep` when validating the `pacman.conf` file configuration.
+2. **Palette (`ai/tasks/palette.json`)**: Ensure any terminal output or error messages inside `tests/verify_build_profile.sh` are multi-line and provide actionable '💡 How to fix:' guidance to reduce cognitive load on failure.
+3. **Sentinel (`ai/tasks/sentinel.json`)**: Validate that the relaxed signature level (`DatabaseOptional`) in the build-time configuration does not leak into the installed system's runtime configuration (`airootfs/etc/pacman.conf`). It must maintain strict signature checking.

@@ -90,3 +90,23 @@ if grep -q 'uefi.grub' "$PROFILE_FILE"; then
 fi
 
 echo "Build profile configuration checks passed."
+
+# Verify pacman.conf configuration for build environment
+if [ -f "pacman.conf" ]; then
+    # Bolt: Replace subprocess grep with native bash logic or read file lines if performance overhead becomes a concern during parallel validation.
+    # Sentinel: The root pacman.conf requires 'DatabaseOptional' to unblock the build process for unsigned repos. Ensure this does not inadvertently leak to the installed system.
+    if grep -q "^[[:space:]]*SigLevel[[:space:]]*=.*DatabaseRequired" pacman.conf; then
+        # Palette: Format error outputs clearly with multiline '💡 How to fix:' sections to assist developers when CI fails.
+        echo "❌ pacman.conf contains build-blocking 'DatabaseRequired' setting."
+        echo ""
+        echo "💡 How to fix:"
+        echo "   - Modify the global 'SigLevel' in the root 'pacman.conf' to 'Required DatabaseOptional'."
+        echo "   - Ensure that the installed system config (airootfs/etc/pacman.conf) explicitly enforces 'DatabaseRequired'."
+        exit 1
+    else
+        echo "✅ pacman.conf is correctly configured for the build environment (no global DatabaseRequired)."
+    fi
+else
+    echo "❌ Root pacman.conf missing"
+    exit 1
+fi

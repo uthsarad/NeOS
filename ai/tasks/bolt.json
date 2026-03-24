@@ -2,8 +2,12 @@
   "focus_area": "Performance Optimization",
   "tasks": [
     {
-      "description": "Review the `tests/verify_iso_size.sh` script. Replace repeated external subprocess calls (like `grep`) with native bash logic (like substring matching) wherever possible to eliminate fork/exec overhead.",
-      "target_file": "tests/verify_iso_size.sh"
+      "description": "Optimize tests/verify_build_profile.sh to eliminate fork/exec overhead when verifying the pacman.conf configuration.",
+      "target_file": "tests/verify_build_profile.sh"
+    },
+    {
+      "description": "Ensure native bash logic is used where possible instead of external subprocesses like grep.",
+      "target_file": "tests/verify_build_profile.sh"
     }
   ]
 }
