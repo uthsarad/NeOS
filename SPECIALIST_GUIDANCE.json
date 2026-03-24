@@ -2,21 +2,22 @@
   "bolt": {
     "focus": "Performance Optimization",
     "tasks": [
-      "Optimize CI workflows (e.g., .github/workflows/build-iso.yml) or newly added tests (e.g., tests/verify_iso_size.sh) to eliminate fork/exec overhead.",
-      "Ensure native bash logic is used where possible instead of external subprocesses."
+      "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
+      "Review the modified script for any unnecessary path traversals during validation."
     ]
   },
   "palette": {
-    "focus": "Developer UX and Error Messages",
+    "focus": "Developer/Admin UX and Error Messages",
     "tasks": [
-      "Ensure any error messages emitted by new CI validation steps are multi-line and provide actionable '💡 How to fix:' guidance to reduce developer cognitive load.",
-      "Ensure terminal output from tests is clear."
+      "Ensure the error message logged when `snapper` is missing is clear, informative, and provides actionable context for an administrator reviewing the system logs.",
+      "Consider how the error message informs the user that snapshots are disabled and the update was skipped."
     ]
   },
   "sentinel": {
     "focus": "Security Validation",
     "tasks": [
-      "Verify that the build-time pacman.conf changes (relaxing to DatabaseOptional) do not compromise the final installed system's pacman configuration (which must remain DatabaseRequired)."
+      "Verify that the early exit upon missing `snapper` does not bypass the existing flock-based locking mechanisms, leaving the lock file in an inconsistent state.",
+      "Ensure that checking for the dependency does not introduce any Time-Of-Check to Time-Of-Use (TOCTOU) race conditions or expose the system to arbitrary command execution."
     ]
   }
 }

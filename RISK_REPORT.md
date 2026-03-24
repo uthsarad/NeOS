@@ -2,20 +2,20 @@
 
 ## Current Risk Landscape
 
-### 1. Build Failure Risk (Critical)
-**Observation:** The `pacman.conf` file currently forces `DatabaseRequired`, which prevents the ISO build from succeeding due to unsigned repository dependencies (`alci_repo`). This active failure in the CI pipeline is a complete blocker for any further feature validation or distribution.
-**Impact:** No ISO images can be produced. Developers and users cannot test or consume the current state of NeOS.
-**Mitigation Priority:** Immediate. The Architect must relax the build-time `pacman.conf` to use `DatabaseOptional` for the global `SigLevel`, allowing the build to proceed. The test `tests/verify_build_profile.sh` must be updated to reflect this necessary build environment configuration.
+### 1. Silent Failure Risk in Autoupdates (High)
+**Observation:** The `airootfs/usr/local/bin/neos-autoupdate.sh` script manages system updates and relies on `snapper` to create pre- and post-update Btrfs snapshots. However, the script does not verify that `snapper` is installed before attempting to use it.
+**Impact:** If a user uninstalls `snapper` or if it fails to install correctly, the `neos-autoupdate.timer` will trigger the script, but the system update will proceed without generating a rollback snapshot. This introduces a significant risk of silent data loss or unrecoverable system states if an update breaks the system.
+**Mitigation Priority:** High. The Architect must add a dependency check for `snapper` within `neos-autoupdate.sh` that logs a clear warning and gracefully exits (exit code `0`) if missing. This prevents the systemd unit from failing while ensuring no unsafe updates occur without snapshot protection.
 
-### 2. Release Failure Risk (High)
-**Observation:** There is no CI-level enforcement of the ISO size limit (2 GiB) required by the GitHub Releases API.
-**Impact:** The CI pipeline may successfully build an ISO, but the deployment step will fail silently or explicitly during the release creation, preventing users from downloading the distribution.
-**Mitigation Priority:** High. The Architect must implement an explicit size validation step in `.github/workflows/build-iso.yml` that strictly enforces the 2 GiB limit before the release is attempted.
+### 2. Supply Chain Risk (Medium)
+**Observation:** The `alci_repo` configured in the build environment `pacman.conf` has `SigLevel = Optional`.
+**Impact:** While the installed system correctly requires signatures (`DatabaseRequired`), the ISO build process itself relies on an unsigned repository. If this repository is compromised, malicious packages could be injected during the build phase.
+**Mitigation Priority:** Medium (Documented/Accepted for now). This is a known risk from previous Sentinel audits that requires upstream collaboration or the establishment of a signed internal mirror. It cannot be resolved in the current architectural scope without significant infrastructure investment.
 
-### 3. Supply Chain Risk (Medium)
-**Observation:** The `alci_repo` configured in `pacman.conf` has `SigLevel = Optional`. This remains an unmitigated supply chain risk, as malicious packages could be injected during the build phase.
-**Impact:** While the installed system correctly requires signatures (`DatabaseRequired`), the build process itself is vulnerable.
-**Mitigation Priority:** Medium (Documented/Accepted for now). This is a known risk from the `SENTINEL_REPORT.md` that requires upstream collaboration or a signed internal mirror. It cannot be resolved in this sprint without significant infrastructure changes.
+### 3. Incomplete Architecture Support (High - Long Term)
+**Observation:** The documentation (`README.md`, `HANDBOOK.md`) claims a Windows-familiar GUI experience, but currently, only the `x86_64` architecture delivers this full feature set (Calamares installer, snapshots, ZRAM). `i686` and `aarch64` are experimental and lack the GUI installer.
+**Impact:** Users attempting to install on non-x86_64 hardware will encounter a confusing, terminal-only experience that contradicts the project's primary mission.
+**Mitigation Priority:** High (Long-term roadmap). While documentation updates have clarified this limitation, the medium-term goal must address providing installation scripts or adapting Calamares for these experimental architectures if they are to be officially supported.
 
 ## Strategic Outlook
-By prioritizing the immediate resolution of the build-blocking `pacman.conf` issue and implementing CI-level ISO size validation, the team restores the fundamental capability to build and release NeOS (Roadmap Phases 1 and 2). This hardening pass is strictly necessary before pursuing the more complex application UX and hardware reliability goals defined in Phases 4-5. The team has already successfully mitigated several previous critical and high-priority risks, including the persistent live environment autologin, systemd sandboxing deficiencies, and script concurrency issues.
+By prioritizing the immediate resolution of the `snapper` dependency check in `neos-autoupdate.sh`, the team hardens the core snapshot-based update mechanism that distinguishes NeOS from a standard Arch installation (Roadmap Phases 1 and 5). This defensive measure is necessary to guarantee system resilience before expanding the feature set or officially supporting new hardware architectures. Previous passes have successfully resolved critical build blockers (`pacman.conf`) and release constraints (ISO size validation), leaving this runtime stability issue as the highest leverage improvement for the current sprint.

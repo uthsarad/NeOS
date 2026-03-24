@@ -1,19 +1,15 @@
 {
-  "objective": "Resolve the build-blocking pacman.conf issue and implement CI-level ISO size validation.",
+  "objective": "Implement dependency validation for snapper in neos-autoupdate.sh.",
   "constraints": {
     "allowed_files": [
-      "pacman.conf",
-      ".github/workflows/build-iso.yml",
-      "tests/verify_build_profile.sh",
-      "tests/verify_iso_size.sh"
+      "airootfs/usr/local/bin/neos-autoupdate.sh"
     ],
-    "max_surface_area": "Limited to CI pipeline scripts, build configuration, and testing.",
+    "max_surface_area": "Limited strictly to the dependency check logic inside neos-autoupdate.sh.",
     "architect_must_obey": [
-      "Modify the root pacman.conf to use DatabaseOptional to unblock the build.",
-      "Implement a CI step in build-iso.yml to validate that the built ISO is under 2 GiB.",
-      "Ensure tests/verify_build_profile.sh is updated to expect the correct pacman.conf configuration.",
-      "Do NOT alter installed system configuration (e.g., airootfs/etc/pacman.conf).",
-      "Do NOT implement features from the Deep Audit that have already been resolved (e.g., systemd sandboxing, sudoers fix, Rust path traversal)."
+      "Ensure the script checks for the presence of the 'snapper' command before attempting to create or link snapshots.",
+      "If 'snapper' is missing, log a clear warning and exit gracefully (exit code 0) to prevent the systemd unit from entering a failed state, while ensuring no update occurs without snapshot protection.",
+      "Do NOT alter other functional logic in the script or repository.",
+      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, ISO size validation, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, and the sudoers vulnerability) have already been resolved in the current codebase state and must not be touched or re-implemented."
     ]
   }
 }
