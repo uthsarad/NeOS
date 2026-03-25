@@ -2,12 +2,12 @@
   "focus_area": "Security Validation",
   "tasks": [
     {
-      "description": "Verify that the build-time pacman.conf changes (relaxing to DatabaseOptional in root pacman.conf) do not compromise the final installed system's pacman configuration.",
-      "target_file": "pacman.conf"
+      "description": "Verify that the early exit upon missing `snapper` does not bypass the existing flock-based locking mechanisms, leaving the lock file in an inconsistent state.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     },
     {
-      "description": "Ensure that airootfs/etc/pacman.conf correctly maintains 'DatabaseRequired' for end-user security.",
-      "target_file": "airootfs/etc/pacman.conf"
+      "description": "Ensure that checking for the dependency does not introduce any Time-Of-Check to Time-Of-Use (TOCTOU) race conditions or expose the system to arbitrary command execution.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

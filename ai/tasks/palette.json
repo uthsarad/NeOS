@@ -1,13 +1,13 @@
 {
-  "focus_area": "Developer UX and Error Messages",
+  "focus_area": "Developer/Admin UX and Error Messages",
   "tasks": [
     {
-      "description": "Ensure any error messages emitted by the new pacman.conf validation in tests/verify_build_profile.sh are multi-line and provide actionable '💡 How to fix:' guidance.",
-      "target_file": "tests/verify_build_profile.sh"
+      "description": "Ensure the error message logged when `snapper` is missing is clear, informative, and provides actionable context for an administrator reviewing the system logs.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     },
     {
-      "description": "Ensure terminal output from tests is clear and reduces developer cognitive load on failure.",
-      "target_file": "tests/verify_build_profile.sh"
+      "description": "Consider how the error message informs the user that snapshots are disabled and the update was skipped.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

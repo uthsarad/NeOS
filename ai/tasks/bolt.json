@@ -2,12 +2,12 @@
   "focus_area": "Performance Optimization",
   "tasks": [
     {
-      "description": "Optimize tests/verify_build_profile.sh to eliminate fork/exec overhead when verifying the pacman.conf configuration.",
-      "target_file": "tests/verify_build_profile.sh"
+      "description": "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     },
     {
-      "description": "Ensure native bash logic is used where possible instead of external subprocesses like grep.",
-      "target_file": "tests/verify_build_profile.sh"
+      "description": "Review the modified script for any unnecessary path traversals during validation.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }
