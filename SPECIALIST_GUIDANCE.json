@@ -1,21 +1,21 @@
 {
-  "bolt": {
+  "Bolt": {
     "focus": "Performance Optimization",
-    "tasks": [
+    "guidance": [
       "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
       "Review the modified script for any unnecessary path traversals during validation."
     ]
   },
-  "palette": {
+  "Palette": {
     "focus": "Developer/Admin UX and Error Messages",
-    "tasks": [
+    "guidance": [
       "Ensure the error message logged when `snapper` is missing is clear, informative, and provides actionable context for an administrator reviewing the system logs.",
       "Consider how the error message informs the user that snapshots are disabled and the update was skipped."
     ]
   },
-  "sentinel": {
+  "Sentinel": {
     "focus": "Security Validation",
-    "tasks": [
+    "guidance": [
       "Verify that the early exit upon missing `snapper` does not bypass the existing flock-based locking mechanisms, leaving the lock file in an inconsistent state.",
       "Ensure that checking for the dependency does not introduce any Time-Of-Check to Time-Of-Use (TOCTOU) race conditions or expose the system to arbitrary command execution."
     ]
