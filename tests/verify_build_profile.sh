@@ -76,7 +76,8 @@ fi
 
 
 # Verify grub/grub.cfg exists (required for uefi.grub boot mode)
-if grep -q 'uefi.grub' "$PROFILE_FILE"; then
+PROFILE_CONTENT=$(<"$PROFILE_FILE")
+if [[ "$PROFILE_CONTENT" == *"uefi.grub"* ]]; then
     if [ -f "grub/grub.cfg" ]; then
         echo "✅ grub/grub.cfg exists (required for uefi.grub)"
     else
@@ -95,7 +96,14 @@ echo "Build profile configuration checks passed."
 if [ -f "pacman.conf" ]; then
     # Bolt: Replace subprocess grep with native bash logic or read file lines if performance overhead becomes a concern during parallel validation.
     # Sentinel: The root pacman.conf requires 'DatabaseOptional' to unblock the build process for unsigned repos. Ensure this does not inadvertently leak to the installed system.
-    if grep -q "^[[:space:]]*SigLevel[[:space:]]*=.*DatabaseRequired" pacman.conf; then
+    has_db_req=false
+    while read -r line; do
+        if [[ "$line" =~ ^[[:space:]]*SigLevel[[:space:]]*=.*DatabaseRequired ]]; then
+            has_db_req=true
+            break
+        fi
+    done < pacman.conf
+    if $has_db_req; then
         # Palette: Format error outputs clearly with multiline '💡 How to fix:' sections to assist developers when CI fails.
         echo "❌ pacman.conf contains build-blocking 'DatabaseRequired' setting."
         echo ""

@@ -1,14 +1,14 @@
-# BOLT_REPORT
+# Bolt Performance Report
 
 ## What was optimized
-- Replaced multiple external `grep` subprocess calls with native bash string matching `[[ == *pattern* ]]` inside `tests/verify_iso_size.sh`.
-- Modified the script to load `profiledef.sh` and `pacman.conf` into arrays using `mapfile` to eliminate cross-line matching bugs, and iterating through lines in bash memory instead of re-reading via `grep`.
-- Replaced all POSIX single brackets `[ ]` with native bash double brackets `[[ ]]` for conditional evaluation.
+In `tests/verify_build_profile.sh`, the subprocess calls to `grep` used to verify the contents of `profiledef.sh` and `pacman.conf` were replaced with native bash logic.
+- For `profiledef.sh`, the file is now read into memory and checked using a native bash substring match (`[[ "$PROFILE_CONTENT" == *"uefi.grub"* ]]`).
+- For `pacman.conf`, the configuration is validated using a native bash `while read -r` loop combined with bash regular expression matching to enforce line boundaries (`[[ "$line" =~ ^[[:space:]]*SigLevel[[:space:]]*=.*DatabaseRequired ]]`).
 
 ## Before/after reasoning
-- **Before:** The bash script relied on `grep` multiple times, particularly inside a `for` loop matching items in `pacman.conf`. Each call to `grep` spawns an external process (fork/exec overhead), slowing down the verification script significantly on every run. Furthermore, the `[` evaluation incurs pathname expansion and word splitting overhead.
-- **After:** Native bash double bracket evaluation `[[ ]]` bypasses word splitting and is much faster. Using `mapfile` to read the files into arrays and checking with `[[ == *pattern* ]]` entirely eliminates the need for any external subprocess overhead, yielding a highly performant pure bash validation script.
+**Before:** The build profile verification script was relying on external `grep` subprocesses to find strings in configuration files. Spawning external subprocesses incurs overhead (fork/exec) which becomes noticeable when run repeatedly in parallel validation contexts.
 
-## Any remaining performance risks
-- Subprocesses such as `sed` or `echo` may still be used elsewhere in the pipeline.
-- For extremely large files, using `mapfile` might result in high memory consumption, but since both `profiledef.sh` and `pacman.conf` are small configuration files, the memory overhead is entirely negligible and far outweighs the cost of repeatedly calling `grep`.
+**After:** Leveraging bash native operations (string matching and regular expression evaluation via `[[ ]]`) handles string processing internally without spawning new processes. This significantly speeds up validation by avoiding context switching and process setup overhead, especially for small configuration files.
+
+## Remaining performance risks
+While reading small files into memory or iterating through them line-by-line using `while read -r` is fast, this approach could become a bottleneck if `pacman.conf` grows significantly in size. Additionally, relying strictly on bash regex inside a loop might face slow evaluation times compared to an optimized stream-parser if lines become heavily nested or complex, though `pacman.conf` is traditionally very simple.
