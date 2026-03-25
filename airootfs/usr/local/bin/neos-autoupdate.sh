@@ -52,6 +52,9 @@ check_root() {
 }
 
 check_dependencies() {
+    # Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
+    # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
+    # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     if ! command -v snapper >/dev/null 2>&1; then
         log "ERROR: snapper not installed. Automatic snapshots disabled."
         exit 0

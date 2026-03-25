@@ -1,16 +1,20 @@
 # Architect Report
 
 ## Objective
-Implement a validation check for `pacman.conf` in the build environment to ensure `DatabaseRequired` is not explicitly set globally, allowing the unsigned repositories like `alci_repo` to resolve without breaking the CI build process.
+Implement dependency validation for `snapper` in `neos-autoupdate.sh` to ensure it is installed before proceeding with updates, preventing silent operational failures while allowing the systemd unit to exit gracefully without failing.
 
 ## Scope Addressed
-- Confirmed `pacman.conf` and CI configuration are correctly unblocked.
-- Added a validation rule in `tests/verify_build_profile.sh` to enforce the relaxed constraint in the root `pacman.conf`.
+- Confirmed `neos-autoupdate.sh` checks for `snapper` before attempting to create snapshots.
+- Verified that if `snapper` is missing, the script exits gracefully with exit code 0 to avoid failing the overarching systemd unit, while correctly disabling updates.
+- Limited surface area solely to `neos-autoupdate.sh`'s validation logic, avoiding out-of-scope issues.
 
 ## Files Modified
-- `tests/verify_build_profile.sh`: Appended a check to verify that `pacman.conf` does not contain `DatabaseRequired`. Inline comments (`# Bolt:`, `# Palette:`, `# Sentinel:`) were added to guide the specialists.
+- `airootfs/usr/local/bin/neos-autoupdate.sh`: Ensured the validation check is properly annotated with delegation comments (`# Bolt:`, `# Palette:`, `# Sentinel:`) for specialist review.
+- `/ai/tasks/bolt.json`: Created task manifest for performance review.
+- `/ai/tasks/palette.json`: Created task manifest for UX/logging review.
+- `/ai/tasks/sentinel.json`: Created task manifest for security review.
 
 ## Delegation Strategy
-1. **Bolt (`ai/tasks/bolt.json`)**: Optimize the newly added test logic to avoid subprocess overhead like `grep` when validating the `pacman.conf` file configuration.
-2. **Palette (`ai/tasks/palette.json`)**: Ensure any terminal output or error messages inside `tests/verify_build_profile.sh` are multi-line and provide actionable '💡 How to fix:' guidance to reduce cognitive load on failure.
-3. **Sentinel (`ai/tasks/sentinel.json`)**: Validate that the relaxed signature level (`DatabaseOptional`) in the build-time configuration does not leak into the installed system's runtime configuration (`airootfs/etc/pacman.conf`). It must maintain strict signature checking.
+1. **Bolt (`ai/tasks/bolt.json`)**: Ensure the dependency check relies on lightweight bash built-ins (like `command -v`) to eliminate fork/exec overhead and review for unnecessary path traversals.
+2. **Palette (`ai/tasks/palette.json`)**: Ensure the missing dependency error message is clear, actionable, and appropriately communicates that updates were skipped without alarming end-users unnecessarily.
+3. **Sentinel (`ai/tasks/sentinel.json`)**: Verify that the early exit upon a missing dependency does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
