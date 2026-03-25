@@ -108,5 +108,9 @@ if [ -f "pacman.conf" ]; then
     fi
 else
     echo "❌ Root pacman.conf missing"
+    echo ""
+    echo "💡 How to fix:"
+    echo "   - Ensure pacman.conf exists in the repository root."
+    echo "   - This file is required to configure the build environment packages."
     exit 1
 fi
