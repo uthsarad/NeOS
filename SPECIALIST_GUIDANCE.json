@@ -2,22 +2,20 @@
   "Bolt": {
     "focus": "Performance Optimization",
     "guidance": [
-      "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
-      "Review the modified script for any unnecessary path traversals during validation."
+      "Ensure the logging mechanism avoids excessive subshell overhead where possible, relying on native variables like $LINENO."
     ]
   },
   "Palette": {
     "focus": "Developer/Admin UX and Error Messages",
     "guidance": [
-      "Ensure the error message logged when `snapper` is missing is clear, informative, and provides actionable context for an administrator reviewing the system logs.",
-      "Consider how the error message informs the user that snapshots are disabled and the update was skipped."
+      "Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators."
     ]
   },
   "Sentinel": {
     "focus": "Security Validation",
     "guidance": [
-      "Verify that the early exit upon missing `snapper` does not bypass the existing flock-based locking mechanisms, leaving the lock file in an inconsistent state.",
-      "Ensure that checking for the dependency does not introduce any Time-Of-Check to Time-Of-Use (TOCTOU) race conditions or expose the system to arbitrary command execution."
+      "Verify that the trap command does not inadvertently mask script exit codes.",
+      "Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker."
     ]
   }
 }

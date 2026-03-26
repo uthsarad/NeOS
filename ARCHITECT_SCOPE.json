@@ -1,14 +1,16 @@
 {
-  "objective": "Implement dependency validation for snapper in neos-autoupdate.sh.",
+  "objective": "Add trap-based error logging to custom bash scripts.",
   "constraints": {
     "allowed_files": [
-      "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "airootfs/usr/local/bin/neos-installer-partition.sh",
+      "airootfs/usr/local/bin/neos-liveuser-setup"
     ],
-    "max_surface_area": "Limited strictly to the dependency check logic inside neos-autoupdate.sh.",
+    "max_surface_area": "Limited strictly to adding the trap command for logger in the specified bash scripts.",
     "architect_must_obey": [
-      "Ensure the script checks for the presence of the 'snapper' command before attempting to create or link snapshots.",
-      "If 'snapper' is missing, log a clear warning and exit gracefully (exit code 0) to prevent the systemd unit from entering a failed state, while ensuring no update occurs without snapshot protection.",
-      "Do NOT alter other functional logic in the script or repository.",
+      "The scripts must use a 'trap' with the 'logger' utility to send an ERROR message to the system journal if the script fails unexpectedly.",
+      "The error message must include the script name and the line number of the failure.",
+      "For example: trap 'logger -t neos-$(basename \"$0\") \"ERROR: Script failed at line $LINENO\"' ERR",
+      "Do NOT alter other functional logic in the scripts or repository.",
       "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, ISO size validation, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, and the sudoers vulnerability) have already been resolved in the current codebase state and must not be touched or re-implemented."
     ]
   }
