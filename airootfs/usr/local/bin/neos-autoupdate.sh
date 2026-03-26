@@ -56,7 +56,7 @@ check_dependencies() {
     # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     if ! command -v snapper >/dev/null 2>&1; then
-        log "ERROR: snapper not installed. Automatic snapshots disabled."
+        log "WARNING: 'snapper' is not installed. System update skipped to prevent modifications without a rollback snapshot. To enable automatic updates, install snapper: 'pacman -S snapper'."
         exit 0
     fi
 

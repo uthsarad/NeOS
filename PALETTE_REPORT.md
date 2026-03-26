@@ -1,10 +1,7 @@
-# Palette Report
+# Palette UX/Developer Experience Report
 
-## Accessibility fixes
-None (No HTML/UI elements modified; script output enhancements only).
+## Improvements Made
+- **Clearer Error Messaging in `neos-autoupdate.sh`:** Updated the log message generated when the `snapper` dependency is missing. The message was changed from a generic "ERROR" to a clearer "WARNING" that explicitly explains *why* the process was stopped (to prevent modifications without a rollback snapshot) and provides actionable context on *how* to resolve the issue (`pacman -S snapper`). This provides significantly better developer/admin UX.
 
-## UX improvements
-Enhanced developer UX in `tests/verify_build_profile.sh` by transforming the generic "❌ Root pacman.conf missing" terminal error into a multi-line, actionable message featuring a "💡 How to fix:" section. This consistency reduces cognitive load during CI failures.
-
-## Remaining usability risks
-None identified for this specific verification script's terminal output.
+## Remaining Usability Risks
+- The `notify-send` failure block relies heavily on D-Bus environment variables, which might not be set properly for all session types (e.g., bare TTYs without `loginctl` configurations).
