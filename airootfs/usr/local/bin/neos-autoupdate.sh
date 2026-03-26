@@ -55,7 +55,8 @@ check_dependencies() {
     # Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
     # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
-    if ! command -v snapper >/dev/null 2>&1; then
+    SNAPPER_BIN=$(command -v snapper || true)
+    if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
         log "ERROR: snapper not installed. Automatic snapshots disabled."
         exit 0
     fi
@@ -67,6 +68,7 @@ check_dependencies() {
             exit 1
         fi
     done
+    PACMAN_BIN=$(command -v pacman || true)
 }
 
 check_btrfs() {
@@ -115,20 +117,20 @@ perform_update() {
     # Create pre-update snapshot
     local desc="Pre-update snapshot"
     local snap_id
-    snap_id=$(snapper create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
+    snap_id=$("$SNAPPER_BIN" create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
 
     log "Created pre-update snapshot: $snap_id"
 
     # Perform update
-    if pacman -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
+    if "$PACMAN_BIN" -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
         log "System update completed successfully."
         # Create post-update snapshot
-        snapper create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
+        "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
         log "System update failed. Check pacman logs."
         # Still create post snapshot to close the pair, but mark as failed
-        snapper create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
+        "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
         exit 1
     fi
 }

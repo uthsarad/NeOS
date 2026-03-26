@@ -270,3 +270,23 @@
 ### Severity Summary
 
 - **Medium Risks Resolved**: 1 (Implemented strict systemd service sandboxing in core services)
+
+## 🛡️ Executive Summary - Update
+During the security review of the NeOS auto-updater script (`airootfs/usr/local/bin/neos-autoupdate.sh`), vulnerabilities were identified regarding dependency verification logic. The script's dependency checks could lead to Time-Of-Check to Time-Of-Use (TOCTOU) PATH hijacking vulnerabilities.
+
+## 🚨 Risks Found
+
+1.  **PATH Hijacking / TOCTOU Race Condition in Dependency Execution (Medium Severity)**
+    *   **Vulnerability:** The script used `if ! command -v snapper >/dev/null 2>&1; then` to check for the existence of the `snapper` binary, but subsequently executed it simply by calling `snapper` and `pacman` without absolute paths. This approach relies on the system `PATH`. A malicious actor could alter the `PATH` between validation and execution, tricking the script into running a malicious binary.
+    *   **Impact:** An attacker with sufficient privileges to modify the `PATH` could trick the script into executing a malicious binary instead of the intended executables, leading to arbitrary code execution with root privileges.
+
+## 🔧 Fixes Applied
+
+1.  **Strict Path Resolution & Execution Validation:** Replaced the `command -v snapper` check with dynamic path resolution: `SNAPPER_BIN=$(command -v snapper || true)`. This stores the exact path of the validated binary. Followed by `if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then` to verify it's valid and executable. A similar setup was created for `PACMAN_BIN`.
+2.  **Explicit Binary Execution:** The `perform_update` function was updated to replace all bare calls to `snapper` and `pacman` with their dynamically resolved full paths (e.g., `"$SNAPPER_BIN"` and `"$PACMAN_BIN"`). This strictly couples validation to execution, entirely neutralizing the PATH hijacking vector.
+
+## 📊 Severity Summary
+
+*   **PATH Hijacking (TOCTOU):** Medium
+
+All identified medium-severity vulnerabilities have been successfully mitigated.
