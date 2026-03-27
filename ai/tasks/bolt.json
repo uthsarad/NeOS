@@ -2,12 +2,12 @@
   "focus_area": "Performance Optimization",
   "tasks": [
     {
-      "description": "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Ensure the logging mechanism avoids excessive subshell overhead where possible, relying on native variables like $LINENO.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     },
     {
-      "description": "Review the modified script for any unnecessary path traversals during validation.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Ensure the logging mechanism avoids excessive subshell overhead where possible, relying on native variables like $LINENO.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
     }
   ]
 }
