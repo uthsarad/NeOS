@@ -2,20 +2,20 @@
   "Bolt": {
     "focus": "Performance Optimization",
     "guidance": [
-      "Ensure the logging mechanism avoids excessive subshell overhead where possible, relying on native variables like $LINENO."
+      "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead.",
+      "Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging."
     ]
   },
   "Palette": {
     "focus": "Developer/Admin UX and Error Messages",
     "guidance": [
-      "Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators."
+      "Ensure the format of the test output is clear, readable, and features a clear '💡 How to fix:' block with actionable steps to reduce developer cognitive load on failure."
     ]
   },
   "Sentinel": {
     "focus": "Security Validation",
     "guidance": [
-      "Verify that the trap command does not inadvertently mask script exit codes.",
-      "Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker."
+      "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities."
     ]
   }
 }
