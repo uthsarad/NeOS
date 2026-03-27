@@ -2,12 +2,12 @@
   "focus_area": "Developer/Admin UX and Error Messages",
   "tasks": [
     {
-      "description": "Ensure the error message logged when `snapper` is missing is clear, informative, and provides actionable context for an administrator reviewing the system logs.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     },
     {
-      "description": "Consider how the error message informs the user that snapshots are disabled and the update was skipped.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
     }
   ]
 }

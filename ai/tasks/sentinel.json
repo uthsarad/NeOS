@@ -2,12 +2,12 @@
   "focus_area": "Security Validation",
   "tasks": [
     {
-      "description": "Verify that the early exit upon missing `snapper` does not bypass the existing flock-based locking mechanisms, leaving the lock file in an inconsistent state.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     },
     {
-      "description": "Ensure that checking for the dependency does not introduce any Time-Of-Check to Time-Of-Use (TOCTOU) race conditions or expose the system to arbitrary command execution.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
     }
   ]
 }

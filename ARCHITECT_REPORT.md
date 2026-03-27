@@ -1,20 +1,26 @@
 # Architect Report
 
 ## Objective
-Implement dependency validation for `snapper` in `neos-autoupdate.sh` to ensure it is installed before proceeding with updates, preventing silent operational failures while allowing the systemd unit to exit gracefully without failing.
+Add trap-based error logging to custom bash scripts `neos-installer-partition.sh` and `neos-liveuser-setup` to improve observability and prevent silent failures.
 
-## Scope Addressed
-- Confirmed `neos-autoupdate.sh` checks for `snapper` before attempting to create snapshots.
-- Verified that if `snapper` is missing, the script exits gracefully with exit code 0 to avoid failing the overarching systemd unit, while correctly disabling updates.
-- Limited surface area solely to `neos-autoupdate.sh`'s validation logic, avoiding out-of-scope issues.
+## Scope Compliance
+- Implemented a `trap` command using `logger` to record script failures in the system journal.
+- Confirmed the use of the `ERR` signal and `$LINENO` mapping.
+- Added inline comments to delegate performance (`Bolt`), UX/Log output formats (`Palette`), and security evaluations (`Sentinel`).
+- Strictly limited surface area to modifying `airootfs/usr/local/bin/neos-installer-partition.sh` and `airootfs/usr/local/bin/neos-liveuser-setup`.
+- Excluded any out-of-scope issues from previous audits.
 
-## Files Modified
-- `airootfs/usr/local/bin/neos-autoupdate.sh`: Ensured the validation check is properly annotated with delegation comments (`# Bolt:`, `# Palette:`, `# Sentinel:`) for specialist review.
-- `/ai/tasks/bolt.json`: Created task manifest for performance review.
-- `/ai/tasks/palette.json`: Created task manifest for UX/logging review.
-- `/ai/tasks/sentinel.json`: Created task manifest for security review.
+## Data Contracts & Edge Cases
+- Used native bash `trap` to map to `ERR`.
+- Variables evaluated: `$0` (script name), `$LINENO` (line number of failure).
+- Addressed potential edge case of nested variables/command substitution (`basename "$0"`) within the trap.
+
+## Testing & Verification
+- Verified script syntax using `bash -n`.
+- Verified that all output JSON manifests (`bolt.json`, `palette.json`, `sentinel.json`) are valid formats.
 
 ## Delegation Strategy
-1. **Bolt (`ai/tasks/bolt.json`)**: Ensure the dependency check relies on lightweight bash built-ins (like `command -v`) to eliminate fork/exec overhead and review for unnecessary path traversals.
-2. **Palette (`ai/tasks/palette.json`)**: Ensure the missing dependency error message is clear, actionable, and appropriately communicates that updates were skipped without alarming end-users unnecessarily.
-3. **Sentinel (`ai/tasks/sentinel.json`)**: Verify that the early exit upon a missing dependency does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
+- Generated `/ai/tasks/bolt.json` for Performance Optimization.
+- Generated `/ai/tasks/palette.json` for Developer/Admin UX and Error Messages.
+- Generated `/ai/tasks/sentinel.json` for Security Validation.
+- Added corresponding in-line annotations within the target scripts.
