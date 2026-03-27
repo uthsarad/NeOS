@@ -55,7 +55,7 @@ check_dependencies() {
     # Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
     # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
-    SNAPPER_BIN=$(command -v snapper || true)
+    hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
         log "INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
         exit 0
@@ -63,12 +63,12 @@ check_dependencies() {
 
     local dependencies=("pacman" "awk" "df")
     for cmd in "${dependencies[@]}"; do
-        if ! command -v "$cmd" &> /dev/null; then
+        if ! hash "$cmd" 2>/dev/null; then
             log "Error: Required command '$cmd' not found."
             exit 1
         fi
     done
-    PACMAN_BIN=$(command -v pacman || true)
+    hash pacman 2>/dev/null && PACMAN_BIN="${BASH_CMDS[pacman]}" || PACMAN_BIN=""
 }
 
 check_btrfs() {
