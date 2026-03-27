@@ -57,7 +57,7 @@ check_dependencies() {
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     SNAPPER_BIN=$(command -v snapper || true)
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
-        log "ERROR: snapper not installed. Automatic snapshots disabled."
+        log "INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
         exit 0
     fi
 
