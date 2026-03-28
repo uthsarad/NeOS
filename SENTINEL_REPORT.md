@@ -290,3 +290,29 @@ During the security review of the NeOS auto-updater script (`airootfs/usr/local/
 *   **PATH Hijacking (TOCTOU):** Medium
 
 All identified medium-severity vulnerabilities have been successfully mitigated.
+
+
+---
+
+# Sentinel Report: Command Injection Risk in Error Handler
+
+## Risks found
+The error handler trap command in two scripts (`airootfs/usr/local/bin/neos-installer-partition.sh` and `airootfs/usr/local/bin/neos-liveuser-setup`) used the `$0` variable inside `$(basename "$0")` inside a dynamically evaluated trap string. An attacker could potentially achieve command execution or alter system behavior by creating a script or a hard link with a maliciously crafted filename (e.g. `$(id).sh`) and then executing it. Additionally, the previous trap command inadvertently masked the non-zero exit code of the script, resulting in the script exiting with a 0 exit status even upon failure. This masked errors from caller processes, potentially causing subsequent deployment/setup stages to continue incorrectly.
+
+## Fixes applied
+Modified the `trap` command in both `airootfs/usr/local/bin/neos-installer-partition.sh` and `airootfs/usr/local/bin/neos-liveuser-setup` scripts to:
+1. Preserve the error exit status: `status=$?; ...; exit $status`
+2. Avoid subshell execution and mitigate arbitrary command execution from filenames by using bash string manipulation instead: `"neos-${0##*/}"` instead of `neos-$(basename "$0")` and double-quoting the parameter substitution.
+
+The fixed handler looks like:
+```bash
+trap 'status=$?; logger -t "neos-${0##*/}" "ERROR: Script failed at line $LINENO"; exit $status' ERR
+```
+
+## Remaining attack surface
+The scripts correctly follow least privilege by utilizing properly escaped variables in system logging. However, since the script filename (`$0`) can still be partially controlled by an attacker renaming the file, they might still be able to inject confusing or misleading strings into the system logs, though they cannot execute arbitrary commands.
+
+## Severity summary
+- **Severity**: HIGH
+- **Vulnerability**: Command Injection, Error Masking
+- **Impact**: Allowed arbitrary command execution during the execution phase by an attacker controlling the filename, and silenced errors causing caller scripts to believe execution completed successfully when it actually failed.
