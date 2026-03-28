@@ -1,31 +1,31 @@
 # STRATEGIC DIRECTIVE
 
 ## PHASE 1 — Product Alignment Check
-- **What is the product trying to become?** NeOS is a curated, rolling-release Arch Linux distribution targeting a predictable, Windows-familiar KDE Plasma experience through snapshot-based updates and QA validation (Phase 0-2).
-- **Are we building toward that?** Yes. We are focusing on ensuring the reliability and predictability of core infrastructure.
-- **Are we solving the highest leverage problem?** Yes. The `DEEP_AUDIT.md` highlighted the risk of "No Validation of Mirrorlist Connectivity". The mirrorlist contains over 1000 entries, but there is no CI verification that the primary mirrors are actually reachable. This risks silent or slow build failures in CI and broken download experiences for end users.
+- **What is the product trying to become?** NeOS is a curated rolling-release, Arch-based desktop OS prioritizing a Windows-familiar KDE Plasma experience and sustainable long-term maintenance.
+- **Are we building toward that?** Yes, but operational predictability is currently threatened by a lack of CI/CD constraints.
+- **Are we solving the highest leverage problem?** Yes. The `DEEP_AUDIT.md` highlighted a High Priority risk: "Missing ISO Size Validation in CI/CD." ISOs larger than 2 GiB cannot be uploaded to GitHub Releases, causing silent release failures and preventing users from downloading the distribution.
 
 ## PHASE 2 — Technical Posture Review
-- **Is the system stable?** The build pipeline is stable and core validation tests exist, but external dependencies (mirrors) represent a weak link.
-- **Is tech debt increasing?** Deploying an untested, unvalidated mirrorlist creates operational debt.
-- **Are we overbuilding?** No. A simple bash script to test the top worldwide mirrors using native tools (like `curl` or `wget`) is a minimal, high-leverage improvement.
+- **Is the system stable?** The core ISO generation works, but the CI release pipeline is fragile because it lacks enforcement of hard platform constraints.
+- **Is tech debt increasing?** Yes, relying on passive documentation (e.g., "target staying under 2 GiB") rather than active pipeline enforcement creates operational debt and risks broken releases.
+- **Are we overbuilding?** No. A simple size check within the existing `.github/workflows/build-iso.yml` before the release step is a minimal, necessary addition.
 
 ## PHASE 3 — Priority Selection
-- **Selected Priority:** Stabilization / hardening
+- **Selected Priority:** Infrastructure improvement (CI/CD pipeline hardening).
 
 ## PHASE 4 — Controlled Scope Definition
 - **Exact files likely impacted:**
-  - `tests/verify_mirrorlist_connectivity.sh` (new file)
-- **Maximum allowed surface area:** The Implementation Lead (Architect) must strictly create a single new test script to validate mirrorlist connectivity. No new features, logic changes, or UI adjustments are permitted.
+  - `.github/workflows/build-iso.yml`
+- **Maximum allowed surface area:** The Implementation Lead (Architect) must strictly add a single validation step to the existing GitHub Actions workflow. No new features, system logic changes, or other workflow modifications are permitted.
 - **Constraints Architect must obey:**
-  - The script must parse `airootfs/etc/pacman.d/neos-mirrorlist` and extract at least the top 5 `Server = ` entries.
-  - The script must use `curl` or `wget` to verify that these top mirrors are reachable (e.g., checking the root URL or fetching a small file/header).
-  - The script must be marked executable (`chmod +x`).
-  - Do NOT alter other functional logic in the scripts or repository.
-  - Out-of-scope issues from past audit reports (like the pacman.conf build blocker, ISO size validation, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) have already been resolved in the current codebase state and must not be touched or re-implemented.
+  - The step must run after the ISO is built/prepared and before it is uploaded to GitHub Releases.
+  - The step must verify that the built ISO file is strictly less than 2 GiB (2 * 1024 * 1024 * 1024 bytes).
+  - If the ISO exceeds this limit, the workflow must fail (exit 1).
+  - The logic must only affect the `main` branch/release flow.
+  - Out-of-scope issues from past audit reports (e.g., architecture support, dependency validation, systemd sandboxing) have either been resolved or are explicitly excluded from this task to enforce the single coherent deliverable constraint.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect builds:** Implements `tests/verify_mirrorlist_connectivity.sh` to validate the top mirrors.
-- **Bolt optimizes:** Ensures the connectivity check avoids excessive timeouts or fork/exec overhead (e.g., by limiting the connection timeout of the `curl` or `wget` command).
-- **Palette enhances:** Ensures the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable.
-- **Sentinel audits:** Verifies that the parsing of the mirrorlist does not introduce command injection risks (e.g., safely reading the file line-by-line without executing its contents).
+- **Architect builds:** Implements the ISO size validation step in `.github/workflows/build-iso.yml`.
+- **Bolt optimizes:** Ensures the size calculation uses native tools (like `stat` and bash arithmetic) to minimize subprocess overhead, avoiding slow search tools like `find` where simple globbing suffices.
+- **Palette enhances:** Ensures the CI failure output provides a clear, actionable message detailing the actual size versus the limit, reducing cognitive load for developers diagnosing the failure.
+- **Sentinel audits:** Verifies that the workflow modifications respect the existing security boundaries (e.g., actor checks) and that the size check logic cannot be manipulated or bypassed by untrusted PRs.

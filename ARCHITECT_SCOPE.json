@@ -1,16 +1,17 @@
 {
-  "objective": "Add a test script to validate mirrorlist connectivity.",
+  "objective": "Add an ISO size validation step to the CI pipeline to prevent silent release failures on GitHub.",
   "constraints": {
     "allowed_files": [
-      "tests/verify_mirrorlist_connectivity.sh"
+      ".github/workflows/build-iso.yml"
     ],
-    "max_surface_area": "Limited strictly to creating the new test script.",
+    "max_surface_area": "Limited strictly to adding the validation step inside the build-iso.yml workflow.",
     "architect_must_obey": [
-      "The script must parse 'airootfs/etc/pacman.d/neos-mirrorlist' and extract at least the top 5 'Server = ' entries.",
-      "The script must use 'curl' or 'wget' to verify that these top mirrors are reachable.",
-      "The script must be marked executable (chmod +x).",
-      "Do NOT alter other functional logic in the scripts or repository.",
-      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, ISO size validation, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) have already been resolved in the current codebase state and must not be touched or re-implemented."
+      "The step must run after the ISO is built/prepared and before it is uploaded to GitHub Releases.",
+      "The step must verify that the built ISO file is strictly less than 2 GiB (2 * 1024 * 1024 * 1024 bytes).",
+      "If the ISO exceeds this limit, the workflow must fail (exit 1).",
+      "The logic must only affect the main branch or release flow (e.g., if: github.ref == 'refs/heads/main').",
+      "Do NOT alter other functional logic in the workflows or repository.",
+      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, architecture support, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) have already been resolved or are explicitly excluded from this task to enforce the single coherent deliverable constraint."
     ]
   }
 }
