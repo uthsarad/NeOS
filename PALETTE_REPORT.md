@@ -1,10 +1,10 @@
-# Palette UX Report
-
-## Accessibility Fixes
-- None needed in bash scripts.
+# PALETTE REPORT
 
 ## UX Improvements
-- **Actionable Admin Error Message:** Improved the error message in `neos-autoupdate.sh` when `snapper` is missing. The new message clearly explains that `snapper` is not installed, what the consequences are (automatic Btrfs pre/post snapshots disabled, update skipped), and provides actionable instructions on how to resolve the issue (install `snapper` and configure a root configuration).
+- **Admin Error Context:** Improved the error messaging trap in `neos-installer-partition.sh` and `neos-liveuser-setup`. Previously, errors failed silently or without enough context. Now, when a critical failure occurs, a clear and actionable message is printed detailing what command failed, on which line, and the specific exit code. It also provides steps to troubleshoot using `journalctl`.
+
+## Accessibility Fixes
+- None required for this developer/admin UX task.
 
 ## Remaining Usability Risks
-- Other system administrative scripts might also have cryptic errors that could benefit from clearer, more actionable messaging.
+- Other admin scripts may still lack standardized, context-rich error handling. A more systemic approach to error handling across all bash scripts could further enhance developer experience.
