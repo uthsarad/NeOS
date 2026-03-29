@@ -1,14 +1,12 @@
-# BOLT REPORT
+# Bolt Performance Report
 
 ## What was optimized
-Eliminated subshell fork/exec overhead in dependency validation scripts within `airootfs/usr/local/bin/neos-autoupdate.sh`. The variables `SNAPPER_BIN` and `PACMAN_BIN` are now populated using native bash hashing (`hash cmd && BIN="${BASH_CMDS[cmd]}"`) instead of command substitution subshells (`BIN=$(command -v cmd)`).
+1. **Removed Subprocess Overhead**: The parsing of the `neos-mirrorlist` file was optimized. Previously, it utilized an external `awk` process inside a subshell `$(awk ...)`, which then piped `echo` output into a `while read` loop, spawning another subshell. This has been replaced with a native Bash `while read -r` loop combined with native regex string matching (`[[ ... =~ ... ]]`) and parameter expansion to sanitize the matched URLs.
+2. **Added Connection Timeout**: The `curl` connectivity check was modified to include `--connect-timeout 5` alongside the existing `--max-time 10` configuration.
 
 ## Before/After Reasoning
-- **Before:** Using `SNAPPER_BIN=$(command -v snapper || true)` spawned a subshell, requiring a `clone` syscall and context switch, taking ~830µs per 1000 iterations in benchmarking.
-- **After:** Using `hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""` resolves the path entirely within the bash built-in context, taking ~72µs per 1000 iterations (an over 10x performance improvement). This eliminates unnecessary process creation and OS scheduling overhead during critical, highly-frequent validation paths.
-- **Complexity Impact:** Minimal. While slightly more verbose, the `hash`/`BASH_CMDS` trick safely caches the absolute path preventing PATH hijacking (addressing Sentinel's security requirement) while remaining robust and performant.
+- **Before**: Using `awk` and subshells caused unnecessary fork and execute overhead (spawning new processes) inside a bash script, which degraded performance, especially during CI execution. The missing `--connect-timeout` inside the `curl` command meant if a server was entirely unreachable and silently dropping packets, the CI would hang for up to the full `--max-time` (10s) duration for each offline mirror.
+- **After**: The native bash extraction eliminates external process invocation completely and streamlines the file reading. By adding a 5-second connection timeout, `curl` will now fail fast during the TCP handshake phase if the server is unreachable, while retaining the 10-second `--max-time` allowance for slow but alive servers.
 
 ## Remaining Performance Risks
-- `btrfs fi usage` and `findmnt` were already correctly replaced with lighter alternatives (`stat` and `df`).
-- `awk` parsing of `df` was also replaced with native `read` loops.
-- The script is now highly optimized, with no major remaining overheads in the validation sequence before the heavier `pacman` and `snapper` system calls are initiated.
+- **Sequential Network Requests**: The connectivity checks currently run synchronously (one at a time). If all top 5 mirrors are slow or unreachable, it could still take 25 to 50 seconds to complete. This could be optimized further using parallel execution (e.g., `xargs -P` or bash background jobs `&`), though it might increase script complexity. For now, sequential testing is retained for simplicity and logging clarity.
