@@ -3,15 +3,16 @@ set -euo pipefail
 
 # Sentinel: Verify safe parsing of mirrorlist to prevent command injection
 # Bolt: Optimize file reading and avoid excessive subprocess overhead if possible
-MIRRORS=$(grep '^[[:space:]]*Server[[:space:]]*=' airootfs/etc/pacman.d/neos-mirrorlist | head -n 5)
+MIRRORS=$(awk -F'=' '/^[[:space:]]*Server[[:space:]]*=/ {
+    url = $2
+    sub(/^[[:space:]]*/, "", url)
+    sub(/[[:space:]]*$/, "", url)
+    sub(/\$repo\/os\/\$arch/, "", url)
+    print url
+    if (++count == 5) exit
+}' airootfs/etc/pacman.d/neos-mirrorlist)
 
-echo "$MIRRORS" | while read -r MIRROR_LINE; do
-    # Extract the URL part after the equals sign and strip leading/trailing whitespace
-    URL=$(echo "$MIRROR_LINE" | awk -F'=' '{print $2}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-
-    # Strip $repo/os/$arch variables to just check the base URL
-    BASE_URL=$(echo "$URL" | sed 's/\$repo\/os\/\$arch//')
-
+echo "$MIRRORS" | while read -r BASE_URL; do
     echo "Testing connectivity to: $BASE_URL"
 
     # Bolt: Ensure the connectivity check avoids excessive timeouts
