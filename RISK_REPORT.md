@@ -1,17 +1,26 @@
-# RISK & PRIORITY REPORT
+# Priority & Risk Report
 
-## System Drift and Product Goals
-The system is largely on track toward the product goals of providing a predictable, Windows-familiar KDE Plasma experience through a snapshot-based rolling-release model. Recent efforts to stabilize the build process (`pacman.conf` DatabaseRequired issue) and correct configuration issues demonstrate strong alignment. However, there are lingering risks related to deployment operations that could hinder maintainability and user accessibility.
+**Generated:** $(date +%Y-%m-%d)
+**Target:** NeOS Repository
+**Author:** Maestro (Strategic Engineering Director AI)
 
-## Identified Risk Areas
+## Identified Risks from Deep Audit
 
-### 1. Maintainability & Operations
-- **Missing ISO Size Validation in CI/CD (High Priority):** As identified in the `DEEP_AUDIT.md`, the CI pipeline lacks enforcement of GitHub Releases' hard 2 GiB per-asset limit. Currently, if an ISO exceeds 2 GiB (e.g., due to an unoptimized package addition), the build succeeds but the release publishing step fails silently. This prevents users from downloading the distribution and creates operational confusion.
-- **Incomplete Architecture Support:** Documentation discrepancies exist between x86_64, i686, and aarch64 features, risking user confusion.
-- **No Dependency Validation for Core Services:** Critical services like `neos-autoupdate.sh` lack upfront checks for dependencies like `snapper` or Btrfs.
+The `DEEP_AUDIT.md` highlighted several areas of concern. Among the highest priority (after the successfully resolved build-blocking `pacman.conf` and ISO Size validations) is the lack of dependency validation for core services in the live system.
 
-### 2. Complexity Creep
-- **Overbuilding Mitigations:** There is a risk that attempting to validate the ISO size could lead to complex CI artifact manipulation. The mitigation must remain strictly a minimal bash check within the existing workflow using native tools (e.g., `stat`).
+1. **Risk of Silent Runtime Failures (High Priority)**
+   - **Context:** Scripts like `airootfs/usr/local/bin/neos-autoupdate.sh` execute automatically via systemd timers.
+   - **Vulnerability:** They assume dependencies like `snapper` exist and that the root filesystem is Btrfs. If a user uninstalls `snapper` or the filesystem is not Btrfs, the script fails.
+   - **Impact:** System updates and automated snapshot creation fail silently, creating a risk of data loss. The systemd unit crashes or reports confusing errors to the user, undermining the "predictable and reliable" product goal.
+   - **Mitigation:** Introduce explicit dependency checks before execution. If dependencies are missing, the scripts must log an actionable message and exit gracefully (status 0) to avoid failing the timer.
 
-## Prioritized Action
-1. **Harden Deployment Pipeline:** Implement an explicit ISO size validation step in `.github/workflows/build-iso.yml` that strictly blocks release creation if the final ISO exceeds the 2 GiB limit, failing the workflow with an actionable error.
+2. **Incomplete Architecture Support (Medium-to-High Priority - Deferred)**
+   - **Context:** The documentation claims a Windows-familiar experience, but this is only delivered on x86_64, confusing i686/aarch64 users.
+   - **Status:** Deferred for a future cycle to maintain focus on the immediate fragility in the core service scripts (single coherent deliverable rule).
+
+3. **Systemd Sandboxing (Medium Priority - Deferred)**
+   - **Context:** Services currently run as root without basic systemd sandboxing directives (`ProtectSystem=strict`, etc.).
+   - **Status:** Deferred for a future Sentinel-focused audit cycle.
+
+## Justification for Priority Selection
+We are addressing the dependency validation in `neos-autoupdate.sh` to prevent silent data loss and runtime failures. The goal of NeOS is stability. A system that crashes when an expected package is missing—without gracefully handling the edge case—fails the stability requirement. By implementing these checks natively without heavy subprocess overhead, we resolve an architectural flaw while maintaining performance.

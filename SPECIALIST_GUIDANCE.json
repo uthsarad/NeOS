@@ -1,22 +1,14 @@
 {
   "Bolt": {
-    "focus": "Performance Optimization",
-    "guidance": [
-      "Ensure the size calculation uses native tools (like `stat` and bash arithmetic) to minimize subprocess overhead.",
-      "Avoid slow search tools like `find` where simple bash globbing suffices to locate the ISO."
-    ]
+    "focus": "Performance of Dependency Validation",
+    "guidance": "Ensure that the dependency checks (e.g., checking for snapper) use native bash hashing (`hash cmd`) rather than subshells (e.g., `$(command -v cmd)`) to eliminate unnecessary fork/clone syscall overhead during script startup."
   },
   "Palette": {
-    "focus": "Developer/Admin UX and Error Messages",
-    "guidance": [
-      "Ensure the CI failure output provides a clear, actionable message detailing the actual size versus the 2 GiB limit.",
-      "Provide a clear '💡 How to fix:' block with actionable steps to reduce developer cognitive load on failure (e.g., removing packages or adding NoExtract rules)."
-    ]
+    "focus": "Developer/Admin UX for Logging",
+    "guidance": "Ensure that any error or warning messages logged when dependencies are missing are readable, actionable, and formatted well for system administrators diagnosing the system."
   },
   "Sentinel": {
-    "focus": "Security Validation",
-    "guidance": [
-      "Verify that the workflow modifications respect the existing security boundaries (e.g., actor checks) and that the size check logic cannot be manipulated or bypassed by untrusted PRs."
-    ]
+    "focus": "Security of Dependency Resolution",
+    "guidance": "Verify that the dependency validation logic avoids PATH hijacking and TOCTOU vulnerabilities by resolving and storing safe paths securely."
   }
 }
