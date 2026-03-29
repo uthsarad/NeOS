@@ -1,17 +1,15 @@
 {
-  "objective": "Add an ISO size validation step to the CI pipeline to prevent silent release failures on GitHub.",
+  "objective": "Add dependency validation for core services (snapper and Btrfs root detection) in neos-autoupdate.sh.",
   "constraints": {
     "allowed_files": [
-      ".github/workflows/build-iso.yml"
+      "airootfs/usr/local/bin/neos-autoupdate.sh"
     ],
-    "max_surface_area": "Limited strictly to adding the validation step inside the build-iso.yml workflow.",
+    "max_surface_area": "Limited strictly to adding dependency and environment validation logic at the beginning of neos-autoupdate.sh.",
     "architect_must_obey": [
-      "The step must run after the ISO is built/prepared and before it is uploaded to GitHub Releases.",
-      "The step must verify that the built ISO file is strictly less than 2 GiB (2 * 1024 * 1024 * 1024 bytes).",
-      "If the ISO exceeds this limit, the workflow must fail (exit 1).",
-      "The logic must only affect the main branch or release flow (e.g., if: github.ref == 'refs/heads/main').",
-      "Do NOT alter other functional logic in the workflows or repository.",
-      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, architecture support, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) have already been resolved or are explicitly excluded from this task to enforce the single coherent deliverable constraint."
+      "Check that the `snapper` binary is available. If missing, log an error message and exit gracefully (exit code 0) so the systemd unit doesn't fail.",
+      "Check that the root filesystem is Btrfs. If not, log a warning message and exit gracefully (exit code 0).",
+      "Do NOT modify any other logic in `neos-autoupdate.sh` or any other scripts.",
+      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, missing ISO Size Validation, Incomplete Architecture Support, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) are explicitly excluded from this task to enforce the single coherent deliverable constraint."
     ]
   }
 }
