@@ -1,10 +1,10 @@
-# PALETTE REPORT
-
-## UX Improvements
-- **Admin Error Context:** Improved the error messaging trap in `neos-installer-partition.sh` and `neos-liveuser-setup`. Previously, errors failed silently or without enough context. Now, when a critical failure occurs, a clear and actionable message is printed detailing what command failed, on which line, and the specific exit code. It also provides steps to troubleshoot using `journalctl`.
+# Palette Report
 
 ## Accessibility Fixes
-- None required for this developer/admin UX task.
+- None applicable for this backend shell script task.
+
+## UX Improvements
+- **Actionable Error Messages**: Updated the mirrorlist connectivity check in `tests/verify_mirrorlist_connectivity.sh` to output a clear, actionable error message when a mirror is unreachable. Instead of simply stating "Failed to connect", the error now provides a "💡 How to fix:" section with step-by-step instructions on troubleshooting internet connection, checking mirror status, and updating the mirrorlist. This reduces developer/admin cognitive load on failure.
 
 ## Remaining Usability Risks
-- Other admin scripts may still lack standardized, context-rich error handling. A more systemic approach to error handling across all bash scripts could further enhance developer experience.
+- Other testing scripts in the `tests/` directory may also lack actionable error messages and could benefit from a similar UX review for better developer experience.
