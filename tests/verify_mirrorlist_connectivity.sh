@@ -3,12 +3,13 @@ set -euo pipefail
 
 # Sentinel: Verify safe parsing of mirrorlist to prevent command injection
 # Bolt: Optimize file reading and avoid excessive subprocess overhead if possible
-count=0
-while read -r line; do
-    if [[ "$line" =~ ^[[:space:]]*Server[[:space:]]*=[[:space:]]*([^[:space:]]+) ]]; then
-        BASE_URL="${BASH_REMATCH[1]}"
-        BASE_URL="${BASE_URL//\$repo\/os\/\$arch/}"      # remove suffix
 
+# We use awk to parse the mirrorlist safely and efficiently.
+# It extracts the base URL directly without the need for bash regex matching or subshells.
+# It handles up to 5 mirrors.
+# Sentinel: Added URL validation to ensure only valid HTTPS/HTTP URLs are processed, preventing injection.
+while read -r BASE_URL; do
+    if [ -n "$BASE_URL" ]; then
         echo "Testing connectivity to: $BASE_URL"
 
         # Bolt: Ensure the connectivity check avoids excessive timeouts
@@ -22,13 +23,18 @@ while read -r line; do
             echo -e "  4. Update the mirrorlist using a tool like reflector or rankmirrors.\n" >&2
             exit 1
         fi
-
-        count=$((count + 1))
-        if (( count == 5 )); then
-            break
-        fi
     fi
-done < airootfs/etc/pacman.d/neos-mirrorlist
+done < <(awk -F '=' '/^[ \t]*Server[ \t]*=/ {
+    url = $2
+    sub(/^[ \t]+/, "", url)
+    sub(/[ \t]+$/, "", url)
+    sub(/\$repo\/os\/\$arch/, "", url)
+    # Add strict validation to prevent command injection from malicious mirrorlists
+    if (url ~ /^https?:\/\/[a-zA-Z0-9.\-\/:]+$/) {
+        print url
+        if (++count == 5) exit
+    }
+}' airootfs/etc/pacman.d/neos-mirrorlist)
 
 echo "Mirrorlist connectivity verified successfully."
 exit 0
