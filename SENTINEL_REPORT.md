@@ -312,3 +312,26 @@ All identified medium-severity vulnerabilities have been successfully mitigated.
 ### Severity Summary
 
 - **High Risks Resolved**: 1 (Replaced insecure mirrorlist pipeline parsing with robust `awk` implementation)
+
+## Sentinel Report - Mirrorlist Parsing Security Enhancement
+
+### Risks Found
+
+1. **Command Injection Potential in Script Pipelines (High Severity)**
+   - **File audited**: `tests/verify_mirrorlist_connectivity.sh`
+   - **Vulnerability**: The script used a complex, multi-stage pipeline or `read` loops to parse mirrorlist URLs from `airootfs/etc/pacman.d/neos-mirrorlist`. This approach of processing untrusted file contents within shell loops creates potential shell injection vectors if the configuration file is maliciously modified, as variables and command substitutions could be inadvertently evaluated depending on how they are referenced and passed to tools like `curl`.
+
+### Fixes Applied
+
+1. **Replaced Pipeline with Robust Single-Pass `awk`**
+   - **Action**: Completely replaced the brittle shell parsing logic with a strict, single-pass `awk` block.
+   - **Details**: The new `awk` script safely matches the mirror lines, extracts the URL component, and performs all necessary string stripping (removing leading/trailing whitespace and variable placeholders like `$repo/os/$arch`) entirely within the isolated `awk` process without any intermediate shell evaluation or multiple subprocess invocations.
+   - **Validation**: Added explicit regex validation (`/^https?:\/\/[a-zA-Z0-9.\-\/:]+$/`) inside `awk` to ensure only well-formed URLs are passed to `curl`, effectively neutralizing any complex command injection payloads.
+
+### Remaining Attack Surface
+
+- The URL validation relies on the formatting inside `neos-mirrorlist`. While command injection via parsing is mitigated, a compromised file could still point to malicious endpoints.
+
+### Severity Summary
+
+- **High Risks Resolved**: 1 (Replaced insecure mirrorlist pipeline parsing with robust `awk` implementation containing strict URL validation)
