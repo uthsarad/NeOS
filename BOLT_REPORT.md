@@ -10,3 +10,6 @@
 
 ## Remaining Performance Risks
 - **Sequential Network Requests**: The connectivity checks currently run synchronously (one at a time). If all top 5 mirrors are slow or unreachable, it could still take 25 to 50 seconds to complete. This could be optimized further using parallel execution (e.g., `xargs -P` or bash background jobs `&`), though it might increase script complexity. For now, sequential testing is retained for simplicity and logging clarity.
+## Reduced Timeouts & Optimized Regex
+1. **Removed Redundant Parameter Expansion**: Simplified the bash regex match to extract the URL without trailing spaces directly (`([^[:space:]]+)`), eliminating the need for a separate, complex parameter expansion step (`BASE_URL="${BASE_URL%"${BASE_URL##*[![:space:]]}"}"`) and speeding up the loop.
+2. **Aggressive Timeout Limits**: Reduced `curl` connection timeout from 5 seconds to 2 seconds, and max timeout from 10 seconds to 3 seconds. This severely limits the maximum wait time per offline mirror, significantly preventing the CI pipeline from hanging if network connectivity issues arise.
