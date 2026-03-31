@@ -1,15 +1,13 @@
 {
-  "objective": "Implement dependency validation for snapper in neos-autoupdate.sh.",
-  "constraints": {
-    "allowed_files": [
-      "airootfs/usr/local/bin/neos-autoupdate.sh"
-    ],
-    "max_surface_area": "Limited strictly to the dependency check logic inside neos-autoupdate.sh.",
-    "architect_must_obey": [
-      "Ensure the script checks for the presence of the 'snapper' command before attempting to create or link snapshots.",
-      "If 'snapper' is missing, log a clear warning and exit gracefully (exit code 0) to prevent the systemd unit from entering a failed state, while ensuring no update occurs without snapshot protection.",
-      "Do NOT alter other functional logic in the script or repository.",
-      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, ISO size validation, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, and the sudoers vulnerability) have already been resolved in the current codebase state and must not be touched or re-implemented."
-    ]
-  }
+  "focus_area": "Hardening Testing Infrastructure and Package Consistency",
+  "tasks": [
+    {
+      "description": "Create a new test script to verify ISO size constraints based on profiledef.sh and pacman.conf. Ensure the script has executable permissions (+x).",
+      "target_file": "tests/verify_iso_size.sh"
+    },
+    {
+      "description": "Add section comments to the x86_64 package list to maintain consistency with i686 and aarch64 lists, making it easier to maintain.",
+      "target_file": "packages.x86_64"
+    }
+  ]
 }

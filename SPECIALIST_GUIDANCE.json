@@ -1,23 +1,43 @@
 {
-  "Bolt": {
-    "focus": "Performance Optimization",
-    "guidance": [
-      "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
-      "Review the modified script for any unnecessary path traversals during validation."
-    ]
-  },
-  "Palette": {
-    "focus": "Developer/Admin UX and Error Messages",
-    "guidance": [
-      "Ensure the error message logged when `snapper` is missing is clear, informative, and provides actionable context for an administrator reviewing the system logs.",
-      "Consider how the error message informs the user that snapshots are disabled and the update was skipped."
-    ]
-  },
-  "Sentinel": {
-    "focus": "Security Validation",
-    "guidance": [
-      "Verify that the early exit upon missing `snapper` does not bypass the existing flock-based locking mechanisms, leaving the lock file in an inconsistent state.",
-      "Ensure that checking for the dependency does not introduce any Time-Of-Check to Time-Of-Use (TOCTOU) race conditions or expose the system to arbitrary command execution."
-    ]
+  "specialists": {
+    "bolt": {
+      "focus_area": "Performance Optimization in Error Handling",
+      "tasks": [
+        {
+          "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+          "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+        },
+        {
+          "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+          "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+        }
+      ]
+    },
+    "palette": {
+      "focus_area": "Developer/Admin UX in Error Logs",
+      "tasks": [
+        {
+          "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+          "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+        },
+        {
+          "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+          "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+        }
+      ]
+    },
+    "sentinel": {
+      "focus_area": "Security Validation in Shell Scripts",
+      "tasks": [
+        {
+          "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
+          "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+        },
+        {
+          "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
+          "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+        }
+      ]
+    }
   }
 }

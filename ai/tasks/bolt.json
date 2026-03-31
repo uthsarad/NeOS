@@ -2,12 +2,8 @@
   "focus_area": "Performance Optimization",
   "tasks": [
     {
-      "description": "Ensure the dependency validation for `snapper` relies on native or lightweight bash capabilities (e.g., `command -v`) rather than heavier external subprocesses to eliminate fork/exec overhead.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
-    },
-    {
-      "description": "Review the modified script for any unnecessary path traversals during validation.",
-      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+      "description": "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead. Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }

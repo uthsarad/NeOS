@@ -55,18 +55,20 @@ check_dependencies() {
     # Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
     # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
-    if ! command -v snapper >/dev/null 2>&1; then
-        log "WARNING: 'snapper' is not installed. System update skipped to prevent modifications without a rollback snapshot. To enable automatic updates, install snapper: 'pacman -S snapper'."
+    hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
+    if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
+        log "INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
         exit 0
     fi
 
     local dependencies=("pacman" "awk" "df")
     for cmd in "${dependencies[@]}"; do
-        if ! command -v "$cmd" &> /dev/null; then
+        if ! hash "$cmd" 2>/dev/null; then
             log "Error: Required command '$cmd' not found."
             exit 1
         fi
     done
+    hash pacman 2>/dev/null && PACMAN_BIN="${BASH_CMDS[pacman]}" || PACMAN_BIN=""
 }
 
 check_btrfs() {
@@ -115,20 +117,20 @@ perform_update() {
     # Create pre-update snapshot
     local desc="Pre-update snapshot"
     local snap_id
-    snap_id=$(snapper create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
+    snap_id=$("$SNAPPER_BIN" create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
 
     log "Created pre-update snapshot: $snap_id"
 
     # Perform update
-    if pacman -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
+    if "$PACMAN_BIN" -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
         log "System update completed successfully."
         # Create post-update snapshot
-        snapper create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
+        "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
         log "System update failed. Check pacman logs."
         # Still create post snapshot to close the pair, but mark as failed
-        snapper create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
+        "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
         exit 1
     fi
 }

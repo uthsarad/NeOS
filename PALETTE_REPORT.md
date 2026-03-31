@@ -1,7 +1,11 @@
 # Palette UX/Developer Experience Report
 
-## Improvements Made
-- **Clearer Error Messaging in `neos-autoupdate.sh`:** Updated the log message generated when the `snapper` dependency is missing. The message was changed from a generic "ERROR" to a clearer "WARNING" that explicitly explains *why* the process was stopped (to prevent modifications without a rollback snapshot) and provides actionable context on *how* to resolve the issue (`pacman -S snapper`). This provides significantly better developer/admin UX.
+## UX improvements
+- Improved error message formatting in `tests/verify_mirrorlist_connectivity.sh` by adding ASCII borders and clear spacing to visually separate error details from surrounding output.
+- Enhanced readability of actionable steps by moving the path to `airootfs/etc/pacman.d/neos-mirrorlist` to a new line, preventing long lines from wrapping awkwardly on narrow terminals.
 
-## Remaining Usability Risks
-- The `notify-send` failure block relies heavily on D-Bus environment variables, which might not be set properly for all session types (e.g., bare TTYs without `loginctl` configurations).
+## Accessibility fixes
+- None required for this bash script.
+
+## Remaining usability risks
+- Other testing scripts may lack visual structure in their error messages. This pattern could be adopted across other scripts.
