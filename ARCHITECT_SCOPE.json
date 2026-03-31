@@ -1,16 +1,13 @@
 {
-  "objective": "Add a test script to validate mirrorlist connectivity.",
-  "constraints": {
-    "allowed_files": [
-      "tests/verify_mirrorlist_connectivity.sh"
-    ],
-    "max_surface_area": "Limited strictly to creating the new test script.",
-    "architect_must_obey": [
-      "The script must parse 'airootfs/etc/pacman.d/neos-mirrorlist' and extract at least the top 5 'Server = ' entries.",
-      "The script must use 'curl' or 'wget' to verify that these top mirrors are reachable.",
-      "The script must be marked executable (chmod +x).",
-      "Do NOT alter other functional logic in the scripts or repository.",
-      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, ISO size validation, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) have already been resolved in the current codebase state and must not be touched or re-implemented."
-    ]
-  }
+  "focus_area": "Hardening Testing Infrastructure and Package Consistency",
+  "tasks": [
+    {
+      "description": "Create a new test script to verify ISO size constraints based on profiledef.sh and pacman.conf. Ensure the script has executable permissions (+x).",
+      "target_file": "tests/verify_iso_size.sh"
+    },
+    {
+      "description": "Add section comments to the x86_64 package list to maintain consistency with i686 and aarch64 lists, making it easier to maintain.",
+      "target_file": "packages.x86_64"
+    }
+  ]
 }

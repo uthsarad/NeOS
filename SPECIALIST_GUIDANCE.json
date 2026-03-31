@@ -1,21 +1,43 @@
 {
-  "Bolt": {
-    "focus": "Performance Optimization",
-    "guidance": [
-      "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead.",
-      "Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging."
-    ]
-  },
-  "Palette": {
-    "focus": "Developer/Admin UX and Error Messages",
-    "guidance": [
-      "Ensure the format of the test output is clear, readable, and features a clear '💡 How to fix:' block with actionable steps to reduce developer cognitive load on failure."
-    ]
-  },
-  "Sentinel": {
-    "focus": "Security Validation",
-    "guidance": [
-      "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities."
-    ]
+  "specialists": {
+    "bolt": {
+      "focus_area": "Performance Optimization in Error Handling",
+      "tasks": [
+        {
+          "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+          "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+        },
+        {
+          "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+          "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+        }
+      ]
+    },
+    "palette": {
+      "focus_area": "Developer/Admin UX in Error Logs",
+      "tasks": [
+        {
+          "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+          "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+        },
+        {
+          "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+          "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+        }
+      ]
+    },
+    "sentinel": {
+      "focus_area": "Security Validation in Shell Scripts",
+      "tasks": [
+        {
+          "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
+          "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+        },
+        {
+          "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
+          "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+        }
+      ]
+    }
   }
 }
