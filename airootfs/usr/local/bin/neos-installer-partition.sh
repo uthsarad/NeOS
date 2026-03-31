@@ -3,5 +3,5 @@ set -euo pipefail
 # Sentinel: [task] Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.
 # Bolt: [task] Ensure the logging mechanism avoids excessive subshell overhead where possible, relying on native variables like $LINENO.
 # Palette: [task] Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.
-trap 'logger -t neos-${0##*/} "ERROR: Script failed at line $LINENO"' ERR
+trap 'err=$?; echo -e "\n🚨 CRITICAL ERROR: ${0##*/}\n💡 What went wrong: Command \`$BASH_COMMAND\` failed at line $LINENO with exit code $err.\n🔧 How to fix:\n - Review system journal: journalctl -t neos-${0##*/}\n - Check system state and script configuration.\n" >&2; logger -t "neos-${0##*/}" "CRITICAL: Script failed at line $LINENO (Exit Code $err). Command: $BASH_COMMAND. Please review the system journal."; exit $err' ERR
 # neos-installer-partition placeholder

@@ -1,10 +1,11 @@
-# Palette UX Report
+# Palette UX/Developer Experience Report
 
-## Accessibility Fixes
-- None needed in bash scripts.
+## UX improvements
+- Improved error message formatting in `tests/verify_mirrorlist_connectivity.sh` by adding ASCII borders and clear spacing to visually separate error details from surrounding output.
+- Enhanced readability of actionable steps by moving the path to `airootfs/etc/pacman.d/neos-mirrorlist` to a new line, preventing long lines from wrapping awkwardly on narrow terminals.
 
-## UX Improvements
-- **Actionable Admin Error Message:** Improved the error message in `neos-autoupdate.sh` when `snapper` is missing. The new message clearly explains that `snapper` is not installed, what the consequences are (automatic Btrfs pre/post snapshots disabled, update skipped), and provides actionable instructions on how to resolve the issue (install `snapper` and configure a root configuration).
+## Accessibility fixes
+- None required for this bash script.
 
-## Remaining Usability Risks
-- Other system administrative scripts might also have cryptic errors that could benefit from clearer, more actionable messaging.
+## Remaining usability risks
+- Other testing scripts may lack visual structure in their error messages. This pattern could be adopted across other scripts.

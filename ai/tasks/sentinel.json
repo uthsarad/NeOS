@@ -2,12 +2,8 @@
   "focus_area": "Security Validation",
   "tasks": [
     {
-      "description": "Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.",
-      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
-    },
-    {
-      "description": "Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.",
-      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+      "description": "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }
