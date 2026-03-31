@@ -1,10 +1,11 @@
-# Palette Report
+# Palette UX/Developer Experience Report
 
-## Accessibility Fixes
-- None applicable for this task. The focus was strictly on administrative UX and developer cognitive load in error logs.
+## UX improvements
+- Improved error message formatting in `tests/verify_mirrorlist_connectivity.sh` by adding ASCII borders and clear spacing to visually separate error details from surrounding output.
+- Enhanced readability of actionable steps by moving the path to `airootfs/etc/pacman.d/neos-mirrorlist` to a new line, preventing long lines from wrapping awkwardly on narrow terminals.
 
-## UX Improvements
-- **Enhanced Visual Hierarchy in CLI Errors:** Modified the unreachable mirror error message in `tests/verify_mirrorlist_connectivity.sh` to use structural visual cues (ASCII borders and spacing) to separate the error state from the actionable remediation steps. This improves readability and reduces developer cognitive load during failure analysis.
+## Accessibility fixes
+- None required for this bash script.
 
-## Remaining Usability Risks
-- Other testing scripts or build tools in the repository may still output cryptic or poorly formatted error messages without actionable steps. A full audit of CI/CD output formats may be beneficial for developer experience.
+## Remaining usability risks
+- Other testing scripts may lack visual structure in their error messages. This pattern could be adopted across other scripts.

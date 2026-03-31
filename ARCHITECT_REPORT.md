@@ -30,3 +30,21 @@ Add an ISO size validation step to the CI pipeline to prevent silent release fai
 ## Constraints Adhered To
 - Maintained the single coherent deliverable constraint by refusing to expand scope or modify an already-solved problem.
 - Preserved existing specialist tracking data by avoiding destructive overwrites of `/ai/tasks/*.json` files.
+
+---
+
+## Architect Report - Dependency Validation for Core Services
+
+## Objective
+Add dependency validation for core services (snapper and Btrfs root detection) in neos-autoupdate.sh.
+
+## Actions Taken
+1. **Scope Validation**: Analyzed the current `airootfs/usr/local/bin/neos-autoupdate.sh` and discovered that the exact dependency validation logic for snapper and Btrfs is **already fully implemented** in the script's `check_dependencies` and `check_btrfs` functions.
+2. **Fail-Safe Execution**: Adhering to the "smallest correct version" constraint and the directive to "avoid overengineering," I have made **no modifications** to `neos-autoupdate.sh` as altering it would either de-optimize working code or introduce regressions.
+3. **Delegation Constraints**: Because the feature is already fully implemented, contains native bash capabilities to avoid overhead, and respects actor-check security boundaries (already marked with `# Bolt:`, `# Palette:`, and `# Sentinel:` comments by a previous iteration), I have **not overwritten** the existing `bolt.json`, `palette.json`, or `sentinel.json` task manifests.
+
+## Constraints Adhered To
+- The surface area was strictly limited to evaluating the core services dependency validation logic at the beginning of neos-autoupdate.sh.
+- Did not modify any other logic in `neos-autoupdate.sh` or any other scripts.
+- Maintained the single coherent deliverable constraint by refusing to expand scope or modify an already-solved problem.
+- Preserved existing specialist tracking data by avoiding destructive overwrites of `/ai/tasks/*.json` files.

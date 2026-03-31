@@ -1,15 +1,13 @@
 {
-  "objective": "Add dependency validation for core services (snapper and Btrfs root detection) in neos-autoupdate.sh.",
-  "constraints": {
-    "allowed_files": [
-      "airootfs/usr/local/bin/neos-autoupdate.sh"
-    ],
-    "max_surface_area": "Limited strictly to adding dependency and environment validation logic at the beginning of neos-autoupdate.sh.",
-    "architect_must_obey": [
-      "Check that the `snapper` binary is available. If missing, log an error message and exit gracefully (exit code 0) so the systemd unit doesn't fail.",
-      "Check that the root filesystem is Btrfs. If not, log a warning message and exit gracefully (exit code 0).",
-      "Do NOT modify any other logic in `neos-autoupdate.sh` or any other scripts.",
-      "Out-of-scope issues from past audit reports (like the pacman.conf build blocker, missing ISO Size Validation, Incomplete Architecture Support, systemd sandboxing, Rust profile audit path traversal, TOCTOU in autoupdate, sudoers vulnerability, and incomplete error handling) are explicitly excluded from this task to enforce the single coherent deliverable constraint."
-    ]
-  }
+  "focus_area": "Hardening Testing Infrastructure and Package Consistency",
+  "tasks": [
+    {
+      "description": "Create a new test script to verify ISO size constraints based on profiledef.sh and pacman.conf. Ensure the script has executable permissions (+x).",
+      "target_file": "tests/verify_iso_size.sh"
+    },
+    {
+      "description": "Add section comments to the x86_64 package list to maintain consistency with i686 and aarch64 lists, making it easier to maintain.",
+      "target_file": "packages.x86_64"
+    }
+  ]
 }
