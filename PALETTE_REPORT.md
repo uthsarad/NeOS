@@ -1,4 +1,4 @@
-# Palette Report
+# Palette UX/Developer Experience Report
 
 ## UX improvements
 - Improved error message formatting in `tests/verify_mirrorlist_connectivity.sh` by adding ASCII borders and clear spacing to visually separate error details from surrounding output.
