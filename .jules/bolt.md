@@ -87,3 +87,7 @@
 ## 2026-06-18 - POSIX vs Native Bash Conditional Evaluation
 **Learning:** In bash scripts, POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
 **Action:** Always prefer native bash double brackets `[[ ... ]]` over POSIX single brackets for conditional evaluations in bash scripts. They are a shell keyword rather than a command, and bypass standard pathname expansion and word splitting entirely, resulting in faster and safer evaluations, especially within tight loops.
+
+## $(date +%Y-%m-%d) - Native Bash Parameter Expansion
+**Learning:** Using command substitutions like `$(basename "$0")` inside error traps spawns unnecessary subshells and external binary calls during failure conditions.
+**Action:** Always prefer native bash parameter expansion like `${0##*/}` to extract filenames and avoid unnecessary subprocess overhead, especially in cold or critical failure paths.

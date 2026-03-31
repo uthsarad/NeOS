@@ -15,9 +15,20 @@ while read -r BASE_URL; do
     if [[ -n "$BASE_URL" ]]; then
         echo "Testing connectivity to: $BASE_URL"
         # Bolt: Ensure the connectivity check avoids excessive timeouts
-        curl -I -s --connect-timeout 2 --max-time 3 "$BASE_URL" > /dev/null &
-        PIDS+=($!)
-        URLS+=("$BASE_URL")
+        # Palette: Ensure the format of the logged error message is clear and includes actionable steps
+        if ! curl -I -s --connect-timeout 2 --max-time 3 "$BASE_URL" > /dev/null; then
+            echo -e "\n================================================================================" >&2
+            echo -e "❌ ERROR: Failed to connect to $BASE_URL" >&2
+            echo -e "================================================================================\n" >&2
+            echo -e "💡 How to fix:" >&2
+            echo -e "  1. Check your internet connection." >&2
+            echo -e "  2. Verify the mirror is currently online." >&2
+            echo -e "  3. If the mirror is permanently down, remove it from:" >&2
+            echo -e "     airootfs/etc/pacman.d/neos-mirrorlist" >&2
+            echo -e "  4. Update the mirrorlist using a tool like reflector or rankmirrors.\n" >&2
+            echo -e "================================================================================\n" >&2
+            exit 1
+        fi
     fi
 done < <(awk -F '=' '/^[ \t]*Server[ \t]*=/ {
     url = $2
