@@ -1,13 +1,21 @@
 {
-  "focus_area": "Hardening Testing Infrastructure and Package Consistency",
+  "focus_area": "Infrastructure improvement: Documentation and Release Management",
   "tasks": [
     {
-      "description": "Create a new test script to verify ISO size constraints based on profiledef.sh and pacman.conf. Ensure the script has executable permissions (+x).",
-      "target_file": "tests/verify_iso_size.sh"
+      "description": "Fix documentation URLs in HANDBOOK.md, replacing old repository URLs with https://github.com/uthsarad/NeOS.",
+      "target_file": "docs/HANDBOOK.md"
     },
     {
-      "description": "Add section comments to the x86_64 package list to maintain consistency with i686 and aarch64 lists, making it easier to maintain.",
-      "target_file": "packages.x86_64"
+      "description": "Fix documentation URLs in CONTRIBUTING.md, replacing old repository URLs with https://github.com/uthsarad/NeOS.",
+      "target_file": "CONTRIBUTING.md"
+    },
+    {
+      "description": "Initialize a CHANGELOG.md following the 'Keep a Changelog' format with recent fixes.",
+      "target_file": "CHANGELOG.md"
     }
+  ],
+  "constraints": [
+    "Do not modify any bash scripts, CI workflows, or system configurations.",
+    "Limit changes strictly to Markdown documentation files."
   ]
 }
