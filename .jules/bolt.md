@@ -91,3 +91,7 @@
 ## $(date +%Y-%m-%d) - Native Bash Parameter Expansion
 **Learning:** Using command substitutions like `$(basename "$0")` inside error traps spawns unnecessary subshells and external binary calls during failure conditions.
 **Action:** Always prefer native bash parameter expansion like `${0##*/}` to extract filenames and avoid unnecessary subprocess overhead, especially in cold or critical failure paths.
+
+## 2024-05-19 - Parallelizing Sequential Network Checks in Bash
+**Learning:** Sequential network operations (like multiple `curl` checks) in bash scripts can severely bottleneck performance due to blocking timeouts, especially during CI/CD validations.
+**Action:** Always optimize sequential network checks by dispatching them as background jobs (`&`), storing their process IDs (`PIDS+=($!)`), and using `wait` in a separate loop to collect exit codes. This allows parallel execution and drastically reduces overall run time without introducing complex external dependencies.
