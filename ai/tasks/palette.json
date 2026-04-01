@@ -2,8 +2,16 @@
   "focus_area": "Developer/Admin UX and Error Messages",
   "tasks": [
     {
-      "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
+      "description": "Ensure the format of the test output is clear, readable, and includes actionable '\ud83d\udca1 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
       "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+    },
+    {
+      "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
