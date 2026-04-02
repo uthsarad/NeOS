@@ -9,3 +9,4 @@
 
 ## Remaining usability risks
 - Other testing scripts may lack visual structure in their error messages. This pattern could be adopted across other scripts.
+- Enhanced error message formatting in custom scripts (`airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`) by introducing structural ASCII borders, indented details, and clear, numbered actionable steps. This significantly reduces developer cognitive load when analyzing script failures in terminal outputs.
