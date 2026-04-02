@@ -1,29 +1,29 @@
 {
   "specialists": {
     "bolt": {
-      "focus_area": "Build Optimization",
+      "focus_area": "Repository bloat prevention",
       "tasks": [
         {
-          "description": "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.",
-          "target_file": "docs/*"
+          "description": "Ensure no large assets or images are added during the documentation update.",
+          "target_file": "CHANGELOG.md"
         }
       ]
     },
     "palette": {
-      "focus_area": "Documentation UX",
+      "focus_area": "Documentation Readability",
       "tasks": [
         {
-          "description": "Verify that the new CHANGELOG.md and updated URLs are correctly formatted and accessible.",
+          "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
           "target_file": "CHANGELOG.md"
         }
       ]
     },
     "sentinel": {
-      "focus_area": "Information Security",
+      "focus_area": "Credential Leak Prevention",
       "tasks": [
         {
-          "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
-          "target_file": "docs/*"
+          "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
+          "target_file": "CHANGELOG.md"
         }
       ]
     }

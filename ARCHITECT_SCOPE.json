@@ -1,21 +1,18 @@
 {
-  "focus_area": "Infrastructure improvement: Documentation and Release Management",
-  "tasks": [
-    {
-      "description": "Fix documentation URLs in HANDBOOK.md, replacing old repository URLs with https://github.com/uthsarad/NeOS.",
-      "target_file": "docs/HANDBOOK.md"
-    },
-    {
-      "description": "Fix documentation URLs in CONTRIBUTING.md, replacing old repository URLs with https://github.com/uthsarad/NeOS.",
-      "target_file": "CONTRIBUTING.md"
-    },
-    {
-      "description": "Initialize a CHANGELOG.md following the 'Keep a Changelog' format with recent fixes.",
-      "target_file": "CHANGELOG.md"
-    }
+  "target_files": [
+    "docs/PREREQUISITES_DRAFT.md",
+    "docs/HANDBOOK.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md"
+  ],
+  "instructions": [
+    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in docs/PREREQUISITES_DRAFT.md",
+    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in docs/HANDBOOK.md",
+    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in CONTRIBUTING.md",
+    "Initialize CHANGELOG.md with a formal structure."
   ],
   "constraints": [
-    "Do not modify any bash scripts, CI workflows, or system configurations.",
-    "Limit changes strictly to Markdown documentation files."
+    "Do not modify any source code, CI scripts, or configuration files.",
+    "Restrict changes entirely to Markdown files."
   ]
 }
