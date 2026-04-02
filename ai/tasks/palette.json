@@ -12,6 +12,10 @@
     {
       "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Verify that the new CHANGELOG.md and updated URLs are correctly formatted and accessible.",
+      "target_file": "CHANGELOG.md"
     }
   ]
 }

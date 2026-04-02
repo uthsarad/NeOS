@@ -12,6 +12,10 @@
     {
       "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
+      "target_file": "docs/*"
     }
   ]
 }
