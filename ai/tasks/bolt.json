@@ -12,6 +12,10 @@
     {
       "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.",
+      "target_file": "docs/*"
     }
   ]
 }
