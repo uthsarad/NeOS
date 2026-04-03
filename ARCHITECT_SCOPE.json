@@ -1,18 +1,17 @@
 {
   "target_files": [
-    "docs/PREREQUISITES_DRAFT.md",
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md",
-    "CHANGELOG.md"
+    "docs/TROUBLESHOOTING.md",
+    "README.md",
+    "docs/HANDBOOK.md"
   ],
   "instructions": [
-    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in docs/PREREQUISITES_DRAFT.md",
-    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in docs/HANDBOOK.md",
-    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in CONTRIBUTING.md",
-    "Initialize CHANGELOG.md with a formal structure."
+    "Create a new file `docs/TROUBLESHOOTING.md`.",
+    "Include sections covering: Build failures, Boot issues, Network problems, Snapshot rollback, and Driver issues based on project context.",
+    "Update `README.md` to include a link to the new troubleshooting guide in the Documentation section.",
+    "Update `docs/HANDBOOK.md` to include a link to the new troubleshooting guide where appropriate."
   ],
   "constraints": [
-    "Do not modify any source code, CI scripts, or configuration files.",
-    "Restrict changes entirely to Markdown files."
+    "Do NOT modify any executable code, configuration files, or CI workflows.",
+    "Limit changes strictly to Markdown file creation and reference link additions."
   ]
 }

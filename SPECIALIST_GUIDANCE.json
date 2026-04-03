@@ -5,7 +5,7 @@
       "tasks": [
         {
           "description": "Ensure no large assets or images are added during the documentation update.",
-          "target_file": "CHANGELOG.md"
+          "target_file": "docs/TROUBLESHOOTING.md"
         }
       ]
     },
@@ -13,17 +13,17 @@
       "focus_area": "Documentation Readability",
       "tasks": [
         {
-          "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
-          "target_file": "CHANGELOG.md"
+          "description": "Verify the formatting and structure of the newly created docs/TROUBLESHOOTING.md.",
+          "target_file": "docs/TROUBLESHOOTING.md"
         }
       ]
     },
     "sentinel": {
-      "focus_area": "Credential Leak Prevention",
+      "focus_area": "Security of Troubleshooting Steps",
       "tasks": [
         {
-          "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
-          "target_file": "CHANGELOG.md"
+          "description": "Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.",
+          "target_file": "docs/TROUBLESHOOTING.md"
         }
       ]
     }
