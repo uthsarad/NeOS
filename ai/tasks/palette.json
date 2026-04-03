@@ -16,6 +16,10 @@
     {
       "description": "Verify that the new CHANGELOG.md and updated URLs are correctly formatted and accessible.",
       "target_file": "CHANGELOG.md"
+    },
+    {
+      "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
+      "target_file": "CHANGELOG.md"
     }
   ]
 }
