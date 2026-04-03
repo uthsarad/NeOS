@@ -16,6 +16,10 @@
     {
       "description": "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.",
       "target_file": "docs/*"
+    },
+    {
+      "description": "Ensure no large assets or images are added during the documentation update.",
+      "target_file": "CHANGELOG.md"
     }
   ]
 }

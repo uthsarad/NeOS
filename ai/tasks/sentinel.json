@@ -16,6 +16,10 @@
     {
       "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
       "target_file": "docs/*"
+    },
+    {
+      "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
+      "target_file": "CHANGELOG.md"
     }
   ]
 }
