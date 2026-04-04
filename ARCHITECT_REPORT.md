@@ -91,3 +91,20 @@ Update repository URLs in documentation and initialize CHANGELOG.md, as mandated
 - Updated `docs/PREREQUISITES_DRAFT.md`, `docs/HANDBOOK.md`, and `CONTRIBUTING.md` replacing `neos-project/neos` with `uthsarad/NeOS`.
 - Verified `CHANGELOG.md` is properly formatted following "Keep a Changelog" and contains no outdated URLs.
 - Appended specific task delegations to specialist JSON manifests (`bolt.json`, `palette.json`, `sentinel.json`).
+
+## Architect Report - Troubleshooting Guide Implementation
+
+## Objective
+Implement the `docs/TROUBLESHOOTING.md` guide and link it from `README.md` and `docs/HANDBOOK.md` as mandated by `ARCHITECT_SCOPE.json` and `STRATEGIC_DIRECTIVE.md`.
+
+## Actions Taken
+1.  **Scope Validation**: Confirmed the task fits inside `ARCHITECT_SCOPE.json` and targets only the specified Markdown files.
+2.  **Implementation**: Created `docs/TROUBLESHOOTING.md` with sections covering Build failures, Boot issues, Network problems, Snapshot rollback, and Driver issues.
+3.  **Integration**: Updated the "Documentation" section in `README.md` and the "Troubleshooting" section in `docs/HANDBOOK.md` to link to the new guide.
+4.  **Delegation**: Inserted inline comments for Bolt, Palette, and Sentinel in `docs/TROUBLESHOOTING.md` to mark potential optimization, UX, and security validation points. Appended the required tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` without destroying existing task tracking.
+
+## Constraints Adhered To
+- The surface area was strictly limited to the creation of one markdown file and updating documentation links.
+- Made NO modifications to any executable code, configuration files, or CI workflows.
+- Implemented the smallest correct version of the guide, avoiding overengineering while writing clean, readable markdown.
+- Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
