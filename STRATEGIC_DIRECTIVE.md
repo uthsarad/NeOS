@@ -1,31 +1,30 @@
 # STRATEGIC DIRECTIVE
 
 ## PHASE 1 — Product Alignment Check
-- **Product Vision:** NeOS aims to be a curated, predictable rolling-release Arch-based desktop OS with a Windows-familiar KDE Plasma experience.
-- **Current Alignment:** We are aligned. Recent efforts have stabilized the build profile, improved CI robustness, and addressed initial security/operational debt.
-- **Highest Leverage Problem:** The deep audit (DEEP_AUDIT.md) identified missing user-facing documentation for troubleshooting. As we approach beta, users and contributors need a structured guide for common issues (build failures, boot issues, snapshot rollbacks).
+- **Product Vision:** NeOS is a curated, predictable rolling-release Arch-based desktop OS targeting a Windows-familiar KDE Plasma experience.
+- **Current Alignment:** Strong alignment. Recent runs stabilized repository security defaults, documentation, CI workflows, and autoupdate snapshot dependencies.
+- **Highest Leverage Problem:** The `DEEP_AUDIT.md` action plan identified a gap in CI validation robustness (Item 3 in Audit: "Optional dependency warning in build-profile test"). Specifically, the CI pipeline and `tests/verify_build_profile.sh` rely on `PyYAML` to detect malformed GitHub Actions workflows. Its absence causes the workflow validation to be skipped, creating a blind spot where syntax errors could break automation.
 
 ## PHASE 2 — Technical Posture Review
-- **System Stability:** High. Verification scripts confirm repository integrity and basic security defaults.
-- **Tech Debt:** Decreasing. We have recently fixed documentation URLs and initialized a formal changelog.
-- **Overbuilding Risk:** Low, provided we stick strictly to documentation enhancements without altering underlying script logic.
+- **System Stability:** Stable. The build pipeline and core services enforce strict security boundaries and native script logic.
+- **Tech Debt:** Low. We verified items 1-10 in the `AUDIT_ACTION_PLAN.md` are either fully resolved, documented, or architecturally locked out from arbitrary modification. The remaining tech debt resides in test suite environmental dependencies.
+- **Overbuilding Risk:** Low. The fix requires adding a single package dependency to the CI test runner environment, keeping system logic untouched.
 
 ## PHASE 3 — Priority Selection
-**Selected Priority:** Stabilization / hardening (specifically, operational hardening via Documentation).
+**Selected Priority:** Infrastructure improvement (specifically, adding PyYAML to the CI audit environment for rigorous YAML validation).
 
 ## PHASE 4 — Controlled Scope Definition
 - **Exact files likely impacted:**
-  - `docs/TROUBLESHOOTING.md` (New file)
-  - `README.md` (Link update)
-  - `docs/HANDBOOK.md` (Link update)
-- **Maximum allowed surface area:** Creation of one markdown file and updating documentation links.
+  - `.github/workflows/build-iso.yml`
+- **Maximum allowed surface area:**
+  - Modification of the `pacman -Sy` dependency installation command in the `test` job of the `.github/workflows/build-iso.yml` workflow.
 - **Constraints Architect must obey:**
-  - Do NOT modify any executable code, configuration files, or CI workflows.
-  - The troubleshooting guide must address the specific topics identified in the audit action plan (Build failures, Boot issues, Network problems, Snapshot rollback, Driver issues).
-  - Limit the scope to exactly one coherent deliverable: the troubleshooting guide and its references.
+  - Do NOT modify any executable code in the `airootfs/` directory or bash logic in the `tests/` directory.
+  - Limit the scope exactly to adding the `python-yaml` (or equivalent) package to the CI runner environment.
+  - Implement the smallest correct version to resolve the missing dependency warning.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Implement the `docs/TROUBLESHOOTING.md` file and add links to it from `README.md` and `docs/HANDBOOK.md`.
-- **Bolt:** Ensure the troubleshooting guide does not introduce unnecessary repository bloat (e.g., large embedded media).
-- **Palette:** Verify the Markdown structure, headings, and readability of the troubleshooting guide.
-- **Sentinel:** Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.
+- **Architect:** Add `python-yaml` to the pacman installation step within the `test` job of `.github/workflows/build-iso.yml`.
+- **Bolt:** Ensure the dependency addition does not significantly slow down the CI `test` job startup.
+- **Palette:** Ensure any resulting YAML validation errors surfaced in CI logs remain clear and actionable.
+- **Sentinel:** Verify the package installation does not alter the `--privileged` execution boundaries or introduce supply chain risks to the test environment.

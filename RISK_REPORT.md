@@ -1,13 +1,12 @@
 # Risk & Priority Report
 
 ## Current System Risks
-1. **Operational/Documentation Debt (Medium Risk):** The absence of a dedicated troubleshooting guide increases support burden and friction for new users encountering common issues (e.g., ISO build, boot problems).
-2. **Network Resilience (Medium Risk):** Monitored. Tests like `verify_mirrorlist_connectivity.sh` are brittle in restricted environments, which may impact CI reliability.
-3. **Security Risks (Low Risk):** System security and build configurations are stable. Changes in this cycle are limited to documentation, posing no direct risk to the technical baseline.
+1. **CI Pipeline Blind Spot (Medium Risk):** The `DEEP_AUDIT.md` highlighted that the YAML validation stage in `tests/verify_build_profile.sh` is currently skipped in CI because the `python-yaml` dependency is not installed in the runner environment. This allows malformed GitHub Actions workflow YAML files to pass CI silently, potentially breaking the pipeline on subsequent runs if a syntax error slips through to the `main` branch.
+2. **Repository Consistency (Low Risk):** Minor, non-blocking items from the audit (e.g., adding structural comments to `packages.x86_64`) remain but do not threaten build integrity.
 
 ## Mitigations
-- Addressing operational debt by creating `docs/TROUBLESHOOTING.md`.
-- Future sprints should evaluate test resilience.
+- Addressing the CI blind spot by adding `python-yaml` to the `pacman` installation command in the `test` job of `.github/workflows/build-iso.yml`. This closes the validation gap.
+- Future sprints can address minor organizational cleanup in package manifests.
 
 ## Priority
-Address the medium-priority documentation issue (creating a troubleshooting guide) from the `AUDIT_ACTION_PLAN.md` while enforcing strict constraints against modifying any codebase logic.
+Address the medium-priority CI validation issue (adding PyYAML to the test runner) from the `AUDIT_ACTION_PLAN.md` while enforcing strict constraints against modifying the core verification script logic itself.

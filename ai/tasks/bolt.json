@@ -24,6 +24,10 @@
     {
       "description": "Ensure no large assets or images are added during the documentation update.",
       "target_file": "docs/TROUBLESHOOTING.md"
+    },
+    {
+      "description": "Ensure the addition of python-yaml to the test job's pacman command does not introduce a measurable delay in CI startup times. The test job must remain extremely fast to provide quick feedback.",
+      "target_file": ".github/workflows/build-iso.yml"
     }
   ]
 }

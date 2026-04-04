@@ -1,29 +1,29 @@
 {
   "specialists": {
     "bolt": {
-      "focus_area": "Repository bloat prevention",
+      "focus_area": "CI Startup Performance",
       "tasks": [
         {
-          "description": "Ensure no large assets or images are added during the documentation update.",
-          "target_file": "docs/TROUBLESHOOTING.md"
+          "description": "Ensure the addition of python-yaml to the test job's pacman command does not introduce a measurable delay in CI startup times. The test job must remain extremely fast to provide quick feedback.",
+          "target_file": ".github/workflows/build-iso.yml"
         }
       ]
     },
     "palette": {
-      "focus_area": "Documentation Readability",
+      "focus_area": "Developer UX in CI",
       "tasks": [
         {
-          "description": "Verify the formatting and structure of the newly created docs/TROUBLESHOOTING.md.",
-          "target_file": "docs/TROUBLESHOOTING.md"
+          "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
+          "target_file": "tests/verify_build_profile.sh"
         }
       ]
     },
     "sentinel": {
-      "focus_area": "Security of Troubleshooting Steps",
+      "focus_area": "CI Execution Security",
       "tasks": [
         {
-          "description": "Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.",
-          "target_file": "docs/TROUBLESHOOTING.md"
+          "description": "Verify the installation of the python-yaml package from official Arch Linux repositories does not alter execution boundaries or inadvertently expose the CI runner to supply chain attacks.",
+          "target_file": ".github/workflows/build-iso.yml"
         }
       ]
     }

@@ -24,6 +24,10 @@
     {
       "description": "Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.",
       "target_file": "docs/TROUBLESHOOTING.md"
+    },
+    {
+      "description": "Verify the installation of the python-yaml package from official Arch Linux repositories does not alter execution boundaries or inadvertently expose the CI runner to supply chain attacks.",
+      "target_file": ".github/workflows/build-iso.yml"
     }
   ]
 }
