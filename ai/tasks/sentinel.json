@@ -20,6 +20,10 @@
     {
       "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
       "target_file": "CHANGELOG.md"
+    },
+    {
+      "description": "Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.",
+      "target_file": "docs/TROUBLESHOOTING.md"
     }
   ]
 }

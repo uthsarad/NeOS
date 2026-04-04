@@ -2,7 +2,7 @@
   "focus_area": "Developer/Admin UX and Error Messages",
   "tasks": [
     {
-      "description": "Ensure the format of the test output is clear, readable, and includes actionable '\ud83d\udca1 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
+      "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
       "target_file": "tests/verify_mirrorlist_connectivity.sh"
     },
     {
@@ -20,6 +20,10 @@
     {
       "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
       "target_file": "CHANGELOG.md"
+    },
+    {
+      "description": "Verify the formatting and structure of the newly created docs/TROUBLESHOOTING.md.",
+      "target_file": "docs/TROUBLESHOOTING.md"
     }
   ]
 }

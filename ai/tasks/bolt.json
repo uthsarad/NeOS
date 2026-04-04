@@ -20,6 +20,10 @@
     {
       "description": "Ensure no large assets or images are added during the documentation update.",
       "target_file": "CHANGELOG.md"
+    },
+    {
+      "description": "Ensure no large assets or images are added during the documentation update.",
+      "target_file": "docs/TROUBLESHOOTING.md"
     }
   ]
 }

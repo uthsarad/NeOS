@@ -138,13 +138,4 @@ Place your scripts in `airootfs/usr/local/bin/` and ensure they are executable. 
 
 ## Troubleshooting
 
-### "Target not found" during build
-This usually means a package listed in `packages.x86_64` doesn't exist in the enabled repositories. Check your spelling or if the package was removed from Arch.
-
-### Build fails with permission errors
-Ensure you are running `mkarchiso` with `sudo`.
-
-### ISO doesn't boot
-*   Check if Secure Boot is disabled in your BIOS (NeOS may not support Secure Boot out of the box yet).
-*   Try a different USB port or drive.
-*   Verify the ISO checksum.
+For common issues regarding build failures, boot problems, network configuration, and snapshot rollbacks, please refer to the dedicated **[Troubleshooting Guide](TROUBLESHOOTING.md)**.
