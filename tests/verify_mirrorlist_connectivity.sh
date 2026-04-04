@@ -11,7 +11,7 @@ set -euo pipefail
 PIDS=()
 URLS=()
 
-while read -r BASE_URL; do
+while IFS= read -r BASE_URL; do
     if [[ -n "$BASE_URL" ]]; then
         echo "Testing connectivity to: $BASE_URL"
         # Bolt: Ensure the connectivity check avoids excessive timeouts and dispatch as background jobs
