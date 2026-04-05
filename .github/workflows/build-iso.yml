@@ -111,15 +111,15 @@ jobs:
           OUT_DIR="$GITHUB_WORKSPACE/out"
           echo "PROFILE_DIR=$PROFILE_DIR"
           echo "PACMAN_CONF=$PACMAN_CONF"
-          if [ -z "$PROFILE_DIR" ]; then
+          if [[ -z "$PROFILE_DIR" ]]; then
             echo "PROFILE_DIR is empty" >&2
             exit 1
           fi
-          if [ ! -f "$PACMAN_CONF" ]; then
+          if [[ ! -f "$PACMAN_CONF" ]]; then
             echo "Missing pacman config at $PACMAN_CONF" >&2
             exit 1
           fi
-          if [ ! -f "$PROFILE_DIR/profiledef.sh" ]; then
+          if [[ ! -f "$PROFILE_DIR/profiledef.sh" ]]; then
             echo "Missing profiledef.sh in $PROFILE_DIR" >&2
             exit 1
           fi
@@ -132,7 +132,7 @@ jobs:
           # Check if ISO was split into parts
           shopt -s nullglob
           parts=(neos-*.iso.part*)
-          if [ ${#parts[@]} -gt 0 ]; then
+          if [[ ${#parts[@]} -gt 0 ]]; then
             echo "Found ISO part files, combining them..."
             # Extract the base filename from the first part file
             base_name="${parts[0]%.part*}"
@@ -165,7 +165,7 @@ jobs:
           shopt -s nullglob
           files=(out/*.iso)
           ISO_FILE="${files[0]:-}"
-          if [ -z "$ISO_FILE" ]; then
+          if [[ -z "$ISO_FILE" ]]; then
              echo "❌ No ISO file found to validate"
              exit 1
           fi
@@ -182,7 +182,7 @@ jobs:
           echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           echo "Max Size: $MAX_SIZE bytes (${MAX_SIZE_MB} MiB)"
 
-          if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
+          if [[ "$ISO_SIZE" -ge "$MAX_SIZE" ]]; then
             # Palette: Consider providing instructions on how to reduce ISO size
             EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
             printf -v EXCESS_SIZE_MB "%d.%02d" "$((EXCESS_SIZE / 1048576))" "$(((EXCESS_SIZE % 1048576) * 100 / 1048576))"
