@@ -19,8 +19,8 @@ Identify and implement a measurable performance improvement in the codebase.
 - **Impact**: Barely measurable loop speed improvement by avoiding redundant word splitting.
 - **Measurement**: Run `bash tests/verify_mirrorlist_connectivity.sh`.
 
-## $(date +%Y-%m-%d) Optimization Update
-- **What**: Replaced POSIX single brackets `[ ... ]` with native bash double brackets `[[ ... ]]` in `.github/workflows/build-iso.yml`.
+## 2026-06-19 Optimization Update
+- **What**: Replaced POSIX single brackets `[ ... ]` with native bash double brackets `[[ ... ]]` in `tests/verify_iso_smoketest.sh` and `tests/verify_iso_grub.sh`.
 - **Why**: Native bash double brackets `[[ ... ]]` are faster and safer because they bypass standard pathname expansion and word splitting entirely.
-- **Impact**: Minor performance improvement in CI bash scripts during conditional evaluation.
-- **Measurement**: Run `bash tests/verify_iso_size.sh` to ensure scripts execute properly.
+- **Impact**: Minor performance improvement in CI bash validation scripts during conditional evaluation.
+- **Measurement**: Run `bash tests/verify_iso_smoketest.sh` and `bash tests/verify_iso_grub.sh` to ensure scripts execute properly.
