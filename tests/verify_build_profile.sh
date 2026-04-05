@@ -9,13 +9,19 @@ echo "Verifying mkarchiso build profile configuration..."
 # Verify workflow YAML is valid (prevents broken CI from heredoc/YAML conflicts)
 if [ -f "$WORKFLOW_FILE" ]; then
     if python3 -c "import yaml" 2>/dev/null; then
-        if python3 -c "
+        # Capture the error output to display it clearly
+        if ERR_MSG=$(python3 -c "
 import yaml, sys
-with open('$WORKFLOW_FILE') as f:
-    yaml.safe_load(f)
-" 2>/dev/null; then
+try:
+    with open('$WORKFLOW_FILE') as f:
+        yaml.safe_load(f)
+except Exception as e:
+    print(e, file=sys.stderr)
+    sys.exit(1)
+" 2>&1); then
             echo "✅ $WORKFLOW_FILE is valid YAML"
         else
+            echo -e "$ERR_MSG" >&2
             echo "❌ $WORKFLOW_FILE has YAML syntax errors (CI will fail with 0 jobs)"
             echo ""
             echo "💡 How to fix:"
