@@ -8,6 +8,14 @@ echo "Verifying mkarchiso build profile configuration..."
 
 # Verify workflow YAML is valid (prevents broken CI from heredoc/YAML conflicts)
 if [ -f "$WORKFLOW_FILE" ]; then
+    if ! python3 -c "import yaml" 2>/dev/null; then
+        if command -v pacman >/dev/null 2>&1; then
+            echo "Installing python-yaml dynamically for validation..."
+            pacman -Sy --noconfirm python-yaml || true
+        else
+            echo "pacman not found, skipping python-yaml installation..."
+        fi
+    fi
     if python3 -c "import yaml" 2>/dev/null; then
         # Capture the error output to display it clearly
         if ERR_MSG=$(python3 -c "
