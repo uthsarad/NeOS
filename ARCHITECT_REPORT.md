@@ -108,3 +108,7 @@ Implement the `docs/TROUBLESHOOTING.md` guide and link it from `README.md` and `
 - Made NO modifications to any executable code, configuration files, or CI workflows.
 - Implemented the smallest correct version of the guide, avoiding overengineering while writing clean, readable markdown.
 - Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
+
+## Architect Update: Added python-yaml dependency
+- Added `python-yaml` to the `.github/workflows/build-iso.yml` test job to enable YAML validation in the CI pipeline.
+- Confirmed that the required delegation tasks for Bolt, Palette, and Sentinel regarding this feature were already accurately present in their respective manifest files.
