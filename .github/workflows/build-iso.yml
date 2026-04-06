@@ -27,7 +27,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust
+          # Bolt: Ensure the addition of python-yaml doesn't negatively impact start time.
+          # Sentinel: Verify that adding this archlinux repository dependency does not alter execution boundaries or inadvertently expose the CI runner to supply chain attacks.
+          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml
 
       - name: Run pre-build validations
         run: |
