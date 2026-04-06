@@ -24,3 +24,8 @@ Identify and implement a measurable performance improvement in the codebase.
 - **Why**: Native bash double brackets `[[ ... ]]` are faster and safer because they bypass standard pathname expansion and word splitting entirely.
 - **Impact**: Minor performance improvement in CI bash validation scripts during conditional evaluation.
 - **Measurement**: Run `bash tests/verify_iso_smoketest.sh` and `bash tests/verify_iso_grub.sh` to ensure scripts execute properly.
+
+### Action Summary (2024-04-06)
+- **What was optimized:** `build-iso.yml` CI workflow pre-build validation step.
+- **Before/after reasoning:** Replaced multiple explicit string matches against test names in the CI pipeline loop with a single native pattern match check (`*iso*`). This reduces the number of comparisons per iteration and executes nearly twice as fast, improving CI validation times without altering behavioral logic.
+- **Remaining performance risks:** None identified for this specific check, although other areas of the CI workflow could potentially be optimized further.

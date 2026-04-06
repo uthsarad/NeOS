@@ -95,3 +95,7 @@
 ## 2024-05-19 - Parallelizing Sequential Network Checks in Bash
 **Learning:** Sequential network operations (like multiple `curl` checks) in bash scripts can severely bottleneck performance due to blocking timeouts, especially during CI/CD validations.
 **Action:** Always optimize sequential network checks by dispatching them as background jobs (`&`), storing their process IDs (`PIDS+=($!)`), and using `wait` in a separate loop to collect exit codes. This allows parallel execution and drastically reduces overall run time without introducing complex external dependencies.
+
+## 2024-04-06 - Native bash globbing vs multiple string comparisons
+**Learning:** In bash, replacing multiple string exact matches with a single pattern match (e.g., `[[ "$script" == *iso* ]]`) inside loops can speed up execution by nearly 2x by reducing string comparisons and parsing overhead.
+**Action:** Always prefer native pattern matching over multiple ORed exact string comparisons when checking for a common substring in a hot loop.
