@@ -1,0 +1,1 @@
+echo "Restored files correctly."
