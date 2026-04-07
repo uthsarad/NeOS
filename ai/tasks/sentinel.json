@@ -2,28 +2,28 @@
   "focus_area": "Security Validation",
   "tasks": [
     {
-      "description": "Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.",
-      "target_file": "docs/TROUBLESHOOTING.md"
-    },
-    {
-      "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
-      "target_file": "CHANGELOG.md"
-    },
-    {
-      "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
-      "target_file": "docs/*"
-    },
-    {
       "description": "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities.",
       "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
     },
     {
       "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     },
     {
-      "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
-      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+      "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
+      "target_file": "docs/*"
+    },
+    {
+      "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
+      "target_file": "CHANGELOG.md"
+    },
+    {
+      "description": "Audit the troubleshooting guide to ensure no insecure workarounds or dangerous commands are recommended to users.",
+      "target_file": "docs/TROUBLESHOOTING.md"
     },
     {
       "description": "Verify the installation of the python-yaml package from official Arch Linux repositories does not alter execution boundaries or inadvertently expose the CI runner to supply chain attacks.",

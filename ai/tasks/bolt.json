@@ -2,6 +2,22 @@
   "focus_area": "Performance Optimization",
   "tasks": [
     {
+      "description": "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead. Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
+    },
+    {
+      "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.",
+      "target_file": "docs/*"
+    },
+    {
       "description": "Ensure no large assets or images are added during the documentation update.",
       "target_file": "CHANGELOG.md"
     },
@@ -12,22 +28,6 @@
     {
       "description": "Ensure the addition of python-yaml to the test job's pacman command does not introduce a measurable delay in CI startup times. The test job must remain extremely fast to provide quick feedback.",
       "target_file": ".github/workflows/build-iso.yml"
-    },
-    {
-      "description": "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead. Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging.",
-      "target_file": "tests/verify_mirrorlist_connectivity.sh"
-    },
-    {
-      "description": "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.",
-      "target_file": "docs/*"
-    },
-    {
-      "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
-      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
-    },
-    {
-      "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
-      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
     }
   ]
 }

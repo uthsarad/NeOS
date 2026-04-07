@@ -2,23 +2,23 @@
   "focus_area": "Developer/Admin UX and Error Messages",
   "tasks": [
     {
-      "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
-      "target_file": "tests/verify_build_profile.sh"
-    },
-    {
-      "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
-      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+      "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     },
     {
       "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
       "target_file": "airootfs/usr/local/bin/neos-liveuser-setup"
     },
     {
-      "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
-      "target_file": "tests/verify_mirrorlist_connectivity.sh"
+      "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     },
     {
       "description": "Verify that the new CHANGELOG.md and updated URLs are correctly formatted and accessible.",
+      "target_file": "CHANGELOG.md"
+    },
+    {
+      "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
       "target_file": "CHANGELOG.md"
     },
     {
@@ -26,8 +26,8 @@
       "target_file": "docs/TROUBLESHOOTING.md"
     },
     {
-      "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
-      "target_file": "CHANGELOG.md"
+      "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
+      "target_file": "tests/verify_build_profile.sh"
     }
   ]
 }
