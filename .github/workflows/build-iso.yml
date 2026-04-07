@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust
+          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml
 
       - name: Run pre-build validations
         run: |

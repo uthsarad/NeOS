@@ -335,3 +335,13 @@ All identified medium-severity vulnerabilities have been successfully mitigated.
 ### Severity Summary
 
 - **High Risks Resolved**: 1 (Replaced insecure mirrorlist pipeline parsing with robust `awk` implementation containing strict URL validation)
+
+## Sentinel Update: Removed dynamic state-altering package manager execution
+**Risks found:** `tests/verify_build_profile.sh` used a dynamic `pacman -Sy --noconfirm python-yaml || true` command to resolve dependencies. Executing state-altering commands that require root privileges within local test scripts presents a severe system-safety risk for developers, and could lead to system breakage or accidental partial upgrades.
+**Fixes applied:**
+- Removed the dynamic `pacman -Sy` call from the local validation script (`tests/verify_build_profile.sh`).
+- Re-assigned the dependency installation directly to the secure CI environment scope in `.github/workflows/build-iso.yml` (append `python-yaml` to the existing dependency installation line).
+**Remaining attack surface:**
+- The CI pipeline still runs with `--privileged` docker container. This should be audited separately to ensure the risk boundary is well-understood.
+**Severity summary:**
+- The removed dynamic pacman operation is treated as HIGH severity for preventing accidental partial upgrades and system modification on local contributor development machines.
