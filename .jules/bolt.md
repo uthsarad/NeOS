@@ -95,3 +95,6 @@
 ## 2024-05-19 - Parallelizing Sequential Network Checks in Bash
 **Learning:** Sequential network operations (like multiple `curl` checks) in bash scripts can severely bottleneck performance due to blocking timeouts, especially during CI/CD validations.
 **Action:** Always optimize sequential network checks by dispatching them as background jobs (`&`), storing their process IDs (`PIDS+=($!)`), and using `wait` in a separate loop to collect exit codes. This allows parallel execution and drastically reduces overall run time without introducing complex external dependencies.
+## 2025-04-07 - Subshell pre-optimization discovery
+**Learning:** The NeOS codebase is heavily pre-optimized, particularly inside tests and bash scripts. Many scripts already utilize robust parallel execution, native bash arithmetic/parameter expansion, and AWK script parsing over bash piping tools.
+**Action:** Default to Fail-Safe Behavior: avoid blindly rewriting optimized scripts. Rely on code profiling first and only introduce minor nudges if explicitly mandated by the task format without undoing prior optimizations.
