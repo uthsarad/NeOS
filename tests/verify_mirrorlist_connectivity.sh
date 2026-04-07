@@ -12,13 +12,11 @@ PIDS=()
 URLS=()
 
 while IFS= read -r BASE_URL; do
-    if [[ -n "$BASE_URL" ]]; then
-        echo "Testing connectivity to: $BASE_URL"
-        # Bolt: Ensure the connectivity check avoids excessive timeouts and dispatch as background jobs
-        curl -I -s --connect-timeout 2 --max-time 3 "$BASE_URL" > /dev/null &
-        PIDS+=($!)
-        URLS+=("$BASE_URL")
-    fi
+    echo "Testing connectivity to: $BASE_URL"
+    # Bolt: Ensure the connectivity check avoids excessive timeouts and dispatch as background jobs
+    curl -I -s --connect-timeout 2 --max-time 3 "$BASE_URL" > /dev/null &
+    PIDS+=($!)
+    URLS+=("$BASE_URL")
 done < <(awk -F '=' '/^[ \t]*Server[ \t]*=/ {
     url = $2
     sub(/^[ \t]+/, "", url)
