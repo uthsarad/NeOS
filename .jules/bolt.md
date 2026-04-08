@@ -98,3 +98,6 @@
 ## 2025-04-07 - Subshell pre-optimization discovery
 **Learning:** The NeOS codebase is heavily pre-optimized, particularly inside tests and bash scripts. Many scripts already utilize robust parallel execution, native bash arithmetic/parameter expansion, and AWK script parsing over bash piping tools.
 **Action:** Default to Fail-Safe Behavior: avoid blindly rewriting optimized scripts. Rely on code profiling first and only introduce minor nudges if explicitly mandated by the task format without undoing prior optimizations.
+## 2024-05-15 - Fast File Discovery with Bash Globbing
+**Learning:** In bash scripts, replacing multiple exact string matches (e.g., `[[ "$var" == "str1" ]] || [[ "$var" == "str2" ]]`) inside a hot loop with a single native bash glob match (e.g., `[[ "$var" == *str* ]]`) significantly reduces comparisons, eliminates parsing overhead, and speeds up execution.
+**Action:** Always prefer native globbing patterns over multiple ORed conditional checks when filtering filenames or short, common substrings in loop evaluations.
