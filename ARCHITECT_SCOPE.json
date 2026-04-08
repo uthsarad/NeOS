@@ -1,14 +1,16 @@
 {
   "target_files": [
-    ".github/workflows/build-iso.yml"
+    "airootfs/etc/systemd/system/neos-autoupdate.service",
+    "airootfs/etc/systemd/system/neos-liveuser-setup.service",
+    "airootfs/etc/systemd/system/neos-driver-manager.service"
   ],
   "instructions": [
-    "Locate the 'Install dependencies' step within the 'test' job in `.github/workflows/build-iso.yml`.",
-    "Add the package `python-yaml` to the list of packages installed via the `pacman -Sy` command to enable full YAML syntax validation in `tests/verify_build_profile.sh`."
+    "Implement systemd sandboxing in all specified `.service` files.",
+    "Add `ProtectSystem=strict`, `ProtectHome=yes`, `PrivateTmp=yes`, `NoNewPrivileges=yes`, `ProtectKernelTunables=yes`, and `RestrictRealtime=yes` to the `[Service]` section of each file."
   ],
   "constraints": [
-    "Do NOT modify the bash logic inside `tests/verify_build_profile.sh` or any other test scripts.",
-    "Do NOT modify any executable code in the `airootfs/` directory.",
-    "Limit the scope exactly to modifying the package installation command."
+    "Ensure changes are limited exactly to the required systemd directives.",
+    "Do not alter the `ExecStart` or other existing functionality parameters.",
+    "Verify syntax correctly aligns with systemd unit file standards."
   ]
 }
