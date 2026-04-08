@@ -1,29 +1,29 @@
 {
   "specialists": {
     "bolt": {
-      "focus_area": "CI Startup Performance",
+      "focus_area": "Service Boot Performance",
       "tasks": [
         {
-          "description": "Ensure the addition of python-yaml to the test job's pacman command does not introduce a measurable delay in CI startup times. The test job must remain extremely fast to provide quick feedback.",
-          "target_file": ".github/workflows/build-iso.yml"
+          "description": "Verify that the added systemd sandboxing directives do not introduce measurable performance regressions during service startup.",
+          "target_file": "airootfs/etc/systemd/system/*.service"
         }
       ]
     },
     "palette": {
-      "focus_area": "Developer UX in CI",
+      "focus_area": "Developer UX in Service Logs",
       "tasks": [
         {
-          "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
-          "target_file": "tests/verify_build_profile.sh"
+          "description": "Ensure any failures related to tightened systemd sandboxing (e.g., permission denied) are logged with clear, actionable context for developers.",
+          "target_file": "airootfs/etc/systemd/system/*.service"
         }
       ]
     },
     "sentinel": {
-      "focus_area": "CI Execution Security",
+      "focus_area": "Privilege Escalation Prevention",
       "tasks": [
         {
-          "description": "Verify the installation of the python-yaml package from official Arch Linux repositories does not alter execution boundaries or inadvertently expose the CI runner to supply chain attacks.",
-          "target_file": ".github/workflows/build-iso.yml"
+          "description": "Audit the updated systemd service units to ensure sandboxing is correctly applied and prevents privilege escalation or unauthorized file system access.",
+          "target_file": "airootfs/etc/systemd/system/*.service"
         }
       ]
     }
