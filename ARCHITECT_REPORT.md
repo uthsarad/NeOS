@@ -129,3 +129,17 @@ Implement the `docs/TROUBLESHOOTING.md` guide and link it from `README.md` and `
 - Reverted the unauthorized workflow modification to `.github/workflows/build-iso.yml` due to an intentional security boundary (lacking a PAT for modifying workflows).
 - Modified `tests/verify_build_profile.sh` to remove the dynamic `pacman -Sy` installation logic, as executing package managers dynamically in validation scripts introduces safety risks when run locally by developers.
 - The missing `python-yaml` dependency is natively handled by the test script using graceful degradation, safely skipping the YAML validation without failing the CI suite, which is an authorized and acceptable resolution given the security constraints.
+
+## ARCHITECT REPORT UPDATE
+
+### Scope: Implement python-yaml in CI dependencies
+- **Files Modified:** `.github/workflows/build-iso.yml`
+- **Action Taken:** Added `python-yaml` to the pacman installation step within the `test` job.
+- **Constraints Honored:**
+  - Kept changes restricted to the specified job in `.github/workflows/build-iso.yml`.
+  - Did NOT modify `airootfs/` directory.
+  - Did NOT modify tests bash logic.
+- **Delegations Generated:**
+  - Bolt: verify performance is not delayed by the addition.
+  - Palette: verify developers find YAML parsing errors readable.
+  - Sentinel: verify `python-yaml` introduction from official repos introduces no supply-chain or boundary escape risk.

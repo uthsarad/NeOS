@@ -28,6 +28,10 @@
     {
       "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
       "target_file": "tests/verify_build_profile.sh"
+    },
+    {
+      "description": "Architect explicitly: Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
+      "target_file": "tests/verify_build_profile.sh"
     }
   ]
 }

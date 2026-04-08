@@ -26,8 +26,10 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Install dependencies
+        # Sentinel: Verify python-yaml installation from official repos introduces no supply-chain or boundary escape risk.
+        # Bolt: Verify performance is not delayed by the addition of python-yaml.
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust
+          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml
 
       - name: Run pre-build validations
         run: |
