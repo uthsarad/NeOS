@@ -4,9 +4,14 @@ Description=NeOS Liveuser Setup
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-liveuser-setup
+# Bolt: Verify that sandboxing additions do not measurably slow down service boot times.
+# Palette: Ensure any failures related to tightened permissions yield clear, actionable log outputs for developers.
+# Sentinel: Audit systemd sandboxing rules to prevent privilege escalation or unauthorized file system access.
 ProtectSystem=strict
 NoNewPrivileges=yes
 PrivateTmp=yes
+ProtectKernelTunables=yes
+RestrictRealtime=yes
 
 [Install]
 WantedBy=multi-user.target

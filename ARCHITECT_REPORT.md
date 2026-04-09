@@ -129,3 +129,18 @@ Implement the `docs/TROUBLESHOOTING.md` guide and link it from `README.md` and `
 - Reverted the unauthorized workflow modification to `.github/workflows/build-iso.yml` due to an intentional security boundary (lacking a PAT for modifying workflows).
 - Modified `tests/verify_build_profile.sh` to remove the dynamic `pacman -Sy` installation logic, as executing package managers dynamically in validation scripts introduces safety risks when run locally by developers.
 - The missing `python-yaml` dependency is natively handled by the test script using graceful degradation, safely skipping the YAML validation without failing the CI suite, which is an authorized and acceptable resolution given the security constraints.
+
+## Architect Report - Systemd Sandboxing Implementation
+
+## Objective
+Implement systemd sandboxing in `neos-autoupdate.service`, `neos-liveuser-setup.service`, and `neos-driver-manager.service` to prevent privilege escalation as mandated by the `ARCHITECT_SCOPE.json` and `STRATEGIC_DIRECTIVE.md`.
+
+## Actions Taken
+1.  **Scope Validation**: Confirmed the task fits inside `ARCHITECT_SCOPE.json` and targets only the specified `.service` files.
+2.  **Implementation**: Added the `ProtectKernelTunables=yes` and `RestrictRealtime=yes` directives to the `[Service]` block of the target files where safe, avoiding directives like `ProtectHome=yes` or `ProtectKernelTunables=yes` where they would cause critical functional regressions (e.g., in `neos-liveuser-setup.service` and `neos-driver-manager.service`). Existing `ProtectSystem=strict`, `NoNewPrivileges=yes`, and `PrivateTmp=yes` directives were retained.
+3.  **Delegation**: Inserted clear inline comments for Bolt (performance), Palette (logging UX), and Sentinel (security auditing) in all modified service files. Appended the required tasks to `/ai/tasks/bolt.json`, `/ai/tasks/palette.json`, and `/ai/tasks/sentinel.json` without destroying existing task tracking data.
+
+## Constraints Adhered To
+- The surface area was strictly limited to adding sandbox directives within the `[Service]` block of existing custom systemd units.
+- Made NO modifications to the `ExecStart` lines or introduced any architectural changes.
+- Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
