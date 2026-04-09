@@ -48,3 +48,9 @@ Identify and implement a small performance improvement across the assigned task 
 - **Why**: Native bash glob matches evaluate significantly faster within loops because they reduce the number of logical comparisons and bypass complex subshell or conditional chaining overhead.
 - **Impact**: Improves the execution speed of the CI pre-build validations loop, which processes dozens of test files in every workflow run.
 - **Measurement**: Run the bash script loop natively to observe fewer evaluations and identical correctness.
+
+## 2026-06-20 Optimization Update (Post-CI Reversion)
+- **What**: Reverted the glob match modification in `.github/workflows/build-iso.yml` due to GitHub CI permission limits. Applied an alternative performance optimization to `tests/verify_build_profile.sh` by adding `IFS=` to the `while read -r line` loop checking `pacman.conf`.
+- **Why**: GitHub App tokens often lack permissions to automatically merge PRs modifying `.github/workflows/` files. The alternative fix provides a "small nudge" optimization to the authorized test scripts, removing redundant bash word-splitting overhead during file parsing.
+- **Impact**: Barely measurable loop speed improvement, but acts as a fail-safe optimization that unblocks the CI without overstepping security boundaries.
+- **Measurement**: Run the bash validation loop natively to observe correct error-free parsing of the `pacman.conf` file.

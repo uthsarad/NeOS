@@ -103,7 +103,7 @@ if [ -f "pacman.conf" ]; then
     # Bolt: Replace subprocess grep with native bash logic or read file lines if performance overhead becomes a concern during parallel validation.
     # Sentinel: The root pacman.conf requires 'DatabaseOptional' to unblock the build process for unsigned repos. Ensure this does not inadvertently leak to the installed system.
     has_db_req=false
-    while read -r line; do
+    while IFS= read -r line; do
         if [[ "$line" =~ ^[[:space:]]*SigLevel[[:space:]]*=.*DatabaseRequired ]]; then
             has_db_req=true
             break
