@@ -28,6 +28,10 @@
     {
       "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
       "target_file": "tests/verify_build_profile.sh"
+    },
+    {
+      "description": "Ensure any failures related to tightened systemd sandboxing (e.g., permission denied) are logged with clear, actionable context for developers.",
+      "target_file": "airootfs/etc/systemd/system/*.service"
     }
   ]
 }
