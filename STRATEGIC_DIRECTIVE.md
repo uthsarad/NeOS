@@ -1,41 +1,26 @@
-PHASE 1 — Product Alignment Check
-- What is the product trying to become?
-  NeOS is aiming to be a curated, snapshot-based Arch Linux desktop distribution focused on predictable behavior, stability, and a Windows-familiar UX.
-- Are we building toward that?
-  Yes, by emphasizing stability and low breakage through curated configurations rather than adding raw features.
-- Are we solving the highest leverage problem?
-  The deep audit report highlights a critical security gap: systemd services run with elevated privileges without strict sandboxing. Resolving this provides high-leverage stability and aligns with the resilience mindset.
+# Strategic Directive
 
-PHASE 2 — Technical Posture Review
-- Is the system stable?
-  Generally stable, but vulnerable to potential privilege escalation if custom service components fail or are exploited.
-- Is tech debt increasing?
-  Tech debt remains from un-sandboxed services (`neos-autoupdate.service`, `neos-driver-manager.service`, etc.) as identified in the `DEEP_AUDIT.md`.
-- Are we overbuilding?
-  No. We are prioritizing hardening existing, necessary components rather than introducing new services.
+## PHASE 1 — Product Alignment Check
+- **What is the product trying to become?** NeOS aims to be a curated, predictable rolling-release Arch-based desktop OS with a Windows-familiar KDE Plasma experience.
+- **Are we building toward that?** Yes, the recent implementations of systemd sandboxing, automated Btrfs snapshot hooks, and verified QML enhancements indicate a trajectory towards a resilient, polished desktop. However, the system's reliance on custom bash scripts introduces maintainability risk.
+- **Are we solving the highest leverage problem?** Ensuring the robustness of our custom scripts via automated CI validation (ShellCheck) is the highest leverage infrastructure improvement we can make to prevent regressions and security vulnerabilities before the beta release.
 
-PHASE 3 — Priority Selection
-- Stabilization / hardening
-  We will dedicate this effort entirely to implementing systemd sandboxing across custom services.
+## PHASE 2 — Technical Posture Review
+- **Is the system stable?** Mostly. 22 out of 24 verification tests pass, with 2 non-blocking environmental failures. Critical issues like the `pacman.conf` SigLevel blocking builds have been resolved.
+- **Is tech debt increasing?** Yes, due to a proliferation of custom Bash scripts (`tests/verify_*.sh`, `airootfs/usr/local/bin/*`) lacking automated static analysis.
+- **Are we overbuilding?** No, but we are under-validating our custom logic.
 
-PHASE 4 — Controlled Scope Definition
-- Exact files likely impacted:
-  `airootfs/etc/systemd/system/neos-autoupdate.service`
-  `airootfs/etc/systemd/system/neos-liveuser-setup.service`
-  `airootfs/etc/systemd/system/neos-driver-manager.service`
-- Maximum allowed surface area:
-  Modifications must be strictly limited to adding sandbox directives within the `[Service]` block of existing custom systemd units.
-- Constraints Architect must obey:
-  - Do NOT write new executable scripts.
-  - Do NOT modify the `ExecStart` lines.
-  - Limit additions explicitly to: `ProtectSystem=strict`, `ProtectHome=yes`, `PrivateTmp=yes`, `NoNewPrivileges=yes`, `ProtectKernelTunables=yes`, and `RestrictRealtime=yes`.
+## PHASE 3 — Priority Selection
+- **Selected Priority:** Infrastructure improvement
+- **Rationale:** Integrating ShellCheck into the CI pipeline directly addresses the technical debt identified in Phase 2 and satisfies long-term improvement item #14 ("Add Security Scanning: ShellCheck for bash scripts") from `AUDIT_ACTION_PLAN.md`.
 
-PHASE 5 — Delegation Strategy
-- Architect builds:
-  Implementation of systemd sandboxing rules inside the specified unit files.
-- Bolt optimizes:
-  Validation that sandboxing additions do not measurably slow down service boot times.
-- Palette enhances:
-  Verification that any startup failures caused by tightened permissions yield clear, actionable log outputs for developers.
-- Sentinel audits:
-  Confirmation that the applied sandboxing directives correctly isolate the file system and prevent privilege escalation, adhering to the principle of least privilege.
+## PHASE 4 — Controlled Scope Definition
+- **Exact files likely impacted:** `.github/workflows/shellcheck.yml` (new)
+- **Maximum allowed surface area:** Creation of a new GitHub Actions workflow file solely dedicated to running ShellCheck against `.sh` files and scripts without extensions in `airootfs/usr/local/bin/`. No existing production code or scripts should be modified in this run.
+- **Constraints Architect must obey:** Must only create the CI workflow file. Must not attempt to "fix" any warnings ShellCheck finds in this pass; the goal is solely to establish the infrastructure.
+
+## PHASE 5 — Delegation Strategy
+- **Architect builds:** The ShellCheck GitHub Actions workflow (`.github/workflows/shellcheck.yml`).
+- **Bolt optimizes:** Ensure the ShellCheck CI job runs quickly by targeting specific directories rather than performing an exhaustive, unoptimized find across the entire repository.
+- **Palette enhances:** Ensure the ShellCheck output format in CI is readable, preferably using a structured format (like `gcc` or `tty`) that integrates well with GitHub Actions annotations.
+- **Sentinel audits:** Review the workflow to ensure it uses official, pinned actions or secure execution environments to prevent supply chain risks.

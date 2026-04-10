@@ -1,31 +1,20 @@
 {
-  "specialists": {
-    "bolt": {
-      "focus_area": "Service Boot Performance",
-      "tasks": [
-        {
-          "description": "Verify that the added systemd sandboxing directives do not introduce measurable performance regressions during service startup.",
-          "target_file": "airootfs/etc/systemd/system/*.service"
-        }
-      ]
-    },
-    "palette": {
-      "focus_area": "Developer UX in Service Logs",
-      "tasks": [
-        {
-          "description": "Ensure any failures related to tightened systemd sandboxing (e.g., permission denied) are logged with clear, actionable context for developers.",
-          "target_file": "airootfs/etc/systemd/system/*.service"
-        }
-      ]
-    },
-    "sentinel": {
-      "focus_area": "Privilege Escalation Prevention",
-      "tasks": [
-        {
-          "description": "Audit the updated systemd service units to ensure sandboxing is correctly applied and prevents privilege escalation or unauthorized file system access.",
-          "target_file": "airootfs/etc/systemd/system/*.service"
-        }
-      ]
-    }
+  "bolt": {
+    "focus": "Performance of CI execution",
+    "instructions": [
+      "Ensure the ShellCheck workflow uses efficient file discovery methods (e.g., specific `find` commands targeting `tests/` and `airootfs/usr/local/bin/`) rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime."
+    ]
+  },
+  "palette": {
+    "focus": "CI Output Readability",
+    "instructions": [
+      "Ensure the ShellCheck output format in the GitHub Actions workflow is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers."
+    ]
+  },
+  "sentinel": {
+    "focus": "Supply Chain Security",
+    "instructions": [
+      "Review the `.github/workflows/shellcheck.yml` file to ensure it uses official, pinned GitHub actions (e.g., `koalaman/shellcheck-action` with a specific version tag or SHA) or securely installs `shellcheck` via trusted package managers (like `apt-get` on Ubuntu runners) to prevent supply chain risks."
+    ]
   }
 }
