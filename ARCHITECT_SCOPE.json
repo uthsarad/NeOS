@@ -1,16 +1,16 @@
 {
   "target_files": [
-    "airootfs/etc/systemd/system/neos-autoupdate.service",
-    "airootfs/etc/systemd/system/neos-liveuser-setup.service",
-    "airootfs/etc/systemd/system/neos-driver-manager.service"
+    ".github/workflows/shellcheck.yml"
   ],
   "instructions": [
-    "Implement systemd sandboxing in all specified `.service` files.",
-    "Add `ProtectSystem=strict`, `ProtectHome=yes`, `PrivateTmp=yes`, `NoNewPrivileges=yes`, `ProtectKernelTunables=yes`, and `RestrictRealtime=yes` to the `[Service]` section of each file."
+    "Create a new GitHub Actions workflow file at `.github/workflows/shellcheck.yml` to run ShellCheck on all bash scripts.",
+    "The workflow should trigger on push and pull_request to the `main` branch.",
+    "The workflow should find and execute ShellCheck against all `.sh` files in the repository.",
+    "The workflow should also execute ShellCheck against extension-less scripts in `airootfs/usr/local/bin/` (e.g., `neos-liveuser-setup`, `neos-driver-manager`)."
   ],
   "constraints": [
-    "Ensure changes are limited exactly to the required systemd directives.",
-    "Do not alter the `ExecStart` or other existing functionality parameters.",
-    "Verify syntax correctly aligns with systemd unit file standards."
+    "Do not modify any existing bash scripts or production code.",
+    "Do not attempt to fix any ShellCheck warnings or errors in this run.",
+    "The scope is strictly limited to infrastructure creation (the workflow file)."
   ]
 }
