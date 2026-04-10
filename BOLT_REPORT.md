@@ -54,3 +54,17 @@ Identify and implement a small performance improvement across the assigned task 
 - **Why**: GitHub App tokens often lack permissions to automatically merge PRs modifying `.github/workflows/` files. The alternative fix provides a "small nudge" optimization to the authorized test scripts, removing redundant bash word-splitting overhead during file parsing.
 - **Impact**: Barely measurable loop speed improvement, but acts as a fail-safe optimization that unblocks the CI without overstepping security boundaries.
 - **Measurement**: Run the bash validation loop natively to observe correct error-free parsing of the `pacman.conf` file.
+
+## Bolt Report - Trap Command Optimization
+
+## Objective
+Optimize trap error handlers in custom bash scripts to minimize subshell overhead as mandated by the `bolt.json` manifest.
+
+## Actions Taken
+1. **Scope Validation**: Analyzed `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`.
+2. **Implementation**: Extracted the `${0##*/}` parameter expansion into a cached `SCRIPT_NAME` variable declared before the trap definition in both scripts. The trap commands were updated to use `$SCRIPT_NAME` instead of repeatedly executing `${0##*/}`.
+3. **Rationale**: While evaluating the scripts, it was determined that the performance overhead of parameter expansion inside the trap was already minimal because traps only execute upon error conditions. However, in keeping with the 'Fail-Safe Behavior' directive to apply a safe, minor optimization when explicitly mandated to make a small nudge, caching the parameter expansion removes redundant evaluation paths inside error loops, improving trap execution speed without introducing complexity or sacrificing readability.
+
+## Remaining Performance Risks
+- **No major bottlenecks**: The codebase structure surrounding the modified scripts was found to be functionally sound without major blocking I/O or redundant computation loops.
+- **Micro-optimization Limit**: Further optimizations in these specific scripts would border on overengineering without yielding measurable human-perceptible speed gains. Future optimization efforts should target larger structural loops or build-pipeline I/O bottlenecks.
