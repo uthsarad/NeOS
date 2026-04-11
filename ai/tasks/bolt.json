@@ -32,6 +32,10 @@
     {
       "description": "Verify that the added systemd sandboxing directives do not introduce measurable performance regressions during service startup.",
       "target_file": "airootfs/etc/systemd/system/*.service"
+    },
+    {
+      "description": "Ensure the ShellCheck script uses efficient file discovery methods (e.g., specific `find` commands targeting `tests/` and `airootfs/usr/local/bin/`) rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime.",
+      "target_file": "tests/verify_shellcheck.sh"
     }
   ]
 }

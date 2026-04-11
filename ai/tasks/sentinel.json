@@ -32,6 +32,10 @@
     {
       "description": "Audit the updated systemd service units to ensure sandboxing is correctly applied and prevents privilege escalation or unauthorized file system access.",
       "target_file": "airootfs/etc/systemd/system/*.service"
+    },
+    {
+      "description": "Review the `tests/verify_shellcheck.sh` file to ensure it checks for the existence of shellcheck without breaking the build.",
+      "target_file": "tests/verify_shellcheck.sh"
     }
   ]
 }
