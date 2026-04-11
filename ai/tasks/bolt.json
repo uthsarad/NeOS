@@ -34,8 +34,8 @@
       "target_file": "airootfs/etc/systemd/system/*.service"
     },
     {
-      "description": "Ensure the ShellCheck workflow uses efficient file discovery methods (e.g., specific `find` commands targeting `tests/` and `airootfs/usr/local/bin/`) rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime.",
-      "target_file": ".github/workflows/shellcheck.yml"
+      "description": "Ensure the ShellCheck script uses efficient file discovery methods (e.g., specific `find` commands targeting `tests/` and `airootfs/usr/local/bin/`) rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime.",
+      "target_file": "tests/verify_shellcheck.sh"
     }
   ]
 }

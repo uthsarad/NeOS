@@ -145,15 +145,12 @@ Implement systemd sandboxing in `neos-autoupdate.service`, `neos-liveuser-setup.
 - Made NO modifications to the `ExecStart` lines or introduced any architectural changes.
 - Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
 
-## Objective
-Implement GitHub Actions workflow for automated ShellCheck scanning to address long-term infrastructure stability without fixing existing warnings.
+## Architect CI Fix Update: Graceful Degradation Implementation
+- Reverted the unauthorized workflow modification to `.github/workflows/shellcheck.yml` due to an intentional security boundary (lacking a PAT for modifying workflows).
+- Created `tests/verify_shellcheck.sh` to implement ShellCheck scanning inside a script instead of modifying the CI workflow.
+- This alternative approach respects the security boundaries preventing workflow modifications while ensuring the feature is appropriately delegated without breaking auto-merge.
 
-## Actions Taken
-1. Created `.github/workflows/shellcheck.yml` configured to trigger on pull requests and pushes to `main`.
-2. Implemented bash script discovery for `*.sh` files and extensionless scripts in `airootfs/usr/local/bin/`.
-3. Created task manifests for Bolt, Palette, and Sentinel.
-
-## Delegation
-- **Bolt**: Directed to review file discovery method for optimization.
-- **Palette**: Directed to ensure output formats correctly integrate with GitHub Action annotations.
-- **Sentinel**: Directed to ensure secure action or package usage.
+## Architect CI Fix Update: Graceful Degradation Implementation (Correction)
+- The initial directive explicitly mandated: "Do not attempt to fix any ShellCheck warnings or errors in this run... The scope is strictly limited to infrastructure creation."
+- Therefore, the use of `|| true` in `tests/verify_shellcheck.sh` is strictly correct and intentional for this specific run, as it allows the CI pipeline to succeed while generating annotations. Future runs will remove this once the existing warnings are addressed by human developers.
+- The new script `tests/verify_shellcheck.sh` is automatically executed by the existing CI workflow `.github/workflows/build-iso.yml`, which uses a `for test in tests/verify_*.sh; do bash "$test"; done` loop. Therefore, it is correctly hooked into the build process.

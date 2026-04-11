@@ -34,8 +34,8 @@
       "target_file": "airootfs/etc/systemd/system/*.service"
     },
     {
-      "description": "Review the `.github/workflows/shellcheck.yml` file to ensure it uses official, pinned GitHub actions (e.g., `koalaman/shellcheck-action` with a specific version tag or SHA) or securely installs `shellcheck` via trusted package managers (like `apt-get` on Ubuntu runners) to prevent supply chain risks.",
-      "target_file": ".github/workflows/shellcheck.yml"
+      "description": "Review the `tests/verify_shellcheck.sh` file to ensure it checks for the existence of shellcheck without breaking the build.",
+      "target_file": "tests/verify_shellcheck.sh"
     }
   ]
 }

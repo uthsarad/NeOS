@@ -34,8 +34,8 @@
       "target_file": "airootfs/etc/systemd/system/*.service"
     },
     {
-      "description": "Ensure the ShellCheck output format in the GitHub Actions workflow is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers.",
-      "target_file": ".github/workflows/shellcheck.yml"
+      "description": "Ensure the ShellCheck output format is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers.",
+      "target_file": "tests/verify_shellcheck.sh"
     }
   ]
 }
