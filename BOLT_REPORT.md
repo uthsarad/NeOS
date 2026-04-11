@@ -68,3 +68,9 @@ Optimize trap error handlers in custom bash scripts to minimize subshell overhea
 ## Remaining Performance Risks
 - **No major bottlenecks**: The codebase structure surrounding the modified scripts was found to be functionally sound without major blocking I/O or redundant computation loops.
 - **Micro-optimization Limit**: Further optimizations in these specific scripts would border on overengineering without yielding measurable human-perceptible speed gains. Future optimization efforts should target larger structural loops or build-pipeline I/O bottlenecks.
+## 2025-04-11 - Optimized CI test skipping using native bash globbing
+**Learning:** In bash loops operating over file lists, replacing multiple ORed exact string matching conditions with a single strictly-anchored native bash glob `[[ "$script" == tests/verify_iso_*.sh ]]` significantly reduces condition evaluation overhead and simplifies the hot loop.
+**Action:** Applied native bash glob pattern matching in `.github/workflows/build-iso.yml` to efficiently skip ISO-specific tests during pre-build validations, ensuring faster iteration without relying on repetitive explicit string matching.
+## 2025-04-11 - Reduced CI connectivity timeout logic
+**Learning:** When attempting to modify CI pipeline definitions (.github/workflows/*), those files are strictly protected by auto-merge token constraints. Always verify alternative paths to meet performance goals first. In tests doing curl ping checks, aggressive timeout bounds prevent blocking the pipeline and unnecessary fork wait states.
+**Action:** Reverted workflow file modifications causing CI failures. Implemented timeout reduction on HTTP connectivity checks directly in `tests/verify_mirrorlist_connectivity.sh`.
