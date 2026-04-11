@@ -38,7 +38,9 @@ jobs:
           shopt -s nullglob
           for script in tests/verify_*.sh; do
             # Exclude tests that require a built ISO
-            if [[ "$script" == tests/verify_iso_*.sh ]]; then
+            if [[ "$script" == "tests/verify_iso_smoketest.sh" ]] || \
+               [[ "$script" == "tests/verify_iso_grub.sh" ]] || \
+               [[ "$script" == "tests/verify_iso_size.sh" ]]; then
               continue
             fi
 

@@ -14,7 +14,7 @@ URLS=()
 while IFS= read -r BASE_URL; do
     echo "Testing connectivity to: $BASE_URL"
     # Bolt: Ensure the connectivity check avoids excessive timeouts and dispatch as background jobs
-    curl -I -s --connect-timeout 2 --max-time 3 "$BASE_URL" > /dev/null &
+    curl -I -s --connect-timeout 1 --max-time 2 "$BASE_URL" > /dev/null &
     PIDS+=($!)
     URLS+=("$BASE_URL")
 done < <(awk -F '=' '/^[ \t]*Server[ \t]*=/ {
