@@ -1,20 +1,20 @@
 {
   "bolt": {
-    "focus": "Performance of CI execution",
+    "focus": "Performance Optimization",
     "instructions": [
-      "Ensure the ShellCheck workflow uses efficient file discovery methods (e.g., specific `find` commands targeting `tests/` and `airootfs/usr/local/bin/`) rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime."
+      "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently."
     ]
   },
   "palette": {
-    "focus": "CI Output Readability",
+    "focus": "Developer/Admin UX and Error Messages",
     "instructions": [
-      "Ensure the ShellCheck output format in the GitHub Actions workflow is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers."
+      "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps."
     ]
   },
   "sentinel": {
-    "focus": "Supply Chain Security",
+    "focus": "Security Validation",
     "instructions": [
-      "Review the `.github/workflows/shellcheck.yml` file to ensure it uses official, pinned GitHub actions (e.g., `koalaman/shellcheck-action` with a specific version tag or SHA) or securely installs `shellcheck` via trusted package managers (like `apt-get` on Ubuntu runners) to prevent supply chain risks."
+      "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes."
     ]
   }
 }
