@@ -32,6 +32,10 @@
     {
       "description": "Ensure any failures related to tightened systemd sandboxing (e.g., permission denied) are logged with clear, actionable context for developers.",
       "target_file": "airootfs/etc/systemd/system/*.service"
+    },
+    {
+      "description": "Ensure the ShellCheck output format in the GitHub Actions workflow is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers.",
+      "target_file": ".github/workflows/shellcheck.yml"
     }
   ]
 }

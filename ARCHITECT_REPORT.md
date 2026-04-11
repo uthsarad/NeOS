@@ -144,3 +144,16 @@ Implement systemd sandboxing in `neos-autoupdate.service`, `neos-liveuser-setup.
 - The surface area was strictly limited to adding sandbox directives within the `[Service]` block of existing custom systemd units.
 - Made NO modifications to the `ExecStart` lines or introduced any architectural changes.
 - Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
+
+## Objective
+Implement GitHub Actions workflow for automated ShellCheck scanning to address long-term infrastructure stability without fixing existing warnings.
+
+## Actions Taken
+1. Created `.github/workflows/shellcheck.yml` configured to trigger on pull requests and pushes to `main`.
+2. Implemented bash script discovery for `*.sh` files and extensionless scripts in `airootfs/usr/local/bin/`.
+3. Created task manifests for Bolt, Palette, and Sentinel.
+
+## Delegation
+- **Bolt**: Directed to review file discovery method for optimization.
+- **Palette**: Directed to ensure output formats correctly integrate with GitHub Action annotations.
+- **Sentinel**: Directed to ensure secure action or package usage.
