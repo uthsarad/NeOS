@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, HashSet};
+use std::collections::HashSet;
 use std::env;
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
@@ -59,7 +59,7 @@ fn run_audit(root: &Path) -> Result<String, String> {
     assert_mirrorlists_have_servers(root)?;
     assert_profiledef_properties(root)?;
 
-    let mut parsed_files: Vec<(String, BTreeSet<String>)> = Vec::new();
+    let mut parsed_files: Vec<(String, HashSet<String>)> = Vec::new();
     for relative in PACKAGE_FILES {
         let path = root.join(relative);
         let packages = parse_package_file(&path)?;
@@ -106,7 +106,12 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
                 return Err("pacman_conf is set to an empty string in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Provide a valid file path for 'pacman_conf'.".to_string());
             }
 
-            if val.starts_with('/') || val.contains("..") || val.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-') {
+            if val.starts_with('/')
+                || val.contains("..")
+                || val
+                    .chars()
+                    .any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-')
+            {
                 return Err("pacman_conf contains invalid characters or path traversal.\n\n💡 How to fix:\n  - Ensure 'pacman_conf' in 'profiledef.sh' only contains alphanumeric characters, '.', '_', '-', and '/' without path traversal ('..') or absolute paths ('/').".to_string());
             }
 
@@ -114,7 +119,8 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             if !conf_path.exists() {
                 return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}.\n\n💡 How to fix:\n  - Verify the path provided for 'pacman_conf' in 'profiledef.sh' is correct and the file exists.", conf_path.display()));
             }
-            let conf_content = fs::read_to_string(&conf_path).map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
+            let conf_content = fs::read_to_string(&conf_path)
+                .map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
             if !conf_content.contains("DatabaseOptional") {
                 return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional.\n\n💡 How to fix:\n  - Open '{}'\n  - Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display(), conf_path.display()));
             }
@@ -126,7 +132,10 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
             for mode_str in val.split_whitespace() {
                 let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
 
-                if mode.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_') {
+                if mode
+                    .chars()
+                    .any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_')
+                {
                     return Err("bootmodes contains invalid characters (possible command injection).\n\n💡 How to fix:\n  - Ensure 'bootmodes' in 'profiledef.sh' only contains alphanumeric characters, '.', '-', and '_'.".to_string());
                 }
 
@@ -166,8 +175,8 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
     ];
 
     for path in mirrorlists {
-        let file = File::open(&path)
-            .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
+        let file =
+            File::open(&path).map_err(|err| format!("unable to open {}: {err}", path.display()))?;
         let mut reader = BufReader::new(file);
 
         let mut has_server = false;
@@ -175,7 +184,11 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
         // ⚡ Bolt: Reusing a single String buffer prevents per-line memory allocations when scanning
         // potentially massive mirrorlists, significantly improving stream parsing performance.
         let mut raw_line = String::new();
-        while reader.read_line(&mut raw_line).map_err(|err| format!("unable to read {}: {err}", path.display()))? > 0 {
+        while reader
+            .read_line(&mut raw_line)
+            .map_err(|err| format!("unable to read {}: {err}", path.display()))?
+            > 0
+        {
             let trimmed = raw_line.trim();
             if !trimmed.is_empty() && !trimmed.starts_with('#') && trimmed.starts_with("Server") {
                 has_server = true;
@@ -185,22 +198,19 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
         }
 
         if !has_server {
-            return Err(format!(
-                "{} has no active Server entries",
-                path.display()
-            ));
+            return Err(format!("{} has no active Server entries", path.display()));
         }
     }
 
     Ok(())
 }
 
-fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
-    let file = File::open(path)
-        .map_err(|err| format!("unable to open {}: {err}", path.display()))?;
+fn parse_package_file(path: &Path) -> Result<HashSet<String>, String> {
+    let file =
+        File::open(path).map_err(|err| format!("unable to open {}: {err}", path.display()))?;
     let mut reader = BufReader::new(file);
 
-    let mut packages = BTreeSet::new();
+    let mut packages = HashSet::new();
     let mut duplicates = HashSet::new();
 
     // ⚡ Bolt: Reusing a single String buffer across the loop prevents per-line memory allocations,
@@ -209,7 +219,11 @@ fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
 
     for index in 0.. {
         raw_line.clear();
-        if reader.read_line(&mut raw_line).map_err(|err| format!("unable to read {}: {err}", path.display()))? == 0 {
+        if reader
+            .read_line(&mut raw_line)
+            .map_err(|err| format!("unable to read {}: {err}", path.display()))?
+            == 0
+        {
             break;
         }
 
@@ -218,7 +232,9 @@ fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
             continue;
         }
 
-        if trimmed.chars().any(|c| !c.is_alphanumeric() && c != '-' && c != '_' && c != '.' && c != '@' && c != '+') {
+        if trimmed.chars().any(|c| {
+            !c.is_alphanumeric() && c != '-' && c != '_' && c != '.' && c != '@' && c != '+'
+        }) {
             return Err(format!(
                 "{}:{} contains invalid characters or whitespace in package entry (possible terminal injection)",
                 path.display(),
@@ -248,7 +264,7 @@ fn parse_package_file(path: &Path) -> Result<BTreeSet<String>, String> {
     Ok(packages)
 }
 
-fn assert_required_packages(parsed_files: &[(String, BTreeSet<String>)]) -> Result<(), String> {
+fn assert_required_packages(parsed_files: &[(String, HashSet<String>)]) -> Result<(), String> {
     for (name, packages) in parsed_files {
         let mut missing = Vec::new();
         for required in REQUIRED_ALL_ARCH_PACKAGES {
@@ -268,7 +284,9 @@ fn assert_required_packages(parsed_files: &[(String, BTreeSet<String>)]) -> Resu
     Ok(())
 }
 
-fn assert_arch_specific_expectations(parsed_files: &[(String, BTreeSet<String>)]) -> Result<(), String> {
+fn assert_arch_specific_expectations(
+    parsed_files: &[(String, HashSet<String>)],
+) -> Result<(), String> {
     let mut x86_opt = None;
     let mut i686_opt = None;
     let mut aarch64_opt = None;
@@ -285,7 +303,8 @@ fn assert_arch_specific_expectations(parsed_files: &[(String, BTreeSet<String>)]
 
     let x86 = x86_opt.ok_or_else(|| "missing package set for packages.x86_64".to_string())?;
     let i686 = i686_opt.ok_or_else(|| "missing package set for packages.i686".to_string())?;
-    let aarch64 = aarch64_opt.ok_or_else(|| "missing package set for packages.aarch64".to_string())?;
+    let aarch64 =
+        aarch64_opt.ok_or_else(|| "missing package set for packages.aarch64".to_string())?;
 
     if !(x86.contains("linux") && x86.contains("linux-zen")) {
         return Err("packages.x86_64 must include both linux and linux-zen kernels".to_string());
@@ -295,13 +314,15 @@ fn assert_arch_specific_expectations(parsed_files: &[(String, BTreeSet<String>)]
         return Err("packages.i686 unexpectedly small (expected at least 45 packages)".to_string());
     }
     if aarch64.len() < 45 {
-        return Err("packages.aarch64 unexpectedly small (expected at least 45 packages)".to_string());
+        return Err(
+            "packages.aarch64 unexpectedly small (expected at least 45 packages)".to_string(),
+        );
     }
 
     Ok(())
 }
 
-fn build_summary(parsed_files: &[(String, BTreeSet<String>)]) -> String {
+fn build_summary(parsed_files: &[(String, HashSet<String>)]) -> String {
     let mut lines = Vec::new();
 
     for (name, packages) in parsed_files {
@@ -316,7 +337,10 @@ fn build_summary(parsed_files: &[(String, BTreeSet<String>)]) -> String {
                 acc.intersection(packages).cloned().collect()
             });
 
-        lines.push(format!("- common across all architectures: {} packages", common.len()));
+        lines.push(format!(
+            "- common across all architectures: {} packages",
+            common.len()
+        ));
     }
 
     lines.join("\n")
