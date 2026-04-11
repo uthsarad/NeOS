@@ -1,16 +1,17 @@
 {
   "target_files": [
-    ".github/workflows/shellcheck.yml"
+    "airootfs/usr/local/bin/neos-liveuser-setup",
+    "airootfs/usr/local/bin/neos-installer-partition.sh"
   ],
   "instructions": [
-    "Create a new GitHub Actions workflow file at `.github/workflows/shellcheck.yml` to run ShellCheck on all bash scripts.",
-    "The workflow should trigger on push and pull_request to the `main` branch.",
-    "The workflow should find and execute ShellCheck against all `.sh` files in the repository.",
-    "The workflow should also execute ShellCheck against extension-less scripts in `airootfs/usr/local/bin/` (e.g., `neos-liveuser-setup`, `neos-driver-manager`)."
+    "Add 'set -euo pipefail' to the beginning of the scripts if not already present.",
+    "Implement a standard error trap handler: `trap 'logger -t \"$(basename \"$0\")\" \"ERROR at line $LINENO\"' ERR`.",
+    "Ensure error handling logs are explicitly sent to the system logger.",
+    "Do not alter the functional logic of the setup or partition scripts."
   ],
   "constraints": [
-    "Do not modify any existing bash scripts or production code.",
-    "Do not attempt to fix any ShellCheck warnings or errors in this run.",
-    "The scope is strictly limited to infrastructure creation (the workflow file)."
+    "Strictly limit modifications to error handling additions.",
+    "Do not introduce new external dependencies.",
+    "Ensure compatibility with the airootfs execution environment."
   ]
 }
