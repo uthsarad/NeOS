@@ -2,10 +2,10 @@
 
 ## Current System Risks
 
-### 1. Inconsistent Error Handling in Shell Scripts
-- **Risk Level:** Medium
-- **Description:** Several core scripts within `airootfs/usr/local/bin/` lack rigorous error handling (e.g., `set -euo pipefail` and `ERR` traps). This can lead to silent failures during live environment setup or installation, making debugging difficult and potentially leaving the system in an unpredictable state.
-- **Mitigation:** Implement standardized error traps across all critical bash scripts to ensure explicit logging of failures.
+### 1. Snapper Dependency Validation Edge Cases
+- **Risk Level:** Low
+- **Description:** The `neos-autoupdate.sh` script relies on `snapper` for Btrfs snapshots. While the check exists, it requires review to ensure it performs efficiently (no fork/exec overhead), logs errors clearly, and does not bypass lock files on early exit.
+- **Mitigation:** Delegate review tasks to Bolt, Palette, and Sentinel to audit the validation block.
 
 ### 2. CI Test Environment Dependencies
 - **Risk Level:** Low
