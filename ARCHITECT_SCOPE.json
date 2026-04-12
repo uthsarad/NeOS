@@ -1,17 +1,16 @@
 {
   "target_files": [
-    "airootfs/usr/local/bin/neos-liveuser-setup",
-    "airootfs/usr/local/bin/neos-installer-partition.sh"
+    "airootfs/usr/local/bin/neos-autoupdate.sh"
   ],
   "instructions": [
-    "Add 'set -euo pipefail' to the beginning of the scripts if not already present.",
-    "Implement a standard error trap handler: `trap 'logger -t \"$(basename \"$0\")\" \"ERROR at line $LINENO\"' ERR`.",
-    "Ensure error handling logs are explicitly sent to the system logger.",
-    "Do not alter the functional logic of the setup or partition scripts."
+    "Add an inline comment '# Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.' near the snapper dependency check.",
+    "Add an inline comment '# Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.' near the snapper dependency check.",
+    "Add an inline comment '# Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.' near the snapper dependency check."
   ],
   "constraints": [
-    "Strictly limit modifications to error handling additions.",
-    "Do not introduce new external dependencies.",
-    "Ensure compatibility with the airootfs execution environment."
-  ]
+    "Strictly limit modifications to adding comments for the specialists.",
+    "Do not alter the functional logic of the script.",
+    "Do not introduce new external dependencies."
+  ],
+  "dependencies": []
 }

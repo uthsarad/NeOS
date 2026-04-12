@@ -2,19 +2,19 @@
   "bolt": {
     "focus": "Performance Optimization",
     "instructions": [
-      "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently."
+      "Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead."
     ]
   },
   "palette": {
     "focus": "Developer/Admin UX and Error Messages",
     "instructions": [
-      "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps."
+      "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context."
     ]
   },
   "sentinel": {
     "focus": "Security Validation",
     "instructions": [
-      "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes."
+      "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions."
     ]
   }
 }
