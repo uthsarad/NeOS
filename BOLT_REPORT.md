@@ -74,3 +74,7 @@ Optimize trap error handlers in custom bash scripts to minimize subshell overhea
 ## 2025-04-11 - Reduced CI connectivity timeout logic
 **Learning:** When attempting to modify CI pipeline definitions (.github/workflows/*), those files are strictly protected by auto-merge token constraints. Always verify alternative paths to meet performance goals first. In tests doing curl ping checks, aggressive timeout bounds prevent blocking the pipeline and unnecessary fork wait states.
 **Action:** Reverted workflow file modifications causing CI failures. Implemented timeout reduction on HTTP connectivity checks directly in `tests/verify_mirrorlist_connectivity.sh`.
+## Shellcheck Script Optimization
+**What was optimized:** File discovery in `tests/verify_shellcheck.sh`.
+**Before/after reasoning:** The script previously searched the entire repository `.` for `*.sh` scripts. This means scanning irrelevant directories or caching. We changed this to target only the directories `tests/` and `airootfs/usr/local/bin/`. This eliminates exhaustive disk I/O traversing unmodified trees.
+**Remaining performance risks:** Low. `find` is heavily optimized but scaling tests or larger scripts directory could eventually slow down `shellcheck` execution, in which case caching or delta-only linting could be considered.
