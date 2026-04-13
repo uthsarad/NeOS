@@ -6,35 +6,36 @@ NeOS aims to be a curated Arch-based desktop OS targeting predictable behavior, 
 - Are we building toward that?
 Yes. Recent efforts have fortified the foundation, adding deep audits, CI validations, robust automated snapshot update mechanisms, and essential installer (Calamares) refinements.
 - Are we solving the highest leverage problem?
-Currently, our test suite is extensive and functional. The autoupdate mechanism utilizes snapper for system rollback, ensuring reliability. However, we need to ensure that specialists review the `snapper` dependency check in `neos-autoupdate.sh` to prevent regressions in performance, UX, and security.
+Currently, our primary focus has been Phase 1/Phase 2 (ISO Build and Foundation). The roadmap indicates Phase 3 targets "Installer and First-Boot UX" including Calamares customization. However, looking at the recent `ARCHITECT_REPORT.md` and `docs/ROADMAP.md`, we need to transition towards improving the first-boot experience. Specifically, addressing the Calamares customization and first-boot wizard. Looking at `docs/AUDIT_ACTION_PLAN.md`, an outstanding high priority item is to "Document Architecture Limitations" which clarifies that Calamares and snapshots are only for x86_64. We will focus on the "Document Architecture Limitations" to set expectations right for Phase 3 and Phase 4, reducing user confusion and support burden.
 
 PHASE 2 — Technical Posture Review
 - Is the system stable?
-Yes, core validations (22/24) pass. The ISO builds correctly with profile checks succeeding. Hardening configurations (UFW, sysctl, systemd sandboxing) are in place.
+Yes, core validations pass. The ISO builds correctly with profile checks succeeding. Hardening configurations are in place.
 - Is tech debt increasing?
-Tech debt is low, but ensuring all critical paths are reviewed by specialists prevents future debt.
+No. Tech debt is low.
 - Are we overbuilding?
-Not currently. The focus has been on baseline reliability rather than excessive features.
+No.
 
 PHASE 3 — Priority Selection
-- Refinement of recent feature
-Given the recent influx of security and structural validations, the highest priority is to ensure that the `snapper` dependency validation in `neos-autoupdate.sh` is reviewed by all specialists (Bolt, Palette, Sentinel) to guarantee optimal performance, clear error reporting, and secure execution.
+- Infrastructure improvement
+Update the README.md and HANDBOOK.md to document architecture limitations.
 
 PHASE 4 — Controlled Scope Definition
 - Exact files likely impacted:
-  - `airootfs/usr/local/bin/neos-autoupdate.sh`
+  - `README.md`
+  - `docs/HANDBOOK.md`
 - Maximum allowed surface area:
-  - Modifications should be strictly limited to adding specialist delegation comments to the `snapper` validation block.
+  - Add documentation regarding supported architectures and their limitations (x86_64 vs i686/aarch64).
 - Constraints Architect must obey:
-  - Do not alter the core logic or flow of the autoupdate script.
-  - Do not introduce new dependencies.
+  - Do not alter build scripts or workflows.
+  - Limit documentation to clarifying that Calamares installer, snapshot-based updates, and ZRAM compression are only available on x86_64.
 
 PHASE 5 — Delegation Strategy
 - Architect builds:
-  - Add inline comments to `neos-autoupdate.sh` delegating specific reviews to Bolt, Palette, and Sentinel.
+  - Update `README.md` and `docs/HANDBOOK.md` with "Supported Architectures" sections.
 - Bolt optimizes:
-  - Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
+  - Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.
 - Palette enhances:
-  - Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
+  - Ensure the documentation additions are well-structured, easy to read, and clearly highlight the limitations using appropriate markdown formatting.
 - Sentinel audits:
-  - Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
+  - Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.
