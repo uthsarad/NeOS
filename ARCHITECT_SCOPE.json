@@ -1,16 +1,16 @@
 {
   "target_files": [
-    "airootfs/usr/local/bin/neos-autoupdate.sh"
+    "README.md",
+    "docs/HANDBOOK.md"
   ],
   "instructions": [
-    "Add an inline comment '# Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.' near the snapper dependency check.",
-    "Add an inline comment '# Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.' near the snapper dependency check.",
-    "Add an inline comment '# Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.' near the snapper dependency check."
+    "Add a 'Supported Architectures' section to README.md and docs/HANDBOOK.md to clarify that Calamares installer, snapshot-based updates, and ZRAM compression are only available on x86_64.",
+    "Indicate that i686 and aarch64 are experimental/community-supported."
   ],
   "constraints": [
-    "Strictly limit modifications to adding comments for the specialists.",
-    "Do not alter the functional logic of the script.",
-    "Do not introduce new external dependencies."
+    "Limit modifications strictly to README.md and docs/HANDBOOK.md.",
+    "Do not alter build scripts or workflows.",
+    "Ensure documentation explicitly mentions x86_64, i686, and aarch64 differences."
   ],
   "dependencies": []
 }

@@ -2,19 +2,19 @@
   "bolt": {
     "focus": "Performance Optimization",
     "instructions": [
-      "Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead."
+      "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size."
     ]
   },
   "palette": {
     "focus": "Developer/Admin UX and Error Messages",
     "instructions": [
-      "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context."
+      "Ensure the documentation additions are well-structured, easy to read, and clearly highlight the limitations using appropriate markdown formatting."
     ]
   },
   "sentinel": {
     "focus": "Security Validation",
     "instructions": [
-      "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions."
+      "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates."
     ]
   }
 }
