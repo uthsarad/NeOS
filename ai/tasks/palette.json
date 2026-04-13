@@ -36,6 +36,10 @@
     {
       "description": "Ensure the ShellCheck output format is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers.",
       "target_file": "tests/verify_shellcheck.sh"
+    },
+    {
+      "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

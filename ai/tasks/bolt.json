@@ -36,6 +36,10 @@
     {
       "description": "Ensure the ShellCheck script uses efficient file discovery methods (e.g., specific `find` commands targeting `tests/` and `airootfs/usr/local/bin/`) rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime.",
       "target_file": "tests/verify_shellcheck.sh"
+    },
+    {
+      "description": "Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

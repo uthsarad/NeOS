@@ -36,6 +36,10 @@
     {
       "description": "Review the `tests/verify_shellcheck.sh` file to ensure it checks for the existence of shellcheck without breaking the build.",
       "target_file": "tests/verify_shellcheck.sh"
+    },
+    {
+      "description": "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

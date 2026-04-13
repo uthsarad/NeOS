@@ -154,3 +154,17 @@ Implement systemd sandboxing in `neos-autoupdate.service`, `neos-liveuser-setup.
 - The initial directive explicitly mandated: "Do not attempt to fix any ShellCheck warnings or errors in this run... The scope is strictly limited to infrastructure creation."
 - Therefore, the use of `|| true` in `tests/verify_shellcheck.sh` is strictly correct and intentional for this specific run, as it allows the CI pipeline to succeed while generating annotations. Future runs will remove this once the existing warnings are addressed by human developers.
 - The new script `tests/verify_shellcheck.sh` is automatically executed by the existing CI workflow `.github/workflows/build-iso.yml`, which uses a `for test in tests/verify_*.sh; do bash "$test"; done` loop. Therefore, it is correctly hooked into the build process.
+
+## Architect Report - Snapper Dependency Check Validation
+
+## Objective
+Validate the autoupdate script and delegate specialist review of the `snapper` dependency check as mandated by `ARCHITECT_SCOPE.json` and `STRATEGIC_DIRECTIVE.md`.
+
+## Actions Taken
+1. **Scope Validation**: Analyzed `airootfs/usr/local/bin/neos-autoupdate.sh` and confirmed the required inline comments for Bolt, Palette, and Sentinel were already present.
+2. **Fail-Safe Execution**: Adhering to the "smallest correct version" constraint, I made **no modifications** to the source script, applying the Fail-Safe Behavior to prevent altering working code.
+3. **Delegation**: Successfully appended task manifests to `bolt.json`, `palette.json`, and `sentinel.json` targeting the `snapper` validation block in `neos-autoupdate.sh`.
+
+## Constraints Adhered To
+- The surface area was strictly limited to evaluating the target file and generating specialist tracking data.
+- Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
