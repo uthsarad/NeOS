@@ -78,3 +78,28 @@ Optimize trap error handlers in custom bash scripts to minimize subshell overhea
 **What was optimized:** File discovery in `tests/verify_shellcheck.sh`.
 **Before/after reasoning:** The script previously searched the entire repository `.` for `*.sh` scripts. This means scanning irrelevant directories or caching. We changed this to target only the directories `tests/` and `airootfs/usr/local/bin/`. This eliminates exhaustive disk I/O traversing unmodified trees.
 **Remaining performance risks:** Low. `find` is heavily optimized but scaling tests or larger scripts directory could eventually slow down `shellcheck` execution, in which case caching or delta-only linting could be considered.
+
+## Bolt Optimization Report
+
+**Target File:** `tests/verify_shellcheck.sh`
+**Task Reference:** `ai/tasks/bolt.json` - "Ensure the ShellCheck script uses efficient file discovery methods... rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime."
+
+### What was optimized
+Consolidated two separate `find` commands that were piped to `xargs shellcheck` into a single, combined `find` command using logical OR (`-o`).
+
+### Before/After reasoning
+**Before:**
+The script executed `find` twice:
+1. `find tests/ airootfs/usr/local/bin/ -type f -name '*.sh' -print0 | xargs -0 -r shellcheck --format=gcc || true`
+2. `find airootfs/usr/local/bin/ -type f -not -name '*.*' -print0 | xargs -0 -r shellcheck --format=gcc || true`
+
+This resulted in redundant filesystem traversal and spawning two separate pipelines (two `find` processes, two `xargs` processes, and potentially two `shellcheck` instances).
+
+**After:**
+The script uses a unified `find` expression to gather all target files in a single pass:
+`find tests/ airootfs/usr/local/bin/ -type f \( -name '*.sh' -o -path 'airootfs/usr/local/bin/*' ! -name '*.*' \) -print0 | xargs -0 -r shellcheck --format=gcc || true`
+
+This directly minimizes CI runtime and reduces subprocess overhead by issuing one file lookup operation instead of two, fully satisfying the directive.
+
+### Remaining Performance Risks
+The optimization improves filesystem traversal time. There are no remaining performance risks concerning file discovery here since we are already explicitly narrowing the scope to `tests/` and `airootfs/usr/local/bin/` rather than the whole tree.
