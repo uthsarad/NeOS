@@ -98,13 +98,11 @@ check_disk_space() {
 
         # Surface error to active graphical users
         if command -v loginctl >/dev/null 2>&1; then
-            for uid in $(loginctl list-sessions --no-legend | awk '{print $2}' | sort -u); do
-                local user_name
-                user_name=$(id -nu "$uid")
+            while read -r uid user_name _; do
                 # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
                 # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
                 su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send 'System Update Failed' '$err_msg' --icon=dialog-error --urgency=critical" || true
-            done
+            done < <(loginctl list-users --no-legend)
         fi
 
         exit 1

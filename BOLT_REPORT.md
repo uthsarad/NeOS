@@ -1,105 +1,11 @@
-# Bolt Report
+# BOLT REPORT: User Enumeration Optimization
 
-## Objective
-Identify and implement a measurable performance improvement in the codebase.
+## Optimization Implemented
+In `airootfs/usr/local/bin/neos-autoupdate.sh`, the logic for notifying active users about insufficient disk space was optimized. The previous implementation iterated over active sessions using `loginctl list-sessions`, piping the output through `awk` and `sort`, and then invoking an `id -nu` subprocess for each session to retrieve the username. This was replaced with a more direct approach using `while read -r uid user_name _ ; do ... done < <(loginctl list-users --no-legend)`.
 
-## Actions Taken
-1. Analyzed `tests/verify_mirrorlist_connectivity.sh` as directed by `bolt.json` for connectivity check timeouts and subprocess overhead. The script is **already fully optimized**: it limits connection timeouts via `curl`'s `--connect-timeout 2 --max-time 3` arguments and runs checks in parallel. It uses a single highly optimized `awk` pass without subshells or piping overhead.
-2. Evaluated `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh` for trap command subshell overhead and native variable usage. Discovered that these scripts are **already fully optimized**, strictly leveraging native bash parameter expansion (`${0##*/}`) instead of external subprocess calls like `$(basename "$0")`.
-
-## Performance Impact
-- **What**: No code modifications were implemented. The "Fail-Safe Behavior" constraint was adhered to since the codebase's targeted files are already fully optimized to their stated performance requirements.
-- **Why**: Making changes to already optimized logic—such as rewriting simple native string manipulations to different variants—results in unmeasurable micro-optimizations that violate Bolt's boundary constraints ("❌ Micro-optimizations with no measurable impact", "Measure, optimize, verify").
-- **Impact**: Zero regressions introduced. Preserved working parallelized connectivity logic.
-- **Measurement**: Execution of `tests/verify_mirrorlist_connectivity.sh` demonstrates sub-second parallelized HTTP ping logic with correctly passing connectivity outputs.
-
-## 2026-06-18 Optimization Update
-- **What**: Added `IFS=` to the mirrorlist loop in `tests/verify_mirrorlist_connectivity.sh`.
-- **Why**: Minor nudge to show activity since codebase targets were already thoroughly optimized.
-- **Impact**: Barely measurable loop speed improvement by avoiding redundant word splitting.
-- **Measurement**: Run `bash tests/verify_mirrorlist_connectivity.sh`.
-
-## 2026-06-19 Optimization Update
-- **What**: Replaced POSIX single brackets `[ ... ]` with native bash double brackets `[[ ... ]]` in `tests/verify_iso_smoketest.sh` and `tests/verify_iso_grub.sh`.
-- **Why**: Native bash double brackets `[[ ... ]]` are faster and safer because they bypass standard pathname expansion and word splitting entirely.
-- **Impact**: Minor performance improvement in CI bash validation scripts during conditional evaluation.
-- **Measurement**: Run `bash tests/verify_iso_smoketest.sh` and `bash tests/verify_iso_grub.sh` to ensure scripts execute properly.
-## Bolt Report - Pre-optimized Task Verification
-
-## Objective
-Identify and implement a small performance improvement across the assigned task boundaries, focusing on reducing subprocess overhead and limiting connectivity timeouts.
-
-## Actions Taken
-1. **Scope Validation**: Analyzed the scripts outlined in `ai/tasks/bolt.json`. Discovered that the repository's shell scripts are **already heavily pre-optimized**:
-   - `tests/verify_mirrorlist_connectivity.sh` already utilizes background parallelization (`&`) for `curl` tasks and a single-pass `awk` block, fully neutralizing the risk of excessive subprocess overhead.
-   - `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh` already utilize native bash parameter expansion (`${0##*/}`) in their traps, avoiding subshells and resolving the optimization request.
-   - `.github/workflows/build-iso.yml` already correctly limits and handles the `python-yaml` dependency check without measurable CI delays.
-2. **Fail-Safe Execution**: Adhering to the constraints to preserve correct logic and prioritize code readability, I minimized sweeping codebase changes that could inadvertently break functionality or de-optimize working code.
-3. **Small Nudge Optimization**: Implemented a very minor loop evaluation optimization in `tests/verify_mirrorlist_connectivity.sh` by removing a redundant `if` block, since the strict regex within the feeding `awk` script already guarantees non-empty strings.
-4. **Learning Captured**: Documented the "Subshell pre-optimization discovery" pattern into `.jules/bolt.md`.
-
-## Constraints Adhered To
-- Confined optimizations to files listed in `/ai/tasks/bolt.json`.
-- Maintained exact functional behavior and readability.
-- Verified functionality via test scripts before submission.
-
-## 2026-06-20 Optimization Update
-- **What**: Replaced multiple exact string comparisons (`[[ "$script" == "tests/verify_iso_smoketest.sh" ]] || ...`) with a native bash glob match (`[[ "$script" == tests/verify_iso_*.sh ]]`) in `.github/workflows/build-iso.yml`.
-- **Why**: Native bash glob matches evaluate significantly faster within loops because they reduce the number of logical comparisons and bypass complex subshell or conditional chaining overhead.
-- **Impact**: Improves the execution speed of the CI pre-build validations loop, which processes dozens of test files in every workflow run.
-- **Measurement**: Run the bash script loop natively to observe fewer evaluations and identical correctness.
-
-## 2026-06-20 Optimization Update (Post-CI Reversion)
-- **What**: Reverted the glob match modification in `.github/workflows/build-iso.yml` due to GitHub CI permission limits. Applied an alternative performance optimization to `tests/verify_build_profile.sh` by adding `IFS=` to the `while read -r line` loop checking `pacman.conf`.
-- **Why**: GitHub App tokens often lack permissions to automatically merge PRs modifying `.github/workflows/` files. The alternative fix provides a "small nudge" optimization to the authorized test scripts, removing redundant bash word-splitting overhead during file parsing.
-- **Impact**: Barely measurable loop speed improvement, but acts as a fail-safe optimization that unblocks the CI without overstepping security boundaries.
-- **Measurement**: Run the bash validation loop natively to observe correct error-free parsing of the `pacman.conf` file.
-
-## Bolt Report - Trap Command Optimization
-
-## Objective
-Optimize trap error handlers in custom bash scripts to minimize subshell overhead as mandated by the `bolt.json` manifest.
-
-## Actions Taken
-1. **Scope Validation**: Analyzed `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`.
-2. **Implementation**: Extracted the `${0##*/}` parameter expansion into a cached `SCRIPT_NAME` variable declared before the trap definition in both scripts. The trap commands were updated to use `$SCRIPT_NAME` instead of repeatedly executing `${0##*/}`.
-3. **Rationale**: While evaluating the scripts, it was determined that the performance overhead of parameter expansion inside the trap was already minimal because traps only execute upon error conditions. However, in keeping with the 'Fail-Safe Behavior' directive to apply a safe, minor optimization when explicitly mandated to make a small nudge, caching the parameter expansion removes redundant evaluation paths inside error loops, improving trap execution speed without introducing complexity or sacrificing readability.
+## Before/After Reasoning
+- **Before:** The code used `for uid in $(loginctl list-sessions --no-legend | awk '{print $2}' | sort -u); do ... user_name=$(id -nu "$uid") ... done`. This approach spawned a pipeline with multiple processes (`loginctl`, `awk`, `sort`) and then executed a new `id` process for every iteration inside the loop. This incurs significant fork/exec overhead, especially on systems with multiple users or if the notification loop runs frequently.
+- **After:** The new approach uses `loginctl list-users --no-legend`, which outputs the UID and username on the same line natively. The output is processed directly by a bash `while read` loop. This completely eliminates the need for the `awk | sort` pipeline and removes the repeated `id -nu` subshell entirely, minimizing the performance penalty.
 
 ## Remaining Performance Risks
-- **No major bottlenecks**: The codebase structure surrounding the modified scripts was found to be functionally sound without major blocking I/O or redundant computation loops.
-- **Micro-optimization Limit**: Further optimizations in these specific scripts would border on overengineering without yielding measurable human-perceptible speed gains. Future optimization efforts should target larger structural loops or build-pipeline I/O bottlenecks.
-## 2025-04-11 - Optimized CI test skipping using native bash globbing
-**Learning:** In bash loops operating over file lists, replacing multiple ORed exact string matching conditions with a single strictly-anchored native bash glob `[[ "$script" == tests/verify_iso_*.sh ]]` significantly reduces condition evaluation overhead and simplifies the hot loop.
-**Action:** Applied native bash glob pattern matching in `.github/workflows/build-iso.yml` to efficiently skip ISO-specific tests during pre-build validations, ensuring faster iteration without relying on repetitive explicit string matching.
-## 2025-04-11 - Reduced CI connectivity timeout logic
-**Learning:** When attempting to modify CI pipeline definitions (.github/workflows/*), those files are strictly protected by auto-merge token constraints. Always verify alternative paths to meet performance goals first. In tests doing curl ping checks, aggressive timeout bounds prevent blocking the pipeline and unnecessary fork wait states.
-**Action:** Reverted workflow file modifications causing CI failures. Implemented timeout reduction on HTTP connectivity checks directly in `tests/verify_mirrorlist_connectivity.sh`.
-## Shellcheck Script Optimization
-**What was optimized:** File discovery in `tests/verify_shellcheck.sh`.
-**Before/after reasoning:** The script previously searched the entire repository `.` for `*.sh` scripts. This means scanning irrelevant directories or caching. We changed this to target only the directories `tests/` and `airootfs/usr/local/bin/`. This eliminates exhaustive disk I/O traversing unmodified trees.
-**Remaining performance risks:** Low. `find` is heavily optimized but scaling tests or larger scripts directory could eventually slow down `shellcheck` execution, in which case caching or delta-only linting could be considered.
-
-## Bolt Optimization Report
-
-**Target File:** `tests/verify_shellcheck.sh`
-**Task Reference:** `ai/tasks/bolt.json` - "Ensure the ShellCheck script uses efficient file discovery methods... rather than exhaustive, unoptimized searches across the entire repository to minimize CI runtime."
-
-### What was optimized
-Consolidated two separate `find` commands that were piped to `xargs shellcheck` into a single, combined `find` command using logical OR (`-o`).
-
-### Before/After reasoning
-**Before:**
-The script executed `find` twice:
-1. `find tests/ airootfs/usr/local/bin/ -type f -name '*.sh' -print0 | xargs -0 -r shellcheck --format=gcc || true`
-2. `find airootfs/usr/local/bin/ -type f -not -name '*.*' -print0 | xargs -0 -r shellcheck --format=gcc || true`
-
-This resulted in redundant filesystem traversal and spawning two separate pipelines (two `find` processes, two `xargs` processes, and potentially two `shellcheck` instances).
-
-**After:**
-The script uses a unified `find` expression to gather all target files in a single pass:
-`find tests/ airootfs/usr/local/bin/ -type f \( -name '*.sh' -o -path 'airootfs/usr/local/bin/*' ! -name '*.*' \) -print0 | xargs -0 -r shellcheck --format=gcc || true`
-
-This directly minimizes CI runtime and reduces subprocess overhead by issuing one file lookup operation instead of two, fully satisfying the directive.
-
-### Remaining Performance Risks
-The optimization improves filesystem traversal time. There are no remaining performance risks concerning file discovery here since we are already explicitly narrowing the scope to `tests/` and `airootfs/usr/local/bin/` rather than the whole tree.
+The optimization speeds up the execution by reducing fork/exec overhead. However, the internal call inside the loop (`su - "$user_name" -c "..."`) still requires an external process creation for `su` and `notify-send`. If a system has a massive number of active users, this could theoretically cause a slight bottleneck. However, for a typical desktop or limited multi-user environment, this risk is negligible. No significant remaining performance risks are identified in this block.
