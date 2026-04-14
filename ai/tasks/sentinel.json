@@ -40,6 +40,10 @@
     {
       "description": "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.",
       "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
+      "target_file": "README.md, docs/HANDBOOK.md"
     }
   ]
 }
