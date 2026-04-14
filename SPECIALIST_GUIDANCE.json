@@ -1,20 +1,20 @@
 {
   "bolt": {
-    "focus": "Performance Optimization",
+    "focus": "Performance",
     "instructions": [
-      "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size."
+      "Monitor subshell overhead in the new validation checks."
     ]
   },
   "palette": {
-    "focus": "Developer/Admin UX and Error Messages",
+    "focus": "UX",
     "instructions": [
-      "Ensure the documentation additions are well-structured, easy to read, and clearly highlight the limitations using appropriate markdown formatting."
+      "Ensure error messages sent to the logger are clear and actionable."
     ]
   },
   "sentinel": {
-    "focus": "Security Validation",
+    "focus": "Security",
     "instructions": [
-      "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates."
+      "Verify the filesystem checks do not introduce command injection risks."
     ]
   }
 }
