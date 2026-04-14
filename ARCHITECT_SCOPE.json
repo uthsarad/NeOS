@@ -1,16 +1,12 @@
 {
   "target_files": [
-    "README.md",
-    "docs/HANDBOOK.md"
+    "airootfs/usr/local/bin/neos-autoupdate.sh"
   ],
   "instructions": [
-    "Add a 'Supported Architectures' section to README.md and docs/HANDBOOK.md to clarify that Calamares installer, snapshot-based updates, and ZRAM compression are only available on x86_64.",
-    "Indicate that i686 and aarch64 are experimental/community-supported."
+    "Add dependency validation for 'snapper' and 'Btrfs' root filesystem to 'airootfs/usr/local/bin/neos-autoupdate.sh' after 'set -euo pipefail', as per 'docs/AUDIT_ACTION_PLAN.md'."
   ],
   "constraints": [
-    "Limit modifications strictly to README.md and docs/HANDBOOK.md.",
-    "Do not alter build scripts or workflows.",
-    "Ensure documentation explicitly mentions x86_64, i686, and aarch64 differences."
+    "Strictly limit modifications to 'airootfs/usr/local/bin/neos-autoupdate.sh'."
   ],
   "dependencies": []
 }
