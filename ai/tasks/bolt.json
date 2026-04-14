@@ -40,6 +40,10 @@
     {
       "description": "Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.",
       "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Monitor documentation updates to ensure no heavy assets are added that could bloat the repository or ISO size.",
+      "target_file": "README.md, docs/HANDBOOK.md"
     }
   ]
 }

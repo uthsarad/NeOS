@@ -168,3 +168,14 @@ Validate the autoupdate script and delegate specialist review of the `snapper` d
 ## Constraints Adhered To
 - The surface area was strictly limited to evaluating the target file and generating specialist tracking data.
 - Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
+
+## Document Architecture Limitations
+
+**Status:** Completed
+**Scope:** `README.md`, `docs/HANDBOOK.md`
+
+**Implementation Details:**
+- Updated the "Supported Architectures" section in `README.md` to explicitly state that the `x86_64` architecture delivers the full GUI experience, including the Calamares installer, system snapshots, and ZRAM compression.
+- Updated `README.md` to explicitly note that the `i686` and `aarch64` architectures lack the full GUI experience (including Calamares installer, system snapshots, and ZRAM compression).
+- Modified the "Architecture Limitations" bullet points under "Prerequisites -> For Users (Installing NeOS) -> Hardware" in `docs/HANDBOOK.md` to reflect these exact limitations for each architecture type.
+- Delegated tasks to Bolt, Palette, and Sentinel specialists via `ai/tasks/*.json` to ensure performance constraints are met, formatting is clear and accessible, and no sensitive information was leaked during these documentation changes.

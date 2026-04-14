@@ -40,6 +40,10 @@
     {
       "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
       "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure the documentation additions are well-structured, easy to read, and clearly highlight the limitations using appropriate markdown formatting.",
+      "target_file": "README.md, docs/HANDBOOK.md"
     }
   ]
 }
