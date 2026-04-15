@@ -1,0 +1,7 @@
+Branch: bolt-perf-optimization
+PR Title: ⚡ Bolt: Optimize pacman.conf validation loop in verify_build_profile.sh
+PR Description:
+💡 What: Replaced the while-read loop for parsing pacman.conf with a single-read memory load and native bash regex evaluation.
+🎯 Why: Reduces script execution time by avoiding per-line bash overhead during CI validation.
+📊 Impact: Faster CI execution for verify_build_profile.sh.
+🔬 Measurement: Run tests/verify_build_profile.sh and verify it passes quickly.
