@@ -1,20 +1,20 @@
 {
   "bolt": {
-    "focus": "Performance",
+    "focus": "Performance Optimization",
     "instructions": [
-      "Monitor subshell overhead in the new validation checks."
+      "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead. Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging."
     ]
   },
   "palette": {
-    "focus": "UX",
+    "focus": "Developer/Admin UX and Error Messages",
     "instructions": [
-      "Ensure error messages sent to the logger are clear and actionable."
+      "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure."
     ]
   },
   "sentinel": {
-    "focus": "Security",
+    "focus": "Security Validation",
     "instructions": [
-      "Verify the filesystem checks do not introduce command injection risks."
+      "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities."
     ]
   }
 }

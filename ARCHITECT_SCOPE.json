@@ -1,12 +1,17 @@
 {
   "target_files": [
-    "airootfs/usr/local/bin/neos-autoupdate.sh"
+    "airootfs/etc/pacman.d/neos-mirrorlist"
   ],
   "instructions": [
-    "Add dependency validation for 'snapper' and 'Btrfs' root filesystem to 'airootfs/usr/local/bin/neos-autoupdate.sh' after 'set -euo pipefail', as per 'docs/AUDIT_ACTION_PLAN.md'."
+    "Remove the offline mirror entry pointing to `https://ftpmirror.infania.net/mirror/archlinux/` to resolve the `tests/verify_mirrorlist_connectivity.sh` failure and unblock the CI build pipeline."
   ],
   "constraints": [
-    "Strictly limit modifications to 'airootfs/usr/local/bin/neos-autoupdate.sh'."
+    "Do not add any new mirrors.",
+    "Do not re-rank or reorder the existing mirrors.",
+    "Do not modify `pacman.conf` or any other configuration files.",
+    "Ensure the file remains a valid pacman mirrorlist."
   ],
-  "dependencies": []
+  "dependencies": [
+    "tests/verify_mirrorlist_connectivity.sh"
+  ]
 }
