@@ -1,11 +1,13 @@
-# RISK REPORT
+# NeOS Risk & Priority Report
 
-## 1. Silent Failures due to Missing Dependencies
-- **Risk Level:** High
-- **Description:** As identified in `docs/AUDIT_ACTION_PLAN.md`, if `snapper` is removed or the root filesystem is not Btrfs, the autoupdate script may fail silently or cause undefined behavior.
-- **Mitigation:** Implement dependency validation in `airootfs/usr/local/bin/neos-autoupdate.sh`.
+## Current Risk Assessment
+The most immediate risk to the NeOS project is the fragility of the build pipeline due to external dependencies. Specifically, a single offline or unreachable mirror (`https://ftpmirror.infania.net/mirror/archlinux/`) causes the `verify_mirrorlist_connectivity.sh` check to fail, completely blocking the generation of new ISO artifacts.
 
-## 2. ISO Size Constraints
-- **Risk Level:** Low
-- **Description:** The ISO build process has a hard limit of 2 GiB for GitHub Releases.
-- **Mitigation:** Continuous monitoring to ensure updates do not unnecessarily inflate the ISO size.
+### Impact
+- **Severity:** High (blocks all builds and CI progression)
+- **Probability:** High (mirrors frequently experience downtime or deprecation)
+
+## Mitigation Strategy
+1. **Immediate Mitigation:** Remove the explicitly failing mirror from the default `neos-mirrorlist` to restore a green build state.
+2. **Short-Term Hardening:** Ensure the connectivity test has strict timeout bounds (handled by Bolt) to prevent pipeline hangs, and provide actionable error output (handled by Palette).
+3. **Long-Term Consideration:** Implement a more robust mirror ranking and fallback system during the ISO build process to tolerate individual mirror failures without requiring manual intervention in the configuration files.
