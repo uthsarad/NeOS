@@ -44,6 +44,10 @@
     {
       "description": "Ensure the documentation additions are well-structured, easy to read, and clearly highlight the limitations using appropriate markdown formatting.",
       "target_file": "README.md, docs/HANDBOOK.md"
+    },
+    {
+      "description": "If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }
