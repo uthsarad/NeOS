@@ -18,7 +18,6 @@ fi
 # Ensure log file exists with secure permissions
 if [ ! -f "$LOG_FILE" ]; then
     (umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true
-    chmod 600 "$LOG_FILE"
 fi
 
 # SECURITY: Prevent symlink attacks on lock file
@@ -30,7 +29,6 @@ fi
 # Ensure lock file exists with secure permissions
 if [ ! -f "$LOCK_FILE" ]; then
     (umask 077; set -C; > "$LOCK_FILE") 2>/dev/null || true
-    chmod 600 "$LOCK_FILE"
 fi
 
 # Apply flock
