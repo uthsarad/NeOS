@@ -102,13 +102,13 @@ echo "Build profile configuration checks passed."
 if [ -f "pacman.conf" ]; then
     # Bolt: Replace subprocess grep with native bash logic or read file lines if performance overhead becomes a concern during parallel validation.
     # Sentinel: The root pacman.conf requires 'DatabaseOptional' to unblock the build process for unsigned repos. Ensure this does not inadvertently leak to the installed system.
-    has_db_req=false
-    while IFS= read -r line; do
-        if [[ "$line" =~ ^[[:space:]]*SigLevel[[:space:]]*=.*DatabaseRequired ]]; then
-            has_db_req=true
-            break
-        fi
-    done < pacman.conf
+    CONTENT=$(<"pacman.conf")
+    regex=$'(^|\n)[[:space:]]*SigLevel[[:space:]]*=[^\n]*DatabaseRequired'
+    if [[ "$CONTENT" =~ $regex ]]; then
+        has_db_req=true
+    else
+        has_db_req=false
+    fi
     if $has_db_req; then
         # Palette: Format error outputs clearly with multiline '💡 How to fix:' sections to assist developers when CI fails.
         echo "❌ pacman.conf contains build-blocking 'DatabaseRequired' setting."
