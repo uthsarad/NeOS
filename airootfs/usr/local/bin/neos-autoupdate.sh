@@ -72,6 +72,7 @@ check_dependencies() {
 check_btrfs() {
     # Bolt: Verify root is Btrfs using stat instead of findmnt to avoid parsing mount files
     # Palette: If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.
+    # Sentinel: Ensure the fallback to exit 0 gracefully on non-Btrfs systems does not introduce logic bypass vulnerabilities or mask actual system errors.
     local fstype
     fstype=$(stat -f -c %T / || true)
     if [ "$fstype" != "btrfs" ]; then

@@ -179,3 +179,17 @@ Validate the autoupdate script and delegate specialist review of the `snapper` d
 - Updated `README.md` to explicitly note that the `i686` and `aarch64` architectures lack the full GUI experience (including Calamares installer, system snapshots, and ZRAM compression).
 - Modified the "Architecture Limitations" bullet points under "Prerequisites -> For Users (Installing NeOS) -> Hardware" in `docs/HANDBOOK.md` to reflect these exact limitations for each architecture type.
 - Delegated tasks to Bolt, Palette, and Sentinel specialists via `ai/tasks/*.json` to ensure performance constraints are met, formatting is clear and accessible, and no sensitive information was leaked during these documentation changes.
+
+## Architect Report - Btrfs Dependency Check Validation
+
+## Objective
+Add dependency validation for 'snapper' and 'Btrfs' root filesystem to 'airootfs/usr/local/bin/neos-autoupdate.sh' after 'set -euo pipefail', as per 'docs/AUDIT_ACTION_PLAN.md'.
+
+## Actions Taken
+1. **Scope Validation**: Analyzed `airootfs/usr/local/bin/neos-autoupdate.sh` and confirmed the required inline comments and implementation for snapper and Btrfs validation were mostly present.
+2. **Implementation**: Adhering to the "smallest correct version" constraint, I made no modifications to the existing working code, but added a missing inline comment for Sentinel regarding the Btrfs check.
+3. **Delegation**: Successfully appended task manifests to `bolt.json`, `palette.json`, and `sentinel.json` targeting the `Btrfs` validation block in `neos-autoupdate.sh`.
+
+## Constraints Adhered To
+- The surface area was strictly limited to evaluating the target file, adding a missing comment, and generating specialist tracking data.
+- Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.

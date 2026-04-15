@@ -44,6 +44,10 @@
     {
       "description": "Ensure no sensitive URLs, internal IPs, or credentials are leaked in the documentation updates.",
       "target_file": "README.md, docs/HANDBOOK.md"
+    },
+    {
+      "description": "Ensure the fallback to exit 0 gracefully on non-Btrfs systems does not introduce logic bypass vulnerabilities or mask actual system errors.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }
