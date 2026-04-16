@@ -2,19 +2,19 @@
   "bolt": {
     "focus": "Performance Optimization",
     "instructions": [
-      "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead. Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging."
+      "Monitor documentation updates to ensure no heavy assets (images, unoptimized diagrams) are added that could bloat the repository size."
     ]
   },
   "palette": {
-    "focus": "Developer/Admin UX and Error Messages",
+    "focus": "UX and Accessibility",
     "instructions": [
-      "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure."
+      "Ensure the markdown structure of the new ADR is scannable, accessible, and uses clear heading hierarchies for easy reading."
     ]
   },
   "sentinel": {
     "focus": "Security Validation",
     "instructions": [
-      "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities."
+      "Verify that no sensitive operational details, credentials, or internal infrastructure information are leaked in the newly created architecture decisions documentation."
     ]
   }
 }

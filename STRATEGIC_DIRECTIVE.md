@@ -2,27 +2,27 @@
 
 ## PHASE 1 — Product Alignment Check
 - **What is the product trying to become?** NeOS aims to be a predictable, low-breakage, Windows-familiar Arch Linux desktop distribution that curates the user experience and update cycle.
-- **Are we building toward that?** Yes, by ensuring a reliable installation and build pipeline. However, fragile external dependencies currently block ISO builds and validation.
-- **Are we solving the highest leverage problem?** Yes. Without a passing CI and a reliable mirror list, the system cannot be built, tested, or distributed reliably.
+- **Are we building toward that?** Yes. Recent critical fixes to the build pipeline and ISO size limits have stabilized the foundation. Now we must ensure the core design decisions are documented for future maintainability.
+- **Are we solving the highest leverage problem?** Yes. The lack of Architecture Decision Records (ADRs) creates a knowledge gap for future contributors and risks deviating from the core brand ethos.
 
 ## PHASE 2 — Technical Posture Review
-- **Is the system stable?** The core architecture is solid and passes most automated verification checks. However, the build pipeline is completely blocked by a failing network connectivity test.
-- **Is tech debt increasing?** Relying on an unmaintained or unreachable mirror (`https://ftpmirror.infania.net/mirror/archlinux/`) introduces operational debt and fragility to our release process.
-- **Are we overbuilding?** No. Addressing a failing mirror is a critical, minimal fix required for basic functionality.
+- **Is the system stable?** Yes, the core architecture and build pipelines are stable following recent emergency fixes.
+- **Is tech debt increasing?** Yes, documentation debt is increasing. The 'why' behind major technical decisions (e.g., using `linux-lts`, Btrfs + snapper, Calamares) is not formally recorded.
+- **Are we overbuilding?** No. Formalizing ADRs is a fundamental governance requirement, not an over-engineered feature.
 
 ## PHASE 3 — Priority Selection
 Select ONE of:
-- **Stabilization / hardening**
+- **Refinement of recent feature**
 
-We must pause new feature development to address the immediate CI blockage caused by external dependency failure. A reliable build is a prerequisite for all other work.
+We will prioritize the refinement of documentation by implementing the Architecture Decision Records (ADRs) recommended in the AUDIT_ACTION_PLAN.md.
 
 ## PHASE 4 — Controlled Scope Definition
-- **Exact files likely impacted:** `airootfs/etc/pacman.d/neos-mirrorlist`
-- **Maximum allowed surface area:** Modifications are strictly limited to removing the unreachable mirror. No new mirrors should be added, and no other configuration files should be altered.
-- **Constraints Architect must obey:** Remove the line containing `https://ftpmirror.infania.net/mirror/archlinux/` from the mirrorlist. Do not attempt to re-rank or add alternative mirrors to keep the change minimal and focused. Do not alter any other pacman configuration files.
+- **Exact files likely impacted:** `docs/decisions/0001-core-architecture-decisions.md`, `README.md`
+- **Maximum allowed surface area:** Creation of the new ADR directory and document, and a link addition to the README. No executable code or build pipelines may be modified.
+- **Constraints Architect must obey:** Create a single, comprehensive ADR document consolidating the decisions for `linux-lts`, Btrfs + snapper, Calamares, plasma-meta, and 8 parallel downloads. Ensure the directory `docs/decisions/` is created.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect builds:** Implements the targeted removal of the offline mirror to unblock the CI pipeline and restore build stability.
-- **Bolt optimizes:** Ensures the mirror connectivity test avoids excessive timeouts to prevent pipeline hangs during future mirror failures.
-- **Palette enhances:** Improves error messaging during connectivity failures to be clearer and more actionable for developers.
-- **Sentinel audits:** Verifies that mirrorlist parsing remains secure against command injection and only processes valid URLs.
+- **Architect builds:** Creates the `docs/decisions/` directory and writes `0001-core-architecture-decisions.md`, linking it in `README.md`.
+- **Bolt optimizes:** Monitors the documentation addition to ensure no unnecessary heavy assets (like large architecture diagrams) are included that might bloat the repository.
+- **Palette enhances:** Ensures the markdown structure of the new ADR is scannable, accessible, and uses clear heading hierarchies.
+- **Sentinel audits:** Verifies no sensitive operational details or credentials are leaked in the newly created documentation.
