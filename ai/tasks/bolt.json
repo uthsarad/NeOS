@@ -48,6 +48,10 @@
     {
       "description": "Verify root is Btrfs using stat instead of findmnt to avoid parsing mount files.",
       "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure the connectivity check avoids excessive timeouts or fork/exec overhead. Limit the connection timeout of the HTTP request to prevent the CI pipeline from hanging.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }

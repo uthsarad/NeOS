@@ -48,6 +48,10 @@
     {
       "description": "If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.",
       "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }
