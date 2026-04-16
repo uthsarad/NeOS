@@ -48,6 +48,10 @@
     {
       "description": "Ensure the fallback to exit 0 gracefully on non-Btrfs systems does not introduce logic bypass vulnerabilities or mask actual system errors.",
       "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }

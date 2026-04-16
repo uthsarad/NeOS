@@ -193,3 +193,18 @@ Add dependency validation for 'snapper' and 'Btrfs' root filesystem to 'airootfs
 ## Constraints Adhered To
 - The surface area was strictly limited to evaluating the target file, adding a missing comment, and generating specialist tracking data.
 - Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
+
+## Architect Report - Mirrorlist Unreachable Mirror Fix
+
+## Objective
+Remove the offline mirror entry pointing to `https://ftpmirror.infania.net/mirror/archlinux/` from the pacman mirrorlist to unblock the CI build pipeline.
+
+## Actions Taken
+1. **Scope Validation**: Removed `ftpmirror.infania.net` from `airootfs/etc/pacman.d/neos-mirrorlist` strictly targeting the failing entry without adding or re-ranking mirrors.
+2. **Implementation**: Verified that tests `tests/verify_mirrorlist_connectivity.sh` successfully pass after the targeted removal.
+3. **Delegation**: Appended task manifests to `bolt.json`, `palette.json`, and `sentinel.json` specifying further optimizations, UX enhancements, and security validation for the mirrorlist connectivity testing without performing a destructive overwrite.
+
+## Constraints Adhered To
+- The surface area was strictly limited to removing the unreachable mirror.
+- Made NO modifications to other pacman configuration files or re-ranked existing mirrors.
+- Preserved existing specialist tracking data by using JSON parsing to securely append new tasks to maintain system cohesion and avoid destroying pending workflows.
