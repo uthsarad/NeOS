@@ -1,20 +1,22 @@
 {
   "bolt": {
-    "focus": "Performance Optimization",
+    "focus": "Performance of Verification Scripts",
     "instructions": [
-      "Monitor documentation updates to ensure no heavy assets (images, unoptimized diagrams) are added that could bloat the repository size."
+      "Ensure `verify_mirrorlist_connectivity.sh` uses aggressive timeout bounds (`--connect-timeout 1 --max-time 2`) for curl.",
+      "Review test scripts to eliminate redundant fork/exec overhead in loops."
     ]
   },
   "palette": {
-    "focus": "UX and Accessibility",
+    "focus": "Developer UX and Output Formatting",
     "instructions": [
-      "Ensure the markdown structure of the new ADR is scannable, accessible, and uses clear heading hierarchies for easy reading."
+      "Ensure the test output clearly distinguishes between a skipped test (due to environment) and a failed test.",
+      "Provide actionable '💡 How to fix:' instructions when tests fail."
     ]
   },
   "sentinel": {
-    "focus": "Security Validation",
+    "focus": "Security of CI/CD Additions",
     "instructions": [
-      "Verify that no sensitive operational details, credentials, or internal infrastructure information are leaked in the newly created architecture decisions documentation."
+      "Verify that mirror testing scripts securely parse the mirrorlist without executing its contents."
     ]
   }
 }

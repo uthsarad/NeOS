@@ -1,13 +1,17 @@
-# NeOS Risk & Priority Report
+# Risk & Priority Report
 
-## Current Risk Assessment
-The immediate technical blockers (unreachable mirrors, ISO size limits) have been mitigated, stabilizing the build pipeline. The most prominent current risk is "documentation debt" — the lack of formal records explaining the 'why' behind critical architectural choices.
+## Current Risk Posture
+Based on the recent Deep Audit, the core system configuration is strong. However, operational risks exist in the testing infrastructure:
 
-### Impact
-- **Severity:** Medium (hinders contributor onboarding and risks architectural drift over time).
-- **Probability:** High (without documentation, institutional knowledge is lost rapidly).
+1. **Environment-Dependent Test Failures (Medium Risk):**
+   - `verify_iso_smoketest.sh` fails in static audit environments where the ISO artifact (`out/`) is not yet built.
+   - `verify_mirrorlist_connectivity.sh` is brittle and fails depending on network reachability.
+   - These false positives degrade developer trust in the testing tools.
+
+## Strategic Priorities
+1. **Harden Verification Scripts:** Update the test suite to be environment-aware. Tests should gracefully skip when prerequisites (like built artifacts or network access) are intentionally missing during static analysis.
 
 ## Mitigation Strategy
-1. **Immediate Mitigation:** Create a consolidated Architecture Decision Record (ADR) to formally document the core foundation choices (e.g., `linux-lts`, Btrfs, Calamares).
-2. **Short-Term Hardening:** Ensure the ADR directory is linked from the main README so it is easily discoverable by new developers.
-3. **Long-Term Consideration:** Establish a policy that any future major architectural shifts must be preceded by a formal ADR.
+- Deploy the Architect to introduce environment-detection logic into the failing test scripts.
+- Ensure tests explicitly validate required conditions before execution.
+- Limit the scope strictly to the test suite to avoid introducing regressions into the ISO build process.
