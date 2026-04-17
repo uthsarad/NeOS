@@ -1,17 +1,16 @@
 {
   "target_files": [
-    "docs/decisions/0001-core-architecture-decisions.md",
-    "README.md"
+    "tests/verify_iso_smoketest.sh",
+    "tests/verify_mirrorlist_connectivity.sh"
   ],
   "instructions": [
-    "Create the directory 'docs/decisions/' if it does not exist.",
-    "Create a new file 'docs/decisions/0001-core-architecture-decisions.md' consolidating the architectural decisions for: linux-lts vs linux-zen, Btrfs + snapper, Calamares installer, plasma-meta, and 8 parallel downloads.",
-    "Update 'README.md' to include a link to the new Architecture Decision Records under the Documentation section."
+    "Implement environment detection in `verify_iso_smoketest.sh` to gracefully exit 0 when `out/` is missing, except when explicitly triggered post-build.",
+    "Refactor `verify_mirrorlist_connectivity.sh` to gracefully handle network isolation or add fallback mirror mechanisms."
   ],
   "constraints": [
-    "Do not modify any executable code, configuration files, or CI workflows.",
-    "Ensure the ADR follows standard markdown formatting.",
-    "Do not include heavy assets like images or complex diagrams."
+    "Limit modifications to the `tests/` directory.",
+    "Maintain fast execution times for all test scripts.",
+    "Do not mask actual errors; clearly log skipped tests vs. failures."
   ],
   "dependencies": []
 }
