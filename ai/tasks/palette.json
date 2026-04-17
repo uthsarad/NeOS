@@ -52,6 +52,10 @@
     {
       "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
       "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "Ensure the markdown structure of the new ADR is scannable, accessible, and uses clear heading hierarchies for easy reading.",
+      "target_file": "docs/decisions/0001-core-architecture-decisions.md"
     }
   ]
 }

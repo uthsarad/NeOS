@@ -208,3 +208,18 @@ Remove the offline mirror entry pointing to `https://ftpmirror.infania.net/mirro
 - The surface area was strictly limited to removing the unreachable mirror.
 - Made NO modifications to other pacman configuration files or re-ranked existing mirrors.
 - Preserved existing specialist tracking data by using JSON parsing to securely append new tasks to maintain system cohesion and avoid destroying pending workflows.
+
+## Architect Report - Architecture Decision Records Implementation
+
+## Objective
+Implement the initial Architecture Decision Record (ADR) consolidating major architectural choices and link it in the README, as mandated by the `ARCHITECT_SCOPE.json` and `STRATEGIC_DIRECTIVE.md`.
+
+## Actions Taken
+1. **Scope Validation**: Confirmed the task fits within `ARCHITECT_SCOPE.json`, targeting only the creation of `docs/decisions/0001-core-architecture-decisions.md` and modifying `README.md`.
+2. **Implementation**: Created the new ADR document explaining `linux-lts`, Btrfs + snapper, Calamares, `plasma-meta`, and 8 parallel downloads. Added a link to this ADR in `README.md`.
+3. **Delegation**: Added clear inline comments for Bolt (performance), Palette (UX/accessibility), and Sentinel (security) in the new ADR file. Appended the required tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` safely using a Python JSON parser.
+
+## Constraints Adhered To
+- The surface area was strictly limited to creating the new ADR document and updating the `README.md`.
+- Made NO modifications to any executable code, configuration files, or CI workflows.
+- Preserved existing specialist tracking data by using JSON parsing to securely append new tasks.
