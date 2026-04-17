@@ -52,6 +52,10 @@
     {
       "description": "Verify that the parsing of the mirrorlist safely reads the file line-by-line without executing its contents or introducing command injection vulnerabilities.",
       "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "Verify that no sensitive operational details, credentials, or internal infrastructure information are leaked in the newly created architecture decisions documentation.",
+      "target_file": "docs/decisions/0001-core-architecture-decisions.md"
     }
   ]
 }

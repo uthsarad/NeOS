@@ -39,6 +39,7 @@ This repository serves as the **official Archiso profile** for building the NeOS
 - [VM Startup Modules](docs/VM_STARTUP.md)
 - [Deep Audit Report](docs/DEEP_AUDIT.md) - Comprehensive repository analysis
 - [Audit Action Plan](docs/AUDIT_ACTION_PLAN.md) - Prioritized improvement roadmap
+- **[Architecture Decision Records](docs/decisions/0001-core-architecture-decisions.md)** - Log of major architecture decisions.
 
 ## Building NeOS
 
