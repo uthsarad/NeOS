@@ -1,22 +1,20 @@
 {
   "bolt": {
-    "focus": "Performance of Verification Scripts",
+    "focus": "Strategic Pause",
     "instructions": [
-      "Ensure `verify_mirrorlist_connectivity.sh` uses aggressive timeout bounds (`--connect-timeout 1 --max-time 2`) for curl.",
-      "Review test scripts to eliminate redundant fork/exec overhead in loops."
+      "No optimization tasks assigned."
     ]
   },
   "palette": {
-    "focus": "Developer UX and Output Formatting",
+    "focus": "Strategic Pause",
     "instructions": [
-      "Ensure the test output clearly distinguishes between a skipped test (due to environment) and a failed test.",
-      "Provide actionable '💡 How to fix:' instructions when tests fail."
+      "No UX enhancement tasks assigned."
     ]
   },
   "sentinel": {
-    "focus": "Security of CI/CD Additions",
+    "focus": "Strategic Pause",
     "instructions": [
-      "Verify that mirror testing scripts securely parse the mirrorlist without executing its contents."
+      "No security audit tasks assigned."
     ]
   }
 }

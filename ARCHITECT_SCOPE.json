@@ -1,16 +1,11 @@
 {
-  "target_files": [
-    "tests/verify_iso_smoketest.sh",
-    "tests/verify_mirrorlist_connectivity.sh"
-  ],
+  "target_files": [],
   "instructions": [
-    "Implement environment detection in `verify_iso_smoketest.sh` to gracefully exit 0 when `out/` is missing, except when explicitly triggered post-build.",
-    "Refactor `verify_mirrorlist_connectivity.sh` to gracefully handle network isolation or add fallback mirror mechanisms."
+    "Perform no code modifications to the system or CI pipeline.",
+    "Run all validation test scripts to ensure the system remains stable."
   ],
   "constraints": [
-    "Limit modifications to the `tests/` directory.",
-    "Maintain fast execution times for all test scripts.",
-    "Do not mask actual errors; clearly log skipped tests vs. failures."
+    "Do not alter any system configuration, application code, or CI workflows."
   ],
   "dependencies": []
 }
