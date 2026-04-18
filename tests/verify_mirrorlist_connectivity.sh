@@ -4,6 +4,11 @@ set -euo pipefail
 # Sentinel: Verify safe parsing of mirrorlist to prevent command injection
 # Bolt: Optimize file reading and avoid excessive subprocess overhead if possible
 
+if ! curl -I -s --connect-timeout 2 "https://archlinux.org" > /dev/null; then
+    echo "⚠️ Network isolation detected. Skipping mirrorlist connectivity test."
+    exit 0
+fi
+
 # We use awk to parse the mirrorlist safely and efficiently.
 # It extracts the base URL directly without the need for bash regex matching or subshells.
 # It handles up to 5 mirrors.

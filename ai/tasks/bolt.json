@@ -56,6 +56,10 @@
     {
       "description": "Monitor documentation updates to ensure no heavy assets (images, unoptimized diagrams) are added that could bloat the repository size.",
       "target_file": "docs/decisions/0001-core-architecture-decisions.md"
+    },
+    {
+      "description": "Optimize network isolation check in verify_mirrorlist_connectivity.sh to avoid DNS lookup delays.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }

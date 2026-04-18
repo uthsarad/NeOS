@@ -56,6 +56,10 @@
     {
       "description": "Verify that no sensitive operational details, credentials, or internal infrastructure information are leaked in the newly created architecture decisions documentation.",
       "target_file": "docs/decisions/0001-core-architecture-decisions.md"
+    },
+    {
+      "description": "Ensure the network isolation check URL does not introduce privacy concerns or unintended data leaks.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }

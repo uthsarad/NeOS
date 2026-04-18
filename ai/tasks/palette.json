@@ -56,6 +56,10 @@
     {
       "description": "Ensure the markdown structure of the new ADR is scannable, accessible, and uses clear heading hierarchies for easy reading.",
       "target_file": "docs/decisions/0001-core-architecture-decisions.md"
+    },
+    {
+      "description": "Improve terminal output for skipped tests in verify_iso_smoketest.sh and verify_mirrorlist_connectivity.sh to clearly distinguish them from passes/failures.",
+      "target_file": "tests/verify_iso_smoketest.sh, tests/verify_mirrorlist_connectivity.sh"
     }
   ]
 }
