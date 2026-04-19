@@ -1,11 +1,18 @@
 {
-  "target_files": [],
+  "target_files": [
+    "airootfs/usr/local/bin/neos-liveuser-setup",
+    "airootfs/usr/local/bin/neos-installer-partition.sh"
+  ],
   "instructions": [
-    "Perform no code modifications to the system or CI pipeline.",
-    "Run all validation test scripts to ensure the system remains stable."
+    "Refactor neos-liveuser-setup and neos-installer-partition.sh to ensure robust error handling and structured initialization sequences.",
+    "Verify that Btrfs filesystem expectations are explicitly met without relying on unstable parsing of mount files."
   ],
   "constraints": [
-    "Do not alter any system configuration, application code, or CI workflows."
+    "Limit modifications strictly to the defined target files to prevent feature creep.",
+    "Do not introduce any new external dependencies or binaries.",
+    "Ensure all file generation and permission setting follow secure practices (e.g., umask 077, no TOCTOU chmod)."
   ],
-  "dependencies": []
+  "dependencies": [
+    "None"
+  ]
 }
