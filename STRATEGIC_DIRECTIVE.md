@@ -1,21 +1,30 @@
-# Strategic Directive
+# Strategic Directive: Phase 3 Installer & First-Boot Refinement
 
-PHASE 1 — Product Alignment Check
-The product aims to provide a predictable, Windows-familiar Arch-based experience. We have recently implemented critical fixes to the build system, ISO size validations, and dependency checks. We are currently aligned with the product goals by ensuring the stability of the core infrastructure. The priority now is to formalize this stabilization and enforce a strategic pause to observe the pipeline.
+## PHASE 1 — Product Alignment Check
+- **Product Vision:** A predictable, curated Arch Linux experience with a Windows-familiar GUI-first workflow.
+- **Alignment:** Aligned. Following the recent stability verification, we are advancing Phase 3 (Installer and First-Boot UX).
+- **Highest Leverage:** Hardening the transition from live ISO to an installed state ensures baseline reliability before adding higher-level UX polish.
 
-PHASE 2 — Technical Posture Review
-The system is stable. The critical build blocker in `pacman.conf` has been resolved, ISO size guardrails (`tests/verify_iso_size.sh`) are implemented, and architecture limitations are accurately documented. Tech debt has been significantly reduced.
+## PHASE 2 — Technical Posture Review
+- **Stability:** System is stable. Recent profile audit optimizations improved CI execution.
+- **Tech Debt:** Custom shell scripts (`airootfs/usr/local/bin/neos-liveuser-setup`, `airootfs/usr/local/bin/neos-installer-partition.sh`) require structural refinement to prevent debt accumulation.
+- **Overbuilding:** Controlled. We must restrict efforts to hardening existing flows rather than introducing new installer components.
 
-PHASE 3 — Priority Selection
-No-build day (strategic pause)
+## PHASE 3 — Priority Selection
+- **Selection:** Refinement of recent feature
 
-PHASE 4 — Controlled Scope Definition
-- Exact files likely impacted: None.
-- Maximum allowed surface area: 0 files.
-- Constraints Architect must obey: Do not write production code. Verify the existing stable state.
+## PHASE 4 — Controlled Scope Definition
+- **Impacted Files:**
+  - `airootfs/usr/local/bin/neos-liveuser-setup`
+  - `airootfs/usr/local/bin/neos-installer-partition.sh`
+- **Surface Area:** Hardening and structural refinement of existing live-user setup and installer partitioning scripts.
+- **Constraints:**
+  - Do not introduce new dependencies.
+  - Maintain Btrfs compatibility without unstable mount parsing.
+  - Apply strict secure file creation practices (e.g., `umask 077`, no TOCTOU).
 
-PHASE 5 — Delegation Strategy
-- Architect verifies existing tests pass without modifying system code.
-- Bolt has no performance optimizations today.
-- Palette has no UX changes today.
-- Sentinel has no security audits today.
+## PHASE 5 — Delegation Strategy
+- **Architect:** Refine error handling and execution flow in target scripts.
+- **Bolt:** Optimize script execution by eliminating redundant subshells and applying native bash capabilities.
+- **Palette:** Enhance developer and admin UX through structured, actionable error logging in bash traps.
+- **Sentinel:** Audit target scripts for command injection, quoting flaws, and TOCTOU vulnerabilities.
