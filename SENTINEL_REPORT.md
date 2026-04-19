@@ -33,3 +33,19 @@ During the audit phase, the following verifications were also addressed:
 - **High:** 0
 - **Medium:** 1 (TOCTOU in log/lock creation - FIXED)
 - **Low:** 0
+
+## Sentinel Security Report - CI Pipeline Resource Exhaustion
+
+### Risks Found
+- **Vulnerability**: CI Pipeline Resource Exhaustion (DoS Risk).
+- **Severity**: Medium.
+- **Details**: The baseline connectivity check in `tests/verify_mirrorlist_connectivity.sh` lacked a strict bounding on the overall request time. While a connection timeout was present, an established but non-responsive connection could cause the `curl` process, and consequently the CI pipeline, to hang indefinitely.
+
+### Fixes Applied
+- Added `--max-time 2` and reduced the connection timeout to `--connect-timeout 1` for the `https://archlinux.org` check. This enforces a strict execution bound, ensuring the check fails gracefully instead of hanging.
+
+### Remaining Attack Surface
+- No immediate network-related hanging risks remain in this script. However, downstream background `curl` processes also depend on accurate timeouts, which have already been verified.
+
+### Severity Summary
+- **Medium** priority issue addressed. The mitigation improves the operational resilience of the pipeline against slow or non-responsive endpoints.
