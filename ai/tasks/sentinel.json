@@ -60,6 +60,10 @@
     {
       "description": "Ensure the network isolation check URL does not introduce privacy concerns or unintended data leaks.",
       "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "No security audits assigned during strategic pause.",
+      "target_file": "None"
     }
   ]
 }
