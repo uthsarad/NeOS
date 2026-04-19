@@ -84,6 +84,7 @@ check_btrfs() {
 check_disk_space() {
     # Bolt: Using lightweight 'df' instead of 'btrfs fi usage' to minimize performance overhead during update initialization.
     # Minimum required space: 5GB (5242880 KB)
+    # Bolt: Consider native bash integer math for disk space comparisons to avoid external binary overhead if calculations become complex.
     local min_space=5242880
     local available_space
     # Use -Pk to ensure POSIX output format, preventing line wrapping on long filesystem names.
