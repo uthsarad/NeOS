@@ -64,6 +64,14 @@
     {
       "description": "No performance optimizations assigned during strategic pause.",
       "target_file": "None"
+    },
+    {
+      "description": "Analyze neos-liveuser-setup and neos-installer-partition.sh to eliminate redundant subshells.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Replace expensive external process calls (e.g., grep in loops) with native bash regex or parameter expansion where applicable.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
