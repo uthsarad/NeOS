@@ -4,8 +4,9 @@
     "airootfs/usr/local/bin/neos-installer-partition.sh"
   ],
   "instructions": [
-    "Refactor neos-liveuser-setup and neos-installer-partition.sh to ensure robust error handling and structured initialization sequences.",
-    "Verify that Btrfs filesystem expectations are explicitly met without relying on unstable parsing of mount files."
+    "Implement robust error handling and structured initialization sequences in the target scripts.",
+    "Ensure trap commands securely handle variable expansion without masking exit codes or introducing injection risks.",
+    "Refine execution flow without introducing new external dependencies."
   ],
   "constraints": [
     "Limit modifications strictly to the defined target files to prevent feature creep.",

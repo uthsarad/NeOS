@@ -1,19 +1,19 @@
 {
   "bolt": {
-    "focus": "Performance optimizations in installer scripts",
+    "focus": "Performance optimizations in Phase 3 installer scripts",
     "instructions": [
       "Analyze neos-liveuser-setup and neos-installer-partition.sh to eliminate redundant subshells.",
       "Replace expensive external process calls (e.g., grep in loops) with native bash regex or parameter expansion where applicable."
     ]
   },
   "palette": {
-    "focus": "Developer and Admin UX in terminal output",
+    "focus": "Developer and Admin UX in terminal output for Phase 3",
     "instructions": [
       "Ensure logged error messages in custom script traps (neos-liveuser-setup, neos-installer-partition.sh) are clear, use structural visual cues, and include actionable steps."
     ]
   },
   "sentinel": {
-    "focus": "Security Validation of installer scripts",
+    "focus": "Security Validation of Phase 3 installer scripts",
     "instructions": [
       "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
       "Audit the installer scripts to ensure no TOCTOU vulnerabilities are introduced during file creation."
