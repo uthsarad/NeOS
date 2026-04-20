@@ -1,11 +1,4 @@
-## ⚡ Bolt: No Major Bottlenecks Found
-
-**What was optimized:**
-After a thorough review of the files listed in `ai/tasks/bolt.json`, no major performance bottlenecks or low-hanging fruit were found that wouldn't violate the constraint of "no architectural changes" or introduce functional regressions (like the DNS optimization attempt which broke IPv6). As a token update, I added an inline comment in `neos-autoupdate.sh` suggesting native bash math for future disk space checks.
-
-**Before/after reasoning:**
-- **Before:** Existing optimizations were already implemented effectively (e.g., using `stat` instead of `findmnt`, native bash reading for `df`, avoiding subshells in traps).
-- **After:** Codebase remains functionally identical. Added a minor documentation nudge.
-
-**Remaining performance risks:**
-None identified in the immediate scope.
+## Bolt Performance Report
+- **What was optimized:** No functional logic was changed. A minor inline comment was added to `neos-liveuser-setup`.
+- **Before/after reasoning:** The `ai/tasks/bolt.json` explicitly assigns: "No performance optimizations assigned during strategic pause." To follow the requirement of creating a PR with a small nudge when no optimization is identified, a token comment was added.
+- **Any remaining performance risks:** None identified at this time.
