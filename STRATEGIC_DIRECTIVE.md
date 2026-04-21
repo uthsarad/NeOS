@@ -1,30 +1,28 @@
-# Strategic Directive: Phase 3 Installer & First-Boot Refinement (Execution Phase)
+# Strategic Directive: Phase 3 Installer Partitioning Implementation
 
 ## PHASE 1 — Product Alignment Check
 - **Product Vision:** A predictable, curated Arch Linux experience with a Windows-familiar GUI-first workflow.
-- **Alignment:** Aligned. The strategic pause and stability verifications have concluded. We are now advancing to the active implementation of Phase 3 (Installer and First-Boot UX).
-- **Highest Leverage:** Hardening the core execution logic and error handling in the installer and live-user setup scripts ensures reliability before introducing complex Calamares configurations.
+- **Alignment:** Aligned. With foundational scripts refined, we must build the core partitioning capability to enable installation.
+- **Highest Leverage:** Implementing safe, robust Btrfs partitioning logic is the most critical blocker for the Phase 3 Installer UX.
 
 ## PHASE 2 — Technical Posture Review
-- **Stability:** System is stable. The strategic pause confirmed no regressions exist and baseline checks pass.
-- **Tech Debt:** Custom shell scripts (`airootfs/usr/local/bin/neos-liveuser-setup`, `airootfs/usr/local/bin/neos-installer-partition.sh`) require immediate structural refinement to prevent debt accumulation as complexity grows.
-- **Overbuilding:** Controlled. The execution scope is strictly limited to structural improvements, error handling, and secure file creation within existing scripts.
+- **Stability:** System is stable.
+- **Tech Debt:** Existing shell scripts are clean. We must prevent complexity creep in the new partitioning script.
+- **Overbuilding:** Controlled. We will focus purely on baseline Btrfs subvolume layout and explicit device targeting. No complex multi-disk or RAID setups yet.
 
 ## PHASE 3 — Priority Selection
-- **Selection:** Refinement of recent feature (Active Implementation)
+- **Selection:** New feature implementation (Partitioning Logic)
 
 ## PHASE 4 — Controlled Scope Definition
 - **Impacted Files:**
-  - `airootfs/usr/local/bin/neos-liveuser-setup`
   - `airootfs/usr/local/bin/neos-installer-partition.sh`
-- **Surface Area:** Hardening and structural refinement of existing live-user setup and installer partitioning scripts.
+- **Surface Area:** Implement the core functions to format a targeted disk with Btrfs, create required subvolumes (`@`, `@home`, `@var`, `@snapshots`), and handle UEFI boot partition setup.
 - **Constraints:**
-  - Do not introduce new dependencies.
-  - Ensure trap commands securely handle variable expansion without introducing command injection or masking exit codes.
-  - Apply strict secure file creation practices (e.g., `umask 077`, no TOCTOU).
+  - Must implement explicit device safety checks (e.g., verifying target is a block device, not mounted).
+  - Keep operations minimal and idempotent where possible.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Implement robust error handling, refine execution flow, and ensure secure file creation in target scripts.
-- **Bolt:** Optimize script execution by eliminating redundant subshells and applying native bash capabilities.
-- **Palette:** Enhance developer and admin UX through structured, actionable error logging in bash traps.
-- **Sentinel:** Audit implemented changes for command injection, quoting flaws, and TOCTOU vulnerabilities.
+- **Architect:** Implement the core partitioning and formatting logic.
+- **Bolt:** Optimize disk I/O operations and parallelize where safe.
+- **Palette:** Provide clear terminal output indicating progress and milestones during partitioning.
+- **Sentinel:** Audit the script for destructive operation safety, ensuring `rm -rf` or `wipefs` are strictly bounded.

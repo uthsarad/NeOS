@@ -1,17 +1,16 @@
 {
   "target_files": [
-    "airootfs/usr/local/bin/neos-liveuser-setup",
     "airootfs/usr/local/bin/neos-installer-partition.sh"
   ],
   "instructions": [
-    "Implement robust error handling and structured initialization sequences in the target scripts.",
-    "Ensure trap commands securely handle variable expansion without masking exit codes or introducing injection risks.",
-    "Refine execution flow without introducing new external dependencies."
+    "Implement core Btrfs partitioning logic.",
+    "Create standard subvolumes: @, @home, @var, @snapshots.",
+    "Include strict block device validation before destructive operations."
   ],
   "constraints": [
-    "Limit modifications strictly to the defined target files to prevent feature creep.",
-    "Do not introduce any new external dependencies or binaries.",
-    "Ensure all file generation and permission setting follow secure practices (e.g., umask 077, no TOCTOU chmod)."
+    "Limit modifications to the partitioning script.",
+    "Do not implement complex RAID or multi-disk logic.",
+    "Ensure all variables representing device paths are properly quoted."
   ],
   "dependencies": [
     "None"
