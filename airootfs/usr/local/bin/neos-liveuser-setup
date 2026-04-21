@@ -7,3 +7,4 @@ set -euo pipefail
 SCRIPT_NAME="${0##*/}"
 trap 'err=$?; echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$BASH_COMMAND\"\n  Failed at line: $LINENO\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true; logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $LINENO (Exit Code $err). Command: \"$BASH_COMMAND\". Please review the system journal." || true; exit $err' ERR
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
+chmod 0440 /etc/sudoers.d/zz-live-wheel
