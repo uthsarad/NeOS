@@ -49,3 +49,19 @@ During the audit phase, the following verifications were also addressed:
 
 ### Severity Summary
 - **Medium** priority issue addressed. The mitigation improves the operational resilience of the pipeline against slow or non-responsive endpoints.
+
+## Sentinel Security Report - Live User Sudoers Provisioning
+
+### Risks Found
+- **Vulnerability**: Insecure File Permissions.
+- **Severity**: Low / Enhancement.
+- **Details**: `airootfs/usr/local/bin/neos-liveuser-setup` created `/etc/sudoers.d/zz-live-wheel` directly using bash redirection (`>`). This created the file with the default environmental umask (e.g., `0644`), which is less secure than the standard `0440` required for sudoers configurations.
+
+### Fixes Applied
+- Appended a direct `chmod 0440 /etc/sudoers.d/zz-live-wheel` command after creation to strictly enforce the correct least-privilege permissions without suppressing native error handling.
+
+### Remaining Attack Surface
+- Minimal. The directory `/etc/sudoers.d/` is owned by root, preventing unauthorized symlink planting (mitigating TOCTOU).
+
+### Severity Summary
+- **Low** priority enhancement applied successfully to enforce `sudo` best practices.
