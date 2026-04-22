@@ -72,6 +72,10 @@
     {
       "description": "Audit the installer scripts to ensure no TOCTOU vulnerabilities are introduced during file creation.",
       "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Audit device path variables to ensure no destructive commands (wipefs, mkfs) can target unintended drives. Verify that safety checks (e.g., block device validation, unmounted state) cannot be bypassed.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

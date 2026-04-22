@@ -72,6 +72,10 @@
     {
       "description": "Replace expensive external process calls (e.g., grep in loops) with native bash regex or parameter expansion where applicable.",
       "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Review mkfs and partitioning commands for optimal block sizes and parameters. Minimize redundant sync or sleep calls during formatting.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
