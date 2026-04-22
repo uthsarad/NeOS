@@ -68,6 +68,10 @@
     {
       "description": "Ensure logged error messages in custom script traps (neos-liveuser-setup, neos-installer-partition.sh) are clear, use structural visual cues, and include actionable steps.",
       "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure milestone outputs (e.g., 'Creating subvolumes...', 'Formatting drive...') are clearly visible to the user. Format error messages for target device validation failures clearly.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
