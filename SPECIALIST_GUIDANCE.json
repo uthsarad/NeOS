@@ -1,23 +1,23 @@
 {
   "bolt": {
-    "focus": "Disk I/O optimization",
+    "focus": "CI Test Optimization",
     "instructions": [
-      "Review mkfs and partitioning commands for optimal block sizes and parameters.",
-      "Minimize redundant sync or sleep calls during formatting."
+      "Review tests/ for unnecessary forks inside loops.",
+      "Ensure network checks have strict timeouts."
     ]
   },
   "palette": {
-    "focus": "Terminal UX during installation",
+    "focus": "Developer UX in Tests",
     "instructions": [
-      "Ensure milestone outputs (e.g., 'Creating subvolumes...', 'Formatting drive...') are clearly visible to the user.",
-      "Format error messages for target device validation failures clearly."
+      "Ensure test failure outputs include clear 'How to fix' instructions.",
+      "Format outputs cleanly for CI logs."
     ]
   },
   "sentinel": {
-    "focus": "Destructive Operation Safety",
+    "focus": "CI Security Posture",
     "instructions": [
-      "Audit device path variables to ensure no destructive commands (wipefs, mkfs) can target unintended drives.",
-      "Verify that safety checks (e.g., block device validation, unmounted state) cannot be bypassed."
+      "Review GitHub actions for unsafe privileges.",
+      "Verify test scripts safely degrade on missing dependencies without executing untrusted code."
     ]
   }
 }

@@ -1,18 +1,12 @@
 {
-  "target_files": [
-    "airootfs/usr/local/bin/neos-installer-partition.sh"
-  ],
+  "target_files": [],
   "instructions": [
-    "Implement core Btrfs partitioning logic.",
-    "Create standard subvolumes: @, @home, @var, @snapshots.",
-    "Include strict block device validation before destructive operations."
+    "Implement a No-build day (Strategic Pause). Do not modify any production code logic.",
+    "Verify the stability of the current test suite."
   ],
   "constraints": [
-    "Limit modifications to the partitioning script.",
-    "Do not implement complex RAID or multi-disk logic.",
-    "Ensure all variables representing device paths are properly quoted."
+    "Zero modifications to `airootfs/`.",
+    "All changes must be restricted to documentation or specialist delegation manifests."
   ],
-  "dependencies": [
-    "None"
-  ]
+  "dependencies": []
 }

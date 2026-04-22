@@ -1,28 +1,22 @@
-# Strategic Directive: Phase 3 Installer Partitioning Implementation
+# Strategic Directive
+**Date:** 2026-04-01
+**Phase:** Core Infrastructure & Baseline Usability
 
-## PHASE 1 — Product Alignment Check
-- **Product Vision:** A predictable, curated Arch Linux experience with a Windows-familiar GUI-first workflow.
-- **Alignment:** Aligned. With foundational scripts refined, we must build the core partitioning capability to enable installation.
-- **Highest Leverage:** Implementing safe, robust Btrfs partitioning logic is the most critical blocker for the Phase 3 Installer UX.
+## Product Alignment Check
+The product is NeOS, a curated, snapshot-based Arch Linux desktop distribution targeting Windows switchers with a KDE Plasma 6 focus. We are currently ensuring the baseline architecture is solid, secure, and performant before advancing to UX polish.
 
-## PHASE 2 — Technical Posture Review
-- **Stability:** System is stable.
-- **Tech Debt:** Existing shell scripts are clean. We must prevent complexity creep in the new partitioning script.
-- **Overbuilding:** Controlled. We will focus purely on baseline Btrfs subvolume layout and explicit device targeting. No complex multi-disk or RAID setups yet.
+## Technical Posture Review
+The baseline system is stable with core configuration, security, and partitioning logic implemented. The deep audit (docs/DEEP_AUDIT.md) surfaced some infrastructure issues, mainly around CI tests.
 
-## PHASE 3 — Priority Selection
-- **Selection:** New feature implementation (Partitioning Logic)
+## Priority Selection
+**Stabilization / hardening** - Specifically fixing CI tests that fail due to missing dependencies/network assumptions, and hardening the CI pipeline structure. The codebase itself is in a good spot for a no-build day for Architects.
 
-## PHASE 4 — Controlled Scope Definition
-- **Impacted Files:**
-  - `airootfs/usr/local/bin/neos-installer-partition.sh`
-- **Surface Area:** Implement the core functions to format a targeted disk with Btrfs, create required subvolumes (`@`, `@home`, `@var`, `@snapshots`), and handle UEFI boot partition setup.
-- **Constraints:**
-  - Must implement explicit device safety checks (e.g., verifying target is a block device, not mounted).
-  - Keep operations minimal and idempotent where possible.
+## Controlled Scope Definition
+*   Target: Tests (`tests/`) and CI pipelines (`.github/workflows/`)
+*   Constraints: Do not modify core production code (`airootfs/`). Limit changes to fixing the verification scripts to be robust in CI environments.
 
-## PHASE 5 — Delegation Strategy
-- **Architect:** Implement the core partitioning and formatting logic.
-- **Bolt:** Optimize disk I/O operations and parallelize where safe.
-- **Palette:** Provide clear terminal output indicating progress and milestones during partitioning.
-- **Sentinel:** Audit the script for destructive operation safety, ensuring `rm -rf` or `wipefs` are strictly bounded.
+## Delegation Strategy
+*   **Architect:** No-build day (Strategic Pause). Wait for CI/Test stabilization.
+*   **Bolt:** Ensure CI test loops are optimized.
+*   **Palette:** Ensure test errors are actionable.
+*   **Sentinel:** Audit CI execution privileges and dependencies.
