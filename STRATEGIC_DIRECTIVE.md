@@ -1,22 +1,22 @@
 # Strategic Directive
-**Date:** 2026-04-01
+**Date:** 2026-04-23
 **Phase:** Core Infrastructure & Baseline Usability
 
 ## Product Alignment Check
-The product is NeOS, a curated, snapshot-based Arch Linux desktop distribution targeting Windows switchers with a KDE Plasma 6 focus. We are currently ensuring the baseline architecture is solid, secure, and performant before advancing to UX polish.
+The product is NeOS, a curated, snapshot-based Arch Linux desktop distribution targeting Windows switchers with a KDE Plasma 6 focus. The baseline architecture is solid, secure, and performant.
 
 ## Technical Posture Review
-The baseline system is stable with core configuration, security, and partitioning logic implemented. The deep audit (docs/DEEP_AUDIT.md) surfaced some infrastructure issues, mainly around CI tests.
+The baseline system is stable, with core configurations, security, and partitioning logic implemented. The CI environment handles builds and tests correctly. We are now maintaining the stability established in previous sprints.
 
 ## Priority Selection
-**Stabilization / hardening** - Specifically fixing CI tests that fail due to missing dependencies/network assumptions, and hardening the CI pipeline structure. The codebase itself is in a good spot for a no-build day for Architects.
+**No-build day (strategic pause)** - Ensure the system remains stable and does not suffer from feature creep. Focus on strategic reviews rather than codebase modification.
 
 ## Controlled Scope Definition
-*   Target: Tests (`tests/`) and CI pipelines (`.github/workflows/`)
-*   Constraints: Do not modify core production code (`airootfs/`). Limit changes to fixing the verification scripts to be robust in CI environments.
+*   Target: `STRATEGIC_DIRECTIVE.md`, `ARCHITECT_SCOPE.json`, `SPECIALIST_GUIDANCE.json`, and `RISK_REPORT.md`
+*   Constraints: Maintain the system in its current state; no feature additions or modifications.
 
 ## Delegation Strategy
-*   **Architect:** No-build day (Strategic Pause). Wait for CI/Test stabilization.
-*   **Bolt:** Ensure CI test loops are optimized.
-*   **Palette:** Ensure test errors are actionable.
-*   **Sentinel:** Audit CI execution privileges and dependencies.
+*   **Architect:** No-build day (Strategic Pause).
+*   **Bolt:** No performance optimizations.
+*   **Palette:** No UX enhancements.
+*   **Sentinel:** No security audits.

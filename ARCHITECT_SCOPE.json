@@ -1,12 +1,15 @@
 {
-  "target_files": [],
+  "target_files": [
+    "None"
+  ],
   "instructions": [
-    "Implement a No-build day (Strategic Pause). Do not modify any production code logic.",
-    "Verify the stability of the current test suite."
+    "No-build day. Ensure the system remains stable and do not add new features."
   ],
   "constraints": [
-    "Zero modifications to `airootfs/`.",
-    "All changes must be restricted to documentation or specialist delegation manifests."
+    "Do not modify codebase files.",
+    "Limit updates to strategic documents only."
   ],
-  "dependencies": []
+  "dependencies": [
+    "None"
+  ]
 }

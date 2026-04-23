@@ -1,23 +1,20 @@
 {
   "bolt": {
-    "focus": "CI Test Optimization",
+    "focus": "Strategic Pause",
     "instructions": [
-      "Review tests/ for unnecessary forks inside loops.",
-      "Ensure network checks have strict timeouts."
+      "No performance optimizations assigned during strategic pause."
     ]
   },
   "palette": {
-    "focus": "Developer UX in Tests",
+    "focus": "Strategic Pause",
     "instructions": [
-      "Ensure test failure outputs include clear 'How to fix' instructions.",
-      "Format outputs cleanly for CI logs."
+      "No UX enhancements assigned during strategic pause."
     ]
   },
   "sentinel": {
-    "focus": "CI Security Posture",
+    "focus": "Strategic Pause",
     "instructions": [
-      "Review GitHub actions for unsafe privileges.",
-      "Verify test scripts safely degrade on missing dependencies without executing untrusted code."
+      "No security audits assigned during strategic pause."
     ]
   }
 }
