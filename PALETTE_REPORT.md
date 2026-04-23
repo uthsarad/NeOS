@@ -11,3 +11,4 @@
 - Other testing scripts may lack visual structure in their error messages. This pattern could be adopted across other scripts.
 - Enhanced error message formatting in custom scripts (`airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh`) by introducing structural ASCII borders, indented details, and clear, numbered actionable steps. This significantly reduces developer cognitive load when analyzing script failures in terminal outputs.
 - Improved developer UX in `tests/verify_build_profile.sh` by cleanly formatting and outputting raw YAML validation exceptions to `stderr`, enabling faster debugging during CI pipeline failures.
+- Improved terminal output for skipped tests in `tests/verify_iso_smoketest.sh` and `tests/verify_mirrorlist_connectivity.sh` by adding ASCII borders and a clear `⏭️ SKIPPED` indicator to distinguish them from passes/failures.

@@ -9,7 +9,10 @@ if [[ ! -d "$OUT_DIR" ]]; then
         echo "Run: sudo ./build.sh"
         exit 1
     else
-        echo "⚠️ Missing output directory: $OUT_DIR. Skipping ISO smoke test gracefully."
+        echo -e "\n================================================================================"
+        echo -e "⏭️  SKIPPED: Missing output directory: $OUT_DIR."
+        echo -e "   ISO smoke test bypassed gracefully as REQUIRE_ISO!=1."
+        echo -e "================================================================================\n"
         exit 0
     fi
 fi
@@ -24,7 +27,10 @@ if [[ "$ISO_COUNT" -eq 0 ]]; then
         echo "Run: sudo ./build.sh"
         exit 1
     else
-        echo "⚠️ No ISO found in $OUT_DIR. Skipping ISO smoke test gracefully."
+        echo -e "\n================================================================================"
+        echo -e "⏭️  SKIPPED: No ISO found in $OUT_DIR."
+        echo -e "   ISO smoke test bypassed gracefully as REQUIRE_ISO!=1."
+        echo -e "================================================================================\n"
         exit 0
     fi
 fi
