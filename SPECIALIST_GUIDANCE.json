@@ -1,20 +1,23 @@
 {
   "bolt": {
-    "focus": "Strategic Pause",
+    "focus": "Performance of error handling",
     "instructions": [
-      "No performance optimizations assigned during strategic pause."
+      "Ensure trap commands and error logging minimize subshell overhead.",
+      "Prefer native bash variables over external process calls in error paths."
     ]
   },
   "palette": {
-    "focus": "Strategic Pause",
+    "focus": "UX of terminal output",
     "instructions": [
-      "No UX enhancements assigned during strategic pause."
+      "Ensure logged error messages are clear and contain actionable steps for users.",
+      "Use structural visual cues in terminal output for critical failures."
     ]
   },
   "sentinel": {
-    "focus": "Strategic Pause",
+    "focus": "Security of execution paths",
     "instructions": [
-      "No security audits assigned during strategic pause."
+      "Verify that trap commands safely handle variable expansion without introducing command injection risks.",
+      "Ensure TOCTOU vulnerabilities are not introduced during file creation or logging."
     ]
   }
 }
