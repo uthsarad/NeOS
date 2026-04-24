@@ -76,6 +76,10 @@
     {
       "description": "Audit device path variables to ensure no destructive commands (wipefs, mkfs) can target unintended drives. Verify that safety checks (e.g., block device validation, unmounted state) cannot be bypassed.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "No security audits assigned during strategic pause.",
+      "target_file": "None"
     }
   ]
 }

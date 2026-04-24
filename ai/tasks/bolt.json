@@ -76,6 +76,10 @@
     {
       "description": "Review mkfs and partitioning commands for optimal block sizes and parameters. Minimize redundant sync or sleep calls during formatting.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "No performance optimizations assigned during strategic pause.",
+      "target_file": "None"
     }
   ]
 }
