@@ -1,15 +1,11 @@
 {
-  "target_files": [
-    "None"
-  ],
-  "instructions": [
-    "No-build day. Ensure the system remains stable and do not add new features."
+  "allowed_files": [
+    "airootfs/usr/local/bin/neos-liveuser-setup",
+    "airootfs/usr/local/bin/neos-installer-partition.sh"
   ],
   "constraints": [
-    "Do not modify codebase files.",
-    "Limit updates to strategic documents only."
-  ],
-  "dependencies": [
-    "None"
+    "No new file creation.",
+    "Refactoring must preserve existing exit codes.",
+    "Limit modifications to error handling and trap refinements."
   ]
 }
