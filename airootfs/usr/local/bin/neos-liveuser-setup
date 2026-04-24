@@ -5,6 +5,15 @@ set -euo pipefail
 # Bolt: Logging mechanism is optimized and avoids subshells, utilizing native variables like $LINENO.
 # Palette: [task] Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.
 SCRIPT_NAME="${0##*/}"
-trap 'err=$?; echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$BASH_COMMAND\"\n  Failed at line: $LINENO\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true; logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $LINENO (Exit Code $err). Command: \"$BASH_COMMAND\". Please review the system journal." || true; exit $err' ERR
+_error_handler() {
+    local err=$1
+    local line=$2
+    local cmd="$BASH_COMMAND"
+    echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true
+    logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
+    exit "$err"
+}
+
+trap '_error_handler $? $LINENO' ERR
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
 chmod 0440 /etc/sudoers.d/zz-live-wheel
