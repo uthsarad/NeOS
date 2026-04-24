@@ -65,3 +65,19 @@ During the audit phase, the following verifications were also addressed:
 
 ### Severity Summary
 - **Low** priority enhancement applied successfully to enforce `sudo` best practices.
+
+## Sentinel Report - Error Handler Readability & Robustness Enhancement
+
+### Risks Found
+- **Low / Enhancement**: `airootfs/usr/local/bin/neos-liveuser-setup` utilized an inline string for its `ERR` trap which made the code dense and difficult to maintain. Furthermore, passing `$BASH_COMMAND` directly into the trap evaluation string, while technically safe in standard Bash due to late binding inside double quotes, is an anti-pattern. Best practices dictate avoiding the evaluation of dynamic variables inside trap definition strings to ensure maximum robustness across execution environments.
+
+### Fixes Applied
+- Extracted trap logic in `neos-liveuser-setup` into a dedicated, readable `_error_handler` function.
+- Refactored `_error_handler` in both `neos-liveuser-setup` and `neos-installer-partition.sh` to capture `$BASH_COMMAND` safely within the handler's local scope natively, rather than passing it via the trap evaluation string.
+
+### Remaining Attack Surface
+- None regarding these specific handlers. Administrative scripts are now cleaner and follow robust trap best practices.
+
+### Severity Summary
+- Severity: LOW (Enhancement)
+- Impact: Improved code readability, maintainability, and alignment with robust Bash scripting practices.

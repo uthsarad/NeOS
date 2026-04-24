@@ -8,13 +8,13 @@ SCRIPT_NAME="${0##*/}"
 _error_handler() {
     local err=$1
     local line=$2
-    local cmd="$3"
+    local cmd="$BASH_COMMAND"
     echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
 
-trap '_error_handler $? $LINENO "$BASH_COMMAND"' ERR
+trap '_error_handler $? $LINENO' ERR
 
 TARGET_DEV="${1:-}"
 
