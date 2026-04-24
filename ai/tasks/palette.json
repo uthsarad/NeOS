@@ -72,6 +72,10 @@
     {
       "description": "Ensure milestone outputs (e.g., 'Creating subvolumes...', 'Formatting drive...') are clearly visible to the user. Format error messages for target device validation failures clearly.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "No UX enhancements assigned during strategic pause.",
+      "target_file": "None"
     }
   ]
 }
