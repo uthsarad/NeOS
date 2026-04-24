@@ -20,28 +20,28 @@ trap '_error_handler $? $LINENO' ERR
 TARGET_DEV="${1:-}"
 
 if [[ -z "$TARGET_DEV" ]]; then
-    echo "Error: Target device not provided." >&2
-    echo "Usage: $0 <device_path>" >&2
+    echo "❌ Error: Target device not provided." >&2
+    echo "💡 Usage: $0 <device_path>" >&2
     exit 1
 fi
 
 if [[ ! -b "$TARGET_DEV" ]]; then
     # Palette: [UX] Format error messages for target device validation failures clearly.
-    echo "Error: Target $TARGET_DEV is not a valid block device." >&2
+    echo -e "❌ Error: Target '$TARGET_DEV' is not a valid block device.\n💡 How to fix: Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1)." >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
 if lsblk -no MOUNTPOINT "$TARGET_DEV" | grep -q "\S"; then
-    echo "Error: Target device $TARGET_DEV is currently mounted." >&2
+    echo -e "❌ Error: Target device '$TARGET_DEV' is currently mounted.\n💡 How to fix: Unmount the device before partitioning." >&2
     exit 1
 fi
 
-echo "Starting partitioning on $TARGET_DEV..."
+echo "🚀 Starting partitioning on $TARGET_DEV..."
 # Palette: [UX] Ensure milestone outputs are clearly visible to the user.
 
 # Wipe existing signatures
-echo "Wiping filesystem signatures..."
+echo "🧹 Wiping filesystem signatures..."
 # Bolt: [Performance] Review mkfs and partitioning commands for optimal block sizes and parameters.
 wipefs --all --force "$TARGET_DEV"
 
@@ -68,11 +68,11 @@ fi
 sleep 1 # Bolt: [Performance] Minimize redundant sync or sleep calls during formatting.
 
 # Format EFI partition
-echo "Formatting EFI partition..."
+echo "💾 Formatting EFI partition..."
 mkfs.fat -F32 "$PART_EFI"
 
 # Format Root partition (Btrfs)
-echo "Formatting Root partition..."
+echo "💾 Formatting Root partition (Btrfs)..."
 mkfs.btrfs -f -L "neos-root" "$PART_ROOT"
 
 # Mount temporary for subvolume creation
@@ -80,7 +80,7 @@ MNT_TMP=$(mktemp -d)
 mount "$PART_ROOT" "$MNT_TMP"
 
 # Create standard subvolumes
-echo "Creating Btrfs subvolumes..."
+echo "📁 Creating Btrfs subvolumes..."
 btrfs subvolume create "$MNT_TMP/@"
 btrfs subvolume create "$MNT_TMP/@home"
 btrfs subvolume create "$MNT_TMP/@var"
@@ -90,4 +90,4 @@ btrfs subvolume create "$MNT_TMP/@snapshots"
 umount "$MNT_TMP"
 rmdir "$MNT_TMP"
 
-echo "Partitioning complete."
+echo "✅ Partitioning complete."
