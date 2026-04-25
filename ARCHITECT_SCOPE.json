@@ -1,11 +1,10 @@
 {
   "allowed_files": [
-    "airootfs/usr/local/bin/neos-liveuser-setup",
-    "airootfs/usr/local/bin/neos-installer-partition.sh"
+    "airootfs/etc/systemd/system/neos-autoupdate.service"
   ],
   "constraints": [
-    "No new file creation.",
-    "Refactoring must preserve existing exit codes.",
-    "Limit modifications to error handling and trap refinements."
+    "Remove ProtectSystem=strict.",
+    "Do not modify neos-autoupdate.sh.",
+    "No new file creation."
   ]
 }
