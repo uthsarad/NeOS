@@ -1,14 +1,13 @@
 # Risk & Priority Report
 
 ## Current Posture
-- **Stability:** Moderate to High. Recent ISO build blocking issues resolved.
-- **Tech Debt:** Low. Core scripts exist but require formalized error handling.
-- **Overbuilding:** Low risk. Focusing on hardening existing paths.
+- **Stability:** Critical risk. System updates are broken due to systemd sandboxing.
+- **Tech Debt:** Low.
+- **Overbuilding:** High in security hardening. Excessive sandboxing in `neos-autoupdate.service` mounts `/usr` and `/var` as read-only, breaking pacman.
 
 ## Key Risks Identified
-- Unhandled exit codes in installer scripts masking upstream failures.
-- TOCTOU vulnerabilities in file writing during live user setup.
+- Functional denial-of-service on system updates due to `ProtectSystem=strict` in `neos-autoupdate.service`.
 
 ## Mitigation Strategy
-- Enforce strict `set -euo pipefail` and `ERR` traps.
-- Audit file creation logic for race conditions.
+- Roll back `ProtectSystem=strict` in the update service.
+- Prioritize functional operations over excessive security lockdowns in package managers.

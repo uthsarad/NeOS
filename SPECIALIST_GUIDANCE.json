@@ -1,23 +1,21 @@
 {
   "bolt": {
-    "focus": "Performance of error handling",
+    "focus": "Performance validation",
     "instructions": [
-      "Ensure trap commands and error logging minimize subshell overhead.",
-      "Prefer native bash variables over external process calls in error paths."
+      "Ensure the removal of sandboxing does not introduce performance regressions."
     ]
   },
   "palette": {
-    "focus": "UX of terminal output",
+    "focus": "UX observation",
     "instructions": [
-      "Ensure logged error messages are clear and contain actionable steps for users.",
-      "Use structural visual cues in terminal output for critical failures."
+      "Ensure failures related to permissions are appropriately logged."
     ]
   },
   "sentinel": {
-    "focus": "Security of execution paths",
+    "focus": "Security vs Functionality",
     "instructions": [
-      "Verify that trap commands safely handle variable expansion without introducing command injection risks.",
-      "Ensure TOCTOU vulnerabilities are not introduced during file creation or logging."
+      "Verify that removing ProtectSystem=strict resolves the functional DOS.",
+      "Ensure remaining sandboxing still provides defense-in-depth without breaking updates."
     ]
   }
 }
