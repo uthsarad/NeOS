@@ -76,6 +76,14 @@
     {
       "description": "No UX enhancements assigned during strategic pause.",
       "target_file": "None"
+    },
+    {
+      "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure logged error messages are clear and contain actionable steps for users. Use structural visual cues in terminal output for critical failures.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

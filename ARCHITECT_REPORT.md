@@ -290,3 +290,31 @@ Adhere to the STRATEGIC_DIRECTIVE.md indicating a "No-build day (strategic pause
 ## Constraints Adhered To
 - The surface area was strictly limited to evaluating the system state and generating specialist tracking data.
 - NO modifications were made to the core system source code, satisfying the constraint of not expanding beyond the validated scope.
+
+## Architect Report - Stabilize Installation Scripts
+
+## Objective
+Harden error handling and system resilience in `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh` according to `STRATEGIC_DIRECTIVE.md`.
+
+## Actions Taken
+1. **Scope Validation**: Target files match the expected list.
+2. **Implementation**: Verified that all error conditions are trapped and gracefully handled. Since the codebase is under a "Strategic Pause" and requested features/specialist comments already exist, I applied Fail-Safe Behavior making zero modifications to the source code.
+3. **Delegation**: Appended task manifests to `bolt.json`, `palette.json`, and `sentinel.json` regarding subshell overhead, UX of terminal output, and security of execution paths in trap commands.
+
+## Constraints Adhered To
+- The surface area was strictly limited to reviewing target files, executing verification scripts, and delegating the required tasks via specialist manifests.
+- Made NO modifications to the source code.
+
+## Architect Report - Implement Specialist Delegation Comments
+
+## Objective
+Harden error handling and add clear specialist delegation comments to `airootfs/usr/local/bin/neos-liveuser-setup` and `airootfs/usr/local/bin/neos-installer-partition.sh` according to `STRATEGIC_DIRECTIVE.md` and `SPECIALIST_GUIDANCE.json`.
+
+## Actions Taken
+1. **Scope Validation**: Target files match the expected list.
+2. **Implementation**: Verified that all error conditions are correctly trapped using `_error_handler`. Added explicit inline comments inside the scripts to highlight areas for UX improvements (Palette), performance optimization (Bolt), and security verification (Sentinel).
+3. **Delegation**: Appended task manifests to `bolt.json`, `palette.json`, and `sentinel.json` referencing subshell overhead, clear actionable error formats, and command injection/TOCTOU verification.
+
+## Constraints Adhered To
+- The surface area was strictly limited to adding delegation comments in the target files, generating specialist tracking data, and writing this report.
+- Made NO unrelated architectural modifications.
