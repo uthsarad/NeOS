@@ -80,6 +80,14 @@
     {
       "description": "No performance optimizations assigned during strategic pause.",
       "target_file": "None"
+    },
+    {
+      "description": "Review the trap commands in custom bash scripts to ensure they minimize subshell overhead and use native variables efficiently.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

@@ -80,6 +80,14 @@
     {
       "description": "No security audits assigned during strategic pause.",
       "target_file": "None"
+    },
+    {
+      "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks or masking exit codes.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Verify that trap commands safely handle variable expansion without introducing command injection risks. Ensure TOCTOU vulnerabilities are not introduced during file creation or logging.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
