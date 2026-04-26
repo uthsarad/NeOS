@@ -3,6 +3,8 @@ name: Auto-merge Jules
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   approve-and-merge:
@@ -11,11 +13,12 @@ jobs:
       contents: write
       pull-requests: write
     # SECURITY: This condition ensures only authorized actors can execute this workflow.
-    # It must strictly evaluate github.actor to prevent untrusted PRs from abusing
-    # the elevated workflows: write permission or merging malicious code.
     if: >-
-      github.actor == 'google-labs-jules[bot]' ||
-      github.actor == github.repository_owner
+      (github.actor == 'google-labs-jules[bot]' ||
+       github.actor == 'google-labs-jules' ||
+       github.actor == 'NimuthuGanegoda' ||
+       github.actor == github.repository_owner) &&
+      (github.event_name != 'pull_request_review' || github.event.review.state == 'approved')
     steps:
       - name: Auto-merge
         # Bolt: Removed actions/checkout as the gh CLI is API-driven and does not need local repo context
