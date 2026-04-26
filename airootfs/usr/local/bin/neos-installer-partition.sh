@@ -59,8 +59,14 @@ parted -s "$TARGET_DEV" set 1 esp on
 # Create root Btrfs partition (remaining space)
 parted -s "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
 
-# Define partition paths (simplified for NVMe vs SATA)
-if [[ "$TARGET_DEV" == *nvme* ]]; then
+# Inform the kernel of partition table changes
+echo "🔄 Updating partition table..."
+partprobe "$TARGET_DEV"
+sleep 2
+
+# Define partition paths (Handle NVMe, MMC, and Loop devices correctly)
+# If the device path ends in a digit, the partition suffix is 'p' + number
+if [[ "$TARGET_DEV" =~ [0-9]$ ]]; then
     PART_EFI="${TARGET_DEV}p1"
     PART_ROOT="${TARGET_DEV}p2"
 else
@@ -69,10 +75,11 @@ else
 fi
 
 # Wait for devices to be ready
-sleep 1 # Bolt: [Performance] Minimize redundant sync or sleep calls during formatting.
+echo "⏳ Waiting for device nodes..."
+udevadm settle || sleep 2
 
 # Format EFI partition
-echo "💾 Formatting EFI partition..."
+echo "💾 Formatting EFI partition (FAT32)..."
 mkfs.fat -F32 "$PART_EFI"
 
 # Format Root partition (Btrfs)

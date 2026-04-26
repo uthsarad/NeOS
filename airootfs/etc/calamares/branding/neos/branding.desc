@@ -1,0 +1,28 @@
+---
+componentName:  neos
+
+welcomeStyleCalamares:   false
+welcomeExpandingLogo:   false
+windowResizable:        true
+windowSize:             800,520
+windowCentered:         true
+
+strings:
+    productName:         NeOS
+    shortProductName:    NeOS
+    productVersion:      2026.04
+    shortProductVersion: 2026.04
+    versionedName:       NeOS 2026.04
+    shortVersionedName:  NeOS 2026.04
+    bootloaderEntryName: NeOS
+    productUrl:          https://github.com/uthsarad/NeOS
+    supportUrl:          https://github.com/uthsarad/NeOS/issues
+    releaseNotesUrl:     https://github.com/uthsarad/NeOS/blob/main/CHANGELOG.md
+
+slideshow:               "show.qml"
+
+style:
+   sidebarBackground:    "#2c3e50"
+   sidebarText:          "#ecf0f1"
+   sidebarTextSelect:    "#2980b9"
+   sidebarTextHighlight: "#3498db"
