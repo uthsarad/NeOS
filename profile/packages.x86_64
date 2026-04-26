@@ -1,6 +1,6 @@
 # Base System
 base
-linux
+linux-zen
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
