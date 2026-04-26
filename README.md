@@ -28,7 +28,18 @@ NeOS leverages and extends several key projects within the Arch Linux ecosystem:
 | 🛠️ **[ALCI](https://github.com/arch-linux-calamares-installer)** | Base installer framework and Calamares integration. |
 | ⚡ **[Chaotic-AUR](https://github.com/chaotic-aur)** | High-performance kernels (Zen) and pre-compiled packages. |
 | 🛡️ **[Sovereign Core](https://github.com/NimuthuGanegoda/Sanctuary-of-Eternity)** | Architectural guidance and security policy foundations. |
-| 👨‍💻 **[Nimuthu Dahanaike](https://github.com/NimuthuGanegoda)** | Project Architect and Lead Maintainer. |
+| 👨‍💻 **[NeOS Team](https://github.com/uthsarad/NeOS/graphs/contributors)** | Collaborative Development & Architectural Review. |
+
+---
+
+## 👥 Project Team
+
+NeOS is a collaborative effort brought to life by a dedicated team of developers and architects:
+
+*   **[Uthsara Dahanaike](https://github.com/uthsarad)** - Project Lead & Lead Developer
+*   **[Nimuthu Ganegoda](https://github.com/NimuthuGanegoda)** - Project Architect & Core Maintainer
+*   **[Neo RED](https://github.com/Neored727)** - Core Contributor
+*   **[Specialist Bots](https://github.com/uthsarad/NeOS/.github/workflows/jules-auto-merge.yml)** - Automated Quality Assurance & Optimization
 
 ---
 
@@ -62,4 +73,4 @@ We welcome technical contributions that align with our stability-first philosoph
 
 ---
 
-**Developed by Nimuthu Ganegoda | Project NeOS | 2026**
+**Developed by the NeOS Team | 2026**
