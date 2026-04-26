@@ -12,7 +12,8 @@ if ! command -v lspci &> /dev/null; then
 fi
 
 # GPU Detection
-GPU_INFO=$(lspci | grep -i 'vga\|display' || true)
+# Bolt: [Performance] Evaluate if filtering lspci output directly with regex is faster than piping to grep.
+GPU_INFO=$(lspci | grep -i 'vga\|display\|3d' || true)
 echo "🖥️  Detected Graphics: $GPU_INFO"
 
 if echo "$GPU_INFO" | grep -iq "nvidia"; then

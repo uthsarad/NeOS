@@ -8,6 +8,10 @@
     {
       "description": "Ensure Calamares branding icons and colors are consistent with the NeOS brand identity.",
       "target_file": "airootfs/etc/calamares/branding/neos/branding.desc"
+    },
+    {
+      "description": "Review milestone outputs in partitioning script. They are functional, but could be integrated into Calamares logs or visual progress bars more tightly.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

@@ -8,6 +8,10 @@
     {
       "description": "Audit the Calamares configuration to ensure no insecure defaults are introduced during the installer implementation.",
       "target_file": "airootfs/etc/calamares/settings.conf"
+    },
+    {
+      "description": "Audit new GPU detection logic for potential command injection or unexpected behavior with unusual lspci output.",
+      "target_file": "airootfs/usr/local/bin/neos-driver-manager"
     }
   ]
 }

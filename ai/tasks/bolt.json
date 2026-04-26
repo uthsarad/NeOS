@@ -8,6 +8,10 @@
     {
       "description": "Review partitioning script for opportunities to use async discard on Btrfs formatting.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Evaluate if filtering lspci output directly with regex is faster than piping to grep.",
+      "target_file": "airootfs/usr/local/bin/neos-driver-manager"
     }
   ]
 }
