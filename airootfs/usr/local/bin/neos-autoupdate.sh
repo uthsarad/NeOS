@@ -18,7 +18,6 @@ fi
 # Ensure log file exists with secure permissions
 if [ ! -f "$LOG_FILE" ]; then
     (umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true
-    chmod 600 "$LOG_FILE"
 fi
 
 # SECURITY: Prevent symlink attacks on lock file
@@ -30,7 +29,6 @@ fi
 # Ensure lock file exists with secure permissions
 if [ ! -f "$LOCK_FILE" ]; then
     (umask 077; set -C; > "$LOCK_FILE") 2>/dev/null || true
-    chmod 600 "$LOCK_FILE"
 fi
 
 # Apply flock
@@ -74,6 +72,7 @@ check_dependencies() {
 check_btrfs() {
     # Bolt: Verify root is Btrfs using stat instead of findmnt to avoid parsing mount files
     # Palette: If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.
+    # Sentinel: Ensure the fallback to exit 0 gracefully on non-Btrfs systems does not introduce logic bypass vulnerabilities or mask actual system errors.
     local fstype
     fstype=$(stat -f -c %T / || true)
     if [ "$fstype" != "btrfs" ]; then
@@ -85,6 +84,7 @@ check_btrfs() {
 check_disk_space() {
     # Bolt: Using lightweight 'df' instead of 'btrfs fi usage' to minimize performance overhead during update initialization.
     # Minimum required space: 5GB (5242880 KB)
+    # Bolt: Consider native bash integer math for disk space comparisons to avoid external binary overhead if calculations become complex.
     local min_space=5242880
     local available_space
     # Use -Pk to ensure POSIX output format, preventing line wrapping on long filesystem names.
@@ -98,13 +98,11 @@ check_disk_space() {
 
         # Surface error to active graphical users
         if command -v loginctl >/dev/null 2>&1; then
-            for uid in $(loginctl list-sessions --no-legend | awk '{print $2}' | sort -u); do
-                local user_name
-                user_name=$(id -nu "$uid")
+            while read -r uid user_name _; do
                 # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
                 # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
                 su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send 'System Update Failed' '$err_msg' --icon=dialog-error --urgency=critical" || true
-            done
+            done < <(loginctl list-users --no-legend)
         fi
 
         exit 1

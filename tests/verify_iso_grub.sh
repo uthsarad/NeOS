@@ -4,12 +4,12 @@ set -e
 GRUB_FILE="grub/grub.cfg"
 PROFILE_FILE="profiledef.sh"
 
-if [ ! -f "$GRUB_FILE" ]; then
+if [[ ! -f "$GRUB_FILE" ]]; then
     echo "❌ Missing $GRUB_FILE"
     exit 1
 fi
 
-if [ ! -f "$PROFILE_FILE" ]; then
+if [[ ! -f "$PROFILE_FILE" ]]; then
     echo "❌ Missing $PROFILE_FILE"
     exit 1
 fi

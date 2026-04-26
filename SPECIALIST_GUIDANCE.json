@@ -1,31 +1,21 @@
 {
-  "specialists": {
-    "bolt": {
-      "focus_area": "Repository bloat prevention",
-      "tasks": [
-        {
-          "description": "Ensure no large assets or images are added during the documentation update.",
-          "target_file": "CHANGELOG.md"
-        }
-      ]
-    },
-    "palette": {
-      "focus_area": "Documentation Readability",
-      "tasks": [
-        {
-          "description": "Verify the formatting and structure of the newly initialized CHANGELOG.md.",
-          "target_file": "CHANGELOG.md"
-        }
-      ]
-    },
-    "sentinel": {
-      "focus_area": "Credential Leak Prevention",
-      "tasks": [
-        {
-          "description": "Audit the updated documentation files to confirm no credentials, internal IP addresses, or sensitive URLs are exposed.",
-          "target_file": "CHANGELOG.md"
-        }
-      ]
-    }
+  "bolt": {
+    "focus": "Performance validation",
+    "instructions": [
+      "Ensure the removal of sandboxing does not introduce performance regressions."
+    ]
+  },
+  "palette": {
+    "focus": "UX observation",
+    "instructions": [
+      "Ensure failures related to permissions are appropriately logged."
+    ]
+  },
+  "sentinel": {
+    "focus": "Security vs Functionality",
+    "instructions": [
+      "Verify that removing ProtectSystem=strict resolves the functional DOS.",
+      "Ensure remaining sandboxing still provides defense-in-depth without breaking updates."
+    ]
   }
 }

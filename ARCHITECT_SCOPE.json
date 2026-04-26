@@ -1,18 +1,10 @@
 {
-  "target_files": [
-    "docs/PREREQUISITES_DRAFT.md",
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md",
-    "CHANGELOG.md"
-  ],
-  "instructions": [
-    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in docs/PREREQUISITES_DRAFT.md",
-    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in docs/HANDBOOK.md",
-    "Search for 'neos-project/neos' and replace with 'uthsarad/NeOS' in CONTRIBUTING.md",
-    "Initialize CHANGELOG.md with a formal structure."
+  "allowed_files": [
+    "airootfs/etc/systemd/system/neos-autoupdate.service"
   ],
   "constraints": [
-    "Do not modify any source code, CI scripts, or configuration files.",
-    "Restrict changes entirely to Markdown files."
+    "Remove ProtectSystem=strict.",
+    "Do not modify neos-autoupdate.sh.",
+    "No new file creation."
   ]
 }

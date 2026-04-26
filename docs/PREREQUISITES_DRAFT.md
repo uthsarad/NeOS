@@ -76,7 +76,7 @@ NeOS pulls optimized kernels (e.g., `linux-lqx`) and other pre-built packages fr
 Once prerequisites are met, you can clone the repo and start the build:
 
 ```bash
-git clone https://github.com/neos-project/neos.git
+git clone https://github.com/uthsarad/NeOS.git
 cd neos
 sudo ./build.sh
 ```
