@@ -1,10 +1,15 @@
 # Strategic Directive
 
-**Focus:** Stabilization and Hardening
-**Objective:** Restore system update functionality by removing excessive sandboxing that causes denial-of-service.
+**Focus:** Feature Completion and Distribution
+**Objective:** Finalize the NeOS Desktop experience and ensure reliable distribution via GitHub Releases.
 
 **Directives for Architect:**
-- Modify `airootfs/etc/systemd/system/neos-autoupdate.service`.
-- Remove `ProtectSystem=strict` as it prevents `pacman -Syu` from writing to `/usr` and `/var`.
-- Ensure the fix enables automatic updates to complete successfully.
-- Do not modify core update logic in the bash scripts.
+- **ACTIVE DEVELOPMENT**: The "Strategic Pause" is concluded. All specialists are cleared for active modifications to core scripts.
+- **Maintain Size**: Keep the x86_64 ISO under 2GB to ensure GitHub Release compatibility.
+- **Installer Polish**: Ensure the Calamares installer experience is seamless and matches the "Windows-familiar" design goals.
+- **Audit Compliance**: All new features must still be verified by Bolt (Performance), Palette (UX), and Sentinel (Security).
+
+**Current Priorities:**
+1. Monitor CI for successful ISO builds and Releases.
+2. Refine `neos-driver-manager` logic for GPU detection.
+3. Enhance `neos-installer-partition.sh` with more informative progress bars.
