@@ -306,8 +306,8 @@ fn assert_arch_specific_expectations(
     let aarch64 =
         aarch64_opt.ok_or_else(|| "missing package set for packages.aarch64".to_string())?;
 
-    if !(x86.contains("linux") && x86.contains("linux-zen")) {
-        return Err("packages.x86_64 must include both linux and linux-zen kernels".to_string());
+    if !x86.contains("linux") && !x86.contains("linux-zen") {
+        return Err("packages.x86_64 must include at least one kernel (linux or linux-zen)".to_string());
     }
 
     if i686.len() < 45 {

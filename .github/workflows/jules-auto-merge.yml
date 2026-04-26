@@ -42,9 +42,10 @@ jobs:
           # because app tokens do not have workflow scope. Use JULES_AUTO_MERGE_TOKEN for these PRs.
           if gh pr view "$PR_URL" --json files --jq '.files[].path' | grep -q '^.github/workflows/'; then
             if [[ "$HAS_PAT" != "true" ]]; then
-              echo "❌ ERROR: PR modifies .github/workflows/* and requires secret JULES_AUTO_MERGE_TOKEN (repo + workflow scopes) for auto-merge." >&2
-              echo "💡 How to fix: Add a Repository Secret named JULES_AUTO_MERGE_TOKEN with 'repo' and 'workflow' scopes." >&2
-              exit 1
+              echo "⚠️  PR modifies .github/workflows/* but JULES_AUTO_MERGE_TOKEN is missing."
+              echo "💬 Commenting on PR..."
+              gh pr comment "$PR_URL" --body "⚠️ **Auto-merge skipped**: This PR modifies workflow files but the required secret \`JULES_AUTO_MERGE_TOKEN\` (with \`repo\` and \`workflow\` scopes) is not configured in this repository. A maintainer must merge this PR manually." || true
+              exit 0
             fi
             echo "✅ PR modifies workflows but JULES_AUTO_MERGE_TOKEN is available."
           fi
