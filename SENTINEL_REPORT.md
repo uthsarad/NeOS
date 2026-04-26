@@ -81,3 +81,19 @@ During the audit phase, the following verifications were also addressed:
 ### Severity Summary
 - Severity: LOW (Enhancement)
 - Impact: Improved code readability, maintainability, and alignment with robust Bash scripting practices.
+
+## Sentinel Security Report - Autoupdate Service DoS
+
+### Risks Found
+- **Vulnerability**: Functional Denial-of-Service (DoS) in System Updates.
+- **Severity**: High.
+- **Details**: The `neos-autoupdate.service` systemd unit contained `ProtectSystem=strict`. While this is a common sandboxing practice, applying it to a service responsible for running package managers (`pacman -Syu`) fundamentally breaks system updates by mounting `/usr` and `/var` as read-only. This results in a functional DoS masquerading as a security enhancement.
+
+### Fixes Applied
+- Removed `ProtectSystem=strict` from `airootfs/etc/systemd/system/neos-autoupdate.service` to restore the update functionality while maintaining other relevant sandboxing directives.
+
+### Remaining Attack Surface
+- The service inherently requires broad system access to perform updates, but other sandboxing measures like `NoNewPrivileges` and `PrivateTmp` remain active to limit unnecessary exposure.
+
+### Severity Summary
+- **High** priority issue addressed. The fix prevents the update mechanism from failing securely but non-functionally.
