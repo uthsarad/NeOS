@@ -62,4 +62,4 @@ We welcome technical contributions that align with our stability-first philosoph
 
 ---
 
-**Developed by Nimuthu Dahanaike | Project NeOS | 2026**
+**Developed by Nimuthu Ganegoda | Project NeOS | 2026**
