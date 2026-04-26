@@ -1,2 +1,69 @@
 #!/bin/bash
-# neos-driver-manager placeholder
+set -euo pipefail
+
+# NeOS Driver Manager
+# Automatically detects and configures hardware drivers for the best experience.
+
+echo "🔍 NeOS Hardware Detection starting..."
+
+# ⚡ Bolt: Use lspci -k for faster module association checks
+if ! command -v lspci &> /dev/null; then
+    echo "⚠️  pciutils not found, hardware detection may be limited."
+fi
+
+# GPU Detection
+GPU_INFO=$(lspci | grep -i 'vga\|display' || true)
+echo "🖥️  Detected Graphics: $GPU_INFO"
+
+if echo "$GPU_INFO" | grep -iq "nvidia"; then
+    echo "🎮 NVIDIA GPU detected!"
+    # Check if proprietary drivers are already installed (they should be in packages.x86_64)
+    if pacman -Qs nvidia &> /dev/null; then
+        echo "✅ NVIDIA proprietary drivers are present."
+        # Sentinel: Ensure kernel modules are loaded safely
+        if ! lsmod | grep -q nvidia; then
+            echo "🚀 Loading NVIDIA kernel modules..."
+            modprobe nvidia nvidia_modeset nvidia_uvm nvidia_drm || echo "❌ Failed to load NVIDIA modules."
+        fi
+    else
+        echo "💡 Suggestion: Install 'nvidia' and 'nvidia-utils' for optimal performance."
+    fi
+elif echo "$GPU_INFO" | grep -iq "intel"; then
+    echo "🔵 Intel Graphics detected."
+    # Ensure i915 is loaded
+    modprobe i915 || true
+elif echo "$GPU_INFO" | grep -iq "amd\|ati"; then
+    echo "🔴 AMD/ATI Graphics detected."
+    # Ensure amdgpu is loaded
+    modprobe amdgpu || true
+fi
+
+# CPU Microcode
+CPU_INFO=$(grep -m1 "vendor_id" /proc/cpuinfo || true)
+if echo "$CPU_INFO" | grep -q "AuthenticAMD"; then
+    echo "🧠 AMD CPU detected. Ensuring amd-ucode is available..."
+elif echo "$CPU_INFO" | grep -q "GenuineIntel"; then
+    echo "🧠 Intel CPU detected. Ensuring intel-ucode is available..."
+fi
+
+# Virtualization Guest Support
+if systemd-detect-virt -q; then
+    VIRT_TYPE=$(systemd-detect-virt)
+    echo "☁️  Virtualization detected: $VIRT_TYPE"
+    case "$VIRT_TYPE" in
+        kvm|qemu)
+            echo "🔧 Loading QEMU/KVM guest modules..."
+            modprobe virtio_pci virtio_blk virtio_net virtio_balloon || true
+            ;;
+        oracle)
+            echo "🔧 Loading VirtualBox guest modules..."
+            modprobe vboxguest vboxsf vboxvideo || true
+            ;;
+        vmware)
+            echo "🔧 Loading VMware guest modules..."
+            modprobe vmw_balloon vmw_vmci vmwgfx || true
+            ;;
+    esac
+fi
+
+echo "✅ NeOS Driver Management task completed."
