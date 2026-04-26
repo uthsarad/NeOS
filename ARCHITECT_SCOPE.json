@@ -1,0 +1,13 @@
+{
+  "allowed_files": [
+    "profile/airootfs/usr/local/bin/neos-driver-manager",
+    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+  ],
+  "constraints": [
+    "Strictly limit modifications to the explicitly allowed files.",
+    "Focus on functional implementation of feature refinements.",
+    "Do not implement deep performance optimizations; leave inline delegation comments for Bolt.",
+    "Do not implement deep UX polish; leave inline delegation comments for Palette.",
+    "Do not implement complex security hardening; leave inline delegation comments for Sentinel."
+  ]
+}

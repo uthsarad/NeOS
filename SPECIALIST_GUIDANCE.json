@@ -1,0 +1,26 @@
+{
+  "bolt": {
+    "focus": "Performance Optimization",
+    "instructions": [
+      "Optimize GPU detection in neos-driver-manager to avoid unnecessary module probing.",
+      "Evaluate if filtering lspci output directly with regex is faster than piping to grep.",
+      "Review partitioning script for opportunities to use async discard on Btrfs formatting."
+    ]
+  },
+  "palette": {
+    "focus": "Developer/Admin UX and Error Messages",
+    "instructions": [
+      "Add informative progress feedback to the neos-installer-partition.sh script using simple progress bars.",
+      "Ensure Calamares branding icons and colors are consistent with the NeOS brand identity.",
+      "Review milestone outputs in partitioning script to ensure clarity."
+    ]
+  },
+  "sentinel": {
+    "focus": "Security Validation",
+    "instructions": [
+      "Verify that the new auto-merge authorization does not bypass required status checks.",
+      "Audit the Calamares configuration to ensure no insecure defaults are introduced.",
+      "Audit new GPU detection logic for potential command injection or unexpected behavior."
+    ]
+  }
+}
