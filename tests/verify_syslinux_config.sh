@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SYSLINUX_DIR="syslinux"
+SYSLINUX_DIR="profile/syslinux"
 
 echo "Verifying Syslinux configuration files in $SYSLINUX_DIR..."
 

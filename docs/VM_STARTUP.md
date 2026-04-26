@@ -1,6 +1,6 @@
 # VM Startup Modules
 
-[← Back to Documentation Index](../README.md#documentation)
+[← Back to Documentation Index](../README.md#📚-documentation-vault)
 
 NeOS ships a conservative set of modules to improve boot reliability in common VM environments. The list is included in the initramfs via `mkinitcpio.conf` for early boot and loaded via `modules-load.d` once the root filesystem is available, alongside filesystem modules for Btrfs and ZFS when configured.
 

@@ -2,7 +2,7 @@
 # Verify that neos-autoupdate.sh contains a symlink check for the log file
 # This is a security check to prevent privilege escalation via log file symlinking
 
-SCRIPT_PATH="airootfs/usr/local/bin/neos-autoupdate.sh"
+SCRIPT_PATH="profile/airootfs/usr/local/bin/neos-autoupdate.sh"
 CHECK_PATTERN="if [ -L \"\$LOG_FILE\" ]; then"
 
 if [ ! -f "$SCRIPT_PATH" ]; then

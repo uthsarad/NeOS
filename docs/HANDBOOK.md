@@ -24,8 +24,8 @@ Unlike a standard Arch Linux installation which is "Do It Yourself" (DIY), NeOS 
 ### For Users (Installing NeOS)
 *   **Hardware**: A 64-bit (x86_64) computer.
     *   *Architecture Limitations:*
-        *   `x86_64` is the only officially supported architecture for the full GUI experience (including the Calamares installer and snapshots).
-        *   `i686` and `aarch64` are experimental and lack the full GUI experience.
+        *   `x86_64` is the only officially supported architecture for the full GUI experience (including the Calamares installer, snapshots, and ZRAM compression).
+        *   `i686` and `aarch64` are experimental and lack the full GUI experience (including Calamares installer, snapshots, and ZRAM compression).
 *   **Storage**: At least 20GB of free disk space (SSD recommended).
 *   **Memory**: At least 4GB RAM (8GB+ recommended).
 *   **Boot Mode**: UEFI (recommended) or Legacy BIOS.

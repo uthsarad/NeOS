@@ -1,5 +1,5 @@
 #!/bin/bash
-SHELLPROCESS_CONF="airootfs/etc/calamares/modules/shellprocess.conf"
+SHELLPROCESS_CONF="profile/airootfs/etc/calamares/modules/shellprocess.conf"
 
 echo "Verifying cleanup configuration in $SHELLPROCESS_CONF..."
 

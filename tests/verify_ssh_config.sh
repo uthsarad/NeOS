@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_FILE="airootfs/etc/ssh/sshd_config"
+CONFIG_FILE="profile/airootfs/etc/ssh/sshd_config"
 
 echo "Verifying SSH configuration in $CONFIG_FILE..."
 

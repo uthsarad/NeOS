@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-QML_FILE="airootfs/etc/calamares/branding/neos/neos-restore-module.qml"
+QML_FILE="profile/airootfs/etc/calamares/branding/neos/neos-restore-module.qml"
 
 echo "Verifying QML restore module: $QML_FILE..."
 

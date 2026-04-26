@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_FILE="airootfs/etc/sysctl.d/90-neos-security.conf"
+CONFIG_FILE="profile/airootfs/etc/sysctl.d/90-neos-security.conf"
 
 echo "Verifying security configuration in $CONFIG_FILE..."
 
@@ -118,7 +118,7 @@ else
 fi
 
 # Sentinel: Check for SigLevel = Required DatabaseRequired in airootfs/etc/pacman.conf
-PACMAN_CONF="airootfs/etc/pacman.conf"
+PACMAN_CONF="profile/airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
 
 if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
@@ -129,7 +129,7 @@ else
 fi
 
 # Sentinel: Check for SigLevel = Required DatabaseOptional in root pacman.conf (build-time config)
-ROOT_PACMAN_CONF="pacman.conf"
+ROOT_PACMAN_CONF="profile/pacman.conf"
 echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
 
 # Root pacman.conf is used during ISO build and uses DatabaseOptional to support mirrors without .db.sig
@@ -153,7 +153,7 @@ fi
 BUILD_SCRIPT="build.sh"
 echo "Verifying security configuration in $BUILD_SCRIPT..."
 
-if grep -q "cp pacman.conf \"\$BUILD_CONF\"" "$BUILD_SCRIPT"; then
+if grep -q "cp \"\$PROFILE_DIR/pacman.conf\" \"\$BUILD_CONF\"" "$BUILD_SCRIPT"; then
     echo "✅ build.sh uses repo pacman.conf"
 else
     echo "❌ build.sh does NOT use repo pacman.conf"
@@ -161,19 +161,24 @@ else
 fi
 
 # Sentinel: Check for unsafe user groups in Calamares configuration
-USERS_CONF="airootfs/etc/calamares/modules/users.conf"
+USERS_CONF="profile/airootfs/etc/calamares/modules/users.conf"
 echo "Verifying user groups in $USERS_CONF..."
 
 if [ -f "$USERS_CONF" ]; then
     if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
         UNSAFE_GROUPS=("sys" "lp" "network" "video" "optical" "storage" "scanner" "power" "adm" "uucp")
+        UNSAFE_PATTERN="[[:space:]]- ($(IFS=\|; echo "${UNSAFE_GROUPS[*]}"))"
         UNSAFE_FOUND=false
-        for group in "${UNSAFE_GROUPS[@]}"; do
-            if grep -q "[[:space:]]- $group" "$USERS_CONF"; then
+
+        while read -r match; do
+            if [ -n "$match" ]; then
+                # Extract the group name from the match (e.g. "  - sys" -> "sys")
+                group="${match##*- }"
                 echo "❌ Unsafe group '$group' found in $USERS_CONF"
                 UNSAFE_FOUND=true
             fi
-        done
+        done < <(grep -E -o "$UNSAFE_PATTERN" "$USERS_CONF" || true)
+
         if [ "$UNSAFE_FOUND" = true ]; then
             exit 1
         else

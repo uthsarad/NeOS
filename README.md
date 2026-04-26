@@ -1,65 +1,65 @@
-# NeOS
+# NeOS (Next Evolution Operating System)
 
-NeOS (Next Evolution Operating System) is a curated, snapshot-based Arch Linux desktop distribution focused on predictable behavior, low breakage, and a Windows-familiar KDE Plasma experience. It is not a thin Arch wrapper or a DIY remix. NeOS owns the stability model, update coordination, and end-user experience.
+[![Build NeOS ISO](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=main)](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml)
+![Status](https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square)
+![Architecture](https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-## What NeOS is
-- **A curated Arch-based desktop distribution** with explicit decisions around updates, drivers, and defaults.
-- **Snapshot-based rolling release**, where repository snapshots are tested and promoted as coherent sets.
-- **KDE Plasma 6–first**, with a polished, KDE Neon–like UX delivered on an Arch base.
-- **Windows switcher–friendly**, prioritizing familiar workflows and low-friction onboarding.
+**NeOS** is a curated, snapshot-based Arch Linux desktop distribution engineered for predictable behavior, system stability, and a refined **KDE Plasma 6** experience. Designed for users transitioning from Windows, NeOS bridges the gap between the flexibility of a rolling release and the reliability of a validated workstation environment.
 
-## What NeOS is not
-- **Not a thin Arch wrapper** that simply points to upstream mirrors.
-- **Not a DIY power-user distro** that expects terminal-first management for day-to-day use.
-- **Not a frozen release**, but a curated rolling model with snapshot gating and rollback expectations.
+---
 
-## Repository Focus & Structure
-This repository serves as the **official Archiso profile** for building the NeOS distribution ISO. It contains the architectural guidance, roadmap, and configuration scaffolding necessary to produce a bootable system. It is written for contributors, reviewers, and early users as NeOS approaches its first public beta.
+## 🚀 Core Objectives
 
-## Supported Architectures
+*   **Snapshot-Gated Stability**: Coherent package sets are validated and promoted via Btrfs snapshots to minimize breakage.
+*   **Refined User Experience**: A polished KDE Plasma 6 environment pre-configured with Windows-familiar defaults and workflows.
+*   **Automated Hardware Optimization**: Integrated driver management for NVIDIA, AMD, and Intel hardware, including virtualization support.
+*   **Secure by Default**: Hardened kernel parameters, pre-configured UFW, and systemd service sandboxing.
+*   **Efficient Footprint**: Optimized build profile maintaining a sub-2GB ISO size for rapid deployment.
 
-*   **x86_64 (Primary Tier)**
-    *   Officially supported, CI verified, and a release blocker.
-    *   The only architecture delivering the full, Windows-familiar GUI experience (including the Calamares installer and system snapshots).
-*   **i686 (Community Tier)**
-    *   Experimental with best-effort support. No stability guarantees.
-    *   Lacks the full GUI experience.
-*   **aarch64 (Community Tier)**
-    *   Experimental with best-effort support. No stability guarantees.
-    *   Lacks the full GUI experience.
+---
 
-## Documentation
-- **[NeOS Mission & Identity](docs/MISSION.md)** - Core philosophy and target audience.
-- **[NeOS Brand Structure](docs/BRAND_STRUCTURE.md)** - Brand ethos, voice, and evolution model.
-- **[NeOS Handbook (Getting Started)](docs/HANDBOOK.md)** - Start here!
-- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Solutions for common issues.
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [Development Roadmap](docs/ROADMAP.md)
-- [Performance Standards](docs/PERFORMANCE.md)
-- [VM Startup Modules](docs/VM_STARTUP.md)
-- [Deep Audit Report](docs/DEEP_AUDIT.md) - Comprehensive repository analysis
-- [Audit Action Plan](docs/AUDIT_ACTION_PLAN.md) - Prioritized improvement roadmap
+## 🏗️ Repository Ecosystem
 
-## Building NeOS
+NeOS leverages and extends several key projects within the Arch Linux ecosystem:
 
-**⚠️ Important:** If you're experiencing issues with VMs not recognizing the ISO, see [ISO Build Fix Guide](docs/ISO_BUILD_FIX.md).
+| Project | Role |
+| :--- | :--- |
+| 🛠️ **[ALCI](https://github.com/arch-linux-calamares-installer)** | Base installer framework and Calamares integration. |
+| ⚡ **[Chaotic-AUR](https://github.com/chaotic-aur)** | High-performance kernels (Zen) and pre-compiled packages. |
+| 🛡️ **[Sovereign Core](https://github.com/NimuthuGanegoda/Sanctuary-of-Eternity)** | Architectural guidance and security policy foundations. |
+| 👨‍💻 **[Nimuthu Dahanaike](https://github.com/NimuthuGanegoda)** | Project Architect and Lead Maintainer. |
 
-To build the ISO locally, you can use the provided `build.sh` script, which handles dependency checks and configuration setup:
+---
+
+## 📚 Technical Documentation
+
+Comprehensive documentation is available in the `docs/` directory:
+
+*   **[Deployment Handbook](docs/HANDBOOK.md)** - Installation and initial setup.
+*   **[System Architecture](docs/ARCHITECTURE.md)** - In-depth look at the NeOS stability model.
+*   **[Development Roadmap](docs/ROADMAP.md)** - Feature milestones and release phases.
+*   **[Hardware Support](docs/VM_STARTUP.md)** - Driver management and virtualization notes.
+*   **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Recovery and common issue resolution.
+
+---
+
+## 🛠️ Local Build Instructions
+
+To generate a NeOS ISO locally, ensure `archiso` is installed and execute the build script from the repository root:
 
 ```bash
 sudo ./build.sh
 ```
 
-For more detailed instructions, refer to the [NeOS Handbook](docs/HANDBOOK.md).
+The build process is fully automated via GitHub Actions, with verified ISOs available in the **[Releases](https://github.com/uthsarad/NeOS/releases)** section.
 
-Before building, you can run the Rust-based profile validator to catch duplicate or malformed package manifests:
+---
 
-```bash
-bash tests/verify_rust_profile_audit.sh
-```
+## 🤝 Contributing
 
-## Contributing
-NeOS is a distribution with clear opinions. Contributions should align with the stability-first, Windows-familiar desktop goals described in the architecture and roadmap documents. Check [CONTRIBUTING](CONTRIBUTING.md) for more details.
+We welcome technical contributions that align with our stability-first philosophy. Please consult the **[Contribution Guidelines](CONTRIBUTING.md)** before submitting pull requests.
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+---
+
+**Developed by Nimuthu Dahanaike | Project NeOS | 2026**

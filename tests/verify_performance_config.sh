@@ -2,7 +2,7 @@
 set -e
 
 # --- Calamares Installer Config Verification ---
-CONFIG_FILE="airootfs/etc/calamares/modules/fstab.conf"
+CONFIG_FILE="profile/airootfs/etc/calamares/modules/fstab.conf"
 
 echo "Verifying performance configuration in $CONFIG_FILE..."
 
@@ -22,7 +22,7 @@ else
 fi
 
 # --- System Performance Config Verification ---
-SYSCTL_FILE="airootfs/etc/sysctl.d/99-neos-performance.conf"
+SYSCTL_FILE="profile/airootfs/etc/sysctl.d/99-neos-performance.conf"
 
 echo "Verifying sysctl performance configuration in $SYSCTL_FILE..."
 
@@ -122,7 +122,7 @@ else
 fi
 
 # --- Network Modules Verification ---
-MODULES_FILE="airootfs/etc/modules-load.d/neos-networking.conf"
+MODULES_FILE="profile/airootfs/etc/modules-load.d/neos-networking.conf"
 echo "Verifying network modules in $MODULES_FILE..."
 
 if [ ! -f "$MODULES_FILE" ]; then

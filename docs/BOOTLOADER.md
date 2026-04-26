@@ -1,6 +1,6 @@
 # Bootloader and Initramfs Defaults
 
-[← Back to Documentation Index](../README.md#documentation)
+[← Back to Documentation Index](../README.md#📚-documentation-vault)
 
 NeOS configures GRUB and mkinitcpio defaults to improve early boot reliability across common VM hypervisors and filesystems. The settings below are conservative to avoid unnecessary probing while still supporting standard layouts.
 

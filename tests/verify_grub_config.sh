@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_FILE="airootfs/etc/default/grub"
+CONFIG_FILE="profile/airootfs/etc/default/grub"
 
 echo "Verifying GRUB release configuration in $CONFIG_FILE..."
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SERVICE_FILE="airootfs/etc/systemd/system/neos-driver-manager.service"
+SERVICE_FILE="profile/airootfs/etc/systemd/system/neos-driver-manager.service"
 
 echo "Verifying service hardening in $SERVICE_FILE..."
 

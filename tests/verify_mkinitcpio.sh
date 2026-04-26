@@ -17,7 +17,7 @@ if [[ "$1" != "--wrapped" ]]; then
 fi
 shift
 
-MKINITCPIO_CONF="airootfs/etc/mkinitcpio.conf"
+MKINITCPIO_CONF="profile/airootfs/etc/mkinitcpio.conf"
 
 if [[ ! -f "$MKINITCPIO_CONF" ]]; then
     echo "❌ $MKINITCPIO_CONF not found!"

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-UNPACKFS_CONF="airootfs/etc/calamares/modules/unpackfs.conf"
-SHELLPROCESS_CONF="airootfs/etc/calamares/modules/shellprocess.conf"
+UNPACKFS_CONF="profile/airootfs/etc/calamares/modules/unpackfs.conf"
+SHELLPROCESS_CONF="profile/airootfs/etc/calamares/modules/shellprocess.conf"
 TARGET_FILE="etc/systemd/system/getty@tty1.service.d/autologin.conf"
 
 echo "Verifying security configuration for autologin cleanup..."
@@ -26,15 +26,15 @@ else
 fi
 
 # 3. Verify existence of the risk file
-if [ -f "airootfs/$TARGET_FILE" ]; then
-    echo "INFO: Vulnerable file exists in source (as expected): airootfs/$TARGET_FILE"
+if [ -f "profile/airootfs/$TARGET_FILE" ]; then
+    echo "INFO: Vulnerable file exists in source (as expected): profile/airootfs/$TARGET_FILE"
 else
     echo "WARN: Vulnerable file NOT found in source. Is the fix necessary?"
 fi
 
 
 # 4. Verify display manager autologin uses the live ISO user
-SDDM_AUTOLOGIN="airootfs/etc/sddm.conf.d/autologin.conf"
+SDDM_AUTOLOGIN="profile/airootfs/etc/sddm.conf.d/autologin.conf"
 if grep -q "^User=liveuser$" "$SDDM_AUTOLOGIN"; then
     echo "PASS: SDDM autologin user is liveuser in $SDDM_AUTOLOGIN"
 else

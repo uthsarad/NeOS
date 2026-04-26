@@ -26,7 +26,8 @@ if ! command -v mksquashfs &> /dev/null; then
     exit 1
 fi
 
-# Work and Out directories
+# Configuration
+PROFILE_DIR="profile"
 WORK_DIR="work"
 OUT_DIR="out"
 
@@ -51,7 +52,7 @@ echo "Generating temporary build configuration..."
 BUILD_CONF="pacman-build.conf"
 
 # Copy repository pacman.conf as base to ensure reproducible and secure builds
-cp pacman.conf "$BUILD_CONF"
+cp "$PROFILE_DIR/pacman.conf" "$BUILD_CONF"
 
 # Update Arch Linux Keyring to prevent signature errors
 echo "Updating Arch Linux Keyring..."
@@ -84,8 +85,8 @@ pacman -U --noconfirm --needed "$CHAOTIC_KEYRING_PKG"
 
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)
-MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/neos-mirrorlist"
-CHAOTIC_MIRRORLIST_PATH="$REPO_ROOT/airootfs/etc/pacman.d/chaotic-mirrorlist"
+MIRRORLIST_PATH="$REPO_ROOT/$PROFILE_DIR/airootfs/etc/pacman.d/neos-mirrorlist"
+CHAOTIC_MIRRORLIST_PATH="$REPO_ROOT/$PROFILE_DIR/airootfs/etc/pacman.d/chaotic-mirrorlist"
 
 # Check if mirrorlist has active servers
 if grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
@@ -102,7 +103,7 @@ fi
 
 # Run mkarchiso
 echo -e "${GREEN}Building ISO...${NC}"
-mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" .
+mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
 
 echo -e "${GREEN}Running ISO validation...${NC}"
 bash tests/verify_iso_grub.sh
