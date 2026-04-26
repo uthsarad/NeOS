@@ -1,14 +1,14 @@
 # Strategic Directive
 
-**Focus:** Feature Completion
-**Objective:** Finalize the NeOS Desktop experience.
+**Focus:** Production Stability and Feature Finalization
+**Objective:** Maintain high-fidelity desktop experience while ensuring reliable automated delivery.
 
-**Directives for Specialist Bots (Jules):**
-- **STOP SKIPPING**: The Strategic Pause is over. You are cleared to modify core files in `profile/airootfs/`.
-- **Target Files**: Focus on `profile/airootfs/usr/local/bin/`.
-- **Quality Control**: Maintain ISO size < 2GB and ensure all `tests/verify_*.sh` pass before committing.
+**Directives for Automated Workflows:**
+- **Active Development Phase**: The Strategic Pause is formally concluded. All automated agents are authorized to perform core modifications within the `profile/` directory.
+- **Resource Management**: Maintain a strict ISO size threshold of 2GB for all x86_64 builds.
+- **Security Compliance**: Ensure all modifications are audited by security (Sentinel) and performance (Bolt) agents before integration.
 
-**Specialist Goals:**
-- **Bolt**: Optimize partitioning block sizes.
-- **Palette**: Improve terminal output aesthetics.
-- **Sentinel**: Audit new user creation logic.
+**Current Priorities:**
+1. Monitor GitHub Actions for consistent release artifact generation.
+2. Refine GPU detection logic in `neos-driver-manager`.
+3. Optimize partitioning feedback for improved user experience.
