@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-GRUB_FILE="grub/grub.cfg"
-PROFILE_FILE="profiledef.sh"
+GRUB_FILE="profile/grub/grub.cfg"
+PROFILE_FILE="profile/profiledef.sh"
 
 if [[ ! -f "$GRUB_FILE" ]]; then
     echo "❌ Missing $GRUB_FILE"

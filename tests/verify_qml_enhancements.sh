@@ -17,7 +17,7 @@ if [[ "$1" != "--wrapped" ]]; then
 fi
 shift
 
-QML_FILE="airootfs/etc/calamares/branding/neos/show.qml"
+QML_FILE="profile/airootfs/etc/calamares/branding/neos/show.qml"
 
 echo "Verifying QML enhancements in $QML_FILE..."
 

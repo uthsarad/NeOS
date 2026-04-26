@@ -7,6 +7,6 @@ if ! command -v shellcheck >/dev/null 2>&1; then
 else
   # Bolt: Use fast file discovery targeting only specific scripts
   echo "Running ShellCheck validation..."
-  find tests/ airootfs/usr/local/bin/ -type f \( -name '*.sh' -o -path 'airootfs/usr/local/bin/*' ! -name '*.*' \) -print0 | xargs -0 -r shellcheck --format=gcc || true
+  find tests/ profile/airootfs/usr/local/bin/ -type f \( -name '*.sh' -o -path 'profile/airootfs/usr/local/bin/*' ! -name '*.*' \) -print0 | xargs -0 -r shellcheck --format=gcc || true
   echo "✅ ShellCheck validation completed."
 fi

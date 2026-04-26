@@ -36,7 +36,7 @@ done < <(awk -F '=' '/^[ \t]*Server[ \t]*=/ {
         print url
         if (++count == 5) exit
     }
-}' airootfs/etc/pacman.d/neos-mirrorlist)
+}' profile/airootfs/etc/pacman.d/neos-mirrorlist)
 
 FAILED=0
 for i in "${!PIDS[@]}"; do
@@ -51,7 +51,7 @@ for i in "${!PIDS[@]}"; do
         echo -e "  1. Check your internet connection." >&2
         echo -e "  2. Verify the mirror is currently online." >&2
         echo -e "  3. If the mirror is permanently down, remove it from:" >&2
-        echo -e "     airootfs/etc/pacman.d/neos-mirrorlist" >&2
+        echo -e "     profile/airootfs/etc/pacman.d/neos-mirrorlist" >&2
         echo -e "  4. Update the mirrorlist using a tool like reflector or rankmirrors.\n" >&2
         echo -e "================================================================================\n" >&2
     fi

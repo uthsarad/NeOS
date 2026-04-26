@@ -3,27 +3,27 @@
 echo "Verifying required airootfs files exist..."
 
 REQUIRED_FILES=(
-    "airootfs/usr/local/bin/neos-driver-manager"
-    "airootfs/usr/local/bin/neos-autoupdate.sh"
-    "airootfs/usr/local/bin/neos-installer-partition.sh"
-    "airootfs/usr/local/bin/neos-liveuser-setup"
-    "airootfs/etc/systemd/system/neos-driver-manager.service"
-    "airootfs/etc/systemd/system/neos-autoupdate.service"
-    "airootfs/etc/systemd/system/neos-autoupdate.timer"
-    "airootfs/etc/systemd/system/neos-liveuser-setup.service"
-    "airootfs/etc/sddm.conf.d/autologin.conf"
-    "airootfs/etc/snapper/configs/root"
-    "airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
-    "airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
-    "airootfs/etc/sysctl.d/90-neos-security.conf"
-    "airootfs/etc/default/grub"
-    "airootfs/etc/pacman.conf"
-    "airootfs/etc/calamares/settings.conf"
-    "airootfs/etc/calamares/modules/services-systemd.conf"
-    "airootfs/etc/systemd/zram-generator.conf"
-    "grub/grub.cfg"
-    "profiledef.sh"
-    "packages.x86_64"
+    "profile/airootfs/usr/local/bin/neos-driver-manager"
+    "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+    "profile/airootfs/usr/local/bin/neos-liveuser-setup"
+    "profile/airootfs/etc/systemd/system/neos-driver-manager.service"
+    "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
+    "profile/airootfs/etc/systemd/system/neos-autoupdate.timer"
+    "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service"
+    "profile/airootfs/etc/sddm.conf.d/autologin.conf"
+    "profile/airootfs/etc/snapper/configs/root"
+    "profile/airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
+    "profile/airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
+    "profile/airootfs/etc/sysctl.d/90-neos-security.conf"
+    "profile/airootfs/etc/default/grub"
+    "profile/airootfs/etc/pacman.conf"
+    "profile/airootfs/etc/calamares/settings.conf"
+    "profile/airootfs/etc/calamares/modules/services-systemd.conf"
+    "profile/airootfs/etc/systemd/zram-generator.conf"
+    "profile/grub/grub.cfg"
+    "profile/profiledef.sh"
+    "profile/packages.x86_64"
 )
 
 ALL_PASSED=true
@@ -38,7 +38,7 @@ for FILE in "${REQUIRED_FILES[@]}"; do
 done
 
 # Verify services-systemd.conf enables required timers
-SERVICES_FILE="airootfs/etc/calamares/modules/services-systemd.conf"
+SERVICES_FILE="profile/airootfs/etc/calamares/modules/services-systemd.conf"
 REQUIRED_SERVICES=(
     "neos-autoupdate.timer"
     "neos-driver-manager"
@@ -59,7 +59,7 @@ for SVC in "${REQUIRED_SERVICES[@]}"; do
 done
 
 # Verify profiledef.sh has permissions for executable scripts
-PROFILE_FILE="profiledef.sh"
+PROFILE_FILE="profile/profiledef.sh"
 REQUIRED_PERMS=(
     "neos-driver-manager"
     "neos-autoupdate.sh"
@@ -83,7 +83,7 @@ done
 echo ""
 echo "Verifying pacman hook format..."
 
-for HOOK in airootfs/etc/pacman.d/hooks/*.hook; do
+for HOOK in profile/airootfs/etc/pacman.d/hooks/*.hook; do
     ACTION_COUNT=$(grep -c '^\[Action\]' "$HOOK")
     if [ "$ACTION_COUNT" -eq 1 ]; then
         echo "✅ $HOOK has exactly 1 [Action] section"

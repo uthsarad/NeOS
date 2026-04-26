@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-UNPACKFS_CONF="airootfs/etc/calamares/modules/unpackfs.conf"
+UNPACKFS_CONF="profile/airootfs/etc/calamares/modules/unpackfs.conf"
 
 echo "Verifying unpackfs exclusion in $UNPACKFS_CONF..."
 

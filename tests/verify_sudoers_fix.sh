@@ -1,8 +1,8 @@
 #!/bin/bash
 # Verify sudoers configuration and live user setup
 
-SUDOERS_FILE="airootfs/etc/sudoers.d/wheel"
-LIVE_SETUP_FILE="airootfs/usr/local/bin/neos-liveuser-setup"
+SUDOERS_FILE="profile/airootfs/etc/sudoers.d/wheel"
+LIVE_SETUP_FILE="profile/airootfs/usr/local/bin/neos-liveuser-setup"
 
 echo "Checking sudoers configuration..."
 

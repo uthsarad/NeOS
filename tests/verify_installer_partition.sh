@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-SCRIPT_PATH="airootfs/usr/local/bin/neos-installer-partition.sh"
+SCRIPT_PATH="profile/airootfs/usr/local/bin/neos-installer-partition.sh"
 
 echo "Verifying $SCRIPT_PATH exists and is executable..."
 if [[ ! -x "$SCRIPT_PATH" ]]; then

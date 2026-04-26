@@ -3,8 +3,8 @@ set -e
 
 echo "Verifying ISO size optimization settings..."
 
-PROFILE_FILE="profiledef.sh"
-PACMAN_CONF="pacman.conf"
+PROFILE_FILE="profile/profiledef.sh"
+PACMAN_CONF="profile/pacman.conf"
 
 if [[ ! -f "$PROFILE_FILE" ]]; then
     echo "❌ $PROFILE_FILE not found"

@@ -86,10 +86,10 @@ jobs:
           set -euo pipefail
           cd "$GITHUB_WORKSPACE"
           # Use the repository's pacman.conf which includes size optimizations (NoExtract)
-          cp "$GITHUB_WORKSPACE/pacman.conf" "$GITHUB_WORKSPACE/pacman-build.conf"
+          cp "$GITHUB_WORKSPACE/profile/pacman.conf" "$GITHUB_WORKSPACE/pacman-build.conf"
 
-          MIRRORLIST_PATH="$GITHUB_WORKSPACE/airootfs/etc/pacman.d/neos-mirrorlist"
-          CHAOTIC_MIRRORLIST_PATH="$GITHUB_WORKSPACE/airootfs/etc/pacman.d/chaotic-mirrorlist"
+          MIRRORLIST_PATH="$GITHUB_WORKSPACE/profile/airootfs/etc/pacman.d/neos-mirrorlist"
+          CHAOTIC_MIRRORLIST_PATH="$GITHUB_WORKSPACE/profile/airootfs/etc/pacman.d/chaotic-mirrorlist"
           if ! grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
             echo "No active servers in $MIRRORLIST_PATH" >&2
             exit 1
@@ -107,7 +107,7 @@ jobs:
       - name: Build ISO
         run: |
           set -euo pipefail
-          PROFILE_DIR="$GITHUB_WORKSPACE"
+          PROFILE_DIR="$GITHUB_WORKSPACE/profile"
           PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
           WORK_DIR="$GITHUB_WORKSPACE/work"
           OUT_DIR="$GITHUB_WORKSPACE/out"
