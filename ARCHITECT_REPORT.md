@@ -22,3 +22,8 @@ Finalize the x86_64 Primary Tier experience, optimize repository automation for 
 
 ## Status: OPERATIONAL
 The repository is fully synchronized, all verification tests are passing, and the automated build pipeline is successfully generating and releasing verified ISO images.
+
+### 4. Implementation Directives Follow-up
+- **GPU Detection:** Refined `lspci` matching in `neos-driver-manager` to include `3d` controllers alongside `vga` and `display`.
+- **Partitioning Feedback:** Enhanced `neos-installer-partition.sh` output with step prefixes (`[Step X/Y]`) to provide clear visual progress milestones for users.
+- **Delegation:** Issued structured tasks to Bolt (Performance) and Palette (UX) for subsequent refinement of these baseline implementations.
