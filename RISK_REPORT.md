@@ -1,10 +1,13 @@
 # Risk & Priority Report
 
-## Current System Risks
-1. **Systemd Service Privilege Escalation (High Risk):** As identified in the `DEEP_AUDIT.md`, custom systemd services (`neos-autoupdate`, `neos-driver-manager`, `neos-liveuser-setup`) currently operate without strict sandboxing protections. If any underlying script is compromised or behaves unpredictably, it has broad access to the filesystem and system state, potentially compromising the host.
+## Current Posture
+- **Stability:** Critical risk. System updates are broken due to systemd sandboxing.
+- **Tech Debt:** Low.
+- **Overbuilding:** High in security hardening. Excessive sandboxing in `neos-autoupdate.service` mounts `/usr` and `/var` as read-only, breaking pacman.
 
-## Mitigations
-- **Immediate Action:** The Architect is directed to implement `ProtectSystem=strict`, `ProtectHome=yes`, `PrivateTmp=yes`, `NoNewPrivileges=yes`, `ProtectKernelTunables=yes`, and `RestrictRealtime=yes` across all custom `.service` files located in `airootfs/etc/systemd/system/`.
+## Key Risks Identified
+- Functional denial-of-service on system updates due to `ProtectSystem=strict` in `neos-autoupdate.service`.
 
-## Priority
-Address the High-Priority Systemd Sandboxing issue to stabilize the core architecture before pursuing further UX or Application enhancements in the roadmap. This is a purely stabilization/hardening run.
+## Mitigation Strategy
+- Roll back `ProtectSystem=strict` in the update service.
+- Prioritize functional operations over excessive security lockdowns in package managers.
