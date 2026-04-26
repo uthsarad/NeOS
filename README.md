@@ -20,13 +20,13 @@ This repository serves as the **official Archiso profile** for building the NeOS
 
 *   **x86_64 (Primary Tier)**
     *   Officially supported, CI verified, and a release blocker.
-    *   The only architecture delivering the full, Windows-familiar GUI experience (including the Calamares installer and system snapshots).
+    *   The only architecture delivering the full, Windows-familiar GUI experience (including the Calamares installer, system snapshots, and ZRAM compression).
 *   **i686 (Community Tier)**
     *   Experimental with best-effort support. No stability guarantees.
-    *   Lacks the full GUI experience.
+    *   Lacks the full GUI experience (including Calamares installer, system snapshots, and ZRAM compression).
 *   **aarch64 (Community Tier)**
     *   Experimental with best-effort support. No stability guarantees.
-    *   Lacks the full GUI experience.
+    *   Lacks the full GUI experience (including Calamares installer, system snapshots, and ZRAM compression).
 
 ## Documentation
 - **[NeOS Mission & Identity](docs/MISSION.md)** - Core philosophy and target audience.
@@ -39,6 +39,7 @@ This repository serves as the **official Archiso profile** for building the NeOS
 - [VM Startup Modules](docs/VM_STARTUP.md)
 - [Deep Audit Report](docs/DEEP_AUDIT.md) - Comprehensive repository analysis
 - [Audit Action Plan](docs/AUDIT_ACTION_PLAN.md) - Prioritized improvement roadmap
+- **[Architecture Decision Records](docs/decisions/0001-core-architecture-decisions.md)** - Log of major architecture decisions.
 
 ## Building NeOS
 
