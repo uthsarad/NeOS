@@ -28,6 +28,62 @@
     {
       "description": "Ensure that the now-enabled YAML validation errors from verify_build_profile.sh are cleanly presented in the GitHub Actions log output, helping developers quickly identify syntax issues.",
       "target_file": "tests/verify_build_profile.sh"
+    },
+    {
+      "description": "Ensure any failures related to tightened systemd sandboxing (e.g., permission denied) are logged with clear, actionable context for developers.",
+      "target_file": "airootfs/etc/systemd/system/*.service"
+    },
+    {
+      "description": "Ensure the ShellCheck output format is readable. Consider using `--format=gcc` or similar structured formats that integrate well with CI environments to produce clear annotations for developers.",
+      "target_file": "tests/verify_shellcheck.sh"
+    },
+    {
+      "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure the documentation additions are well-structured, easy to read, and clearly highlight the limitations using appropriate markdown formatting.",
+      "target_file": "README.md, docs/HANDBOOK.md"
+    },
+    {
+      "description": "If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.",
+      "target_file": "airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure the format of the test output is clear, readable, and includes actionable '💡 How to fix:' instructions if mirrors are unreachable to reduce developer cognitive load on failure.",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "Ensure the markdown structure of the new ADR is scannable, accessible, and uses clear heading hierarchies for easy reading.",
+      "target_file": "docs/decisions/0001-core-architecture-decisions.md"
+    },
+    {
+      "description": "Improve terminal output for skipped tests in verify_iso_smoketest.sh and verify_mirrorlist_connectivity.sh to clearly distinguish them from passes/failures.",
+      "target_file": "tests/verify_iso_smoketest.sh, tests/verify_mirrorlist_connectivity.sh"
+    },
+    {
+      "description": "No UX enhancements assigned during strategic pause.",
+      "target_file": "None"
+    },
+    {
+      "description": "Ensure logged error messages in custom script traps (neos-liveuser-setup, neos-installer-partition.sh) are clear, use structural visual cues, and include actionable steps.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure milestone outputs (e.g., 'Creating subvolumes...', 'Formatting drive...') are clearly visible to the user. Format error messages for target device validation failures clearly.",
+      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "No UX enhancements assigned during strategic pause.",
+      "target_file": "None"
+    },
+    {
+      "description": "Ensure the format of logged error messages in custom script traps is clear, uses structural visual cues, and includes actionable steps.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure logged error messages are clear and contain actionable steps for users. Use structural visual cues in terminal output for critical failures.",
+      "target_file": "airootfs/usr/local/bin/neos-liveuser-setup, airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
