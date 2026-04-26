@@ -9,6 +9,7 @@ echo "Verifying mkarchiso build profile configuration..."
 # Verify workflow YAML is valid (prevents broken CI from heredoc/YAML conflicts)
 if [ -f "$WORKFLOW_FILE" ]; then
     if python3 -c "import yaml" 2>/dev/null; then
+        # Palette: Verify developers find YAML parsing errors readable and formatting of these errors is clean.
         # Capture the error output to display it clearly
         if ERR_MSG=$(python3 -c "
 import yaml, sys
