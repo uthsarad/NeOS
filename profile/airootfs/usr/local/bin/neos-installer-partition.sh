@@ -85,7 +85,9 @@ mkfs.fat -F32 "$PART_EFI"
 
 # Format Root partition (Btrfs)
 echo "Formatting Root partition (Btrfs)..."
-mkfs.btrfs -f -L "neos-root" "$PART_ROOT"
+# Bolt: Use -K (--nodiscard) to skip synchronous block discard during formatting.
+# This significantly speeds up the installation process; discard is handled by async discard during mount.
+mkfs.btrfs -f -K -L "neos-root" "$PART_ROOT"
 
 # Mount temporary for subvolume creation
 MNT_TMP=$(mktemp -d)
