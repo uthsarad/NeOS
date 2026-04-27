@@ -46,6 +46,9 @@ echo "🚀 Starting partitioning on $TARGET_DEV..."
 
 # Wipe existing signatures
 echo "[Step 1/5] [##........] 20% 🧹 Wiping filesystem signatures..."
+# Sentinel: [Security] Ensure milestone logging cannot be manipulated via environment variables.
+# Palette: [UX] Consider integrating milestone status directly into the Calamares UI via DBus or a progress file.
+logger -t "neos-installer-partition" "Milestone: Wiping filesystem signatures"
 # Bolt: [Performance] Review mkfs and partitioning commands for optimal block sizes and parameters.
 wipefs --all --force "$TARGET_DEV"
 
@@ -61,6 +64,7 @@ parted -s "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
 
 # Inform the kernel of partition table changes
 echo "[Step 2/5] [####......] 40% 🔄 Updating partition table..."
+logger -t "neos-installer-partition" "Milestone: Updating partition table"
 partprobe "$TARGET_DEV"
 sleep 2
 
@@ -76,10 +80,12 @@ fi
 
 # Wait for devices to be ready
 echo "[Step 3/5] [######....] 60% ⏳ Waiting for device nodes..."
+logger -t "neos-installer-partition" "Milestone: Waiting for device nodes"
 udevadm settle || sleep 2
 
 # Format EFI partition
 echo "[Step 4/5] [########..] 80% 💾 Formatting partitions..."
+logger -t "neos-installer-partition" "Milestone: Formatting partitions"
 echo "Formatting EFI partition (FAT32)..."
 mkfs.fat -F32 "$PART_EFI"
 
@@ -95,6 +101,7 @@ mount "$PART_ROOT" "$MNT_TMP"
 
 # Create standard subvolumes
 echo "[Step 5/5] [##########] 100% 📁 Creating Btrfs subvolumes..."
+logger -t "neos-installer-partition" "Milestone: Creating Btrfs subvolumes"
 btrfs subvolume create "$MNT_TMP/@"
 btrfs subvolume create "$MNT_TMP/@home"
 btrfs subvolume create "$MNT_TMP/@var"

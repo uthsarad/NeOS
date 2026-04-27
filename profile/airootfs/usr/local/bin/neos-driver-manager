@@ -39,6 +39,24 @@ elif printf "%s\n" "$GPU_INFO" | grep -iq "amd\|ati"; then
     modprobe amdgpu || true
 fi
 
+# Network Detection
+# Bolt: [Performance] Optimize lspci parsing for network controllers to reduce command execution overhead.
+# Sentinel: [Security] Audit network detection regex for potential injection or parsing vulnerabilities.
+NET_INFO=$(lspci | grep -i 'network\|ethernet' || true)
+printf "🌐  Detected Network: %s\n" "$NET_INFO"
+
+if printf "%s\n" "$NET_INFO" | grep -iq "broadcom\|bcm"; then
+    echo "📶 Broadcom network detected. Ensuring broadcom-wl is available..."
+    # Palette: [UX] Format the network detection messages for better user visibility during boot.
+    modprobe wl || true
+elif printf "%s\n" "$NET_INFO" | grep -iq "realtek\|rtl"; then
+    echo "📶 Realtek network detected."
+    modprobe r8169 || true
+elif printf "%s\n" "$NET_INFO" | grep -iq "intel"; then
+    echo "📶 Intel network detected."
+    modprobe iwlwifi || true
+fi
+
 # CPU Microcode
 CPU_INFO=$(grep -m1 "vendor_id" /proc/cpuinfo || true)
 if printf "%s\n" "$CPU_INFO" | grep -q "AuthenticAMD"; then

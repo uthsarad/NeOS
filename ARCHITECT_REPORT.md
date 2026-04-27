@@ -27,3 +27,8 @@ The repository is fully synchronized, all verification tests are passing, and th
 - **GPU Detection:** Refined `lspci` matching in `neos-driver-manager` to include `3d` controllers alongside `vga` and `display`.
 - **Partitioning Feedback:** Enhanced `neos-installer-partition.sh` output with step prefixes (`[Step X/Y]`) to provide clear visual progress milestones for users.
 - **Delegation:** Issued structured tasks to Bolt (Performance) and Palette (UX) for subsequent refinement of these baseline implementations.
+
+### 5. Hardware Detection and Partitioning Refinements
+- **Network Driver Detection**: Added baseline network driver detection (Broadcom, Realtek, Intel) to `neos-driver-manager`.
+- **Partitioning Milestones**: Refined milestone logging in `neos-installer-partition.sh` by emitting events to the system journal.
+- **Specialist Delegation**: Added inline comments for Bolt (Performance), Palette (UX), and Sentinel (Security), and appended their respective JSON task manifests.
