@@ -12,6 +12,10 @@
     {
       "description": "Evaluate if filtering lspci output directly with regex is faster than piping to grep.",
       "target_file": "airootfs/usr/local/bin/neos-driver-manager"
+    },
+    {
+      "description": "Optimize lspci parsing for network controllers to reduce command execution overhead.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
     }
   ]
 }

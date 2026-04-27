@@ -12,6 +12,14 @@
     {
       "description": "Audit new GPU detection logic for potential command injection or unexpected behavior with unusual lspci output.",
       "target_file": "airootfs/usr/local/bin/neos-driver-manager"
+    },
+    {
+      "description": "Audit network detection regex for potential injection or parsing vulnerabilities.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+    },
+    {
+      "description": "Ensure milestone logging in partitioning script cannot be manipulated via environment variables.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

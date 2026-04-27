@@ -12,6 +12,14 @@
     {
       "description": "Review milestone outputs in partitioning script. They are functional, but could be integrated into Calamares logs or visual progress bars more tightly.",
       "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Format the network detection messages for better user visibility during boot.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+    },
+    {
+      "description": "Consider integrating partitioning milestone status directly into the Calamares UI via DBus or a progress file.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
