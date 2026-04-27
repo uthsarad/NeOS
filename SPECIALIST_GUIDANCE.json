@@ -1,26 +1,23 @@
 {
   "bolt": {
-    "focus": "Performance Optimization",
+    "focus": "Performance impact of hardening measures",
     "instructions": [
-      "Optimize GPU detection in neos-driver-manager to avoid unnecessary module probing.",
-      "Evaluate if filtering lspci output directly with regex is faster than piping to grep.",
-      "Review partitioning script for opportunities to use async discard on Btrfs formatting."
+      "Verify that the new systemd sandboxing directives do not measurably slow down service boot times.",
+      "Ensure native bash constructs are used in CI scripts to minimize overhead."
     ]
   },
   "palette": {
-    "focus": "Developer/Admin UX and Error Messages",
+    "focus": "UX of error messaging and documentation",
     "instructions": [
-      "Add informative progress feedback to the neos-installer-partition.sh script using simple progress bars.",
-      "Ensure Calamares branding icons and colors are consistent with the NeOS brand identity.",
-      "Review milestone outputs in partitioning script to ensure clarity."
+      "Ensure any failures related to tightened permissions yield clear, actionable log outputs for developers.",
+      "Review documentation updates for clarity and user understanding."
     ]
   },
   "sentinel": {
-    "focus": "Security Validation",
+    "focus": "Security validation of new configurations",
     "instructions": [
-      "Verify that the new auto-merge authorization does not bypass required status checks.",
-      "Audit the Calamares configuration to ensure no insecure defaults are introduced.",
-      "Audit new GPU detection logic for potential command injection or unexpected behavior."
+      "Audit the systemd sandboxing (ProtectSystem, NoNewPrivileges, PrivateTmp) to ensure root privileges are effectively limited where applicable.",
+      "Ensure that sandboxing exceptions (like omitting ProtectSystem=strict for neos-autoupdate.service) are well-justified and documented."
     ]
   }
 }

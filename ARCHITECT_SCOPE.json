@@ -1,13 +1,17 @@
 {
   "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-driver-manager",
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+    "README.md",
+    "docs/HANDBOOK.md",
+    "CONTRIBUTING.md",
+    "profile/packages.x86_64",
+    "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+    "profile/airootfs/etc/systemd/system/neos-autoupdate.service",
+    "profile/airootfs/etc/systemd/system/neos-driver-manager.service",
+    "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service"
   ],
   "constraints": [
-    "Strictly limit modifications to the explicitly allowed files.",
-    "Focus on functional implementation of feature refinements.",
-    "Do not implement deep performance optimizations; leave inline delegation comments for Bolt.",
-    "Do not implement deep UX polish; leave inline delegation comments for Palette.",
-    "Do not implement complex security hardening; leave inline delegation comments for Sentinel."
+    "Restrict modifications strictly to the files listed in allowed_files.",
+    "Focus on resolving remaining High and Medium Priority items from docs/AUDIT_ACTION_PLAN.md.",
+    "Implement systemd sandboxing without breaking existing functionality. Specifically, do NOT use ProtectSystem=strict on neos-autoupdate.service as it breaks system updates."
   ]
 }
