@@ -11,3 +11,5 @@
 
 ## Remaining Usability Risks
 - The `mkfs.btrfs` and `wipefs` commands could be overly verbose. Consider suppressing non-essential output or redirecting it to a log file, keeping the console output strictly focused on the progress bars.
+
+- **Network Detection Formatting:** Enhanced the visibility of network driver loading in `neos-driver-manager` during boot. Added distinct visual boundaries (`----`) and clear action statements (`➡️  Action: Loading...`) so users can easily read the hardware detection steps as they scroll by on the TTY.

@@ -46,14 +46,14 @@ NET_INFO=$(lspci | grep -i 'network\|ethernet' || true)
 printf "🌐  Detected Network: %s\n" "$NET_INFO"
 
 if printf "%s\n" "$NET_INFO" | grep -iq "broadcom\|bcm"; then
-    echo "📶 Broadcom network detected. Ensuring broadcom-wl is available..."
-    # Palette: [UX] Format the network detection messages for better user visibility during boot.
+    echo -e "----------------------------------------\n📶 NETWORK: Broadcom controller detected\n➡️  Action: Loading 'wl' module...\n----------------------------------------"
+    # Palette: [UX] Network detection messages formatted for better user visibility.
     modprobe wl || true
 elif printf "%s\n" "$NET_INFO" | grep -iq "realtek\|rtl"; then
-    echo "📶 Realtek network detected."
+    echo -e "----------------------------------------\n📶 NETWORK: Realtek controller detected\n➡️  Action: Loading 'r8169' module...\n----------------------------------------"
     modprobe r8169 || true
 elif printf "%s\n" "$NET_INFO" | grep -iq "intel"; then
-    echo "📶 Intel network detected."
+    echo -e "----------------------------------------\n📶 NETWORK: Intel controller detected\n➡️  Action: Loading 'iwlwifi' module...\n----------------------------------------"
     modprobe iwlwifi || true
 fi
 
