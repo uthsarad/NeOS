@@ -1,12 +1,16 @@
+# Sentinel Security Report
 
-# Sentinel Report
+## Risks Found
+- Potential path hijacking vulnerabilities in system scripts (`neos-driver-manager`, `neos-installer-partition.sh`) due to implicit path resolution.
+- Potential log injection or command manipulation in `neos-installer-partition.sh` if `$0` is spoofed and injected into the `logger -t` parameter.
 
-## Security Validation Tasks Completed
+## Fixes Applied
+- Enforced a strict and secure `PATH` at the beginning of `neos-driver-manager` and `neos-installer-partition.sh`.
+- Added input sanitization for `$SCRIPT_NAME` in `neos-installer-partition.sh` to strip non-alphanumeric characters, ensuring safe parameter expansion in `logger`.
 
-1. **Auto-Merge Workflow Check**: Verified that `.github/workflows/jules-auto-merge.yml` properly uses `gh pr merge --auto` which inherently enforces required status checks and branch protection rules before merging.
-2. **Calamares Configuration**: Audited `profile/airootfs/etc/calamares/settings.conf` and found no insecure defaults.
-3. **GPU Detection Hardening**: Fixed a variable expansion vulnerability in `profile/airootfs/usr/local/bin/neos-driver-manager`. Using `echo` to print unvalidated external output (such as `lspci`) can lead to unintended behavior if the string starts with `-e` or `-n`. Mitigated by explicitly formatting output using `printf "%s\n"`.
+## Remaining Attack Surface
+- System logging still trusts local commands, but is mitigated by tag sanitization.
 
 ## Severity Summary
-- **Severity**: Low
-- **Remaining attack surface**: Minimal. Output is now safely formatted and parsed.
+- Path Hijacking: Medium
+- Log Injection: Low

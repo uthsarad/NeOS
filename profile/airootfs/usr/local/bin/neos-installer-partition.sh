@@ -5,7 +5,12 @@ set -euo pipefail
 # Sentinel: [task] Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.
 # Bolt: Logging mechanism is optimized and avoids subshells, utilizing native variables like $LINENO.
 # Palette: [task] Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.
-SCRIPT_NAME="${0##*/}"
+
+# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
+SCRIPT_NAME=$(printf "%s" "${0##*/}" | tr -cd 'a-zA-Z0-9_-')
 
 _error_handler() {
     local err=$1
