@@ -15,11 +15,28 @@ if ! command -v lspci &> /dev/null; then
 fi
 
 # GPU Detection
-# Bolt: [Performance] Evaluate if filtering lspci output directly with regex is faster than piping to grep.
-GPU_INFO=$(lspci | grep -i 'vga\|display\|3d' || true)
+# Cache lspci output to avoid repeated execution
+LSPCI_OUT=$(lspci || true)
+
+# GPU and Network Detection parsed in a single pass using native bash matching
+GPU_INFO=""
+NET_INFO=""
+shopt -s nocasematch
+while IFS= read -r line; do
+    case "$line" in
+        *vga*|*display*|*3d*) GPU_INFO+="$line"$'\n' ;;
+        *network*|*ethernet*) NET_INFO+="$line"$'\n' ;;
+    esac
+done <<< "$LSPCI_OUT"
+
+# Remove trailing newlines
+GPU_INFO="${GPU_INFO%$'\n'}"
+NET_INFO="${NET_INFO%$'\n'}"
+
+# Bolt: [Performance] Avoided filtering lspci output directly with regex or grep to save subprocess overhead.
 printf "🖥️  Detected Graphics: %s\n" "$GPU_INFO"
 
-if printf "%s\n" "$GPU_INFO" | grep -iq "nvidia"; then
+if [[ "$GPU_INFO" == *nvidia* ]]; then
     echo "🎮 NVIDIA GPU detected!"
     # Check if proprietary drivers are already installed (they should be in packages.x86_64)
     if pacman -Qs nvidia &> /dev/null; then
@@ -32,33 +49,33 @@ if printf "%s\n" "$GPU_INFO" | grep -iq "nvidia"; then
     else
         echo "💡 Suggestion: Install 'nvidia' and 'nvidia-utils' for optimal performance."
     fi
-elif printf "%s\n" "$GPU_INFO" | grep -iq "intel"; then
+elif [[ "$GPU_INFO" == *intel* ]]; then
     echo "🔵 Intel Graphics detected."
     # Ensure i915 is loaded
     modprobe i915 || true
-elif printf "%s\n" "$GPU_INFO" | grep -iq "amd\|ati"; then
+elif [[ "$GPU_INFO" == *amd* ]] || [[ "$GPU_INFO" == *ati* ]]; then
     echo "🔴 AMD/ATI Graphics detected."
     # Ensure amdgpu is loaded
     modprobe amdgpu || true
 fi
 
 # Network Detection
-# Bolt: [Performance] Optimize lspci parsing for network controllers to reduce command execution overhead.
+# Bolt: [Performance] Optimized lspci parsing for network controllers to reduce command execution overhead.
 # Sentinel: [Security] Audit network detection regex for potential injection or parsing vulnerabilities.
-NET_INFO=$(lspci | grep -i 'network\|ethernet' || true)
 printf "🌐  Detected Network: %s\n" "$NET_INFO"
 
-if printf "%s\n" "$NET_INFO" | grep -iq "broadcom\|bcm"; then
+if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo "📶 Broadcom network detected. Ensuring broadcom-wl is available..."
     # Palette: [UX] Format the network detection messages for better user visibility during boot.
     modprobe wl || true
-elif printf "%s\n" "$NET_INFO" | grep -iq "realtek\|rtl"; then
+elif [[ "$NET_INFO" == *realtek* ]] || [[ "$NET_INFO" == *rtl* ]]; then
     echo "📶 Realtek network detected."
     modprobe r8169 || true
-elif printf "%s\n" "$NET_INFO" | grep -iq "intel"; then
+elif [[ "$NET_INFO" == *intel* ]]; then
     echo "📶 Intel network detected."
     modprobe iwlwifi || true
 fi
+shopt -u nocasematch
 
 # CPU Microcode
 CPU_INFO=$(grep -m1 "vendor_id" /proc/cpuinfo || true)
