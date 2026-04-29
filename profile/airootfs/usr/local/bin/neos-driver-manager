@@ -65,14 +65,14 @@ fi
 printf "🌐  Detected Network: %s\n" "$NET_INFO"
 
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
-    echo "📶 Broadcom network detected. Ensuring broadcom-wl is available..."
+    echo -e "\e[1m\e[36m📶 Broadcom network detected.\e[0m Ensuring broadcom-wl is available..."
     # Palette: [UX] Format the network detection messages for better user visibility during boot.
     modprobe wl || true
 elif [[ "$NET_INFO" == *realtek* ]] || [[ "$NET_INFO" == *rtl* ]]; then
-    echo "📶 Realtek network detected."
+    echo -e "\e[1m\e[36m📶 Realtek network detected.\e[0m"
     modprobe r8169 || true
 elif [[ "$NET_INFO" == *intel* ]]; then
-    echo "📶 Intel network detected."
+    echo -e "\e[1m\e[36m📶 Intel network detected.\e[0m"
     modprobe iwlwifi || true
 fi
 shopt -u nocasematch

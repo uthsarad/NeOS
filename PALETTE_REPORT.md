@@ -1,13 +1,11 @@
 # Palette UX Report
 
-## Modifications Made
-- Modified `profile/airootfs/usr/local/bin/neos-installer-partition.sh` to include text-based progress bars alongside the existing milestone steps (e.g., `[Step 1/5] [##........] 20%`).
-- Updated `profile/airootfs/etc/calamares/branding/neos/branding.desc` to match the NeOS brand identity. Aligned the color palette with the NeOS blue aesthetic (`#0078D4`).
-
-## UX Enhancements
-- **Progress Visibility**: Developers and administrators executing the partitioning script now receive an immediate, clear visual indication of completion percentage. This reduces uncertainty during longer operations (like formatting and wiping).
-- **Accessibility/Clarity**: Used high-contrast ascii characters (`#` and `.`) rather than relying on Unicode block characters, ensuring the progress bars render correctly across all TTY environments and serial consoles during installation.
-- **Brand Consistency**: The Calamares installer now visually reflects the overarching NeOS brand colors, creating a more cohesive, polished transition from boot to desktop.
+## Accessibility & UX Improvements
+1. **NeOS Installer Partitioning**:
+   - Integrated milestone status directly into a progress file (`/tmp/neos-partition-progress`) to allow Calamares UI to render visual progress bars tightly via DBus or file monitoring.
+2. **NeOS Driver Manager**:
+   - Formatted the network detection output during boot. By utilizing ANSI bold and cyan color escape sequences (`\e[1m\e[36m`), the critical hardware detection lines are significantly more visible for the user, improving readability in a fast-scrolling TTY boot environment.
 
 ## Remaining Usability Risks
-- The `mkfs.btrfs` and `wipefs` commands could be overly verbose. Consider suppressing non-essential output or redirecting it to a log file, keeping the console output strictly focused on the progress bars.
+- Ensure Calamares is appropriately configured to read `/tmp/neos-partition-progress` for the installer UI.
+- Further text improvements might be needed for the GPU detection outputs in the driver manager.
