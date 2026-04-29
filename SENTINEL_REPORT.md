@@ -14,3 +14,9 @@
 ## Severity Summary
 - Path Hijacking: Medium
 - Log Injection: Low
+
+## Security Issue: Log Spoofing / Injection in Partitioning Script
+**Risk Classification:** Low
+**Finding:** The `neos-installer-partition.sh` script previously sanitized the script name by stripping dots (`.`), which caused the logged script name to be altered (e.g., `neos-installer-partitionsh`). Also, `BASH_COMMAND` was logged without sanitization, presenting a risk of log spoofing or injection from newlines or control characters.
+**Fix:** Modified the `tr` command for the script name sanitization to allow dots (`tr -cd 'a-zA-Z0-9_.-'`). Added sanitization for `BASH_COMMAND` (`tr -cd '[:print:]'`) before assigning it to the `cmd` variable to strip control characters and newlines.
+**Remaining Attack Surface:** The script relies on `/proc/mounts` and basic `lsblk` checks which are prone to TOCTOU. These should be strengthened in future updates.

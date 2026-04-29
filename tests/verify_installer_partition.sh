@@ -29,3 +29,13 @@ if ! grep -q "\! -b" "$SCRIPT_PATH"; then
 fi
 
 echo "PASS: Basic static checks passed."
+
+echo "Verifying sanitization logic..."
+if ! grep -q "tr -cd 'a-zA-Z0-9_.-'" "$SCRIPT_PATH"; then
+    echo "FAIL: Missing or incorrect script name sanitization."
+    false
+fi
+if ! grep -q "tr -cd '\[:print:\]'" "$SCRIPT_PATH"; then
+    echo "FAIL: Missing or incorrect BASH_COMMAND sanitization."
+    false
+fi

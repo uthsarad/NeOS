@@ -10,12 +10,12 @@ set -euo pipefail
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
-SCRIPT_NAME=$(printf "%s" "${0##*/}" | tr -cd 'a-zA-Z0-9_-')
+SCRIPT_NAME=$(printf "%s" "${0##*/}" | tr -cd 'a-zA-Z0-9_.-')
 
 _error_handler() {
     local err=$1
     local line=$2
-    local cmd="$BASH_COMMAND"
+    local cmd; cmd=$(printf "%s" "$BASH_COMMAND" | tr -cd '[:print:]')
     # Palette: Ensure logged error messages are clear and contain actionable steps for users. Use structural visual cues in terminal output for critical failures.
     # Bolt: Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.
     echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true
