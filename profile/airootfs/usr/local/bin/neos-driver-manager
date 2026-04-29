@@ -7,6 +7,20 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # NeOS Driver Manager
 # Automatically detects and configures hardware drivers for the best experience.
 
+# ⚡ Bolt: Helper function to avoid modprobe subprocess and I/O overhead if modules are already loaded.
+load_modules() {
+    local missing=()
+    for mod in "$@"; do
+        mod_no_dash="${mod//-/_}"
+        if ! grep -q "^${mod_no_dash} " /proc/modules 2>/dev/null; then
+            missing+=("$mod")
+        fi
+    done
+    if [[ ${#missing[@]} -gt 0 ]]; then
+        modprobe "${missing[@]}" || true
+    fi
+}
+
 echo "🔍 NeOS Hardware Detection starting..."
 
 # ⚡ Bolt: Use lspci -k for faster module association checks
@@ -42,7 +56,7 @@ if [[ "$GPU_INFO" == *nvidia* ]]; then
     if pacman -Qs nvidia &> /dev/null; then
         echo "✅ NVIDIA proprietary drivers are present."
         # Sentinel: Ensure kernel modules are loaded safely
-        if ! lsmod | grep -q nvidia; then
+        if ! grep -q "^nvidia " /proc/modules 2>/dev/null; then
             echo "🚀 Loading NVIDIA kernel modules..."
             modprobe nvidia nvidia_modeset nvidia_uvm nvidia_drm || echo "❌ Failed to load NVIDIA modules."
         fi
@@ -52,11 +66,11 @@ if [[ "$GPU_INFO" == *nvidia* ]]; then
 elif [[ "$GPU_INFO" == *intel* ]]; then
     echo "🔵 Intel Graphics detected."
     # Ensure i915 is loaded
-    modprobe i915 || true
+    load_modules i915
 elif [[ "$GPU_INFO" == *amd* ]] || [[ "$GPU_INFO" == *ati* ]]; then
     echo "🔴 AMD/ATI Graphics detected."
     # Ensure amdgpu is loaded
-    modprobe amdgpu || true
+    load_modules amdgpu
 fi
 
 # Network Detection
@@ -67,13 +81,13 @@ printf "🌐  Detected Network: %s\n" "$NET_INFO"
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo "📶 Broadcom network detected. Ensuring broadcom-wl is available..."
     # Palette: [UX] Format the network detection messages for better user visibility during boot.
-    modprobe wl || true
+    load_modules wl
 elif [[ "$NET_INFO" == *realtek* ]] || [[ "$NET_INFO" == *rtl* ]]; then
     echo "📶 Realtek network detected."
-    modprobe r8169 || true
+    load_modules r8169
 elif [[ "$NET_INFO" == *intel* ]]; then
     echo "📶 Intel network detected."
-    modprobe iwlwifi || true
+    load_modules iwlwifi
 fi
 shopt -u nocasematch
 
@@ -92,15 +106,15 @@ if systemd-detect-virt -q; then
     case "$VIRT_TYPE" in
         kvm|qemu)
             echo "🔧 Loading QEMU/KVM guest modules..."
-            modprobe virtio_pci virtio_blk virtio_net virtio_balloon || true
+            load_modules virtio_pci virtio_blk virtio_net virtio_balloon
             ;;
         oracle)
             echo "🔧 Loading VirtualBox guest modules..."
-            modprobe vboxguest vboxsf vboxvideo || true
+            load_modules vboxguest vboxsf vboxvideo
             ;;
         vmware)
             echo "🔧 Loading VMware guest modules..."
-            modprobe vmw_balloon vmw_vmci vmwgfx || true
+            load_modules vmw_balloon vmw_vmci vmwgfx
             ;;
     esac
 fi
