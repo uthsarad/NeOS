@@ -18,7 +18,7 @@ _error_handler() {
     local cmd; cmd=$(printf "%s" "$BASH_COMMAND" | tr -cd '[:print:]')
     # Palette: Ensure logged error messages are clear and contain actionable steps for users. Use structural visual cues in terminal output for critical failures.
     # Bolt: Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.
-    echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true
+    printf "\n================================================================================\n🚨 CRITICAL ERROR: %s\n================================================================================\n💡 What went wrong:\n  Command: \"%s\"\n  Failed at line: %s\n  Exit code: %s\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-%s\n  2. Check system state and script configuration.\n================================================================================\n" "$SCRIPT_NAME" "$cmd" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
@@ -30,28 +30,28 @@ TARGET_DEV="${1:-}"
 
 if [[ -z "$TARGET_DEV" ]]; then
     echo "❌ Error: Target device not provided." >&2
-    echo "💡 Usage: $0 <device_path>" >&2
+    printf "💡 Usage: %s <device_path>\n" "$0" >&2
     exit 1
 fi
 
 if [[ ! -b "$TARGET_DEV" ]]; then
     # Palette: [UX] Format error messages for target device validation failures clearly.
-    echo -e "❌ Error: Target '$TARGET_DEV' is not a valid block device.\n💡 How to fix: Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1)." >&2
+    printf "❌ Error: Target '%s' is not a valid block device.\n💡 How to fix: Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1).\n" "$TARGET_DEV" >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
 if lsblk -no MOUNTPOINT "$TARGET_DEV" | grep -q "\S"; then
-    echo -e "❌ Error: Target device '$TARGET_DEV' is currently mounted.\n💡 How to fix: Unmount the device before partitioning." >&2
+    printf "❌ Error: Target device '%s' is currently mounted.\n💡 How to fix: Unmount the device before partitioning.\n" "$TARGET_DEV" >&2
     exit 1
 fi
 
-echo "🚀 Starting partitioning on $TARGET_DEV..."
+printf "🚀 Starting partitioning on %s...\n" "$TARGET_DEV"
 # Palette: [UX] Review milestone outputs. They are functional, but could be integrated into Calamares logs or visual progress bars more tightly.
 
 # Wipe existing signatures
 echo "[Step 1/5] [##........] 20% 🧹 Wiping filesystem signatures..."
-echo "20" > /tmp/neos-partition-progress
+echo "20" > /run/neos-partition-progress
 # Sentinel: [Security] Ensure milestone logging cannot be manipulated via environment variables.
 # Palette: [UX] Consider integrating milestone status directly into the Calamares UI via DBus or a progress file.
 logger -t "neos-installer-partition" "Milestone: Wiping filesystem signatures"
@@ -70,7 +70,7 @@ parted -s "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
 
 # Inform the kernel of partition table changes
 echo "[Step 2/5] [####......] 40% 🔄 Updating partition table..."
-echo "40" > /tmp/neos-partition-progress
+echo "40" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Updating partition table"
 partprobe "$TARGET_DEV"
 sleep 2
@@ -87,13 +87,13 @@ fi
 
 # Wait for devices to be ready
 echo "[Step 3/5] [######....] 60% ⏳ Waiting for device nodes..."
-echo "60" > /tmp/neos-partition-progress
+echo "60" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Waiting for device nodes"
 udevadm settle || sleep 2
 
 # Format EFI partition
 echo "[Step 4/5] [########..] 80% 💾 Formatting partitions..."
-echo "80" > /tmp/neos-partition-progress
+echo "80" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Formatting partitions"
 echo "Formatting EFI partition (FAT32)..."
 mkfs.fat -F32 "$PART_EFI"
@@ -110,7 +110,7 @@ mount "$PART_ROOT" "$MNT_TMP"
 
 # Create standard subvolumes
 echo "[Step 5/5] [##########] 100% 📁 Creating Btrfs subvolumes..."
-echo "100" > /tmp/neos-partition-progress
+echo "100" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Creating Btrfs subvolumes"
 btrfs subvolume create "$MNT_TMP/@"
 btrfs subvolume create "$MNT_TMP/@home"
