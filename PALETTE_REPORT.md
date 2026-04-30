@@ -1,11 +1,18 @@
-# Palette UX Report
+# PALETTE_REPORT.md
 
-## Accessibility & UX Improvements
-1. **NeOS Installer Partitioning**:
-   - Integrated milestone status directly into a progress file (`/tmp/neos-partition-progress`) to allow Calamares UI to render visual progress bars tightly via DBus or file monitoring.
-2. **NeOS Driver Manager**:
-   - Formatted the network detection output during boot. By utilizing ANSI bold and cyan color escape sequences (`\e[1m\e[36m`), the critical hardware detection lines are significantly more visible for the user, improving readability in a fast-scrolling TTY boot environment.
+## UX/Accessibility Improvements
+
+### Command-Line Interface (CLI) Visual Clarity
+To improve the user experience during the OS boot and installation phases, terminal outputs have been enhanced with ANSI escape codes for color, bold formatting, and visual structure.
+
+*   **Error Messaging:** Critical script failures in `neos-installer-partition.sh` now prominently display in bold red (`\e[1m\e[31m`) for immediate visibility. The structured 'How to fix' section provides clear, actionable steps formatted in bold cyan (`\e[1m\e[36m`) to guide administrators directly to resolution paths.
+*   **Validation Errors:** Missing, invalid, or actively mounted target device errors are visually highlighted with red indicators and cyan hints for quick user comprehension.
+*   **Progress Tracking:** Partitioning milestones now utilize bold cyan step indicators (`[Step X/Y]`) and green progress representations (`[##........] 20%`), enabling users to parse active operational status at a glance.
+*   **Hardware Detection:** The `neos-driver-manager` logs now categorize detections visually: AMD processors display in green, Intel in blue, and generic milestones in cyan.
+
+### Calamares Installer Branding
+*   **Brand Consistency:** Confirmed that `branding.desc` complies with NeOS brand guidelines, correctly applying the primary blue (`#0078D4`) to the installer sidebar background.
 
 ## Remaining Usability Risks
-- Ensure Calamares is appropriately configured to read `/tmp/neos-partition-progress` for the installer UI.
-- Further text improvements might be needed for the GPU detection outputs in the driver manager.
+*   **Screen Reader Compatibility in TTY:** While visual colors assist sighted users, text-mode environments (TTY) may not present progress effectively to screen reader setups unless specifically configured.
+*   **Progress Bar Integration:** The `/tmp/neos-partition-progress` file handles numeric output, but deeper integration directly into the Calamares graphical UI via DBus would present a more seamless visual experience.
