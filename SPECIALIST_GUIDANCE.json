@@ -1,14 +1,23 @@
 {
   "bolt": {
-    "focus": "No action",
-    "instructions": []
+    "focus": "Performance Optimization",
+    "instructions": [
+      "Review the consolidated lspci parsing in neos-driver-manager.",
+      "Ensure native bash string matching is used effectively to avoid subprocess overhead."
+    ]
   },
   "palette": {
-    "focus": "No action",
-    "instructions": []
+    "focus": "UX & Accessibility",
+    "instructions": [
+      "Review the text-based progress integration in neos-installer-partition.sh.",
+      "Verify that Calamares branding correctly uses NeOS blue (#0078D4)."
+    ]
   },
   "sentinel": {
-    "focus": "No action",
-    "instructions": []
+    "focus": "Security Validation",
+    "instructions": [
+      "Audit any new variable expansions in neos-installer-partition.sh for log injection.",
+      "Ensure execution paths remain strictly defined."
+    ]
   }
 }
