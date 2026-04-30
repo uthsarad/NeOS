@@ -1,8 +1,12 @@
 {
-  "allowed_files": [],
+  "allowed_files": [
+    "profile/airootfs/usr/local/bin/neos-driver-manager",
+    "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+    "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+  ],
   "constraints": [
-    "Do not modify any production code.",
-    "Verify system state with tests.",
-    "Ensure proper test completion."
+    "Limit implementation to one coherent deliverable per run.",
+    "Refine the recent implementations of hardware detection and installer UX without adding new mechanics.",
+    "Ensure all modifications pass the automated verification tests."
   ]
 }

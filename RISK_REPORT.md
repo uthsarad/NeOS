@@ -1,9 +1,11 @@
 # RISK REPORT
 
 ## Risk Assessment
-- **Security:** Minor risks related to auto-merge workflow modifications in GitHub Actions that need to be audited for required status checks bypasses.
-- **Performance:** Potential unnecessary module probing in `neos-driver-manager` and parsing overheads.
-- **UX:** Installer feedback loops could be improved with progress bars.
+- **Feature Creep:** There is a low risk of adding unnecessary complexity to the hardware detection and installer logic.
+- **Performance:** Subprocess spawning inside hardware detection loops previously introduced minor performance overhead.
+- **UX Consistency:** The text-mode installer progress might lack clarity compared to graphical alternatives.
 
 ## Mitigation Strategy
-- **Immediate Action:** Strategic pause. We will focus on testing the existing configuration and ensure system stability before addressing the minor optimizations and UX enhancements identified in `ai/tasks/*.json`.
+- **Strict Scope Control:** The Architect is explicitly limited to refining three existing files to prevent feature creep.
+- **Performance Refinement:** Ensure native bash matching is used over external binaries where applicable.
+- **UX Standardization:** Adopt standard ASCII progress bars and consistent color themes to improve clarity in text interfaces.
