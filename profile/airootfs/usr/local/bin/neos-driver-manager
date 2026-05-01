@@ -42,7 +42,8 @@ if [[ "$GPU_INFO" == *nvidia* ]]; then
     if pacman -Qs nvidia &> /dev/null; then
         echo -e "\e[1m\e[32m✅ NVIDIA proprietary drivers are present.\e[0m"
         # Sentinel: Ensure kernel modules are loaded safely
-        if ! lsmod | grep -q nvidia; then
+        # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+        if ! grep -q "^nvidia " /proc/modules; then
             echo -e "\e[1m\e[34m🚀 Loading NVIDIA kernel modules...\e[0m"
             modprobe nvidia nvidia_modeset nvidia_uvm nvidia_drm || echo -e "\e[1m\e[31m❌ Failed to load NVIDIA modules.\e[0m"
         fi
@@ -52,11 +53,13 @@ if [[ "$GPU_INFO" == *nvidia* ]]; then
 elif [[ "$GPU_INFO" == *intel* ]]; then
     echo -e "\e[1m\e[34m🔵 Intel Graphics detected.\e[0m"
     # Ensure i915 is loaded
-    modprobe i915 || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    grep -q "^i915 " /proc/modules || modprobe i915 || true
 elif [[ "$GPU_INFO" == *amd* ]] || [[ "$GPU_INFO" == *ati* ]]; then
     echo -e "\e[1m\e[31m🔴 AMD/ATI Graphics detected.\e[0m"
     # Ensure amdgpu is loaded
-    modprobe amdgpu || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    grep -q "^amdgpu " /proc/modules || modprobe amdgpu || true
 fi
 
 # Network Detection
@@ -66,21 +69,24 @@ printf "\e[1m\e[36m🌐  Detected Network:\e[0m %s\n" "$NET_INFO"
 
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo -e "\e[1m\e[36m📶 Broadcom network detected.\e[0m Ensuring broadcom-wl is available..."
-    modprobe wl || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    grep -q "^wl " /proc/modules || modprobe wl || true
 elif [[ "$NET_INFO" == *realtek* ]] || [[ "$NET_INFO" == *rtl* ]]; then
     echo -e "\e[1m\e[36m📶 Realtek network detected.\e[0m"
-    modprobe r8169 || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    grep -q "^r8169 " /proc/modules || modprobe r8169 || true
 elif [[ "$NET_INFO" == *intel* ]]; then
     echo -e "\e[1m\e[36m📶 Intel network detected.\e[0m"
-    modprobe iwlwifi || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    grep -q "^iwlwifi " /proc/modules || modprobe iwlwifi || true
 fi
 shopt -u nocasematch
 
 # CPU Microcode
 CPU_INFO=$(grep -m1 "vendor_id" /proc/cpuinfo || true)
-if printf "%s\n" "$CPU_INFO" | grep -q "AuthenticAMD"; then
+if [[ "$CPU_INFO" == *AuthenticAMD* ]]; then
     echo -e "\e[1m\e[32m🧠 AMD CPU detected.\e[0m Ensuring amd-ucode is available..."
-elif printf "%s\n" "$CPU_INFO" | grep -q "GenuineIntel"; then
+elif [[ "$CPU_INFO" == *GenuineIntel* ]]; then
     echo -e "\e[1m\e[34m🧠 Intel CPU detected.\e[0m Ensuring intel-ucode is available..."
 fi
 
