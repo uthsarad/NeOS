@@ -1,11 +1,10 @@
 # RISK REPORT
 
 ## Risk Assessment
-- **Feature Creep:** There is a low risk of adding unnecessary complexity to the hardware detection and installer logic.
-- **Performance:** Subprocess spawning inside hardware detection loops previously introduced minor performance overhead.
-- **UX Consistency:** The text-mode installer progress might lack clarity compared to graphical alternatives.
+- **Update Breakage:** Overly restrictive systemd sandboxing (e.g., `ProtectSystem=strict`) on the update service will mount `/usr` and `/var` read-only, preventing the package manager from functioning and causing a denial-of-service on system updates.
+- **Performance:** Using external binaries (like `awk` or `df`) for simple checks (like disk space) inside the update script introduces unnecessary overhead.
 
 ## Mitigation Strategy
-- **Strict Scope Control:** The Architect is explicitly limited to refining three existing files to prevent feature creep.
-- **Performance Refinement:** Ensure native bash matching is used over external binaries where applicable.
-- **UX Standardization:** Adopt standard ASCII progress bars and consistent color themes to improve clarity in text interfaces.
+- **Strict Scope Control:** Limit Architect to refining `neos-autoupdate.sh` and `neos-autoupdate.service`.
+- **Constraint Enforcement:** Explicitly forbid the use of `ProtectSystem=strict` in the systemd service file.
+- **Performance Refinement:** Mandate the use of native bash capabilities for checks where applicable.

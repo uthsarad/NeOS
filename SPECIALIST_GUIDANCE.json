@@ -2,22 +2,22 @@
   "bolt": {
     "focus": "Performance Optimization",
     "instructions": [
-      "Review the consolidated lspci parsing in neos-driver-manager.",
-      "Ensure native bash string matching is used effectively to avoid subprocess overhead."
+      "Ensure dependency validations in neos-autoupdate.sh rely on native bash capabilities.",
+      "Consider native bash integer math for disk space comparisons."
     ]
   },
   "palette": {
     "focus": "UX & Accessibility",
     "instructions": [
-      "Review the text-based progress integration in neos-installer-partition.sh.",
-      "Verify that Calamares branding correctly uses NeOS blue (#0078D4)."
+      "Ensure error messages logged when dependencies are missing are clear.",
+      "Review graphical update notifier error surfaces for clarity."
     ]
   },
   "sentinel": {
     "focus": "Security Validation",
     "instructions": [
-      "Audit any new variable expansions in neos-installer-partition.sh for log injection.",
-      "Ensure execution paths remain strictly defined."
+      "Audit systemd sandboxing on neos-autoupdate.service.",
+      "Ensure ProtectSystem=strict is avoided as it breaks updates."
     ]
   }
 }
