@@ -34,7 +34,14 @@ GPU_INFO="${GPU_INFO%$'\n'}"
 NET_INFO="${NET_INFO%$'\n'}"
 
 # Bolt: [Performance] Avoided filtering lspci output directly with regex or grep to save subprocess overhead.
-printf "\e[1m\e[36m🖥️  Detected Graphics:\e[0m %s\n" "$GPU_INFO"
+printf "\e[1m\e[36m🖥️  Detected Graphics:\e[0m \n"
+if [ -n "$GPU_INFO" ]; then
+    while IFS= read -r line; do
+        printf "  - %s\n" "$line"
+    done <<< "$GPU_INFO"
+else
+    printf "  - (None)\n"
+fi
 
 if [[ "$GPU_INFO" == *nvidia* ]]; then
     echo -e "\e[1m\e[32m🎮 NVIDIA GPU detected!\e[0m"
@@ -62,7 +69,14 @@ fi
 # Network Detection
 # Bolt: [Performance] Optimized lspci parsing for network controllers to reduce command execution overhead.
 # Sentinel: [Security] Audit network detection regex for potential injection or parsing vulnerabilities.
-printf "\e[1m\e[36m🌐  Detected Network:\e[0m %s\n" "$NET_INFO"
+printf "\e[1m\e[36m🌐  Detected Network:\e[0m \n"
+if [ -n "$NET_INFO" ]; then
+    while IFS= read -r line; do
+        printf "  - %s\n" "$line"
+    done <<< "$NET_INFO"
+else
+    printf "  - (None)\n"
+fi
 
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo -e "\e[1m\e[36m📶 Broadcom network detected.\e[0m Ensuring broadcom-wl is available..."

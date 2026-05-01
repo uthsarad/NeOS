@@ -46,7 +46,7 @@ fi
 echo "🚀 Starting partitioning on $TARGET_DEV..."
 
 # Wipe existing signatures
-echo -e "\e[1m\e[36m[Step 1/5]\e[0m \e[32m[##........] 20%\e[0m 🧹 Wiping filesystem signatures..."
+echo -e "\e[1m\e[36m[Step 1/5]\e[0m \e[32m[==........] 20%\e[0m 🧹 Wiping filesystem signatures..."
 echo "20" > /tmp/neos-partition-progress
 # Sentinel: [Security] Ensure milestone logging cannot be manipulated via environment variables.
 logger -t "neos-installer-partition" "Milestone: Wiping filesystem signatures"
@@ -64,7 +64,7 @@ parted -s "$TARGET_DEV" set 1 esp on
 parted -s "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
 
 # Inform the kernel of partition table changes
-echo -e "\e[1m\e[36m[Step 2/5]\e[0m \e[32m[####......] 40%\e[0m 🔄 Updating partition table..."
+echo -e "\e[1m\e[36m[Step 2/5]\e[0m \e[32m[====......] 40%\e[0m 🔄 Updating partition table..."
 echo "40" > /tmp/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Updating partition table"
 partprobe "$TARGET_DEV"
@@ -81,13 +81,13 @@ else
 fi
 
 # Wait for devices to be ready
-echo -e "\e[1m\e[36m[Step 3/5]\e[0m \e[32m[######....] 60%\e[0m ⏳ Waiting for device nodes..."
+echo -e "\e[1m\e[36m[Step 3/5]\e[0m \e[32m[======....] 60%\e[0m ⏳ Waiting for device nodes..."
 echo "60" > /tmp/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Waiting for device nodes"
 udevadm settle || sleep 2
 
 # Format EFI partition
-echo -e "\e[1m\e[36m[Step 4/5]\e[0m \e[32m[########..] 80%\e[0m 💾 Formatting partitions..."
+echo -e "\e[1m\e[36m[Step 4/5]\e[0m \e[32m[========..] 80%\e[0m 💾 Formatting partitions..."
 echo "80" > /tmp/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Formatting partitions"
 echo "Formatting EFI partition (FAT32)..."
@@ -104,7 +104,7 @@ MNT_TMP=$(mktemp -d)
 mount "$PART_ROOT" "$MNT_TMP"
 
 # Create standard subvolumes
-echo -e "\e[1m\e[36m[Step 5/5]\e[0m \e[32m[##########] 100%\e[0m 📁 Creating Btrfs subvolumes..."
+echo -e "\e[1m\e[36m[Step 5/5]\e[0m \e[32m[==========] 100%\e[0m 📁 Creating Btrfs subvolumes..."
 echo "100" > /tmp/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Creating Btrfs subvolumes"
 btrfs subvolume create "$MNT_TMP/@"

@@ -90,3 +90,7 @@
 ## 2024-03-30 - Enhanced Visual Hierarchy in CLI Errors
 **Learning:** Using structural visual cues (like ASCII borders and spacing) in terminal output significantly reduces cognitive load during failure analysis by separating the error state from the actionable remediation steps.
 **Action:** When creating CLI error messages, group related information using borders and clear indentation to guide the developer's eye to the root cause and the fix sequentially.
+
+## 2026-05-28 - Structured Output for CLI Lists
+**Learning:** Printing multiple lines of hardware detection output (like GPU and Network devices) on a single concatenated line or without indentation makes it difficult for users to read quickly during the fast boot sequence.
+**Action:** When printing multi-line dynamic outputs in bash scripts, use a `while IFS= read -r line` loop to print each item on a new line with clear bullet points (e.g. `  - `) to establish a visual hierarchy.
