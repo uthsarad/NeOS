@@ -22,6 +22,7 @@ strings:
 slideshow:               "show.qml"
 
 style:
+   # Palette: [UX] Ensure Calamares branding correctly uses NeOS blue (#0078D4).
    sidebarBackground:    "#0078D4"
    sidebarText:          "#FFFFFF"
    sidebarTextSelect:    "#005A9E"

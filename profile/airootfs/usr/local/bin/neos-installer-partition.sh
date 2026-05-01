@@ -46,9 +46,11 @@ fi
 echo "🚀 Starting partitioning on $TARGET_DEV..."
 
 # Wipe existing signatures
+# Palette: [UX] Review ASCII text-based progress bars for correct rendering and standard compatibility.
 echo -e "\e[1m\e[36m[Step 1/5]\e[0m \e[32m[##........] 20%\e[0m 🧹 Wiping filesystem signatures..."
 echo "20" > /run/neos-partition-progress
 # Sentinel: [Security] Ensure milestone logging cannot be manipulated via environment variables.
+# Sentinel: [Audit] Verify milestone logging does not introduce injection vectors.
 logger -t "neos-installer-partition" "Milestone: Wiping filesystem signatures"
 # Bolt: [Performance] Review mkfs and partitioning commands for optimal block sizes and parameters.
 wipefs --all --force "$TARGET_DEV"

@@ -2,24 +2,12 @@
   "focus_area": "Security Validation",
   "tasks": [
     {
-      "description": "Verify that the new auto-merge authorization for NimuthuGanegoda does not bypass required status checks.",
-      "target_file": ".github/workflows/jules-auto-merge.yml"
-    },
-    {
-      "description": "Audit the Calamares configuration to ensure no insecure defaults are introduced during the installer implementation.",
-      "target_file": "airootfs/etc/calamares/settings.conf"
-    },
-    {
-      "description": "Audit new GPU detection logic for potential command injection or unexpected behavior with unusual lspci output.",
-      "target_file": "airootfs/usr/local/bin/neos-driver-manager"
-    },
-    {
-      "description": "Audit network detection regex for potential injection or parsing vulnerabilities.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
-    },
-    {
-      "description": "Ensure milestone logging in partitioning script cannot be manipulated via environment variables.",
+      "description": "Audit any new variable expansions in neos-installer-partition.sh for log injection.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure execution paths remain strictly defined.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
     }
   ]
 }
