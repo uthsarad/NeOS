@@ -34,7 +34,13 @@ GPU_INFO="${GPU_INFO%$'\n'}"
 NET_INFO="${NET_INFO%$'\n'}"
 
 # Bolt: [Performance] Avoided filtering lspci output directly with regex or grep to save subprocess overhead.
-printf "\e[1m\e[36m🖥️  Detected Graphics:\e[0m %s\n" "$GPU_INFO"
+# Palette: [UX] Format multi-line graphics string variable with bullet points for readability
+echo -e "\e[1m\e[36m🖥️  Detected Graphics:\e[0m"
+while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
+        echo "  - $line"
+    fi
+done <<< "$GPU_INFO"
 
 if [[ "$GPU_INFO" == *nvidia* ]]; then
     echo -e "\e[1m\e[32m🎮 NVIDIA GPU detected!\e[0m"
@@ -65,7 +71,13 @@ fi
 # Network Detection
 # Bolt: [Performance] Optimized lspci parsing for network controllers to reduce command execution overhead.
 # Sentinel: [Security] Audit network detection regex for potential injection or parsing vulnerabilities.
-printf "\e[1m\e[36m🌐  Detected Network:\e[0m %s\n" "$NET_INFO"
+# Palette: [UX] Format multi-line network string variable with bullet points for readability
+echo -e "\e[1m\e[36m🌐  Detected Network:\e[0m"
+while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
+        echo "  - $line"
+    fi
+done <<< "$NET_INFO"
 
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo -e "\e[1m\e[36m📶 Broadcom network detected.\e[0m Ensuring broadcom-wl is available..."
@@ -97,15 +109,24 @@ if systemd-detect-virt -q; then
     case "$VIRT_TYPE" in
         kvm|qemu)
             echo -e "\e[1m\e[36m🔧 Loading QEMU/KVM guest modules...\e[0m"
-            modprobe virtio_pci virtio_blk virtio_net virtio_balloon || true
+            # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+            for mod in virtio_pci virtio_blk virtio_net virtio_balloon; do
+                grep -q "^${mod/_/-} " /proc/modules || modprobe "$mod" || true
+            done
             ;;
         oracle)
             echo -e "\e[1m\e[36m🔧 Loading VirtualBox guest modules...\e[0m"
-            modprobe vboxguest vboxsf vboxvideo || true
+            # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+            for mod in vboxguest vboxsf vboxvideo; do
+                grep -q "^${mod/_/-} " /proc/modules || modprobe "$mod" || true
+            done
             ;;
         vmware)
             echo -e "\e[1m\e[36m🔧 Loading VMware guest modules...\e[0m"
-            modprobe vmw_balloon vmw_vmci vmwgfx || true
+            # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+            for mod in vmw_balloon vmw_vmci vmwgfx; do
+                grep -q "^${mod/_/-} " /proc/modules || modprobe "$mod" || true
+            done
             ;;
     esac
 fi
