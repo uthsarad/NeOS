@@ -1,32 +1,30 @@
 # STRATEGIC DIRECTIVE
 
 ## PHASE 1 — Product Alignment Check
-- What is the product trying to become? NeOS is becoming a curated rolling-release, Arch-based desktop OS with predictable behavior, Windows-familiar UX, and automated hardware optimization.
-- Are we building toward that? Yes, the baseline ISO build, hardware detection, and installer scripts are functional.
-- Are we solving the highest leverage problem? The core foundation is stable. The highest leverage problem now is refining the recent feature implementations to ensure performance, clear UX during installation, and security without over-engineering.
+- What is the product trying to become? NeOS is a curated, Arch-based desktop OS targeting predictable behavior through staged updates and QA validation.
+- Are we building toward that? Yes, the core system updates and rollback protections via Btrfs snapshots are implemented.
+- Are we solving the highest leverage problem? The highest leverage problem now is ensuring the update mechanism is stable, secure, and performs well without breaking itself through overzealous hardening.
 
 ## PHASE 2 — Technical Posture Review
-- Is the system stable? Yes, the automated build pipeline and basic partitioning are operational.
-- Is tech debt increasing? Minor UX/performance debt was incurred to achieve functional baseline (e.g., multiple subprocess calls in hardware detection, missing progress UI in partitioning).
-- Are we overbuilding? No. We have focused on minimal working components.
+- Is the system stable? Yes, the baseline installer and driver manager are operational.
+- Is tech debt increasing? Potential debt exists in overly aggressive systemd sandboxing that might break core system updates.
+- Are we overbuilding? We need to balance security hardening with functional system update requirements.
 
 ## PHASE 3 — Priority Selection
-- Refinement of recent feature
+- Stabilization / hardening
 
 ## PHASE 4 — Controlled Scope Definition
 - Exact files likely impacted:
-  - `profile/airootfs/usr/local/bin/neos-driver-manager`
-  - `profile/airootfs/usr/local/bin/neos-installer-partition.sh`
-  - `profile/airootfs/etc/calamares/branding/neos/branding.desc`
-- Maximum allowed surface area: 3 files
+  - `profile/airootfs/usr/local/bin/neos-autoupdate.sh`
+  - `profile/airootfs/etc/systemd/system/neos-autoupdate.service`
+- Maximum allowed surface area: 2 files
 - Constraints Architect must obey:
-  - Optimize the hardware detection without breaking existing functionality.
-  - Apply NeOS blue (`#0078D4`) to Calamares branding.
-  - Implement simple text-based progress bars using standard ASCII characters (`#`, `.`).
-  - Do not introduce new features outside this scope. Ensure tests pass.
+  - Do NOT apply `ProtectSystem=strict` to `neos-autoupdate.service` as it mounts `/usr` and `/var` read-only, breaking package manager updates.
+  - Optimize the dependency checks and disk space calculations in `neos-autoupdate.sh` using native bash capabilities.
+  - Do not introduce new mechanics; only refine the existing update process.
 
 ## PHASE 5 — Delegation Strategy
-- Architect builds: Implement the refinement of driver manager and installer partition UX.
-- Bolt optimizes: Measure and validate the lspci caching logic in the driver manager.
-- Palette enhances: Ensure text-based progress indicators and terminal formatting follow UX standards.
-- Sentinel audits: Verify that any changes to script execution or log variables do not introduce injection vectors.
+- Architect builds: Refine `neos-autoupdate.sh` and `neos-autoupdate.service` according to constraints.
+- Bolt optimizes: Ensure dependency validations and disk space checks use lightweight native bash math to eliminate fork/exec overhead.
+- Palette enhances: Review update error notification formatting to ensure messages to the user are clear and actionable.
+- Sentinel audits: Verify systemd sandboxing to ensure it limits privileges without breaking the update functionality (e.g., verifying `ProtectSystem=strict` is NOT used).

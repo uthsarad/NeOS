@@ -1,12 +1,11 @@
 {
   "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-driver-manager",
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
-    "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+    "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+    "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
   ],
   "constraints": [
     "Limit implementation to one coherent deliverable per run.",
-    "Refine the recent implementations of hardware detection and installer UX without adding new mechanics.",
-    "Ensure all modifications pass the automated verification tests."
+    "Do NOT apply ProtectSystem=strict to neos-autoupdate.service.",
+    "Refine dependency and disk checks using native bash."
   ]
 }
