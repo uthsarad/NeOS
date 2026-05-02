@@ -1,23 +1,14 @@
 {
   "bolt": {
     "focus": "Performance Optimization",
-    "instructions": [
-      "Ensure dependency validations in neos-autoupdate.sh rely on native bash capabilities.",
-      "Consider native bash integer math for disk space comparisons."
-    ]
+    "guidance": "Optimize script execution without breaking functionality. Use native bash features over external binaries."
   },
   "palette": {
     "focus": "UX & Accessibility",
-    "instructions": [
-      "Ensure error messages logged when dependencies are missing are clear.",
-      "Review graphical update notifier error surfaces for clarity."
-    ]
+    "guidance": "Ensure consistent branding and actionable error reporting. Use NeOS blue (#0078D4)."
   },
   "sentinel": {
     "focus": "Security Validation",
-    "instructions": [
-      "Audit systemd sandboxing on neos-autoupdate.service.",
-      "Ensure ProtectSystem=strict is avoided as it breaks updates."
-    ]
+    "guidance": "Audit systemd sandboxing to ensure updates aren't broken. Verify safe variable expansions and prevent path hijacking."
   }
 }
