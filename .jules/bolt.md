@@ -106,3 +106,7 @@
 ## 2026-06-20 - GitHub PAT Limits on Workflow Modifications
 **Learning:** PRs that introduce optimizations to `.github/workflows/*` files may trigger CI failures during automated merging if the workflow lacks a repository PAT with explicit workflow write scope.
 **Action:** When acting as a performance persona and encountering a workflow modification block, revert the workflow change to restore CI health and fallback to applying a minor authorized optimization to a test script (like adding `IFS=` to read loops) to satisfy the directive without violating security boundaries.
+
+## 2026-05-02 - Conditional Subshell Avoidance
+**Learning:** When writing bash scripts that cache output of external commands, executing subshells (like `$(command || true)`) for commands that are known to be missing introduces unnecessary process forking and error string handling.
+**Action:** Always conditionally assign empty variables and avoid executing subshells if a preceding `command -v` check confirms the command is unavailable.

@@ -12,11 +12,13 @@ echo -e "\e[1m\e[36m🔍 NeOS Hardware Detection starting...\e[0m"
 # ⚡ Bolt: Use lspci -k for faster module association checks
 if ! command -v lspci &> /dev/null; then
     echo -e "\e[1m\e[33m⚠️  pciutils not found, hardware detection may be limited.\e[0m"
+    LSPCI_OUT=""
+else
+    # GPU Detection
+    # Cache lspci output to avoid repeated execution
+    # Bolt: [Performance] Conditionally execute lspci only if present to eliminate subshell/error overhead when missing.
+    LSPCI_OUT=$(lspci || true)
 fi
-
-# GPU Detection
-# Cache lspci output to avoid repeated execution
-LSPCI_OUT=$(lspci || true)
 
 # GPU and Network Detection parsed in a single pass using native bash matching
 GPU_INFO=""
