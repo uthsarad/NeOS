@@ -8,6 +8,10 @@
     {
       "description": "Ensure execution paths remain strictly defined.",
       "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+    },
+    {
+      "description": "Audit systemd sandboxing on neos-autoupdate.service. Ensure ProtectSystem=strict is avoided as it breaks updates.",
+      "target_file": "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
     }
   ]
 }
