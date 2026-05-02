@@ -1,10 +1,11 @@
-# RISK REPORT
+# Risk & Priority Report
 
-## Risk Assessment
-- **Update Breakage:** Overly restrictive systemd sandboxing (e.g., `ProtectSystem=strict`) on the update service will mount `/usr` and `/var` read-only, preventing the package manager from functioning and causing a denial-of-service on system updates.
-- **Performance:** Using external binaries (like `awk` or `df`) for simple checks (like disk space) inside the update script introduces unnecessary overhead.
+## Security Risks
+- **Sandboxing vs. Updates:** Applying overly strict systemd sandboxing (like `ProtectSystem=strict`) on `neos-autoupdate.service` will break pacman updates. This must be avoided.
+- **Script Vulnerabilities:** System scripts need audits for log injection and path hijacking vulnerabilities.
 
-## Mitigation Strategy
-- **Strict Scope Control:** Limit Architect to refining `neos-autoupdate.sh` and `neos-autoupdate.service`.
-- **Constraint Enforcement:** Explicitly forbid the use of `ProtectSystem=strict` in the systemd service file.
-- **Performance Refinement:** Mandate the use of native bash capabilities for checks where applicable.
+## Performance Risks
+- **External Binaries in Loops:** Relying on tools like `awk` or subshells in hot paths of bash scripts introduces unnecessary overhead.
+
+## Complexity Creep
+- Minor risk. Limiting the scope to script hardening and branding fixes prevents feature creep and aligns with the strategic directive.
