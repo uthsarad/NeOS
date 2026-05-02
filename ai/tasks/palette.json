@@ -12,6 +12,10 @@
     {
       "description": "Ensure text-based progress indicators and terminal formatting follow UX standards.",
       "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+    },
+    {
+      "description": "Ensure error messages logged when dependencies are missing are clear. Review graphical update notifier error surfaces for clarity.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

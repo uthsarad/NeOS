@@ -59,7 +59,7 @@ check_dependencies() {
         exit 0
     fi
 
-    local dependencies=("pacman" "awk" "df")
+    local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
             log "Error: Required command '$cmd' not found."
