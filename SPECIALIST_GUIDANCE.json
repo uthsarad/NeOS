@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "Performance Optimization",
-    "guidance": "Optimize script execution without breaking functionality. Use native bash features over external binaries."
+    "focus": "Performance Monitoring",
+    "guidance": "Observe existing performance optimizations. No active changes allowed during strategic pause."
   },
   "palette": {
-    "focus": "UX & Accessibility",
-    "guidance": "Ensure consistent branding and actionable error reporting. Use NeOS blue (#0078D4)."
+    "focus": "UX Review",
+    "guidance": "Review current visual clarity and accessibility implementations. No active changes allowed."
   },
   "sentinel": {
-    "focus": "Security Validation",
-    "guidance": "Audit systemd sandboxing to ensure updates aren't broken. Verify safe variable expansions and prevent path hijacking."
+    "focus": "Security Auditing",
+    "guidance": "Review existing systemd sandboxing and script sanitization. No active changes allowed."
   }
 }

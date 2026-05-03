@@ -1,11 +1,11 @@
 # Risk & Priority Report
 
 ## Security Risks
-- **Sandboxing vs. Updates:** Applying overly strict systemd sandboxing (like `ProtectSystem=strict`) on `neos-autoupdate.service` will break pacman updates. This must be avoided.
-- **Script Vulnerabilities:** System scripts need audits for log injection and path hijacking vulnerabilities.
+- **Sandboxing Constraints:** We must continue to ensure that `ProtectSystem=strict` is not applied to package manager services like `neos-autoupdate.service`, as it prevents system updates.
+- **Script Vulnerabilities:** We need to keep auditing shell scripts for proper sanitization and path management to prevent injection or path hijacking.
 
 ## Performance Risks
-- **External Binaries in Loops:** Relying on tools like `awk` or subshells in hot paths of bash scripts introduces unnecessary overhead.
+- **Execution Overhead:** Using subshells and external binaries in hot loops remains a risk that requires ongoing monitoring.
 
 ## Complexity Creep
-- Minor risk. Limiting the scope to script hardening and branding fixes prevents feature creep and aligns with the strategic directive.
+- Feature creep is a significant risk. We are enforcing a strategic pause today to mitigate this and maintain long-term stability.
