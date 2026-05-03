@@ -23,6 +23,8 @@ slideshow:               "show.qml"
 
 style:
    # Palette: [UX] Ensure Calamares branding correctly uses NeOS blue (#0078D4).
+   # Bolt: [Performance] Consider testing QML rendering speed with this background vs an image.
+   # Sentinel: [Security] Validate that external product URLs load in a secure sandbox context if clicked.
    sidebarBackground:    "#0078D4"
    sidebarText:          "#FFFFFF"
    sidebarTextSelect:    "#005A9E"

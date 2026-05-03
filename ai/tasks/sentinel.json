@@ -12,6 +12,10 @@
     {
       "description": "Audit systemd sandboxing on neos-autoupdate.service. Ensure ProtectSystem=strict is avoided as it breaks updates.",
       "target_file": "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
+    },
+    {
+      "description": "Validate that external product URLs load in a secure sandbox context if clicked.",
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
     }
   ]
 }
