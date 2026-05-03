@@ -37,10 +37,10 @@ NET_INFO="${NET_INFO%$'\n'}"
 
 # Bolt: [Performance] Avoided filtering lspci output directly with regex or grep to save subprocess overhead.
 # Palette: [UX] Format multi-line graphics string variable with bullet points for readability
-echo -e "\e[1m\e[36m🖥️  Detected Graphics:\e[0m"
+printf "\e[1m\e[36m🖥️  Detected Graphics:\e[0m\n"
 while IFS= read -r line; do
     if [[ -n "$line" ]]; then
-        echo "  - $line"
+        printf "  - %s\n" "$line"
     fi
 done <<< "$GPU_INFO"
 
@@ -74,10 +74,10 @@ fi
 # Bolt: [Performance] Optimized lspci parsing for network controllers to reduce command execution overhead.
 # Sentinel: [Security] Audit network detection regex for potential injection or parsing vulnerabilities.
 # Palette: [UX] Format multi-line network string variable with bullet points for readability
-echo -e "\e[1m\e[36m🌐  Detected Network:\e[0m"
+printf "\e[1m\e[36m🌐  Detected Network:\e[0m\n"
 while IFS= read -r line; do
     if [[ -n "$line" ]]; then
-        echo "  - $line"
+        printf "  - %s\n" "$line"
     fi
 done <<< "$NET_INFO"
 

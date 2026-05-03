@@ -16,7 +16,7 @@ _error_handler() {
     local line=$2
     local cmd; cmd=$(printf "%s" "$BASH_COMMAND" | tr -cd '[:print:]')
     # Bolt: Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.
-    echo -e "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 CRITICAL ERROR: $SCRIPT_NAME\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 What went wrong:\e[0m\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Review system journal: \e[1mjournalctl -t neos-$SCRIPT_NAME\e[0m\n  2. Check system state and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n" >&2 || true
+    printf "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 CRITICAL ERROR: %s\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 What went wrong:\e[0m\n  Command: \"%s\"\n  Failed at line: %s\n  Exit code: %s\n\n\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Review system journal: \e[1mjournalctl -t neos-%s\e[0m\n  2. Check system state and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
@@ -27,23 +27,23 @@ trap '_error_handler $? $LINENO' ERR
 TARGET_DEV="${1:-}"
 
 if [[ -z "$TARGET_DEV" ]]; then
-    echo -e "\e[1m\e[31m❌ Error: Target device not provided.\e[0m" >&2
-    echo -e "\e[1m\e[36m💡 Usage:\e[0m $0 <device_path>" >&2
+    printf "\e[1m\e[31m❌ Error: Target device not provided.\e[0m\n" >&2
+    printf "\e[1m\e[36m💡 Usage:\e[0m %s <device_path>\n" "$0" >&2
     exit 1
 fi
 
 if [[ ! -b "$TARGET_DEV" ]]; then
-    echo -e "\e[1m\e[31m❌ Error: Target '$TARGET_DEV' is not a valid block device.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1)." >&2
+    printf "\e[1m\e[31m❌ Error: Target '%s' is not a valid block device.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1).\n" "$TARGET_DEV" >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
 if lsblk -no MOUNTPOINT "$TARGET_DEV" | grep -q "\S"; then
-    echo -e "\e[1m\e[31m❌ Error: Target device '$TARGET_DEV' is currently mounted.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Unmount the device before partitioning." >&2
+    printf "\e[1m\e[31m❌ Error: Target device '%s' is currently mounted.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Unmount the device before partitioning.\n" "$TARGET_DEV" >&2
     exit 1
 fi
 
-echo "🚀 Starting partitioning on $TARGET_DEV..."
+printf "🚀 Starting partitioning on %s...\n" "$TARGET_DEV"
 
 # Wipe existing signatures
 # Palette: [UX] Review ASCII text-based progress bars for correct rendering and standard compatibility.
