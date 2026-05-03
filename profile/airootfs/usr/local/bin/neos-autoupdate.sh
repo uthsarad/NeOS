@@ -43,7 +43,7 @@ log() {
 }
 
 check_root() {
-    if [ "$(id -u)" -ne 0 ]; then
+    if (( EUID != 0 )); then
         echo "This script must be run as root." >&2
         exit 1
     fi
@@ -91,7 +91,7 @@ check_disk_space() {
     # Bolt: Avoid spawning awk to parse df output. Bash built-in read is ~20% faster.
     { read -r _; read -r _ _ _ available_space _ _; } < <(df -Pk /)
 
-    if [ "$available_space" -lt "$min_space" ]; then
+    if (( available_space < min_space )); then
         # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
         local err_msg="Insufficient disk space for update. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB. Please free up some space and try again."
         log "Error: $err_msg"

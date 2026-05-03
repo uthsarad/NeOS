@@ -88,7 +88,7 @@
 **Learning:** In bash scripts, POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
 **Action:** Always prefer native bash double brackets `[[ ... ]]` over POSIX single brackets for conditional evaluations in bash scripts. They are a shell keyword rather than a command, and bypass standard pathname expansion and word splitting entirely, resulting in faster and safer evaluations, especially within tight loops.
 
-## $(date +%Y-%m-%d) - Native Bash Parameter Expansion
+## 2026-05-03 - Native Bash Parameter Expansion
 **Learning:** Using command substitutions like `$(basename "$0")` inside error traps spawns unnecessary subshells and external binary calls during failure conditions.
 **Action:** Always prefer native bash parameter expansion like `${0##*/}` to extract filenames and avoid unnecessary subprocess overhead, especially in cold or critical failure paths.
 
@@ -110,3 +110,7 @@
 ## 2026-05-02 - Conditional Subshell Avoidance
 **Learning:** When writing bash scripts that cache output of external commands, executing subshells (like `$(command || true)`) for commands that are known to be missing introduces unnecessary process forking and error string handling.
 **Action:** Always conditionally assign empty variables and avoid executing subshells if a preceding `command -v` check confirms the command is unavailable.
+
+## 2026-05-03 - Native Bash EUID vs id -u Subshell
+**Learning:** Using `[ "$(id -u)" -ne 0 ]` to check for root privileges spawns an unnecessary subshell and an external `id` process.
+**Action:** Always prefer the native bash variable `EUID` with arithmetic evaluation `(( EUID != 0 ))` for instant, overhead-free root checks in performance-sensitive scripts.
