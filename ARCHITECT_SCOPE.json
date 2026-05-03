@@ -1,14 +1,8 @@
 {
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-driver-manager",
-    "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
-    "profile/airootfs/etc/calamares/branding/neos/branding.desc",
-    "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
-  ],
+  "allowed_files": [],
   "constraints": [
-    "Limit implementation to one coherent deliverable.",
     "Do not implement new features.",
-    "Insert appropriate inline comments for specialists."
+    "Make zero modifications to the codebase (Strategic Pause).",
+    "Limit implementation to zero files."
   ]
 }
