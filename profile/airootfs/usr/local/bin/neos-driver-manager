@@ -113,21 +113,21 @@ if systemd-detect-virt -q; then
             echo -e "\e[1m\e[36m🔧 Loading QEMU/KVM guest modules...\e[0m"
             # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
             for mod in virtio_pci virtio_blk virtio_net virtio_balloon; do
-                grep -q "^${mod/_/-} " /proc/modules || modprobe "$mod" || true
+            grep -q "^${mod//-/_} " /proc/modules || modprobe "$mod" || true
             done
             ;;
         oracle)
             echo -e "\e[1m\e[36m🔧 Loading VirtualBox guest modules...\e[0m"
             # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
             for mod in vboxguest vboxsf vboxvideo; do
-                grep -q "^${mod/_/-} " /proc/modules || modprobe "$mod" || true
+            grep -q "^${mod//-/_} " /proc/modules || modprobe "$mod" || true
             done
             ;;
         vmware)
             echo -e "\e[1m\e[36m🔧 Loading VMware guest modules...\e[0m"
             # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
             for mod in vmw_balloon vmw_vmci vmwgfx; do
-                grep -q "^${mod/_/-} " /proc/modules || modprobe "$mod" || true
+            grep -q "^${mod//-/_} " /proc/modules || modprobe "$mod" || true
             done
             ;;
     esac

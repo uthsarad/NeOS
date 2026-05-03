@@ -8,6 +8,10 @@
     {
       "description": "Ensure dependency validations in neos-autoupdate.sh rely on native bash capabilities. Consider native bash integer math for disk space comparisons.",
       "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Consider testing QML rendering speed with the #0078D4 background vs an image.",
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
     }
   ]
 }
