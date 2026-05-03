@@ -8,3 +8,11 @@
 **Vulnerability:** The installer partitioning script `neos-installer-partition.sh` wrote progress milestones to `/tmp/neos-partition-progress`. Since `/tmp` is a world-writable directory (sticky bit), an attacker could preemptively create a symlink at this path pointing to a sensitive file (e.g., `/etc/passwd`). When the script, running as root, attempts to write to the progress file, it would follow the symlink and overwrite the sensitive file.
 **Learning:** Writing to predictable paths in world-writable directories introduces critical Time-of-Check to Time-of-Use (TOCTOU) symlink vulnerabilities, especially for scripts running with elevated privileges.
 **Prevention:** Strictly avoid writing temporary progress or state files to predictable paths in world-writable directories like `/tmp`. Instead, write to secure mounts like `/run` (which is typically only accessible by root/system users for writing) or dynamically generate unique paths using `mktemp`.
+## 2024-05-03 - Systemd Sandboxing Breaks Update Functionality
+**Vulnerability:** Applying `ProtectSystem=strict` in systemd service units that run package managers (e.g., `pacman -Syu` in `neos-autoupdate.service`) breaks system updates by mounting `/usr` and `/var` as read-only. This results in a functional denial-of-service masquerading as security hardening.
+**Learning:** Security sandboxing rules must be carefully aligned with the functional requirements of the service. Overly restrictive configurations on a service modifying the OS root will result in a functional denial-of-service.
+**Prevention:** Carefully review systemd directives against the actual behavior of the script. Avoid applying `ProtectSystem=strict` to update utilities.
+## 2024-05-03 - Terminal Control Injection via echo -e
+**Vulnerability:** Outputting unsanitized variables directly using `echo -e "$VAR"` allows an attacker to inject ANSI escape codes or control characters if they control the variable contents. This can lead to terminal disruption or log spoofing.
+**Learning:** Commands like `echo` or `echo -e` are unsafe for dynamic content.
+**Prevention:** Always use `printf "%s\n" "$VAR"` to safely output variable contents containing arbitrary data.
