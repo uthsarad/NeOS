@@ -16,3 +16,8 @@ To improve the user experience during the OS boot and installation phases, termi
 ## Remaining Usability Risks
 *   **Screen Reader Compatibility in TTY:** While visual colors assist sighted users, text-mode environments (TTY) may not present progress effectively to screen reader setups unless specifically configured.
 *   **Progress Bar Integration:** The `/tmp/neos-partition-progress` file handles numeric output, but deeper integration directly into the Calamares graphical UI via DBus would present a more seamless visual experience.
+
+## 2026-05-03 - Autoupdate UX Improvements
+- **Actionable Error Notifications:** Extracted the graphical `notify-send` error logic into a reusable `notify_users` function in `profile/airootfs/usr/local/bin/neos-autoupdate.sh`.
+- **Dependency Failure Clarity:** Updated the background dependency check to surface an explicit, actionable graphical error message ("Required command '$cmd' not found. Please install...") instead of silently exiting or only logging to `/var/log`.
+- **Unified Error Handling:** Reduced boilerplate and ensured that users are consistently informed of both disk space and missing dependency issues via desktop notifications.
