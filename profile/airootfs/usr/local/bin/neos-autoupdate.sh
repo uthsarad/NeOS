@@ -42,6 +42,17 @@ log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
+notify_users() {
+    local err_msg="$1"
+    if command -v loginctl >/dev/null 2>&1; then
+        while read -r uid user_name _; do
+            # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
+            # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
+            su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send 'System Update Failed' '$err_msg' --icon=dialog-error --urgency=critical" || true
+        done < <(loginctl list-users --no-legend)
+    fi
+}
+
 check_root() {
     if [ "$(id -u)" -ne 0 ]; then
         echo "This script must be run as root." >&2
@@ -62,7 +73,9 @@ check_dependencies() {
     local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
-            log "Error: Required command '$cmd' not found."
+            local err_msg="Required command '$cmd' not found. Please install the package containing '$cmd' to enable autoupdates."
+            log "Error: $err_msg"
+            notify_users "$err_msg"
             exit 1
         fi
     done
@@ -95,15 +108,7 @@ check_disk_space() {
         # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
         local err_msg="Insufficient disk space for update. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB. Please free up some space and try again."
         log "Error: $err_msg"
-
-        # Surface error to active graphical users
-        if command -v loginctl >/dev/null 2>&1; then
-            while read -r uid user_name _; do
-                # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
-                # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
-                su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send 'System Update Failed' '$err_msg' --icon=dialog-error --urgency=critical" || true
-            done < <(loginctl list-users --no-legend)
-        fi
+        notify_users "$err_msg"
 
         exit 1
     fi
