@@ -66,7 +66,9 @@ check_dependencies() {
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
-        log "INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
+        local err_msg="INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
+        log "$err_msg"
+        notify_users "$err_msg"
         exit 0
     fi
 
@@ -131,7 +133,9 @@ perform_update() {
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
-        log "System update failed. Check pacman logs."
+        local err_msg="System update failed. Check pacman logs."
+        log "$err_msg"
+        notify_users "$err_msg"
         # Still create post snapshot to close the pair, but mark as failed
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
         exit 1
