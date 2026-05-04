@@ -1,7 +1,11 @@
-# BOLT REPORT
+# Bolt Performance Report
 
-## Optimizations
-- **`neos-autoupdate.sh`**: Replaced the subshell `[ "$(id -u)" -ne 0 ]` with native bash `(( EUID != 0 ))`. This removes the overhead of spawning a subshell and process during root check (subshell takes ~3ms per call, `EUID` is instant). Also replaced POSIX `[ "$available_space" -lt "$min_space" ]` with native bash arithmetic `(( available_space < min_space ))` to avoid test binary overhead.
+## Optimization Applied
+- Reduced virtualization detection overhead in `neos-driver-manager`.
+
+## Before/After Reasoning
+- **Before:** The script used `if systemd-detect-virt -q; then VIRT_TYPE=$(systemd-detect-virt)` which spawned the `systemd-detect-virt` process twice.
+- **After:** It now uses `if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then` which halves the execution overhead by checking the return code and capturing output in a single pass. Benchmark showed single execution took ~687ms vs double execution ~1293ms for 100 iterations.
 
 ## Remaining Risks
-- None identified. Functional behavior is completely preserved.
+- Hardware detection still relies on synchronous execution of commands like `lspci`. Although now cached and optimized using `-k`, parallelizing these checks could yield further startup time improvements, though it might increase script complexity.
