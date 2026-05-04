@@ -114,3 +114,7 @@
 ## 2026-05-03 - Native Bash EUID vs id -u Subshell
 **Learning:** Using `[ "$(id -u)" -ne 0 ]` to check for root privileges spawns an unnecessary subshell and an external `id` process.
 **Action:** Always prefer the native bash variable `EUID` with arithmetic evaluation `(( EUID != 0 ))` for instant, overhead-free root checks in performance-sensitive scripts.
+
+## 2026-06-25 - Avoid Double Executions in Conditional Checks
+**Learning:** Using a command with a quiet flag for a conditional check, and then re-executing it to capture its output (e.g., `if command -q; then var=$(command); fi`) results in unnecessary double subprocess overhead.
+**Action:** Always capture the output of the command directly within the conditional assignment (e.g., `if var=$(command 2>/dev/null); then ... fi`) to halve the execution time and reduce system call overhead in performance-sensitive scripts.

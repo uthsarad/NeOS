@@ -105,8 +105,7 @@ elif [[ "$CPU_INFO" == *GenuineIntel* ]]; then
 fi
 
 # Virtualization Guest Support
-if systemd-detect-virt -q; then
-    VIRT_TYPE=$(systemd-detect-virt)
+if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
     printf "\e[1m\e[35m☁️  Virtualization detected:\e[0m %s\n" "$VIRT_TYPE"
     case "$VIRT_TYPE" in
         kvm|qemu)
