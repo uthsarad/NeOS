@@ -21,3 +21,7 @@ To improve the user experience during the OS boot and installation phases, termi
 - **Actionable Error Notifications:** Extracted the graphical `notify-send` error logic into a reusable `notify_users` function in `profile/airootfs/usr/local/bin/neos-autoupdate.sh`.
 - **Dependency Failure Clarity:** Updated the background dependency check to surface an explicit, actionable graphical error message ("Required command '$cmd' not found. Please install...") instead of silently exiting or only logging to `/var/log`.
 - **Unified Error Handling:** Reduced boilerplate and ensured that users are consistently informed of both disk space and missing dependency issues via desktop notifications.
+
+## 2026-06-28 - Autoupdate UX Improvements (Phase 2)
+- **Missing Snapper Clarity:** Improved error visibility in `neos-autoupdate.sh` by ensuring the absence of the `snapper` utility invokes `notify_users`, ensuring GUI environments present actionable warnings to users rather than failing silently in the background logs.
+- **Update Failure Clarity:** Improved error visibility in `neos-autoupdate.sh` by ensuring pacman update failures invoke `notify_users`, ensuring GUI environments present actionable warnings to users rather than failing silently in the background logs.
