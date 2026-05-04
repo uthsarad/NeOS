@@ -1,14 +1,14 @@
 {
   "bolt": {
     "focus": "Performance Monitoring",
-    "guidance": "Observe existing performance optimizations. No active changes allowed during strategic pause."
+    "guidance": "Validate that input sanitization and option termination rely on native bash syntax and do not incur additional execution overhead."
   },
   "palette": {
     "focus": "UX Review",
-    "guidance": "Review current visual clarity and accessibility implementations. No active changes allowed."
+    "guidance": "Ensure that error messaging regarding invalid device inputs maintains the structured, multi-line formatting standards."
   },
   "sentinel": {
     "focus": "Security Auditing",
-    "guidance": "Review existing systemd sandboxing and script sanitization. No active changes allowed."
+    "guidance": "Audit the implementation of option termination to confirm complete mitigation of option injection vulnerabilities in administrative scripts."
   }
 }
