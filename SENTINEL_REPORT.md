@@ -9,3 +9,8 @@
 
 ## Status: OPERATIONAL
 All modifications have been thoroughly validated using the project's verification test suite. Tests confirm that the necessary functional and security constraints are satisfied without introducing regressions.
+
+### 2. Option Injection Vulnerability
+- **Severity**: High
+- **Issue**: Variable arguments (`$TARGET_DEV`, `$PART_EFI`, `$PART_ROOT`, `$MNT_TMP`) were passed directly to commands in `neos-installer-partition.sh` without standard option termination. This could allow an attacker to inject arbitrary command options if they can control the variable contents to start with a dash (`-`).
+- **Fix**: Added standard option termination (`--`) to commands before passing variable arguments (e.g., `lsblk -no MOUNTPOINT -- "$TARGET_DEV"`) to strictly enforce that the variables are interpreted as positional arguments, not options.

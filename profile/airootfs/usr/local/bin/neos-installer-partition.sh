@@ -38,7 +38,7 @@ if [[ ! -b "$TARGET_DEV" ]]; then
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
-if lsblk -no MOUNTPOINT "$TARGET_DEV" | grep -q "\S"; then
+if lsblk -no MOUNTPOINT -- "$TARGET_DEV" | grep -q "\S"; then
     printf "\e[1m\e[31m❌ Error: Target device '%s' is currently mounted.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Unmount the device before partitioning.\n" "$TARGET_DEV" >&2
     exit 1
 fi
@@ -53,23 +53,23 @@ echo "20" > /run/neos-partition-progress
 # Sentinel: [Audit] Verify milestone logging does not introduce injection vectors.
 logger -t "neos-installer-partition" "Milestone: Wiping filesystem signatures"
 # Bolt: [Performance] Review mkfs and partitioning commands for optimal block sizes and parameters.
-wipefs --all --force "$TARGET_DEV"
+wipefs --all --force -- "$TARGET_DEV"
 
 # Create a minimal partition table (GPT)
-parted -s "$TARGET_DEV" mklabel gpt
+parted -s -- "$TARGET_DEV" mklabel gpt
 
 # Create EFI boot partition (512MB)
-parted -s "$TARGET_DEV" mkpart ESP fat32 1MiB 513MiB
-parted -s "$TARGET_DEV" set 1 esp on
+parted -s -- "$TARGET_DEV" mkpart ESP fat32 1MiB 513MiB
+parted -s -- "$TARGET_DEV" set 1 esp on
 
 # Create root Btrfs partition (remaining space)
-parted -s "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
+parted -s -- "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
 
 # Inform the kernel of partition table changes
 echo -e "\e[1m\e[36m[Step 2/5]\e[0m \e[32m[####......] 40%\e[0m 🔄 Updating partition table..."
 echo "40" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Updating partition table"
-partprobe "$TARGET_DEV"
+partprobe -- "$TARGET_DEV"
 sleep 2
 
 # Define partition paths (Handle NVMe, MMC, and Loop devices correctly)
@@ -93,29 +93,29 @@ echo -e "\e[1m\e[36m[Step 4/5]\e[0m \e[32m[########..] 80%\e[0m 💾 Formatting 
 echo "80" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Formatting partitions"
 echo "Formatting EFI partition (FAT32)..."
-mkfs.fat -F32 "$PART_EFI"
+mkfs.fat -F32 -- "$PART_EFI"
 
 # Format Root partition (Btrfs)
 echo "Formatting Root partition (Btrfs)..."
 # Bolt: Use -K (--nodiscard) to skip synchronous block discard during formatting.
 # This significantly speeds up the installation process; discard is handled by async discard during mount.
-mkfs.btrfs -f -K -L "neos-root" "$PART_ROOT"
+mkfs.btrfs -f -K -L "neos-root" -- "$PART_ROOT"
 
 # Mount temporary for subvolume creation
 MNT_TMP=$(mktemp -d)
-mount "$PART_ROOT" "$MNT_TMP"
+mount -- "$PART_ROOT" "$MNT_TMP"
 
 # Create standard subvolumes
 echo -e "\e[1m\e[36m[Step 5/5]\e[0m \e[32m[##########] 100%\e[0m 📁 Creating Btrfs subvolumes..."
 echo "100" > /run/neos-partition-progress
 logger -t "neos-installer-partition" "Milestone: Creating Btrfs subvolumes"
-btrfs subvolume create "$MNT_TMP/@"
-btrfs subvolume create "$MNT_TMP/@home"
-btrfs subvolume create "$MNT_TMP/@var"
-btrfs subvolume create "$MNT_TMP/@snapshots"
+btrfs subvolume create -- "$MNT_TMP/@"
+btrfs subvolume create -- "$MNT_TMP/@home"
+btrfs subvolume create -- "$MNT_TMP/@var"
+btrfs subvolume create -- "$MNT_TMP/@snapshots"
 
 # Unmount
-umount "$MNT_TMP"
-rmdir "$MNT_TMP"
+umount -- "$MNT_TMP"
+rmdir -- "$MNT_TMP"
 
 echo "✅ Partitioning complete."

@@ -16,3 +16,7 @@
 **Vulnerability:** Outputting unsanitized variables directly using `echo -e "$VAR"` allows an attacker to inject ANSI escape codes or control characters if they control the variable contents. This can lead to terminal disruption or log spoofing.
 **Learning:** Commands like `echo` or `echo -e` are unsafe for dynamic content.
 **Prevention:** Always use `printf "%s\n" "$VAR"` to safely output variable contents containing arbitrary data.
+## 2024-05-05 - Option Injection Vulnerability
+**Vulnerability:** In `neos-installer-partition.sh`, variable arguments (like `$TARGET_DEV`) were passed directly to commands without standard option termination (`--`). If an attacker could control the variable content and it started with a dash (`-`), the command might interpret it as an option, leading to unintended behavior or security vulnerabilities (Option Injection).
+**Learning:** Commands that accept variables as arguments, especially those derived from user input or external sources, should explicitly use `--` to signify the end of options and prevent option injection attacks.
+**Prevention:** Always use standard option termination (`--`) before variable arguments in shell scripts (e.g., `cmd -- "$VAR"` instead of `cmd "$VAR"`).
