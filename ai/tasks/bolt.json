@@ -12,6 +12,10 @@
     {
       "description": "Consider testing QML rendering speed with the #0078D4 background vs an image.",
       "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+    },
+    {
+      "description": "Validate that input sanitization and option termination rely on native bash syntax and do not incur additional execution overhead.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

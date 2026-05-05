@@ -16,6 +16,10 @@
     {
       "description": "Ensure error messages logged when dependencies are missing are clear. Review graphical update notifier error surfaces for clarity.",
       "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure that error messaging regarding invalid device inputs maintains the structured, multi-line formatting standards.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }
