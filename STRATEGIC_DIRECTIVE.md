@@ -2,26 +2,25 @@
 
 ## PHASE 1 — Product Alignment Check
 - **What is the product trying to become?** NeOS aims to be a stable, curated Arch-based desktop featuring a predictable, Windows-familiar KDE Plasma 6 experience.
-- **Are we building toward that?** Yes, by ensuring the core installation scripts and system foundations are thoroughly secured against edge-case vulnerabilities.
-- **Are we solving the highest leverage problem?** Yes, preemptively mitigating security risks such as option injection in administration scripts is a high-leverage hardening activity that protects system integrity.
+- **Are we building toward that?** Yes, by ensuring the system foundation is reliable and robust, and not cluttered with untested features.
+- **Are we solving the highest leverage problem?** Yes, by stopping to assess our current state and avoiding feature creep, we focus on stability.
 
 ## PHASE 2 — Technical Posture Review
 - **Is the system stable?** Yes, the system builds successfully and all tests pass.
-- **Is tech debt increasing?** No, but minor vulnerabilities like missing option terminators in shell scripts could be exploited if malicious or malformed inputs are provided.
-- **Are we overbuilding?** No. We are focusing purely on securing existing logic without adding new features, thereby avoiding complexity creep.
+- **Is tech debt increasing?** No, but we need to ensure it stays that way by not overbuilding.
+- **Are we overbuilding?** We need to be careful not to. A strategic pause is required to review our current posture before adding new features.
 
 ## PHASE 3 — Priority Selection
-- **Priority:** Stabilization / hardening
-- **Rationale:** The system is functionally complete. The priority is to harden the existing scripts by ensuring all external command invocations involving variables use strict option termination to prevent option injection.
+- **Priority:** No-build day (strategic pause)
+- **Rationale:** The system is functionally complete and recent updates have addressed security and performance. A strategic pause is required to prevent feature creep and ensure long-term maintainability.
 
 ## PHASE 4 — Controlled Scope Definition
-- **Exact files likely impacted:**
-  - `profile/airootfs/usr/local/bin/neos-installer-partition.sh`
-- **Maximum allowed surface area:** 1 file.
-- **Constraints Architect must obey:** Do not introduce any new functional behavior or user-facing features. Focus exclusively on adding standard option termination (e.g., `--`) to commands receiving dynamic variables to prevent option injection.
+- **Exact files likely impacted:** None.
+- **Maximum allowed surface area:** 0 files.
+- **Constraints Architect must obey:** Do not implement any code changes. Strictly follow the "allowed_files": [] constraint.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Apply option terminators to commands (like `lsblk`, `wipefs`, `parted`, etc.) in the partitioning script.
-- **Bolt:** Ensure that the addition of option terminators does not introduce subshells or performance overhead.
-- **Palette:** Monitor that terminal output clarity is not affected.
-- **Sentinel:** Audit the script to confirm that all vulnerable commands have been correctly terminated and that input validation is complete.
+- **Architect:** Do not build anything. Obey the zero-file scope limit.
+- **Bolt:** No tasks.
+- **Palette:** No tasks.
+- **Sentinel:** No tasks.

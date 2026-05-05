@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "Performance Monitoring",
-    "guidance": "Validate that input sanitization and option termination rely on native bash syntax and do not incur additional execution overhead."
+    "focus": "None",
+    "guidance": "Strategic pause."
   },
   "palette": {
-    "focus": "UX Review",
-    "guidance": "Ensure that error messaging regarding invalid device inputs maintains the structured, multi-line formatting standards."
+    "focus": "None",
+    "guidance": "Strategic pause."
   },
   "sentinel": {
-    "focus": "Security Auditing",
-    "guidance": "Audit the implementation of option termination to confirm complete mitigation of option injection vulnerabilities in administrative scripts."
+    "focus": "None",
+    "guidance": "Strategic pause."
   }
 }

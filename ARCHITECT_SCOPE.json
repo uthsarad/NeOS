@@ -1,10 +1,7 @@
 {
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
-  ],
+  "allowed_files": [],
   "constraints": [
     "Do not implement new features.",
-    "Limit implementation to the specified allowed files.",
-    "Resolve option injection vulnerabilities by applying standard option termination (e.g., `--`) before variable arguments."
+    "Strategic pause: modify zero files."
   ]
 }
