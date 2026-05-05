@@ -16,6 +16,10 @@
     {
       "description": "Validate that external product URLs load in a secure sandbox context if clicked.",
       "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+    },
+    {
+      "description": "Audit the implementation of option termination to confirm complete mitigation of option injection vulnerabilities in administrative scripts.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
     }
   ]
 }

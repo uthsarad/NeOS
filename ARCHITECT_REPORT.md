@@ -54,3 +54,8 @@ The repository is fully synchronized, all verification tests are passing, and th
 - **Phase 1 Validation**: Confirmed tasks within `ARCHITECT_SCOPE.json` bounds.
 - **Phase 2-4 Build**: Corrected module replacement bug in `neos-driver-manager` logic (`${mod//-/_}`). Appended appropriate inline delegation comments for specialist tasks to `branding.desc`.
 - **Phase 5 Delegation**: Refined `bolt.json`, `palette.json` and `sentinel.json` logic tasks based upon implemented scope constraints.
+
+## $(date +%Y-%m-%d) - Option Termination for Option Injection Vulnerabilities
+- **Phase 1 Validation**: Verified scope limits in ARCHITECT_SCOPE.json to strictly modify `profile/airootfs/usr/local/bin/neos-installer-partition.sh`.
+- **Phase 2-4 Build**: Applied standard option termination (`--`) to commands receiving dynamic variable arguments (such as `logger` and `printf`) to prevent option injection. Confirmed that standard bash implementations are used natively to avoid execution overhead. Output validation via test scripts ensuring partitioning script and hardening steps pass securely.
+- **Phase 5 Delegation**: Generated targeted task manifests for specialist refinement.
