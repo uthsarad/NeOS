@@ -2,6 +2,7 @@
   "allowed_files": [],
   "constraints": [
     "Do not implement new features.",
-    "Strategic pause: modify zero files."
+    "Strategic pause: modify zero files.",
+    "Reflect current workspace requirements."
   ]
 }

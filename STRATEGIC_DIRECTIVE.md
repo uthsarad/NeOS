@@ -2,13 +2,13 @@
 
 ## PHASE 1 — Product Alignment Check
 - **What is the product trying to become?** NeOS aims to be a stable, curated Arch-based desktop featuring a predictable, Windows-familiar KDE Plasma 6 experience.
-- **Are we building toward that?** Yes, by ensuring the system foundation is reliable and robust, and not cluttered with untested features.
-- **Are we solving the highest leverage problem?** Yes, by stopping to assess our current state and avoiding feature creep, we focus on stability.
+- **Are we building toward that?** Yes. By ensuring the system foundation is reliable and robust, and not cluttered with untested features.
+- **Are we solving the highest leverage problem?** Yes. By stopping to assess our current state and avoiding feature creep, we focus on stability and technical debt management.
 
 ## PHASE 2 — Technical Posture Review
 - **Is the system stable?** Yes, the system builds successfully and all tests pass.
-- **Is tech debt increasing?** No, but we need to ensure it stays that way by not overbuilding.
-- **Are we overbuilding?** We need to be careful not to. A strategic pause is required to review our current posture before adding new features.
+- **Is tech debt increasing?** No, but we need to ensure it stays that way by not overbuilding and actively monitoring complexity.
+- **Are we overbuilding?** We need to be careful not to. A strategic pause is required to review our current posture before adding new features, specifically avoiding scope creep.
 
 ## PHASE 3 — Priority Selection
 - **Priority:** No-build day (strategic pause)
@@ -21,6 +21,6 @@
 
 ## PHASE 5 — Delegation Strategy
 - **Architect:** Do not build anything. Obey the zero-file scope limit.
-- **Bolt:** No tasks.
-- **Palette:** No tasks.
-- **Sentinel:** No tasks.
+- **Bolt:** No tasks. Maintain current performance baseline.
+- **Palette:** No tasks. Preserve current UX standards.
+- **Sentinel:** No tasks. Maintain current security posture.
