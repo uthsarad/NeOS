@@ -27,19 +27,33 @@ trap '_error_handler $? $LINENO' ERR
 TARGET_DEV="${1:-}"
 
 if [[ -z "$TARGET_DEV" ]]; then
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
     printf -- "\e[1m\e[31m❌ Error: Target device not provided.\e[0m\n" >&2
-    printf -- "\e[1m\e[36m💡 Usage:\e[0m %s <device_path>\n" "$0" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  No target device path was supplied to the script.\n\n" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  Run the script with a device path:\n  %s <device_path>\n" "$0" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
     exit 1
 fi
 
 if [[ ! -b "$TARGET_DEV" ]]; then
-    printf -- "\e[1m\e[31m❌ Error: Target '%s' is not a valid block device.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1).\n" "$TARGET_DEV" >&2
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target '%s' is not a valid block device.\e[0m\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  The provided path '%s' does not point to a valid block device.\n\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  1. List available block devices: \e[1mlsblk\e[0m\n  2. Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1).\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
 if lsblk -no MOUNTPOINT -- "$TARGET_DEV" | grep -q "\S"; then
-    printf -- "\e[1m\e[31m❌ Error: Target device '%s' is currently mounted.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Unmount the device before partitioning.\n" "$TARGET_DEV" >&2
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target device '%s' is currently mounted.\e[0m\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  The block device '%s' has active mount points and cannot be safely partitioned.\n\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Unmount the device: \e[1mumount %s*\e[0m\n  2. Retry the partitioning script.\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
     exit 1
 fi
 

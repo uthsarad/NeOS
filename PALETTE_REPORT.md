@@ -25,3 +25,6 @@ To improve the user experience during the OS boot and installation phases, termi
 ## 2026-06-28 - Autoupdate UX Improvements (Phase 2)
 - **Missing Snapper Clarity:** Improved error visibility in `neos-autoupdate.sh` by ensuring the absence of the `snapper` utility invokes `notify_users`, ensuring GUI environments present actionable warnings to users rather than failing silently in the background logs.
 - **Update Failure Clarity:** Improved error visibility in `neos-autoupdate.sh` by ensuring pacman update failures invoke `notify_users`, ensuring GUI environments present actionable warnings to users rather than failing silently in the background logs.
+
+## 2026-06-28 - CLI Error Enhancements
+- **Structured Error Formatting:** Updated the `neos-installer-partition.sh` device validation errors to utilize the consistent multi-line ASCII border format. This visually separates the critical failure from the "What went wrong" and "How to fix" sections, significantly reducing cognitive load for administrators troubleshooting invalid device targets.
