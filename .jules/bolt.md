@@ -118,3 +118,7 @@
 ## 2026-06-25 - Avoid Double Executions in Conditional Checks
 **Learning:** Using a command with a quiet flag for a conditional check, and then re-executing it to capture its output (e.g., `if command -q; then var=$(command); fi`) results in unnecessary double subprocess overhead.
 **Action:** Always capture the output of the command directly within the conditional assignment (e.g., `if var=$(command 2>/dev/null); then ... fi`) to halve the execution time and reduce system call overhead in performance-sensitive scripts.
+
+## 2026-06-25 - Native Bash Parameter Expansion for String Sanitization
+**Learning:** Using `tr` in command substitutions (e.g., `$(printf "%s" "$VAR" | tr -cd '[:print:]')`) spawns unnecessary subshells and external processes. Bash native parameter expansions (e.g., `"${VAR//[^[:print:]]/}"`) can effectively strip unwanted characters natively without process forking overhead.
+**Action:** When sanitizing strings or variables in performance-critical bash scripts, especially within `ERR` traps or initialization, always prefer native parameter expansion instead of subshells and external binaries.

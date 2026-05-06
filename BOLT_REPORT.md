@@ -1,11 +1,5 @@
-# Bolt Performance Report
+# BOLT REPORT
 
-## Optimization Applied
-- Reduced virtualization detection overhead in `neos-driver-manager`.
-
-## Before/After Reasoning
-- **Before:** The script used `if systemd-detect-virt -q; then VIRT_TYPE=$(systemd-detect-virt)` which spawned the `systemd-detect-virt` process twice.
-- **After:** It now uses `if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then` which halves the execution overhead by checking the return code and capturing output in a single pass. Benchmark showed single execution took ~687ms vs double execution ~1293ms for 100 iterations.
-
-## Remaining Risks
-- Hardware detection still relies on synchronous execution of commands like `lspci`. Although now cached and optimized using `-k`, parallelizing these checks could yield further startup time improvements, though it might increase script complexity.
+- **What was optimized:** Removed `tr` inside subshells and replaced them with native Bash parameter expansion `//[^...]/` in `neos-installer-partition.sh`.
+- **Before/after reasoning:** The previous use of `tr` spawned a subshell (`$()`), invoked an external process (`tr`), and potentially `printf` as a command instead of builtin. This caused a slight fork/exec overhead especially in traps like `ERR` which must be extremely lightweight. By converting these to native bash parameter expansions, we avoid both subshells and external binary execution.
+- **Any remaining performance risks:** Trap handlers and sanitization now operate using purely internal bash processing.
