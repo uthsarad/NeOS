@@ -1,14 +1,14 @@
 {
   "bolt": {
     "focus": "None",
-    "guidance": "Strategic pause."
+    "guidance": "Strategic pause. Maintain current performance baseline."
   },
   "palette": {
     "focus": "None",
-    "guidance": "Strategic pause."
+    "guidance": "Strategic pause. Preserve current UX standards."
   },
   "sentinel": {
     "focus": "None",
-    "guidance": "Strategic pause."
+    "guidance": "Strategic pause. Maintain current security posture."
   }
 }
