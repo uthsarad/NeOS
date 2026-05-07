@@ -1,14 +1,14 @@
 {
   "bolt": {
     "focus": "None",
-    "guidance": "Strategic pause. Maintain current performance baseline."
+    "guidance": "Strategic pause. Maintain current performance baseline following recent bash optimizations."
   },
   "palette": {
     "focus": "None",
-    "guidance": "Strategic pause. Preserve current UX standards."
+    "guidance": "Strategic pause. Preserve current UX standards and multi-line formatting."
   },
   "sentinel": {
     "focus": "None",
-    "guidance": "Strategic pause. Maintain current security posture."
+    "guidance": "Strategic pause. Maintain current security posture following critical command injection fixes."
   }
 }

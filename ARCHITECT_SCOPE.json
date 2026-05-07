@@ -3,6 +3,6 @@
   "constraints": [
     "Do not implement new features.",
     "Strategic pause: modify zero files.",
-    "Reflect current workspace requirements."
+    "Reflect current workspace requirements following security hardening."
   ]
 }
