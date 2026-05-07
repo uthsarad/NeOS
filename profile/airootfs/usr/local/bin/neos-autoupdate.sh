@@ -44,6 +44,8 @@ log() {
 
 notify_users() {
     local err_msg="$1"
+    # Sentinel: Strip single quotes from err_msg to prevent command injection in su -c
+    err_msg="${err_msg//\'/}"
     if command -v loginctl >/dev/null 2>&1; then
         while read -r uid user_name _; do
             # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
@@ -75,7 +77,7 @@ check_dependencies() {
     local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
-            local err_msg="Required command '$cmd' not found. Please install the package containing '$cmd' to enable autoupdates."
+            local err_msg="Required command \`$cmd\` not found. Please install the package containing \`$cmd\` to enable autoupdates."
             log "Error: $err_msg"
             notify_users "$err_msg"
             exit 1
