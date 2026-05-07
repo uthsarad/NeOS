@@ -14,3 +14,8 @@ All modifications have been thoroughly validated using the project's verificatio
 - **Severity**: High
 - **Issue**: Variable arguments (`$TARGET_DEV`, `$PART_EFI`, `$PART_ROOT`, `$MNT_TMP`) were passed directly to commands in `neos-installer-partition.sh` without standard option termination. This could allow an attacker to inject arbitrary command options if they can control the variable contents to start with a dash (`-`).
 - **Fix**: Added standard option termination (`--`) to commands before passing variable arguments (e.g., `lsblk -no MOUNTPOINT -- "$TARGET_DEV"`) to strictly enforce that the variables are interpreted as positional arguments, not options.
+
+### 3. Command Injection Risk in Graphical Notifications
+- **Severity**: Critical
+- **Issue**: The `neos-autoupdate.sh` script utilized `su -c` to dispatch graphical notifications (`notify-send`) to all logged-in users. However, it passed the error message variable directly into the unescaped single-quoted command string (e.g., `su -c "... notify-send '...' '$err_msg'"`). An attacker who can control the contents of `$err_msg` (for instance, via a maliciously crafted command name injected into the dependency check error) could break out of the single quotes and execute arbitrary shell commands as the targeted user.
+- **Fix**: Added explicit single-quote sanitization (`err_msg="${err_msg//\'/}"`) to strip single quotes from the payload before it is interpolated into the `su -c` command string, mitigating the injection vector. Also refactored error messages to use backticks instead of single quotes to avoid being stripped.
