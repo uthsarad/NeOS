@@ -28,3 +28,6 @@ To improve the user experience during the OS boot and installation phases, termi
 
 ## 2026-06-28 - CLI Error Enhancements
 - **Structured Error Formatting:** Updated the `neos-installer-partition.sh` device validation errors to utilize the consistent multi-line ASCII border format. This visually separates the critical failure from the "What went wrong" and "How to fix" sections, significantly reducing cognitive load for administrators troubleshooting invalid device targets.
+
+## 2026-06-28 - CLI Error Enhancements (Phase 2)
+- **Structured Error Formatting:** Updated the `neos-liveuser-setup` error handler to utilize the consistent multi-line ASCII border format with ANSI colors (red and cyan). This improves visual clarity and reduces cognitive load during critical script failures.
