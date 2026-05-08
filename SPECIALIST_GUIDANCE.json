@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "None",
-    "guidance": "Strategic pause. Maintain current performance baseline following recent bash optimizations."
+    "focus": "Idle",
+    "guidance": "Observe the strategic pause. Do not attempt further bash native conversions today."
   },
   "palette": {
-    "focus": "None",
-    "guidance": "Strategic pause. Preserve current UX standards and multi-line formatting."
+    "focus": "Idle",
+    "guidance": "Observe the strategic pause. No further Calamares QML refinements are permitted."
   },
   "sentinel": {
-    "focus": "None",
-    "guidance": "Strategic pause. Maintain current security posture following critical command injection fixes."
+    "focus": "Idle",
+    "guidance": "Observe the strategic pause. Maintain vigil over the recent command injection patches but modify no files."
   }
 }
