@@ -19,3 +19,8 @@ All modifications have been thoroughly validated using the project's verificatio
 - **Severity**: Critical
 - **Issue**: The `neos-autoupdate.sh` script utilized `su -c` to dispatch graphical notifications (`notify-send`) to all logged-in users. However, it passed the error message variable directly into the unescaped single-quoted command string (e.g., `su -c "... notify-send '...' '$err_msg'"`). An attacker who can control the contents of `$err_msg` (for instance, via a maliciously crafted command name injected into the dependency check error) could break out of the single quotes and execute arbitrary shell commands as the targeted user.
 - **Fix**: Added explicit single-quote sanitization (`err_msg="${err_msg//\'/}"`) to strip single quotes from the payload before it is interpolated into the `su -c` command string, mitigating the injection vector. Also refactored error messages to use backticks instead of single quotes to avoid being stripped.
+
+### 4. Root Browser Launch Risk via Calamares URLs
+- **Severity**: High
+- **Issue**: External URLs in `branding.desc` would launch a web browser as the root user if clicked during the installation process, leading to a significant sandbox escape and privilege escalation risk.
+- **Fix**: Commented out `productUrl`, `supportUrl`, and `releaseNotesUrl` in the Calamares branding configuration to prevent the URLs from being rendered as clickable links in the installer UI.
