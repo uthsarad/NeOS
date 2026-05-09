@@ -1,11 +1,11 @@
 # Maestro Risk Assessment
 
 ## Current Vulnerability Landscape
-- **Resolved Vectors:** The critical command injection vulnerabilities within our Bash notification mechanisms and the option injection flaws within partitioning logic have been successfully patched.
-- **Residual Risk:** Any immediate modifications to our system-level shell scripts (like `neos-autoupdate.sh` or `neos-driver-manager`) risk reopening these vectors.
+- **Resolved Vectors:** Command injection and option injection vulnerabilities in other administrative scripts have been addressed in recent patches.
+- **Residual Risk:** The `neos-autoupdate.sh` script currently lacks validation for its core dependencies (`snapper` and Btrfs). If run on an unsupported configuration, it could fail unpredictably or cause system state inconsistencies.
 
 ## Delivery Pipeline Reliability
-- **CI/CD Constraints:** We are operating under strict ISO size constraints (sub-2GB). The recent shift to the `linux-zen` kernel and removal of `awk` dependency were critical to this. Future feature work could breach this limit.
+- **CI/CD Constraints:** We must ensure any additions to scripts do not introduce external dependencies that inflate the ISO size beyond the 2 GiB limit. The proposed checks use existing tools (`snapper`, `findmnt`).
 
 ## Strategic Decision
-- **Feature Creep Mitigation:** We are formally halting progression into Phase 5. The priority is to solidify Phase 4 hardware automation. No code changes are authorized for this cycle.
+- **Feature Creep Mitigation:** We are prioritizing stabilization (dependency validation) over new features. The scope is strictly limited to adding the missing pre-flight checks in `neos-autoupdate.sh`.

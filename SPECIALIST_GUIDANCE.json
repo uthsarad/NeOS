@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "Idle",
-    "guidance": "Observe the strategic pause. Do not attempt further bash native conversions today."
+    "focus": "Performance validation of dependency checks",
+    "guidance": "Ensure dependency checks avoid slow subshells. Use native bash builtins or efficient external commands."
   },
   "palette": {
-    "focus": "Idle",
-    "guidance": "Observe the strategic pause. No further Calamares QML refinements are permitted."
+    "focus": "UX of warning messages",
+    "guidance": "Review the clarity and phrasing of the logged warning messages."
   },
   "sentinel": {
-    "focus": "Idle",
-    "guidance": "Observe the strategic pause. Maintain vigil over the recent command injection patches but modify no files."
+    "focus": "Security of dependency validations",
+    "guidance": "Validate that the dependency checks (command -v, findmnt) are robust against path manipulation. Ensure graceful exits do not bypass necessary cleanup."
   }
 }
