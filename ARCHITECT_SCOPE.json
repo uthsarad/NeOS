@@ -1,8 +1,11 @@
 {
-  "allowed_files": [],
+  "allowed_files": [
+    "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+  ],
   "constraints": [
-    "Zero code modification mandate is in effect.",
-    "Do not alter ISO build configurations, installer scripts, or QML branding.",
-    "Maintain the current system state following recent security patches."
+    "Implement dependency validation for snapper and Btrfs root.",
+    "Do not implement unrelated features.",
+    "Log warnings if dependencies are missing and exit gracefully.",
+    "Do not modify the core snapshot creation logic, only add the initial validations."
   ]
 }
