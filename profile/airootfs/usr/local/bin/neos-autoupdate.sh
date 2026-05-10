@@ -44,13 +44,17 @@ log() {
 
 notify_users() {
     local err_msg="$1"
+    local title="${2:-System Update Failed}"
+    local icon="${3:-dialog-error}"
+    local urgency="${4:-critical}"
+
     # Sentinel: Strip single quotes from err_msg to prevent command injection in su -c
     err_msg="${err_msg//\'/}"
     if command -v loginctl >/dev/null 2>&1; then
         while read -r uid user_name _; do
             # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
             # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
-            su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send 'System Update Failed' '$err_msg' --icon=dialog-error --urgency=critical" || true
+            su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send '$title' '$err_msg' --icon='$icon' --urgency='$urgency'" || true
         done < <(loginctl list-users --no-legend)
     fi
 }
@@ -70,7 +74,7 @@ check_dependencies() {
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
         local err_msg="INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
         log "$err_msg"
-        notify_users "$err_msg"
+        notify_users "$err_msg" "System Update Skipped" "dialog-information" "normal"
         exit 0
     fi
 
