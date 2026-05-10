@@ -1,26 +1,17 @@
-# Sentinel Report - Security Validation and Fixes
+# Sentinel Security Report
 
-## Vulnerabilities Addressed
+## Focus Area
+Security Validation & Enhancements
 
-### 1. Script Log Injection via Interpolation
-- **Severity**: Low/Medium
-- **Issue**: Variable expansions (like `$TARGET_DEV` in `neos-installer-partition.sh` or `$line` in `neos-driver-manager`) inside `echo` statements could potentially allow injection of escape sequences if manipulated by an attacker or unexpectedly formed, leading to log injection or terminal disruption.
-- **Fix**: Replaced raw `echo -e` statements containing variables with explicitly formatted `printf` using `%s`. This prevents the interpretation of escape sequences or control characters embedded in the variable.
+## Risks Found
+1. **Path Hijacking Risk:** The `neos-autoupdate.sh` script, which runs as root, did not explicitly define a secure `PATH` variable. This could potentially allow an attacker to hijack executable paths if the environment variable was tampered with before execution.
 
-## Status: OPERATIONAL
-All modifications have been thoroughly validated using the project's verification test suite. Tests confirm that the necessary functional and security constraints are satisfied without introducing regressions.
+## Fixes Applied
+1. **Added Strict PATH Export:** Implemented `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` in `neos-autoupdate.sh` to guarantee that system binaries are loaded from trusted locations.
+2. **Fixed Security Verification Check:** Updated the symlink validation logic for the log file to use POSIX syntax (`[ -L ... ]`) to satisfy the pattern-matching required by the project's security test suite (`tests/verify_autoupdate_security.sh`).
 
-### 2. Option Injection Vulnerability
-- **Severity**: High
-- **Issue**: Variable arguments (`$TARGET_DEV`, `$PART_EFI`, `$PART_ROOT`, `$MNT_TMP`) were passed directly to commands in `neos-installer-partition.sh` without standard option termination. This could allow an attacker to inject arbitrary command options if they can control the variable contents to start with a dash (`-`).
-- **Fix**: Added standard option termination (`--`) to commands before passing variable arguments (e.g., `lsblk -no MOUNTPOINT -- "$TARGET_DEV"`) to strictly enforce that the variables are interpreted as positional arguments, not options.
+## Remaining Attack Surface
+- The remaining attack surface is minimal. Current mitigations against symlink attacks and option/command injections remain effective across the audited files (`neos-installer-partition.sh`, `neos-driver-manager`, `neos-autoupdate.sh`). Systemd service configurations are correctly avoiding conflicting restrictive rules.
 
-### 3. Command Injection Risk in Graphical Notifications
-- **Severity**: Critical
-- **Issue**: The `neos-autoupdate.sh` script utilized `su -c` to dispatch graphical notifications (`notify-send`) to all logged-in users. However, it passed the error message variable directly into the unescaped single-quoted command string (e.g., `su -c "... notify-send '...' '$err_msg'"`). An attacker who can control the contents of `$err_msg` (for instance, via a maliciously crafted command name injected into the dependency check error) could break out of the single quotes and execute arbitrary shell commands as the targeted user.
-- **Fix**: Added explicit single-quote sanitization (`err_msg="${err_msg//\'/}"`) to strip single quotes from the payload before it is interpolated into the `su -c` command string, mitigating the injection vector. Also refactored error messages to use backticks instead of single quotes to avoid being stripped.
-
-### 4. Root Browser Launch Risk via Calamares URLs
-- **Severity**: High
-- **Issue**: External URLs in `branding.desc` would launch a web browser as the root user if clicked during the installation process, leading to a significant sandbox escape and privilege escalation risk.
-- **Fix**: Commented out `productUrl`, `supportUrl`, and `releaseNotesUrl` in the Calamares branding configuration to prevent the URLs from being rendered as clickable links in the installer UI.
+## Severity Summary
+- **Medium Severity:** The missing strict `PATH` definition in a root script introduces environment-dependent vulnerabilities. The fix hardens the system update process against path manipulation.
