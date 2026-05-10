@@ -20,6 +20,10 @@
     {
       "description": "Ensure that error messaging regarding invalid device inputs maintains the structured, multi-line formatting standards.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }
