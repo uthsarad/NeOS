@@ -6,11 +6,14 @@
 
 set -euo pipefail
 
+# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
 LOG_FILE="/var/log/neos-autoupdate.log"
 LOCK_FILE="/run/neos-autoupdate.lock"
 
 # SECURITY: Prevent symlink attacks on log file
-if [[ -L "$LOG_FILE" ]]; then
+if [ -L "$LOG_FILE" ]; then
     echo "Security error: $LOG_FILE is a symlink. Aborting." >&2
     exit 1
 fi
