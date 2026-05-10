@@ -1,11 +1,11 @@
 {
   "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    "README.md"
   ],
   "constraints": [
-    "Implement dependency validation for snapper and Btrfs root.",
-    "Do not implement unrelated features.",
-    "Log warnings if dependencies are missing and exit gracefully.",
-    "Do not modify the core snapshot creation logic, only add the initial validations."
+    "Append architecture support limitations.",
+    "Explicitly label x86_64 as primary.",
+    "Explicitly label i686 and aarch64 as experimental.",
+    "Do not modify other existing documentation."
   ]
 }

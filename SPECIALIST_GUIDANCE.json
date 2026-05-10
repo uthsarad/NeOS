@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "Performance validation of dependency checks",
-    "guidance": "Ensure dependency checks avoid slow subshells. Use native bash builtins or efficient external commands."
+    "focus": "None",
+    "guidance": "No performance optimizations required for this documentation update."
   },
   "palette": {
-    "focus": "UX of warning messages",
-    "guidance": "Review the clarity and phrasing of the logged warning messages."
+    "focus": "Documentation readability",
+    "guidance": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension."
   },
   "sentinel": {
-    "focus": "Security of dependency validations",
-    "guidance": "Validate that the dependency checks (command -v, findmnt) are robust against path manipulation. Ensure graceful exits do not bypass necessary cleanup."
+    "focus": "Documentation security",
+    "guidance": "Review the modifications to README.md to ensure no arbitrary external links are introduced."
   }
 }

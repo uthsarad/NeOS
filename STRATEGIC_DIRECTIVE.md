@@ -1,26 +1,26 @@
 # Maestro Strategic Directive
 
 ## PHASE 1 — Product Alignment Check
-- **What is the product trying to become?** A curated, snapshot-based Arch Linux desktop distribution offering Windows-level usability with Linux-level power.
-- **Are we building toward that?** Yes, by ensuring stability and reliable rollback mechanisms through snapshots.
-- **Are we solving the highest leverage problem?** Yes. Without validating snapshot dependencies (like `snapper` and a Btrfs root), the autoupdate mechanism can fail silently, violating our stability and predictability goals.
+- **What is the product trying to become?** A predictable, Windows-familiar Arch-based distribution prioritizing stability via snapshot infrastructure.
+- **Are we building toward that?** Yes, but documentation trails capabilities. Experimental architecture usage generates expectation mismatches.
+- **Are we solving the highest leverage problem?** Yes. Clarifying supported vs. experimental architectures directly reduces support burden and clarifies the project's reliability boundaries.
 
 ## PHASE 2 — Technical Posture Review
-- **Is the system stable?** Test suite shows the base profile is stable, but we have identified critical gaps in our automated update scripts.
-- **Is tech debt increasing?** The `DEEP_AUDIT.md` highlighted missing validations in `neos-autoupdate.sh` which represent a reliability risk.
-- **Are we overbuilding?** No. Adding required dependency checks is fundamental hardening, not overbuilding.
+- **Is the system stable?** The x86_64 core is stabilizing. Experimental i686/aarch64 builds lack parity.
+- **Is tech debt increasing?** User expectation debt is increasing due to undocumented feature gaps across architectures.
+- **Are we overbuilding?** No. This is a documentation refinement.
 
 ## PHASE 3 — Priority Selection
-- **Priority:** Stabilization / hardening.
-- **Rationale:** The `AUDIT_ACTION_PLAN.md` requires adding dependency validation to `neos-autoupdate.sh` to prevent silent failures if dependencies like `snapper` are missing or if the root filesystem is not Btrfs.
+- **Priority:** Refinement of recent feature (Documentation).
+- **Rationale:** The `AUDIT_ACTION_PLAN.md` specifically calls out "Document Architecture Limitations" as a HIGH priority to mitigate user confusion.
 
 ## PHASE 4 — Controlled Scope Definition
-- **Exact files likely impacted:** `profile/airootfs/usr/local/bin/neos-autoupdate.sh`
+- **Exact files likely impacted:** `README.md`
 - **Maximum allowed surface area:** 1 file.
-- **Constraints Architect must obey:** Implement the dependency checks as specified in the audit plan. Ensure no regressions in existing logic.
+- **Constraints Architect must obey:** Update the README to explicitly detail x86_64 as primary and i686/aarch64 as experimental with limited features (no GUI installer, no snapshots, no ZRAM). Do not modify unrelated sections.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Implement dependency validation in `neos-autoupdate.sh` (check for `snapper` and Btrfs root) and exit gracefully with a logged warning if prerequisites are missing.
-- **Bolt:** Ensure the dependency validation uses fast, native bash checks where possible and avoids unnecessary subshells.
-- **Palette:** Verify that the error/warning messages logged via `logger` are clear and adhere to the project's terminology.
-- **Sentinel:** Audit the validations to ensure they do not introduce TOCTOU vulnerabilities, path hijack risks, or command injection.
+- **Architect:** Append architecture support limitations to `README.md`.
+- **Bolt:** N/A (Documentation change only).
+- **Palette:** Ensure markdown additions use clear headings, lists, and emojis (✅/⚠️) for readability.
+- **Sentinel:** Verify no external links are introduced that could pose a security or phishing risk.
