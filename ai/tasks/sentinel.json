@@ -20,6 +20,10 @@
     {
       "description": "Audit the implementation of option termination to confirm complete mitigation of option injection vulnerabilities in administrative scripts.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }

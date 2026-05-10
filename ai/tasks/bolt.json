@@ -16,6 +16,10 @@
     {
       "description": "Validate that input sanitization and option termination rely on native bash syntax and do not incur additional execution overhead.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+    },
+    {
+      "description": "Ensure the early dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
     }
   ]
 }
