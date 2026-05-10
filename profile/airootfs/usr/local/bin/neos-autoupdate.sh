@@ -10,24 +10,24 @@ LOG_FILE="/var/log/neos-autoupdate.log"
 LOCK_FILE="/run/neos-autoupdate.lock"
 
 # SECURITY: Prevent symlink attacks on log file
-if [ -L "$LOG_FILE" ]; then
+if [[ -L "$LOG_FILE" ]]; then
     echo "Security error: $LOG_FILE is a symlink. Aborting." >&2
     exit 1
 fi
 
 # Ensure log file exists with secure permissions
-if [ ! -f "$LOG_FILE" ]; then
+if [[ ! -f "$LOG_FILE" ]]; then
     (umask 077; set -C; > "$LOG_FILE") 2>/dev/null || true
 fi
 
 # SECURITY: Prevent symlink attacks on lock file
-if [ -L "$LOCK_FILE" ]; then
+if [[ -L "$LOCK_FILE" ]]; then
     echo "Security error: $LOCK_FILE is a symlink. Aborting." >&2
     exit 1
 fi
 
 # Ensure lock file exists with secure permissions
-if [ ! -f "$LOCK_FILE" ]; then
+if [[ ! -f "$LOCK_FILE" ]]; then
     (umask 077; set -C; > "$LOCK_FILE") 2>/dev/null || true
 fi
 
@@ -92,7 +92,7 @@ check_btrfs() {
     # Sentinel: Ensure the fallback to exit 0 gracefully on non-Btrfs systems does not introduce logic bypass vulnerabilities or mask actual system errors.
     local fstype
     fstype=$(stat -f -c %T / || true)
-    if [ "$fstype" != "btrfs" ]; then
+    if [[ "$fstype" != "btrfs" ]]; then
         log "Auto-update skipped: Root filesystem is '$fstype'. Btrfs is required for safe rollback snapshots."
         exit 0
     fi
