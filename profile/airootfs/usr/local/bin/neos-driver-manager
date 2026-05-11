@@ -44,6 +44,9 @@ while IFS= read -r line; do
     fi
 done <<< "$GPU_INFO"
 
+PROC_MODULES="$(</proc/modules)"
+is_loaded() { [[ "$PROC_MODULES" =~ (^|$'\n')$1[[:space:]] ]]; }
+
 if [[ "$GPU_INFO" == *nvidia* ]]; then
     echo -e "\e[1m\e[32m🎮 NVIDIA GPU detected!\e[0m"
     # Check if proprietary drivers are already installed (they should be in packages.x86_64)
@@ -51,7 +54,7 @@ if [[ "$GPU_INFO" == *nvidia* ]]; then
         echo -e "\e[1m\e[32m✅ NVIDIA proprietary drivers are present.\e[0m"
         # Sentinel: Ensure kernel modules are loaded safely
         # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
-        if ! grep -q "^nvidia " /proc/modules; then
+        if ! is_loaded "nvidia"; then
             echo -e "\e[1m\e[34m🚀 Loading NVIDIA kernel modules...\e[0m"
             modprobe nvidia nvidia_modeset nvidia_uvm nvidia_drm || echo -e "\e[1m\e[31m❌ Failed to load NVIDIA modules.\e[0m"
         fi
@@ -62,12 +65,12 @@ elif [[ "$GPU_INFO" == *intel* ]]; then
     echo -e "\e[1m\e[34m🔵 Intel Graphics detected.\e[0m"
     # Ensure i915 is loaded
     # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
-    grep -q "^i915 " /proc/modules || modprobe i915 || true
+    is_loaded "i915" || modprobe i915 || true
 elif [[ "$GPU_INFO" == *amd* ]] || [[ "$GPU_INFO" == *ati* ]]; then
     echo -e "\e[1m\e[31m🔴 AMD/ATI Graphics detected.\e[0m"
     # Ensure amdgpu is loaded
     # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
-    grep -q "^amdgpu " /proc/modules || modprobe amdgpu || true
+    is_loaded "amdgpu" || modprobe amdgpu || true
 fi
 
 # Network Detection
@@ -84,15 +87,15 @@ done <<< "$NET_INFO"
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo -e "\e[1m\e[36m📶 Broadcom network detected.\e[0m Ensuring broadcom-wl is available..."
     # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
-    grep -q "^wl " /proc/modules || modprobe wl || true
+    is_loaded "wl" || modprobe wl || true
 elif [[ "$NET_INFO" == *realtek* ]] || [[ "$NET_INFO" == *rtl* ]]; then
     echo -e "\e[1m\e[36m📶 Realtek network detected.\e[0m"
     # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
-    grep -q "^r8169 " /proc/modules || modprobe r8169 || true
+    is_loaded "r8169" || modprobe r8169 || true
 elif [[ "$NET_INFO" == *intel* ]]; then
     echo -e "\e[1m\e[36m📶 Intel network detected.\e[0m"
     # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
-    grep -q "^iwlwifi " /proc/modules || modprobe iwlwifi || true
+    is_loaded "iwlwifi" || modprobe iwlwifi || true
 fi
 shopt -u nocasematch
 
@@ -112,21 +115,21 @@ if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
             echo -e "\e[1m\e[36m🔧 Loading QEMU/KVM guest modules...\e[0m"
             # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
             for mod in virtio_pci virtio_blk virtio_net virtio_balloon; do
-            grep -q "^${mod//-/_} " /proc/modules || modprobe "$mod" || true
+            is_loaded "${mod//-/_}" || modprobe "$mod" || true
             done
             ;;
         oracle)
             echo -e "\e[1m\e[36m🔧 Loading VirtualBox guest modules...\e[0m"
             # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
             for mod in vboxguest vboxsf vboxvideo; do
-            grep -q "^${mod//-/_} " /proc/modules || modprobe "$mod" || true
+            is_loaded "${mod//-/_}" || modprobe "$mod" || true
             done
             ;;
         vmware)
             echo -e "\e[1m\e[36m🔧 Loading VMware guest modules...\e[0m"
             # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
             for mod in vmw_balloon vmw_vmci vmwgfx; do
-            grep -q "^${mod//-/_} " /proc/modules || modprobe "$mod" || true
+            is_loaded "${mod//-/_}" || modprobe "$mod" || true
             done
             ;;
     esac
