@@ -24,6 +24,10 @@
     {
       "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
       "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension.",
+      "target_file": "README.md"
     }
   ]
 }
