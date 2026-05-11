@@ -11,13 +11,13 @@ set -euo pipefail
 # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
 # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
 if ! command -v snapper >/dev/null 2>&1; then
-    logger -t neos-autoupdate "ERROR: snapper not installed. Snapshots disabled."
+    logger -t neos-autoupdate "INFO: 'snapper' utility is not installed. Automatic updates skipped. To enable, install 'snapper' and configure a root profile."
     exit 0
 fi
 
 # Check for Btrfs root
 if ! findmnt -n -o FSTYPE / | grep -q btrfs; then
-    logger -t neos-autoupdate "WARNING: Root is not Btrfs. Snapshots disabled."
+    logger -t neos-autoupdate "INFO: Auto-update skipped: Root filesystem is not Btrfs. Btrfs is required for safe rollback snapshots."
     exit 0
 fi
 
