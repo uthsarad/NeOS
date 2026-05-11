@@ -28,3 +28,8 @@
 **Vulnerability:** External URLs (productUrl, supportUrl, releaseNotesUrl) in Calamares `branding.desc` can launch a web browser as root when clicked by the user during installation.
 **Learning:** Graphical installers running as root must not provide direct links to external websites unless the browser is guaranteed to drop privileges or run in a secure sandbox.
 **Prevention:** Comment out or remove clickable external URLs in installer branding configurations to prevent privilege escalation via root-owned browser processes.
+
+## 2024-05-11 - TOCTOU via Early Exit Bypassing File Locks
+**Vulnerability:** A script designed to run as a concurrent cron job or systemd timer performed early exit checks (e.g., dependency validation) before acquiring its file-based lock (`flock`). This allowed multiple instances to concurrently execute early segments of the script, leading to potential race conditions or uncoordinated early exits that bypass state protections.
+**Learning:** File locking mechanisms intended to serialize script execution must be placed at the very top of the script, before any operations that could trigger an early exit or modify state.
+**Prevention:** Always acquire `flock` or equivalent synchronization primitives immediately after basic environment setup (like `PATH` definitions) and before any validation logic that might call `exit`.

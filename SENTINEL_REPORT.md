@@ -15,3 +15,7 @@ Security Validation & Enhancements
 
 ## Severity Summary
 - **Medium Severity:** The missing strict `PATH` definition in a root script introduces environment-dependent vulnerabilities. The fix hardens the system update process against path manipulation.
+
+## TOCTOU Race Condition on Early Exit
+- **Risk:** The lock creation in `neos-autoupdate.sh` was done after checking for dependencies, causing early exits to bypass the flock-based locking mechanism and introducing TOCTOU vulnerabilities.
+- **Fix:** Moved the strict `PATH` definition, log validation, and lock application above the dependency validation logic.
