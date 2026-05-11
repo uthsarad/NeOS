@@ -1,11 +1,11 @@
 {
   "allowed_files": [
-    "README.md"
+    "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Append architecture support limitations.",
-    "Explicitly label x86_64 as primary.",
-    "Explicitly label i686 and aarch64 as experimental.",
-    "Do not modify other existing documentation."
+    "Update the 'Release Readiness Checklist' to check off completed items (e.g., pacman.conf fix, ISO build validation, ISO size validation, architecture limitations documentation, CHANGELOG update, dependency validation).",
+    "Update the 'Progress Tracking' section to mark 'Critical issue fixed', 'High priority items addressed', and 'Medium priority items started' as completed.",
+    "Do not introduce new tasks or modify other files.",
+    "Ensure the markdown checkbox syntax uses 'x' (i.e., `[x]`)."
   ]
 }
