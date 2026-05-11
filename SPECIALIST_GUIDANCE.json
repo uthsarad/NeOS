@@ -1,14 +1,14 @@
 {
   "bolt": {
     "focus": "None",
-    "guidance": "No performance optimizations required for this documentation update."
+    "guidance": "No performance optimizations are required for this project management reconciliation task."
   },
   "palette": {
-    "focus": "Documentation readability",
-    "guidance": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension."
+    "focus": "None",
+    "guidance": "No UX or accessibility improvements are required for this markdown checklist update."
   },
   "sentinel": {
-    "focus": "Documentation security",
-    "guidance": "Review the modifications to README.md to ensure no arbitrary external links are introduced."
+    "focus": "None",
+    "guidance": "No security audits are required for this purely informational tracking update."
   }
 }
