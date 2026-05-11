@@ -6,21 +6,6 @@
 
 set -euo pipefail
 
-# Validate dependencies
-# Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
-# Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
-# Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
-if ! command -v snapper >/dev/null 2>&1; then
-    logger -t neos-autoupdate "INFO: 'snapper' utility is not installed. Automatic updates skipped. To enable, install 'snapper' and configure a root profile."
-    exit 0
-fi
-
-# Check for Btrfs root
-if ! findmnt -n -o FSTYPE / | grep -q btrfs; then
-    logger -t neos-autoupdate "INFO: Auto-update skipped: Root filesystem is not Btrfs. Btrfs is required for safe rollback snapshots."
-    exit 0
-fi
-
 # Sentinel: [Security] Enforce strict PATH to prevent path hijacking
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
@@ -54,6 +39,21 @@ exec 9> "$LOCK_FILE"
 if ! flock -n 9; then
     echo "Another instance of neos-autoupdate is already running." >&2
     exit 1
+fi
+
+# Validate dependencies
+# Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
+# Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
+# Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
+if ! command -v snapper >/dev/null 2>&1; then
+    logger -t neos-autoupdate "INFO: 'snapper' utility is not installed. Automatic updates skipped. To enable, install 'snapper' and configure a root profile."
+    exit 0
+fi
+
+# Check for Btrfs root
+if ! findmnt -n -o FSTYPE / | grep -q btrfs; then
+    logger -t neos-autoupdate "INFO: Auto-update skipped: Root filesystem is not Btrfs. Btrfs is required for safe rollback snapshots."
+    exit 0
 fi
 
 log() {
