@@ -20,6 +20,10 @@
     {
       "description": "Ensure the early dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.",
       "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    },
+    {
+      "description": "Documentation update only; no performance optimizations required here.",
+      "target_file": "README.md"
     }
   ]
 }

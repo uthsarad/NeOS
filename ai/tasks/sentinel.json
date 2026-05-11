@@ -25,6 +25,10 @@
       "description": "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.",
       "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
       "status": "completed"
+    },
+    {
+      "description": "Review the modifications to README.md to ensure no arbitrary external links are introduced.",
+      "target_file": "README.md"
     }
   ]
 }
