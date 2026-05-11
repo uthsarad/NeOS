@@ -122,3 +122,6 @@
 ## 2026-06-25 - Native Bash Parameter Expansion for String Sanitization
 **Learning:** Using `tr` in command substitutions (e.g., `$(printf "%s" "$VAR" | tr -cd '[:print:]')`) spawns unnecessary subshells and external processes. Bash native parameter expansions (e.g., `"${VAR//[^[:print:]]/}"`) can effectively strip unwanted characters natively without process forking overhead.
 **Action:** When sanitizing strings or variables in performance-critical bash scripts, especially within `ERR` traps or initialization, always prefer native parameter expansion instead of subshells and external binaries.
+## 2026-06-25 - Native Bash vs Multiple Grep Invocations
+**Learning:** Using multiple `grep -q` statements within loops or sequential checks against the same file spawns numerous subshells and external process calls, leading to measurable fork/exec overhead in performance-critical scripts.
+**Action:** When validating against small-to-medium files repeatedly, read the file into memory once natively (`VAR="$(<file)"`) and use native Bash regex matching (`[[ "$VAR" =~ pattern ]]`) to completely eliminate subprocess overhead.
