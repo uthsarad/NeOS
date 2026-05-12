@@ -1,14 +1,14 @@
 {
   "bolt": {
     "focus": "None",
-    "guidance": "No performance optimizations are required for this project management reconciliation task."
+    "guidance": "No performance optimizations are required for this documentation update."
   },
   "palette": {
-    "focus": "None",
-    "guidance": "No UX or accessibility improvements are required for this markdown checklist update."
+    "focus": "Formatting",
+    "guidance": "Ensure that the updated URLs maintain proper markdown link syntax and readability."
   },
   "sentinel": {
-    "focus": "None",
-    "guidance": "No security audits are required for this purely informational tracking update."
+    "focus": "Link Validation",
+    "guidance": "Verify that the replacement URL (https://github.com/uthsarad/NeOS) is safe and that no other external URLs have been altered or introduced maliciously."
   }
 }
