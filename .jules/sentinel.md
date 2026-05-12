@@ -33,3 +33,7 @@
 **Vulnerability:** A script designed to run as a concurrent cron job or systemd timer performed early exit checks (e.g., dependency validation) before acquiring its file-based lock (`flock`). This allowed multiple instances to concurrently execute early segments of the script, leading to potential race conditions or uncoordinated early exits that bypass state protections.
 **Learning:** File locking mechanisms intended to serialize script execution must be placed at the very top of the script, before any operations that could trigger an early exit or modify state.
 **Prevention:** Always acquire `flock` or equivalent synchronization primitives immediately after basic environment setup (like `PATH` definitions) and before any validation logic that might call `exit`.
+## 2026-05-12 - Option Injection in Modprobe and Pacman
+**Vulnerability:** Dynamically generated or hardcoded array variables passed directly to `modprobe` or `pacman` without option terminators (`--`) can trigger option injection vulnerabilities if an attacker controls or injects a string starting with `-`.
+**Learning:** Even when inputs are tightly controlled or assumed safe, omitting standard POSIX option terminators is an anti-pattern. System-level utilities must strictly separate options from arguments.
+**Prevention:** Universally enforce the use of option terminators (`--`) for commands like `pacman`, `modprobe`, `mount`, and `parted` when handling any parameters, even hardcoded ones, to ensure robust defense in depth.
