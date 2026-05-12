@@ -1,11 +1,15 @@
 {
   "allowed_files": [
+    "docs/HANDBOOK.md",
+    "CONTRIBUTING.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROADMAP.md",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Update the 'Release Readiness Checklist' to check off completed items (e.g., pacman.conf fix, ISO build validation, ISO size validation, architecture limitations documentation, CHANGELOG update, dependency validation).",
-    "Update the 'Progress Tracking' section to mark 'Critical issue fixed', 'High priority items addressed', and 'Medium priority items started' as completed.",
-    "Do not introduce new tasks or modify other files.",
-    "Ensure the markdown checkbox syntax uses 'x' (i.e., `[x]`)."
+    "Replace all instances of 'https://github.com/neos-project/neos' with 'https://github.com/uthsarad/NeOS'.",
+    "Correct or remove references to 'NeOS curated repos'.",
+    "Update the 'Release Readiness Checklist' in 'docs/AUDIT_ACTION_PLAN.md' to mark 'Fix documentation URLs' as completed.",
+    "Do not modify source code or system configurations."
   ]
 }
