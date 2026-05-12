@@ -3,23 +3,28 @@
   "tasks": [
     {
       "description": "Audit any new variable expansions in neos-installer-partition.sh for log injection.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     },
     {
       "description": "Ensure execution paths remain strictly defined.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "completed"
     },
     {
       "description": "Audit systemd sandboxing on neos-autoupdate.service. Ensure ProtectSystem=strict is avoided as it breaks updates.",
-      "target_file": "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
+      "target_file": "profile/airootfs/etc/systemd/system/neos-autoupdate.service",
+      "status": "completed"
     },
     {
       "description": "Validate that external product URLs load in a secure sandbox context if clicked.",
-      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc",
+      "status": "completed"
     },
     {
       "description": "Audit the implementation of option termination to confirm complete mitigation of option injection vulnerabilities in administrative scripts.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     },
     {
       "description": "Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.",
@@ -28,7 +33,8 @@
     },
     {
       "description": "Review the modifications to README.md to ensure no arbitrary external links are introduced.",
-      "target_file": "README.md"
+      "target_file": "README.md",
+      "status": "completed"
     }
   ]
 }

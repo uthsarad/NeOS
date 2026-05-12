@@ -19,3 +19,15 @@ Security Validation & Enhancements
 ## TOCTOU Race Condition on Early Exit
 - **Risk:** The lock creation in `neos-autoupdate.sh` was done after checking for dependencies, causing early exits to bypass the flock-based locking mechanism and introducing TOCTOU vulnerabilities.
 - **Fix:** Moved the strict `PATH` definition, log validation, and lock application above the dependency validation logic.
+
+## Security Audit Results
+- **Validation Complete**: Successfully audited `neos-installer-partition.sh` for log injection and option termination. No new vulnerabilities found.
+- **Validation Complete**: Confirmed strict execution paths in `neos-driver-manager`.
+- **Validation Complete**: Verified `neos-autoupdate.service` systemd sandboxing correctly omits `ProtectSystem=strict` to prevent update breakage while maintaining other protections.
+- **Validation Complete**: Verified external URLs in Calamares branding are disabled to prevent root browser escalation.
+- **Validation Complete**: Audited `README.md` for external link safety.
+
+No further security issues were identified during this review cycle. All targeted files comply with the project's security coding standards.
+
+## Security Enhancements
+- **Fix Applied**: Added explicit option termination (`--`) to all `modprobe` and `pacman` commands in `neos-driver-manager` to prevent option injection vulnerabilities when handling potentially untrusted variable inputs (e.g., dynamically detected virtualization types).
