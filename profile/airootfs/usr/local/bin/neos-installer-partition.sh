@@ -27,6 +27,17 @@ trap '_error_handler $? $LINENO' ERR
 
 TARGET_DEV="${1:-}"
 
+# Sentinel: [Security] Validate target device name to prevent arbitrary command execution or injection
+if [[ ! "$TARGET_DEV" =~ ^[a-zA-Z0-9_/:.-]+$ ]] && [[ -n "$TARGET_DEV" ]]; then
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target device name contains invalid characters.\e[0m\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  The provided device path contains characters that are not allowed.\n\n" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  Ensure the device path only contains letters, numbers, slashes, underscores, hyphens, colons, and periods.\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
+    exit 1
+fi
+
 if [[ -z "$TARGET_DEV" ]]; then
     printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
     printf -- "\e[1m\e[31m❌ Error: Target device not provided.\e[0m\n" >&2

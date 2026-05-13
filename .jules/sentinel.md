@@ -37,3 +37,7 @@
 **Vulnerability:** Dynamically generated or hardcoded array variables passed directly to `modprobe` or `pacman` without option terminators (`--`) can trigger option injection vulnerabilities if an attacker controls or injects a string starting with `-`.
 **Learning:** Even when inputs are tightly controlled or assumed safe, omitting standard POSIX option terminators is an anti-pattern. System-level utilities must strictly separate options from arguments.
 **Prevention:** Universally enforce the use of option terminators (`--`) for commands like `pacman`, `modprobe`, `mount`, and `parted` when handling any parameters, even hardcoded ones, to ensure robust defense in depth.
+## 2026-05-13 - Device Name Injection
+**Vulnerability:** Unsanitized device path inputs in scripts like `neos-installer-partition.sh` can introduce command injection risks if the path contains shell metacharacters and is improperly evaluated or logged.
+**Learning:** Even inputs expected to be system paths (like block devices) must be strictly sanitized before being used in shell scripts to prevent attackers from injecting arbitrary commands via crafted filenames.
+**Prevention:** Strictly sanitize all variables containing file paths or device names using bash parameter expansion (e.g., `VAR="${VAR//[^a-zA-Z0-9_/.-]/}"`) to strip out any potentially dangerous characters.

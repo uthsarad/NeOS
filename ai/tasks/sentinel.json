@@ -35,6 +35,11 @@
       "description": "Review the modifications to README.md to ensure no arbitrary external links are introduced.",
       "target_file": "README.md",
       "status": "completed"
+    },
+    {
+      "description": "Sanitize TARGET_DEV variable in neos-installer-partition.sh to prevent injection.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     }
   ]
 }
