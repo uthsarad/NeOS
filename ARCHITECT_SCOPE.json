@@ -1,15 +1,15 @@
 {
   "allowed_files": [
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md",
-    "docs/ARCHITECTURE.md",
-    "docs/ROADMAP.md",
+    "tests/verify_iso_smoketest.sh",
+    ".github/workflows/build-iso.yml",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Replace all instances of 'https://github.com/neos-project/neos' with 'https://github.com/uthsarad/NeOS'.",
-    "Correct or remove references to 'NeOS curated repos'.",
-    "Update the 'Release Readiness Checklist' in 'docs/AUDIT_ACTION_PLAN.md' to mark 'Fix documentation URLs' as completed.",
-    "Do not modify source code or system configurations."
+    "Enhance verify_iso_smoketest.sh to perform a QEMU boot test if an ISO is present.",
+    "Use lightweight QEMU parameters (e.g., -nographic) to verify kernel/initramfs loading without a display.",
+    "Ensure the test includes a strict timeout to prevent infinite hangs.",
+    "Gracefully skip the test if QEMU or virtualization support is missing.",
+    "Update AUDIT_ACTION_PLAN.md to mark the VM boot test task as completed if the implementation is successful.",
+    "Do not modify core OS build logic."
   ]
 }
