@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "None",
-    "guidance": "No performance optimizations are required for this documentation update."
+    "focus": "Test Execution Time",
+    "guidance": "Verify that the QEMU boot test incorporates an appropriate timeout (e.g., `timeout 5m qemu-system-x86_64 ...`) to avoid blocking the CI pipeline indefinitely in case of a boot failure."
   },
   "palette": {
-    "focus": "Formatting",
-    "guidance": "Ensure that the updated URLs maintain proper markdown link syntax and readability."
+    "focus": "None",
+    "guidance": "No UX enhancements required for this task."
   },
   "sentinel": {
-    "focus": "Link Validation",
-    "guidance": "Verify that the replacement URL (https://github.com/uthsarad/NeOS) is safe and that no other external URLs have been altered or introduced maliciously."
+    "focus": "CI Execution Context",
+    "guidance": "Audit the usage of QEMU within the GitHub Actions environment. Ensure it operates with least privilege and does not require `--privileged` container execution if avoidable."
   }
 }
