@@ -3,27 +3,33 @@
   "tasks": [
     {
       "description": "Measure and validate the lspci caching logic in neos-driver-manager.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "completed"
     },
     {
       "description": "Ensure dependency validations in neos-autoupdate.sh rely on native bash capabilities. Consider native bash integer math for disk space comparisons.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
     },
     {
       "description": "Consider testing QML rendering speed with the #0078D4 background vs an image.",
-      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc",
+      "status": "completed"
     },
     {
       "description": "Validate that input sanitization and option termination rely on native bash syntax and do not incur additional execution overhead.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     },
     {
       "description": "Ensure the early dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
     },
     {
       "description": "Documentation update only; no performance optimizations required here.",
-      "target_file": "README.md"
+      "target_file": "README.md",
+      "status": "completed"
     }
   ]
 }

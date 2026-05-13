@@ -12,3 +12,8 @@
 - **What was optimized:** Replaced multiple `grep -q` calls against `/proc/modules` with a single native read `PROC_MODULES="$(</proc/modules)"` and a native bash regex matching function `is_loaded` in `neos-driver-manager`.
 - **Before/after reasoning:** `grep -q` calls in loops and sequential conditions spawned multiple subshells and invoked external processes, leading to measurable fork/exec overhead. By reading the file into memory once and using native Bash matching, we eliminate this overhead completely.
 - **Any remaining performance risks:** Minimal. File size of `/proc/modules` is small enough to hold in memory easily.
+
+## ⚡ Bolt: Native Bash Optimizations
+- **What was optimized:** Replaced `findmnt | grep` with `stat` for early Btrfs root validation, and replaced `$(date)` with native bash `printf` for timestamp generation in `neos-autoupdate.sh`.
+- **Before/after reasoning:** `findmnt | grep` spawned two external subprocesses during script initialization. `$(date)` spawned a subshell and an external `date` binary on every log call. Using native Bash `printf` and `stat` eliminates these fork/exec overheads.
+- **Any remaining performance risks:** Minimal. The script is further optimized for sub-millisecond execution overhead.
