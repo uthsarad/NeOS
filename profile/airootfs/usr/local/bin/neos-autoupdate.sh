@@ -51,13 +51,15 @@ if ! command -v snapper >/dev/null 2>&1; then
 fi
 
 # Check for Btrfs root
-if ! findmnt -n -o FSTYPE / | grep -q btrfs; then
+# Bolt: Optimized Btrfs check using stat instead of findmnt | grep to eliminate subprocess overhead
+if [[ "$(stat -f -c %T / 2>/dev/null)" != "btrfs" ]]; then
     logger -t neos-autoupdate "INFO: Auto-update skipped: Root filesystem is not Btrfs. Btrfs is required for safe rollback snapshots."
     exit 0
 fi
 
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+    # Bolt: Use native bash printf for date formatting to eliminate fork/exec overhead
+    printf '%(%Y-%m-%d %H:%M:%S)T - %s\n' -1 "$1" | tee -a "$LOG_FILE"
 }
 
 notify_users() {
