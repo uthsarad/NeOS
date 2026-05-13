@@ -14,3 +14,14 @@
 - Improved the early dependency logging in `neos-autoupdate.sh` to provide actionable context when `snapper` is missing or the root filesystem is not Btrfs, guiding the user toward proper configuration.
 ## Remaining usability risks
 - The failure message for pacman updates relies on manual review of pacman logs rather than surfacing specific actionable commands.
+
+# PALETTE REPORT
+
+## Accessibility & UX Enhancements
+- Improved error messaging clarity for missing `snapper` dependencies, providing actionable context in log outputs.
+- Enhanced graphical notification formats for missing dependencies by using multi-line text and descriptive titles.
+- Refined the disk space error notification to clearly display required vs. available space using readable multi-line formatting.
+- Enhanced the general system update failure notification to use HTML bolding for log paths, improving readability in KDE Plasma's `notify-send` system.
+
+## Remaining Usability Risks
+- Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.

@@ -3,31 +3,38 @@
   "tasks": [
     {
       "description": "Review the text-based progress integration in neos-installer-partition.sh.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     },
     {
       "description": "Verify that Calamares branding correctly uses NeOS blue (#0078D4).",
-      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc"
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc",
+      "status": "completed"
     },
     {
       "description": "Ensure text-based progress indicators and terminal formatting follow UX standards.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "completed"
     },
     {
       "description": "Ensure error messages logged when dependencies are missing are clear. Review graphical update notifier error surfaces for clarity.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
     },
     {
       "description": "Ensure that error messaging regarding invalid device inputs maintains the structured, multi-line formatting standards.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     },
     {
       "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
     },
     {
       "description": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension.",
-      "target_file": "README.md"
+      "target_file": "README.md",
+      "status": "completed"
     }
   ]
 }

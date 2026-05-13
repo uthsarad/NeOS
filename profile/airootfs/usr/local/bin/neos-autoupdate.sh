@@ -46,7 +46,7 @@ fi
 # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
 # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
 if ! command -v snapper >/dev/null 2>&1; then
-    logger -t neos-autoupdate "INFO: 'snapper' utility is not installed. Automatic updates skipped. To enable, install 'snapper' and configure a root profile."
+    logger -t neos-autoupdate "INFO: 'snapper' utility is missing. System update skipped to prevent unsafe upgrades without rollback protection. Action: Install 'snapper' and configure a root profile."
     exit 0
 fi
 
@@ -99,9 +99,11 @@ check_dependencies() {
     local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
-            local err_msg="Required command \`$cmd\` not found. Please install the package containing \`$cmd\` to enable autoupdates."
-            log "Error: $err_msg"
-            notify_users "$err_msg"
+            local err_msg="Required command \`$cmd\` not found.
+
+Please install the package containing \`$cmd\` to enable automatic system updates."
+            log "Error: Required command \`$cmd\` not found."
+            notify_users "$err_msg" "Update Failed: Missing Dependency" "dialog-error" "critical"
             exit 1
         fi
     done
@@ -132,9 +134,14 @@ check_disk_space() {
 
     if (( available_space < min_space )); then
         # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
-        local err_msg="Insufficient disk space for update. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB. Please free up some space and try again."
-        log "Error: $err_msg"
-        notify_users "$err_msg"
+        local err_msg="Insufficient disk space for update.
+
+Available: $((available_space / 1024)) MB
+Required: $((min_space / 1024)) MB
+
+Please free up some space and try again."
+        log "Error: Insufficient disk space. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB."
+        notify_users "$err_msg" "Update Failed: Disk Full" "drive-harddisk" "critical"
 
         exit 1
     fi
@@ -157,9 +164,12 @@ perform_update() {
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
-        local err_msg="System update failed. Check pacman logs."
-        log "$err_msg"
-        notify_users "$err_msg"
+        local err_msg="The system update failed during execution.
+
+Please review the update logs for more details:
+<b>/var/log/neos-autoupdate.log</b>"
+        log "System update failed. Check pacman logs."
+        notify_users "$err_msg" "System Update Failed" "dialog-error" "critical"
         # Still create post snapshot to close the pair, but mark as failed
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
         exit 1
