@@ -17,3 +17,8 @@
 - **What was optimized:** Replaced `findmnt | grep` with `stat` for early Btrfs root validation, and replaced `$(date)` with native bash `printf` for timestamp generation in `neos-autoupdate.sh`.
 - **Before/after reasoning:** `findmnt | grep` spawned two external subprocesses during script initialization. `$(date)` spawned a subshell and an external `date` binary on every log call. Using native Bash `printf` and `stat` eliminates these fork/exec overheads.
 - **Any remaining performance risks:** Minimal. The script is further optimized for sub-millisecond execution overhead.
+
+## ⚡ Bolt: Native Bash File Reading
+- **What was optimized:** Replaced `grep -m1 "vendor_id" /proc/cpuinfo` with native bash file reading `="$(< /proc/cpuinfo)"` in `neos-driver-manager`.
+- **Before/after reasoning:** The previous implementation spawned a subshell and invoked the external `grep` binary just to check for a substring. By reading the file into memory natively, we eliminate fork/exec overhead entirely.
+- **Any remaining performance risks:** Minimal. `/proc/cpuinfo` is a small virtual file that is extremely fast to load into memory.
