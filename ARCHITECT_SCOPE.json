@@ -1,15 +1,26 @@
 {
   "allowed_files": [
-    "tests/verify_iso_smoketest.sh",
-    ".github/workflows/build-iso.yml",
-    "docs/AUDIT_ACTION_PLAN.md"
+    "docs/AUDIT_ACTION_PLAN.md",
+    "docs/HANDBOOK.md",
+    "docs/ARCHITECTURE.md",
+    "docs/BOOTING.md",
+    "docs/BOOTLOADER.md",
+    "docs/BOOTSTRAP.md",
+    "docs/BRAND_STRUCTURE.md",
+    "docs/DEEP_AUDIT.md",
+    "docs/ISO_BUILD_FIX.md",
+    "docs/MISSION.md",
+    "docs/PERFORMANCE.md",
+    "docs/PREREQUISITES_DRAFT.md",
+    "docs/REMOVED_FEATURES.md",
+    "docs/ROADMAP.md",
+    "docs/TROUBLESHOOTING.md",
+    "docs/VM_STARTUP.md"
   ],
   "constraints": [
-    "Enhance verify_iso_smoketest.sh to perform a QEMU boot test if an ISO is present.",
-    "Use lightweight QEMU parameters (e.g., -nographic) to verify kernel/initramfs loading without a display.",
-    "Ensure the test includes a strict timeout to prevent infinite hangs.",
-    "Gracefully skip the test if QEMU or virtualization support is missing.",
-    "Update AUDIT_ACTION_PLAN.md to mark the VM boot test task as completed if the implementation is successful.",
-    "Do not modify core OS build logic."
+    "Search for the incorrect URL 'https://github.com/neos-project/neos' across all allowed files.",
+    "Replace the incorrect URL with the correct URL 'https://github.com/uthsarad/NeOS'.",
+    "Update AUDIT_ACTION_PLAN.md to mark the 'Fix documentation URLs' task as completed.",
+    "Do not modify core OS build scripts, tests, or configuration files."
   ]
 }
