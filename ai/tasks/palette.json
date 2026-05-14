@@ -35,6 +35,11 @@
       "description": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension.",
       "target_file": "README.md",
       "status": "completed"
+    },
+    {
+      "id": "palette-iso-boot",
+      "status": "pending",
+      "description": "Enhance console output readability for QEMU test logs in verify_iso_smoketest.sh."
     }
   ]
 }

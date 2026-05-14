@@ -40,6 +40,11 @@
       "description": "Sanitize TARGET_DEV variable in neos-installer-partition.sh to prevent injection.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
       "status": "completed"
+    },
+    {
+      "id": "sentinel-iso-boot",
+      "status": "pending",
+      "description": "Audit QEMU usage in CI to ensure it runs with least privileges."
     }
   ]
 }

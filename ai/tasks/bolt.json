@@ -30,6 +30,11 @@
       "description": "Documentation update only; no performance optimizations required here.",
       "target_file": "README.md",
       "status": "completed"
+    },
+    {
+      "id": "bolt-iso-boot",
+      "status": "pending",
+      "description": "Optimize QEMU parameters in verify_iso_smoketest.sh to reduce test execution time."
     }
   ]
 }

@@ -295,7 +295,7 @@ Before first beta release:
 
 - [x] **CRITICAL:** Fix pacman.conf DatabaseRequired issue
 - [x] **CRITICAL:** Verify ISO builds successfully
-- [ ] **CRITICAL:** Test ISO boots in VM
+- [x] **CRITICAL:** Test ISO boots in VM
 - [x] **HIGH:** Add ISO size validation
 - [x] **HIGH:** Document architecture limitations
 - [ ] **HIGH:** Fix documentation URLs
