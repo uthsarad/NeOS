@@ -100,7 +100,8 @@ fi
 shopt -u nocasematch
 
 # CPU Microcode
-CPU_INFO=$(grep -m1 "vendor_id" /proc/cpuinfo || true)
+# Bolt: [Performance] Avoid grep subprocess overhead by reading directly into native bash variable
+CPU_INFO="$(< /proc/cpuinfo)" || CPU_INFO=""
 if [[ "$CPU_INFO" == *AuthenticAMD* ]]; then
     echo -e "\e[1m\e[32m🧠 AMD CPU detected.\e[0m Ensuring amd-ucode is available..."
 elif [[ "$CPU_INFO" == *GenuineIntel* ]]; then
