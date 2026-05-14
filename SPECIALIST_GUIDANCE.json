@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "focus": "Test Execution Time",
-    "guidance": "Verify that the QEMU boot test incorporates an appropriate timeout (e.g., `timeout 5m qemu-system-x86_64 ...`) to avoid blocking the CI pipeline indefinitely in case of a boot failure."
+    "focus": "None",
+    "guidance": "No performance optimizations required for this documentation update."
   },
   "palette": {
-    "focus": "None",
-    "guidance": "No UX enhancements required for this task."
+    "focus": "Formatting Consistency",
+    "guidance": "Ensure that the replacement of URLs does not break markdown formatting, tables, or link syntax in the affected files."
   },
   "sentinel": {
-    "focus": "CI Execution Context",
-    "guidance": "Audit the usage of QEMU within the GitHub Actions environment. Ensure it operates with least privilege and does not require `--privileged` container execution if avoidable."
+    "focus": "Link Validation",
+    "guidance": "Verify that the URL replacements do not introduce any new external domains and strictly adhere to replacing the known incorrect GitHub URL with the official one."
   }
 }

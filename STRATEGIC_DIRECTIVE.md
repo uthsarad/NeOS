@@ -1,21 +1,21 @@
-# STRATEGIC DIRECTIVE: ISO Boot Verification in Virtual Environment
+# STRATEGIC DIRECTIVE: Address Documentation URLs Technical Debt
 
 ## Phase 1: Product Alignment
-NeOS must deliver a reliable out-of-the-box experience. A successful ISO build is insufficient if the resulting image fails to boot or operate correctly in common environments. Verifying the ISO boot process directly supports the mission of delivering a stable, predictable foundation for users.
+NeOS must present a polished and professional image to prospective users and contributors. Incorrect or broken repository URLs in the documentation confuse users and reflect poorly on project maintenance. Fixing these URLs aligns with the mission of delivering a refined experience.
 
 ## Phase 2: Technical Posture
-The project has achieved a stable build pipeline and resolved critical configuration blockers. However, the `AUDIT_ACTION_PLAN.md` identifies "[ ] **CRITICAL:** Test ISO boots in VM" as an outstanding, high-risk item that must be addressed before beta release. The infrastructure exists to build the ISO, but end-to-end runtime validation is currently missing from the automated pipeline or documented manual processes.
+The critical path to a functional ISO and basic boot verification is stable. The immediate technical debt lies in the documentation, specifically the broken URLs identified in the `AUDIT_ACTION_PLAN.md` under the "[ ] **HIGH:** Fix documentation URLs" task.
 
 ## Phase 3: Priority Selection
-Selected Priority: **Stabilization / hardening**. Ensuring the generated artifact is actually usable is paramount. Addressing the untested ISO boot risk directly targets the highest remaining critical item in the audit plan.
+Selected Priority: **Stabilization / hardening** (specifically, documentation cleanup). Resolving the high-priority documentation URLs task ensures that the project's public-facing information is accurate and trustworthy.
 
 ## Phase 4: Controlled Scope
-- **Impacted Files:** `tests/verify_iso_smoketest.sh`, `.github/workflows/build-iso.yml`, `docs/AUDIT_ACTION_PLAN.md`
-- **Allowed Action:** Enhance the existing ISO smoke test script to utilize QEMU for a basic boot verification if an ISO is present, or document the manual VM testing procedure if automation is out of scope for the current environment. Update the audit checklist upon successful implementation.
-- **Constraints:** Do not introduce heavy dependencies (like full GUI testing frameworks) that exceed the current CI runner capabilities without explicit justification. Ensure the test degrades gracefully if virtualization is unavailable.
+- **Impacted Files:** `docs/AUDIT_ACTION_PLAN.md` and any documentation files containing `https://github.com/neos-project/neos`.
+- **Allowed Action:** Identify and correct instances of the incorrect repository URL `https://github.com/neos-project/neos` to the correct URL `https://github.com/uthsarad/NeOS`. Update the audit checklist upon successful implementation.
+- **Constraints:** Do not modify the core OS build logic or testing scripts. Limit changes strictly to documentation text.
 
 ## Phase 5: Delegation Strategy
-- **Architect:** Implement the automated QEMU-based boot validation in `tests/verify_iso_smoketest.sh` or create the manual testing documentation.
-- **Bolt:** Ensure any automated boot test completes within a reasonable timeout to prevent CI hangs.
-- **Palette:** No direct UI/UX changes required, but ensure any test failure logs are clearly legible.
-- **Sentinel:** Verify that running QEMU in CI does not introduce privilege escalation risks or expose the runner to untrusted code execution.
+- **Architect:** Search for and replace incorrect URLs across the allowed documentation files.
+- **Bolt:** No performance optimizations required for this task.
+- **Palette:** Ensure formatting remains consistent and readable after URL replacements.
+- **Sentinel:** Verify that no new, unauthorized external links are introduced during the cleanup.
