@@ -1,14 +1,14 @@
 {
   "bolt": {
     "focus": "None",
-    "guidance": "No performance optimizations required for this documentation update."
+    "guidance": "No performance optimizations required. Task is limited to documentation."
   },
   "palette": {
-    "focus": "Formatting Consistency",
-    "guidance": "Ensure that the replacement of URLs does not break markdown formatting, tables, or link syntax in the affected files."
+    "focus": "Markdown formatting",
+    "guidance": "Ensure URL replacements do not disrupt existing markdown syntax, tables, or formatting."
   },
   "sentinel": {
-    "focus": "Link Validation",
-    "guidance": "Verify that the URL replacements do not introduce any new external domains and strictly adhere to replacing the known incorrect GitHub URL with the official one."
+    "focus": "External link validation",
+    "guidance": "Confirm that only the specific incorrect GitHub URL is replaced and no new external domains are introduced."
   }
 }

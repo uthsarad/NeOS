@@ -1,26 +1,10 @@
 {
   "allowed_files": [
-    "docs/AUDIT_ACTION_PLAN.md",
-    "docs/HANDBOOK.md",
-    "docs/ARCHITECTURE.md",
-    "docs/BOOTING.md",
-    "docs/BOOTLOADER.md",
-    "docs/BOOTSTRAP.md",
-    "docs/BRAND_STRUCTURE.md",
-    "docs/DEEP_AUDIT.md",
-    "docs/ISO_BUILD_FIX.md",
-    "docs/MISSION.md",
-    "docs/PERFORMANCE.md",
-    "docs/PREREQUISITES_DRAFT.md",
-    "docs/REMOVED_FEATURES.md",
-    "docs/ROADMAP.md",
-    "docs/TROUBLESHOOTING.md",
-    "docs/VM_STARTUP.md"
+    "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Search for the incorrect URL 'https://github.com/neos-project/neos' across all allowed files.",
-    "Replace the incorrect URL with the correct URL 'https://github.com/uthsarad/NeOS'.",
-    "Update AUDIT_ACTION_PLAN.md to mark the 'Fix documentation URLs' task as completed.",
-    "Do not modify core OS build scripts, tests, or configuration files."
+    "Replace all instances of 'https://github.com/neos-project/neos' with 'https://github.com/uthsarad/NeOS' strictly in docs/AUDIT_ACTION_PLAN.md.",
+    "Update the checklist item in docs/AUDIT_ACTION_PLAN.md to mark 'Fix documentation URLs' as done.",
+    "Do not modify any source code, build scripts, or CI/CD configurations."
   ]
 }
