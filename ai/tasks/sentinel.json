@@ -40,6 +40,16 @@
       "description": "Sanitize TARGET_DEV variable in neos-installer-partition.sh to prevent injection.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
       "status": "completed"
+    },
+    {
+      "description": "Fix documentation URLs in AUDIT_ACTION_PLAN.md",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "completed"
+    },
+    {
+      "description": "Add strict PATH export and sanitize variables in neos-liveuser-setup to prevent path hijacking and log injection",
+      "target_file": "profile/airootfs/usr/local/bin/neos-liveuser-setup",
+      "status": "completed"
     }
   ]
 }

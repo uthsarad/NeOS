@@ -31,3 +31,17 @@ No further security issues were identified during this review cycle. All targete
 
 ## Security Enhancements
 - **Fix Applied**: Added explicit option termination (`--`) to all `modprobe` and `pacman` commands in `neos-driver-manager` to prevent option injection vulnerabilities when handling potentially untrusted variable inputs (e.g., dynamically detected virtualization types).
+
+## Phase 1: Scope Validation
+- Verified instructions in `ARCHITECT_SCOPE.json` to only modify `docs/AUDIT_ACTION_PLAN.md`.
+
+## Phase 2: Execution
+- Replaced documentation URLs.
+- Updated checklist.
+
+## Phase 1: Scope Validation
+- Selected `profile/airootfs/usr/local/bin/neos-liveuser-setup` for security hardening based on vulnerability scan.
+
+## Phase 2: Execution
+- Added strict `PATH` export to prevent path hijacking.
+- Sanitized `SCRIPT_NAME` and `BASH_COMMAND` using native bash parameter expansion to strip non-printable characters and restrict allowed characters to prevent log injection.
