@@ -1,22 +1,26 @@
-# STRATEGIC DIRECTIVE
+# STRATEGIC DIRECTIVE: Documentation Alignment & Technical Debt
 
 ## Phase 1: Product Alignment Check
-The immediate goal is to address the remaining high-priority technical debt item in the audit plan: fixing broken documentation URLs. Accurate documentation is critical for user adoption, developer onboarding, and overall project credibility. This aligns with the core goal of establishing a solid foundation for the beta release.
+- **What is the product trying to become?** NeOS aims to be a stable, curated Arch Linux distribution with Windows-level usability.
+- **Are we building toward that?** Yes, by ensuring our contributor and user documentation is accurate. Broken or incorrect repository links undermine trust and create friction for new users or contributors.
+- **Are we solving the highest leverage problem?** Resolving documentation technical debt (specifically the incorrect `neos-project/neos` URLs) is a low-effort, high-leverage task that immediately improves onboarding and aligns with the AUDIT_ACTION_PLAN.
 
 ## Phase 2: Technical Posture Review
-The project's build processes are stabilizing, with ISO generation and dependency validation issues addressed. However, the documentation still references incorrect repository URLs (`neos-project/neos`), which presents a high risk of user confusion. Resolving this is a low-effort, high-impact fix to solidify our current posture.
+- **Is the system stable?** Yes, recent commits have hardened security in the live environment (`neos-liveuser-setup`).
+- **Is tech debt increasing?** The `AUDIT_ACTION_PLAN.md` explicitly lists incorrect URLs in `HANDBOOK.md` and `CONTRIBUTING.md` as an outstanding HIGH priority item.
+- **Are we overbuilding?** No. This focuses strictly on resolving existing debt rather than introducing new features.
 
 ## Phase 3: Priority Selection
-**Priority: Refinement of recent feature / Technical Debt Reduction**
-The focus is exclusively on correcting incorrect URLs in `docs/AUDIT_ACTION_PLAN.md`.
+**Selection:** Refinement of recent feature / Technical Debt Reduction.
+We will address the "Fix documentation URLs" task from the Deep Audit.
 
 ## Phase 4: Controlled Scope Definition
--   **Target:** `docs/AUDIT_ACTION_PLAN.md`
--   **Allowed Action:** Replace the incorrect URL (`https://github.com/neos-project/neos`) with the official URL (`https://github.com/uthsarad/NeOS`) in `docs/AUDIT_ACTION_PLAN.md`. Mark the associated task in `docs/AUDIT_ACTION_PLAN.md` as completed (`- [x] **HIGH:** Fix documentation URLs`).
--   **Constraints:** No modifications to core OS scripts, CI/CD pipelines, or configuration files. Limit scope strictly to the single documentation file update.
+- **Exact files likely impacted:** `docs/HANDBOOK.md`, `CONTRIBUTING.md`, `docs/AUDIT_ACTION_PLAN.md`
+- **Maximum allowed surface area:** String replacements for the repository URL and updating the checklist status.
+- **Constraints Architect must obey:** Do not modify any source code, CI/CD pipelines, or configuration files. Only perform the URL corrections and mark the checklist item as complete.
 
 ## Phase 5: Delegation Strategy
--   **Architect:** Implement the URL replacements and update the audit checklist status in `docs/AUDIT_ACTION_PLAN.md`.
--   **Bolt:** No action required (Documentation update).
--   **Palette:** Ensure that URL replacements do not break markdown formatting or readability.
--   **Sentinel:** Verify that no new, unauthorized external domains are introduced during the cleanup.
+- **Architect:** Perform the URL string replacements (`https://github.com/neos-project/neos` -> `https://github.com/uthsarad/NeOS`) in `HANDBOOK.md` and `CONTRIBUTING.md`. Update `AUDIT_ACTION_PLAN.md` to check off the "Fix documentation URLs" task.
+- **Bolt:** None (No performance impact).
+- **Palette:** Ensure markdown formatting remains intact.
+- **Sentinel:** Validate that no unauthorized external domains are introduced.

@@ -1,10 +1,13 @@
 {
   "allowed_files": [
+    "docs/HANDBOOK.md",
+    "CONTRIBUTING.md",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Replace all instances of 'https://github.com/neos-project/neos' with 'https://github.com/uthsarad/NeOS' strictly in docs/AUDIT_ACTION_PLAN.md.",
+    "Replace all instances of 'https://github.com/neos-project/neos' with 'https://github.com/uthsarad/NeOS' strictly in the allowed documentation files.",
     "Update the checklist item in docs/AUDIT_ACTION_PLAN.md to mark 'Fix documentation URLs' as done.",
-    "Do not modify any source code, build scripts, or CI/CD configurations."
+    "Do not modify any source code, build scripts, or CI/CD configurations.",
+    "Ensure that no markdown formatting is broken."
   ]
 }
