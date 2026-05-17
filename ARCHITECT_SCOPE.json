@@ -1,13 +1,14 @@
 {
+  "directive": "Stabilization / hardening",
   "allowed_files": [
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md",
+    "profile/airootfs/etc/systemd/system/neos-autoupdate.service",
+    "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Replace all instances of 'https://github.com/neos-project/neos' with 'https://github.com/uthsarad/NeOS' strictly in the allowed documentation files.",
-    "Update the checklist item in docs/AUDIT_ACTION_PLAN.md to mark 'Fix documentation URLs' as done.",
-    "Do not modify any source code, build scripts, or CI/CD configurations.",
-    "Ensure that no markdown formatting is broken."
+    "Do not break autoupdate functionality; avoid ProtectSystem=strict in neos-autoupdate.service if it interferes with pacman updates.",
+    "Do not restrict neos-liveuser-setup.service in a way that prevents it from creating the liveuser.",
+    "Update checklist status in docs/AUDIT_ACTION_PLAN.md for the 'Implement Systemd Sandboxing' task.",
+    "Do not modify neos-driver-manager.service as it is already compliant."
   ]
 }

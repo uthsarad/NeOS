@@ -1,14 +1,22 @@
 {
   "bolt": {
-    "focus": "None",
-    "guidance": "No performance optimizations required. Task is limited to documentation updates."
+    "focus": "Performance",
+    "instructions": [
+      "Ensure the addition of systemd sandboxing directives does not incur noticeable service start delays.",
+      "Check that minor parsing changes or tracking updates do not introduce I/O overhead."
+    ]
   },
   "palette": {
-    "focus": "Markdown formatting",
-    "guidance": "Ensure URL replacements do not disrupt existing markdown syntax, tables, or formatting."
+    "focus": "UX & Accessibility",
+    "instructions": [
+      "If strict sandboxing causes a service failure, ensure the logged output remains clear and actionable for developers.",
+      "Ensure markdown updates to checklist tracking remain properly formatted."
+    ]
   },
   "sentinel": {
-    "focus": "External link validation",
-    "guidance": "Confirm that only the specific incorrect GitHub URL is replaced and no new external domains are introduced."
+    "focus": "Security",
+    "instructions": [
+      "Audit the specific systemd directives added to ensure they effectively sandbox the services without causing regressions in core OS functionality (like updates or user creation)."
+    ]
   }
 }
