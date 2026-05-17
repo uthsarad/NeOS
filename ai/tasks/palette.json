@@ -35,6 +35,11 @@
       "description": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension.",
       "target_file": "README.md",
       "status": "completed"
+    },
+    {
+      "description": "Ensure markdown formatting is intact for checklist updates.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "pending"
     }
   ]
 }

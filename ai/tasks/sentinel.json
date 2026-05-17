@@ -50,6 +50,11 @@
       "description": "Add strict PATH export and sanitize variables in neos-liveuser-setup to prevent path hijacking and log injection",
       "target_file": "profile/airootfs/usr/local/bin/neos-liveuser-setup",
       "status": "completed"
+    },
+    {
+      "description": "Confirm checklist updates do not alter external links or instructions.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "pending"
     }
   ]
 }
