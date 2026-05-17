@@ -1,26 +1,27 @@
-# STRATEGIC DIRECTIVE: Documentation Alignment & Technical Debt
+# STRATEGIC DIRECTIVE: Systemd Sandboxing & Stabilization
 
 ## Phase 1: Product Alignment Check
-- **What is the product trying to become?** NeOS aims to be a stable, curated Arch Linux distribution with Windows-level usability.
-- **Are we building toward that?** Yes, by ensuring our contributor and user documentation is accurate. Broken or incorrect repository links undermine trust and create friction for new users or contributors.
-- **Are we solving the highest leverage problem?** Resolving documentation technical debt (specifically the incorrect `neos-project/neos` URLs) is a low-effort, high-leverage task that immediately improves onboarding and aligns with the AUDIT_ACTION_PLAN.
+- **Goal:** NeOS is a curated, stable, and secure Arch Linux desktop.
+- **Current State:** A core feature, snapshot-based rollback and secure defaults, is mostly in place. We are currently addressing audit findings to ensure we don't ship vulnerable configurations.
+- **Alignment:** Prioritizing hardening directly serves the product's "predictable and secure" mission.
 
 ## Phase 2: Technical Posture Review
-- **Is the system stable?** Yes, recent commits have hardened security in the live environment (`neos-liveuser-setup`).
-- **Is tech debt increasing?** The `AUDIT_ACTION_PLAN.md` explicitly lists incorrect URLs in `HANDBOOK.md` and `CONTRIBUTING.md` as an outstanding HIGH priority item.
-- **Are we overbuilding?** No. This focuses strictly on resolving existing debt rather than introducing new features.
+- **Stability:** The build pipeline and primary services are stable and pass automated testing.
+- **Tech Debt:** An outstanding medium-priority audit item (#7) identifies incomplete systemd sandboxing across services. `neos-driver-manager.service` has been hardened, but `neos-autoupdate.service` and `neos-liveuser-setup.service` are missing critical sandboxing directives.
+- **Overbuilding:** No. Implementing documented, missing security constraints is a straightforward stabilization task.
 
 ## Phase 3: Priority Selection
-**Selection:** Refinement of recent feature / Technical Debt Reduction.
-We will address the "Fix documentation URLs" task from the Deep Audit.
+- **Selected:** Stabilization / hardening
+- **Justification:** Completing the systemd sandboxing closes an open audit loop, tightening root-level execution environments and reducing the risk of privilege escalation.
 
 ## Phase 4: Controlled Scope Definition
-- **Exact files likely impacted:** `docs/HANDBOOK.md`, `CONTRIBUTING.md`, `docs/AUDIT_ACTION_PLAN.md`
-- **Maximum allowed surface area:** String replacements for the repository URL and updating the checklist status.
-- **Constraints Architect must obey:** Do not modify any source code, CI/CD pipelines, or configuration files. Only perform the URL corrections and mark the checklist item as complete.
+- `profile/airootfs/etc/systemd/system/neos-autoupdate.service`
+- `profile/airootfs/etc/systemd/system/neos-liveuser-setup.service`
+- `docs/AUDIT_ACTION_PLAN.md` (to update checklist status)
+- **Constraints:** Do NOT modify `neos-driver-manager.service` as it already conforms to sandboxing tests. Do NOT break update functionality by using overly restrictive protections in `neos-autoupdate.service` (e.g., `ProtectSystem=strict` should be avoided there if it breaks updates).
 
 ## Phase 5: Delegation Strategy
-- **Architect:** Perform the URL string replacements (`https://github.com/neos-project/neos` -> `https://github.com/uthsarad/NeOS`) in `HANDBOOK.md` and `CONTRIBUTING.md`. Update `AUDIT_ACTION_PLAN.md` to check off the "Fix documentation URLs" task.
-- **Bolt:** None (No performance impact).
-- **Palette:** Ensure markdown formatting remains intact.
-- **Sentinel:** Validate that no unauthorized external domains are introduced.
+- **Architect:** Implement systemd sandboxing for `neos-autoupdate.service` and `neos-liveuser-setup.service` as outlined in `docs/AUDIT_ACTION_PLAN.md`. Update the audit documentation tracking.
+- **Bolt:** Validate that the new sandboxing rules do not measurably slow down service boot times.
+- **Palette:** Ensure any failures due to sandboxing produce clear, actionable log outputs.
+- **Sentinel:** Audit the sandboxing rules to ensure they effectively mitigate risk without breaking intended service behavior.
