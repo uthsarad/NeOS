@@ -1,24 +1,11 @@
-# BOLT REPORT
+# Bolt Report
 
-- **What was optimized:** Removed `tr` inside subshells and replaced them with native Bash parameter expansion `//[^...]/` in `neos-installer-partition.sh`.
-- **Before/after reasoning:** The previous use of `tr` spawned a subshell (`$()`), invoked an external process (`tr`), and potentially `printf` as a command instead of builtin. This caused a slight fork/exec overhead especially in traps like `ERR` which must be extremely lightweight. By converting these to native bash parameter expansions, we avoid both subshells and external binary execution.
-- **Any remaining performance risks:** Trap handlers and sanitization now operate using purely internal bash processing.
+## What was optimized
+- Eliminated an unnecessary `grep -q "\S"` subprocess fork in `neos-installer-partition.sh` during the active mount check.
 
-## ⚡ Bolt: Native Bash Evaluation
-- **What was optimized:** Replaced POSIX `[ ... ]` conditional tests with native Bash `[[ ... ]]` in `neos-autoupdate.sh`.
-- **Before/after reasoning:** POSIX single brackets invoke the `test` command, which is prone to word splitting and pathname expansion overhead. Double brackets are a shell keyword, completely bypassing this parsing behavior and evaluating conditions natively.
-- **Any remaining performance risks:** Minimal. The script is now free of unnecessary POSIX expansion latency.
-## ⚡ Bolt: Native Bash Evaluation
-- **What was optimized:** Replaced multiple `grep -q` calls against `/proc/modules` with a single native read `PROC_MODULES="$(</proc/modules)"` and a native bash regex matching function `is_loaded` in `neos-driver-manager`.
-- **Before/after reasoning:** `grep -q` calls in loops and sequential conditions spawned multiple subshells and invoked external processes, leading to measurable fork/exec overhead. By reading the file into memory once and using native Bash matching, we eliminate this overhead completely.
-- **Any remaining performance risks:** Minimal. File size of `/proc/modules` is small enough to hold in memory easily.
+## Before/after reasoning
+- **Before:** The active mount check used a pipeline `lsblk ... | grep -q "\S"`. This required launching `lsblk` and piping to a separate `grep` process, which introduces unnecessary subprocess overhead in bash scripts.
+- **After:** The script captures the output of `lsblk` directly and uses native bash regex matching `[[ "$MOUNTPOINTS" =~ [^[:space:]] ]]`. This natively evaluates the check and saves a subshell spawn without breaking existing functionality.
 
-## ⚡ Bolt: Native Bash Optimizations
-- **What was optimized:** Replaced `findmnt | grep` with `stat` for early Btrfs root validation, and replaced `$(date)` with native bash `printf` for timestamp generation in `neos-autoupdate.sh`.
-- **Before/after reasoning:** `findmnt | grep` spawned two external subprocesses during script initialization. `$(date)` spawned a subshell and an external `date` binary on every log call. Using native Bash `printf` and `stat` eliminates these fork/exec overheads.
-- **Any remaining performance risks:** Minimal. The script is further optimized for sub-millisecond execution overhead.
-
-## ⚡ Bolt: Native Bash File Reading
-- **What was optimized:** Replaced `grep -m1 "vendor_id" /proc/cpuinfo` with native bash file reading `="$(< /proc/cpuinfo)"` in `neos-driver-manager`.
-- **Before/after reasoning:** The previous implementation spawned a subshell and invoked the external `grep` binary just to check for a substring. By reading the file into memory natively, we eliminate fork/exec overhead entirely.
-- **Any remaining performance risks:** Minimal. `/proc/cpuinfo` is a small virtual file that is extremely fast to load into memory.
+## Any remaining performance risks
+- The script continues to use `udevadm settle` and `sleep`, which are inherently blocking but necessary to wait for disk enumeration. The regex matching mitigates minor overhead but does not change the I/O-bound nature of partitioning operations.

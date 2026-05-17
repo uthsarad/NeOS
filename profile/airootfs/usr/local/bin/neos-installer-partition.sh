@@ -59,7 +59,9 @@ if [[ ! -b "$TARGET_DEV" ]]; then
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
-if lsblk -no MOUNTPOINT -- "$TARGET_DEV" | grep -q "\S"; then
+# Bolt: [Performance] Replaced grep -q with native bash regex match to eliminate subprocess overhead.
+MOUNTPOINTS=$(lsblk -no MOUNTPOINT -- "$TARGET_DEV" 2>/dev/null || true)
+if [[ "$MOUNTPOINTS" =~ [^[:space:]] ]]; then
     printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
     printf -- "\e[1m\e[31m❌ Error: Target device '%s' is currently mounted.\e[0m\n" "$TARGET_DEV" >&2
     printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
