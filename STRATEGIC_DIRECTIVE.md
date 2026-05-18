@@ -1,27 +1,25 @@
-# STRATEGIC DIRECTIVE: Systemd Sandboxing & Stabilization
+# STRATEGIC DIRECTIVE: Administrative Tracking Update
 
 ## Phase 1: Product Alignment Check
-- **Goal:** NeOS is a curated, stable, and secure Arch Linux desktop.
-- **Current State:** A core feature, snapshot-based rollback and secure defaults, is mostly in place. We are currently addressing audit findings to ensure we don't ship vulnerable configurations.
-- **Alignment:** Prioritizing hardening directly serves the product's "predictable and secure" mission.
+- **Goal:** Maintain clear and accurate tracking of project status toward the Beta release.
+- **Current State:** Several features (Pre-build CI tests, Troubleshooting guide) are already implemented in the codebase, but their completion status is not reflected in the tracking checklist.
+- **Alignment:** Accurate tracking ensures the team knows what is left before the release, preventing redundant work.
 
 ## Phase 2: Technical Posture Review
-- **Stability:** The build pipeline and primary services are stable and pass automated testing.
-- **Tech Debt:** An outstanding medium-priority audit item (#7) identifies incomplete systemd sandboxing across services. `neos-driver-manager.service` has been hardened, but `neos-autoupdate.service` and `neos-liveuser-setup.service` are missing critical sandboxing directives.
-- **Overbuilding:** No. Implementing documented, missing security constraints is a straightforward stabilization task.
+- **Stability:** The system is stable.
+- **Tech Debt:** Administrative drift in `docs/AUDIT_ACTION_PLAN.md` where implemented tasks are still marked as pending.
+- **Overbuilding:** No. Updating a checklist reduces confusion without adding complexity.
 
 ## Phase 3: Priority Selection
-- **Selected:** Stabilization / hardening
-- **Justification:** Completing the systemd sandboxing closes an open audit loop, tightening root-level execution environments and reducing the risk of privilege escalation.
+- **Selected:** Refinement of recent feature
+- **Justification:** Resolving administrative drift is a low-risk, necessary step to accurately reflect our progress towards the Beta release.
 
 ## Phase 4: Controlled Scope Definition
-- `profile/airootfs/etc/systemd/system/neos-autoupdate.service`
-- `profile/airootfs/etc/systemd/system/neos-liveuser-setup.service`
-- `docs/AUDIT_ACTION_PLAN.md` (to update checklist status)
-- **Constraints:** Do NOT modify `neos-driver-manager.service` as it already conforms to sandboxing tests. Do NOT break update functionality by using overly restrictive protections in `neos-autoupdate.service` (e.g., `ProtectSystem=strict` should be avoided there if it breaks updates).
+- `docs/AUDIT_ACTION_PLAN.md`
+- **Constraints:** Do not modify any codebase scripts or production files. Only update the checklist statuses for tasks that are already complete. Do not alter literal task instructions or examples.
 
 ## Phase 5: Delegation Strategy
-- **Architect:** Implement systemd sandboxing for `neos-autoupdate.service` and `neos-liveuser-setup.service` as outlined in `docs/AUDIT_ACTION_PLAN.md`. Update the audit documentation tracking.
-- **Bolt:** Validate that the new sandboxing rules do not measurably slow down service boot times.
-- **Palette:** Ensure any failures due to sandboxing produce clear, actionable log outputs.
-- **Sentinel:** Audit the sandboxing rules to ensure they effectively mitigate risk without breaking intended service behavior.
+- **Architect:** Update the checklist status in `docs/AUDIT_ACTION_PLAN.md` to mark "Pre-build CI tests" and "Troubleshooting guide" as completed (`[x]`).
+- **Bolt:** No performance optimization needed for this task. Ensure `bolt.json` tracking reflects no required action.
+- **Palette:** Ensure `palette.json` tracking reflects no required action.
+- **Sentinel:** Ensure `sentinel.json` tracking reflects no required action.
