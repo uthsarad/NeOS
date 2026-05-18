@@ -1,14 +1,11 @@
 {
-  "directive": "Stabilization / hardening",
+  "directive": "Refinement of recent feature",
   "allowed_files": [
-    "profile/airootfs/etc/systemd/system/neos-autoupdate.service",
-    "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Do not break autoupdate functionality; avoid ProtectSystem=strict in neos-autoupdate.service if it interferes with pacman updates.",
-    "Do not restrict neos-liveuser-setup.service in a way that prevents it from creating the liveuser.",
-    "Update checklist status in docs/AUDIT_ACTION_PLAN.md for the 'Implement Systemd Sandboxing' task.",
-    "Do not modify neos-driver-manager.service as it is already compliant."
+    "Only update the checklist status (from [ ] to [x]) for 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md.",
+    "Do not destructively alter literal task instructions or examples within the document.",
+    "Do not modify any source code or production files."
   ]
 }

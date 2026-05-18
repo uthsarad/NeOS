@@ -2,21 +2,19 @@
   "bolt": {
     "focus": "Performance",
     "instructions": [
-      "Ensure the addition of systemd sandboxing directives does not incur noticeable service start delays.",
-      "Check that minor parsing changes or tracking updates do not introduce I/O overhead."
+      "No performance optimizations are required for this administrative tracking update."
     ]
   },
   "palette": {
     "focus": "UX & Accessibility",
     "instructions": [
-      "If strict sandboxing causes a service failure, ensure the logged output remains clear and actionable for developers.",
-      "Ensure markdown updates to checklist tracking remain properly formatted."
+      "No UX or accessibility enhancements are required for this administrative tracking update."
     ]
   },
   "sentinel": {
     "focus": "Security",
     "instructions": [
-      "Audit the specific systemd directives added to ensure they effectively sandbox the services without causing regressions in core OS functionality (like updates or user creation)."
+      "No security validation is required for this administrative tracking update."
     ]
   }
 }
