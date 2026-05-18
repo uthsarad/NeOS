@@ -41,3 +41,7 @@
 **Vulnerability:** Unsanitized device path inputs in scripts like `neos-installer-partition.sh` can introduce command injection risks if the path contains shell metacharacters and is improperly evaluated or logged.
 **Learning:** Even inputs expected to be system paths (like block devices) must be strictly sanitized before being used in shell scripts to prevent attackers from injecting arbitrary commands via crafted filenames.
 **Prevention:** Strictly sanitize all variables containing file paths or device names using bash parameter expansion (e.g., `VAR="${VAR//[^a-zA-Z0-9_/.-]/}"`) to strip out any potentially dangerous characters.
+## 2026-02-18 - Additional Systemd Sandboxing
+**Vulnerability:** Systemd units `neos-autoupdate.service` and `neos-liveuser-setup.service` lacked restrictions on Control Groups, Kernel Modules, and Hostname modifications.
+**Learning:** We can apply defense-in-depth even for root-level scripts that need broad read/write access (e.g. pacman operations) by selectively restricting features they don't need (like kernel module loading).
+**Prevention:** Always use a comprehensive baseline of systemd sandboxing directives (`ProtectControlGroups`, `ProtectKernelModules`, `ProtectHostname`, `ProtectKernelLogs`, etc.) in addition to basic ones (`ProtectSystem`, `PrivateTmp`).
