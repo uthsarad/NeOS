@@ -1,20 +1,11 @@
 {
-  "bolt": {
-    "focus": "Performance",
-    "instructions": [
-      "No performance optimizations are required for this administrative tracking update."
-    ]
+  "Bolt": {
+    "directive": "Perform a minor, authorized performance optimization (nudge)."
   },
-  "palette": {
-    "focus": "UX & Accessibility",
-    "instructions": [
-      "No UX or accessibility enhancements are required for this administrative tracking update."
-    ]
+  "Palette": {
+    "directive": "Verify that markdown formatting remains intact after checklist updates in docs/AUDIT_ACTION_PLAN.md."
   },
-  "sentinel": {
-    "focus": "Security",
-    "instructions": [
-      "No security validation is required for this administrative tracking update."
-    ]
+  "Sentinel": {
+    "directive": "No action required."
   }
 }
