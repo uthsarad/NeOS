@@ -1,11 +1,9 @@
 {
-  "directive": "Refinement of recent feature",
   "allowed_files": [
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Only update the checklist status (from [ ] to [x]) for 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md.",
-    "Do not destructively alter literal task instructions or examples within the document.",
-    "Do not modify any source code or production files."
+    "Only update the checkbox status of 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md from '[ ]' to '[x]'.",
+    "Do not alter any other text, links, or instructions."
   ]
 }
