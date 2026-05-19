@@ -45,3 +45,7 @@
 **Vulnerability:** Systemd units `neos-autoupdate.service` and `neos-liveuser-setup.service` lacked restrictions on Control Groups, Kernel Modules, and Hostname modifications.
 **Learning:** We can apply defense-in-depth even for root-level scripts that need broad read/write access (e.g. pacman operations) by selectively restricting features they don't need (like kernel module loading).
 **Prevention:** Always use a comprehensive baseline of systemd sandboxing directives (`ProtectControlGroups`, `ProtectKernelModules`, `ProtectHostname`, `ProtectKernelLogs`, etc.) in addition to basic ones (`ProtectSystem`, `PrivateTmp`).
+## 2026-05-18 - Additional Systemd Sandboxing (neos-driver-manager)
+**Vulnerability:** The systemd unit `neos-driver-manager.service` lacked restrictions on Control Groups and Hostname modifications, despite having other sandboxing directives.
+**Learning:** Defense-in-depth requires a comprehensive baseline for root-level services. However, directives like `ProtectKernelModules` cannot be applied to services like `neos-driver-manager` that explicitly rely on `modprobe` to load drivers, as this breaks core functionality.
+**Prevention:** Always apply the baseline of systemd sandboxing directives (`ProtectControlGroups`, `ProtectHostname`) but carefully evaluate directives that restrict necessary OS features (like `ProtectKernelModules`) based on the service's literal function.
