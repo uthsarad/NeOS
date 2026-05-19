@@ -22,3 +22,15 @@
 
 ### Any remaining performance risks
 - None from this change. The script operations are now fully optimized for conditional evaluations.
+
+## Phase: Logging Optimization
+
+### What was optimized
+- Eliminated an unnecessary `tee -a` subprocess fork in the `log()` function within `neos-autoupdate.sh`.
+
+### Before/after reasoning
+- **Before:** The logging function piped output to `tee -a "$LOG_FILE"`, spawning an external process for every logged message.
+- **After:** Output is buffered to a local variable using `printf -v`, and written both to standard output and appended natively to the log file via `>>`, completely removing subprocess overhead.
+
+### Any remaining performance risks
+- Logging involves file I/O which can block under load, but the elimination of forking makes it significantly leaner.

@@ -59,7 +59,10 @@ fi
 
 log() {
     # Bolt: Use native bash printf for date formatting to eliminate fork/exec overhead
-    printf '%(%Y-%m-%d %H:%M:%S)T - %s\n' -1 "$1" | tee -a "$LOG_FILE"
+    local msg
+    printf -v msg '%(%Y-%m-%d %H:%M:%S)T - %s\n' -1 "$1"
+    printf "%s" "$msg"
+    printf "%s" "$msg" >> "$LOG_FILE"
 }
 
 notify_users() {
