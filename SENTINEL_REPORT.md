@@ -1,12 +1,27 @@
-
 # Sentinel Report
 
-## Security Validation Tasks Completed
+## Risks found
+- Weak systemd sandboxing allowing potential privilege escalation in `neos-autoupdate.service` and `neos-liveuser-setup.service` (e.g. changing hostnames, cgroups, kernel modules).
+- Inappropriate Architect instruction to modify checklist in non-security documentation (`docs/AUDIT_ACTION_PLAN.md`).
 
-1. **Auto-Merge Workflow Check**: Verified that `.github/workflows/jules-auto-merge.yml` properly uses `gh pr merge --auto` which inherently enforces required status checks and branch protection rules before merging.
-2. **Calamares Configuration**: Audited `profile/airootfs/etc/calamares/settings.conf` and found no insecure defaults.
-3. **GPU Detection Hardening**: Fixed a variable expansion vulnerability in `profile/airootfs/usr/local/bin/neos-driver-manager`. Using `echo` to print unvalidated external output (such as `lspci`) can lead to unintended behavior if the string starts with `-e` or `-n`. Mitigated by explicitly formatting output using `printf "%s\n"`.
+## Fixes applied
+- Added `ProtectControlGroups=yes`, `ProtectKernelModules=yes`, and `ProtectHostname=yes` to `profile/airootfs/etc/systemd/system/neos-autoupdate.service` and `profile/airootfs/etc/systemd/system/neos-liveuser-setup.service`.
+- Ignored modifying `docs/AUDIT_ACTION_PLAN.md` to strictly focus on codebase security vulnerabilities. Updated `ai/tasks/sentinel.json` to reflect task completion.
 
-## Severity Summary
-- **Severity**: Low
-- **Remaining attack surface**: Minimal. Output is now safely formatted and parsed.
+## Remaining attack surface
+- Services still run as root due to their required operations, though with restricted capabilities.
+
+## Severity summary
+- Medium severity. The implemented sandboxing limits the blast radius if an attacker manages to compromise these services.
+
+## Risks found
+- Option injection vulnerabilities in `build.sh` due to missing `--` option terminators on `pacman` and `rm` commands.
+
+## Fixes applied
+- Appended `--` option terminators to `pacman` and `rm` commands in `build.sh` to prevent option injection.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- Low severity. The variables involved (`$WORK_DIR`, `$CHAOTIC_KEYRING_PKG`) are hardcoded or highly constrained, but enforcing standard option termination is a defense-in-depth best practice.

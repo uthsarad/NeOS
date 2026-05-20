@@ -1,15 +1,27 @@
-# Palette UX Report
+# Palette Report
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Enhanced the graphical notification wrapper in `neos-autoupdate.sh` to accept dynamic titles, icons, and urgency levels.
+- Prevented a graceful exit (due to missing `snapper`) from presenting to the user as a critical system failure, changing it instead to an informational "System Update Skipped" dialog.
+## Remaining usability risks
+- Further system scripts using `notify-send` might also have hardcoded severities; these should be audited as well.
 
-## Modifications Made
-- Modified `profile/airootfs/usr/local/bin/neos-installer-partition.sh` to include text-based progress bars alongside the existing milestone steps (e.g., `[Step 1/5] [##........] 20%`).
-- Updated `profile/airootfs/etc/calamares/branding/neos/branding.desc` to match the NeOS brand identity. Aligned the color palette with the NeOS blue aesthetic (`#0078D4`).
+---
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Improved the early dependency logging in `neos-autoupdate.sh` to provide actionable context when `snapper` is missing or the root filesystem is not Btrfs, guiding the user toward proper configuration.
+## Remaining usability risks
+- The failure message for pacman updates relies on manual review of pacman logs rather than surfacing specific actionable commands.
 
-## UX Enhancements
-- **Progress Visibility**: Developers and administrators executing the partitioning script now receive an immediate, clear visual indication of completion percentage. This reduces uncertainty during longer operations (like formatting and wiping).
-- **Accessibility/Clarity**: Used high-contrast ascii characters (`#` and `.`) rather than relying on Unicode block characters, ensuring the progress bars render correctly across all TTY environments and serial consoles during installation.
-- **Brand Consistency**: The Calamares installer now visually reflects the overarching NeOS brand colors, creating a more cohesive, polished transition from boot to desktop.
+# PALETTE REPORT
+
+## Accessibility & UX Enhancements
+- Improved error messaging clarity for missing `snapper` dependencies, providing actionable context in log outputs.
+- Enhanced graphical notification formats for missing dependencies by using multi-line text and descriptive titles.
+- Refined the disk space error notification to clearly display required vs. available space using readable multi-line formatting.
+- Enhanced the general system update failure notification to use HTML bolding for log paths, improving readability in KDE Plasma's `notify-send` system.
 
 ## Remaining Usability Risks
-- The `mkfs.btrfs` and `wipefs` commands could be overly verbose. Consider suppressing non-essential output or redirecting it to a log file, keeping the console output strictly focused on the progress bars.
-
-- **Network Detection Formatting:** Enhanced the visibility of network driver loading in `neos-driver-manager` during boot. Added distinct visual boundaries (`----`) and clear action statements (`➡️  Action: Loading...`) so users can easily read the hardware detection steps as they scroll by on the TTY.
+- Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.

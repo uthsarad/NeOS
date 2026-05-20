@@ -90,3 +90,11 @@
 ## 2024-03-30 - Enhanced Visual Hierarchy in CLI Errors
 **Learning:** Using structural visual cues (like ASCII borders and spacing) in terminal output significantly reduces cognitive load during failure analysis by separating the error state from the actionable remediation steps.
 **Action:** When creating CLI error messages, group related information using borders and clear indentation to guide the developer's eye to the root cause and the fix sequentially.
+
+## 2026-05-03 - Consistent CLI Error Surfacing
+**Learning:** Background CLI scripts (like auto-updaters) often fail silently if dependencies are missing, frustrating users. Consolidating graphical notification logic (like `notify-send`) into a reusable function ensures consistent error surfacing across all CLI script failure modes without duplicating complex DBUS/su boilerplate.
+**Action:** Always extract graphical notification logic into a helper function and apply it to all critical failure points (e.g., missing dependencies, disk space) to guarantee users are informed.
+
+## 2024-05-28 - Context-Aware Notification UX
+**Learning:** Hardcoding error states (like 'System Update Failed') for all background notification surfaces creates alarm fatigue and confusion when a script merely skips execution gracefully (e.g., missing optional snapshot dependencies).
+**Action:** Parameterize title, icon, and urgency in graphical notification wrappers to align the visual severity with the actual systemic impact.

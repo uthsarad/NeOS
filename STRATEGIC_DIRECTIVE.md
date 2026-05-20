@@ -1,34 +1,26 @@
 # Strategic Directive
 
-## Phase 1: Product Alignment Check
-- **Goal:** NeOS aims to be a curated, predictable rolling-release Arch desktop with Windows-familiar UX.
-- **Current State:** The foundational snapshot infrastructure and ISO build pipeline are operational. Immediate blocking issues like `pacman.conf` and CI ISO validation are resolved.
-- **Leverage:** The highest leverage problem is completing the remaining high-priority audit items to ensure reliable system hardening and accurate documentation without breaking existing functionality.
+## PHASE 1: Product Alignment Check
+- **Product Vision**: NeOS is a curated, snapshot-based Arch Linux distribution targeting stability and Windows-familiar UX.
+- **Current Alignment**: We are aligned, currently focusing on hardening and operational predictability.
+- **Highest Leverage Problem**: Synchronizing tracking documents with codebase reality to ensure accurate progress reporting and prevent duplicated effort.
 
-## Phase 2: Technical Posture Review
-- **Stability:** The build pipeline is unblocked and functional.
-- **Tech Debt:** High-priority documentation gaps regarding architecture limitations and missing dependency validations in the autoupdate script remain.
-- **Overbuilding:** We must strictly adhere to resolving immediate audit findings and hardening existing services before introducing new features like App Sandboxing (Phase 5).
+## PHASE 2: Technical Posture Review
+- **System Stability**: High. Verification scripts confirm strong baseline engineering hygiene.
+- **Tech Debt**: Documentation drift identified. `docs/AUDIT_ACTION_PLAN.md` does not reflect the completion of CI pre-build testing (`.github/workflows/build-iso.yml`) and the existence of the Troubleshooting Guide (`docs/TROUBLESHOOTING.md`).
+- **Overbuilding Risk**: Low.
 
-## Phase 3: Priority Selection
-**Selection:** Stabilization / hardening
-We will focus on documenting architecture limitations, adding dependency validation to the autoupdate script, fixing documentation URLs, adding section comments to packages.x86_64, and implementing systemd sandboxing.
+## PHASE 3: Priority Selection
+- **Selected Priority**: Stabilization / hardening.
+- **Rationale**: Update tracking documentation to reflect the current state of the codebase, ensuring accurate reporting and alignment.
 
-## Phase 4: Controlled Scope Definition
-- **Exact files impacted:**
-  - `README.md`
-  - `docs/HANDBOOK.md`
-  - `CONTRIBUTING.md`
-  - `profile/packages.x86_64`
-  - `profile/airootfs/usr/local/bin/neos-autoupdate.sh`
-  - `profile/airootfs/etc/systemd/system/neos-autoupdate.service`
-  - `profile/airootfs/etc/systemd/system/neos-driver-manager.service`
-  - `profile/airootfs/etc/systemd/system/neos-liveuser-setup.service`
-- **Maximum allowed surface area:** Modifications are strictly limited to these files to resolve the remaining High/Medium priority audit findings.
-- **Constraints Architect must obey:** Focus strictly on functional implementation of the fixes. Do not implement deep performance optimizations or comprehensive UX polish; rely on delegation to specialists. Ensure security configurations do not break existing functionality (e.g., do not use `ProtectSystem=strict` on `neos-autoupdate.service`).
+## PHASE 4: Controlled Scope Definition
+- **Impacted Files**: `docs/AUDIT_ACTION_PLAN.md`
+- **Surface Area**: Minimal. Checkbox toggling in a single tracking document.
+- **Constraints**: The Architect must strictly update only the specified checkbox items (`Pre-build CI tests`, `Troubleshooting guide`) from incomplete `[ ]` to complete `[x]`. No other modifications are permitted.
 
-## Phase 5: Delegation Strategy
-- **Architect:** Implement the remaining fixes outlined in `docs/AUDIT_ACTION_PLAN.md` for High and Medium Priority items.
-- **Bolt:** Optimize CI validation scripts and evaluate the performance impact of new sandboxing directives.
-- **Palette:** Ensure error messages and documentation updates are clear, actionable, and formatted correctly.
-- **Sentinel:** Audit the new systemd sandboxing rules to ensure no new vulnerabilities are introduced and that they are applied correctly without breaking services.
+## PHASE 5: Delegation Strategy
+- **Architect**: Update the checklist status in `docs/AUDIT_ACTION_PLAN.md` for the completed tasks.
+- **Bolt**: Nudge (minor authorized performance optimization on a target file).
+- **Palette**: Ensure markdown formatting is intact for checklist updates in `docs/AUDIT_ACTION_PLAN.md`.
+- **Sentinel**: No immediate security task required for this documentation update.

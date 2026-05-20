@@ -1,17 +1,9 @@
 {
   "allowed_files": [
-    "README.md",
-    "docs/HANDBOOK.md",
-    "CONTRIBUTING.md",
-    "profile/packages.x86_64",
-    "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
-    "profile/airootfs/etc/systemd/system/neos-autoupdate.service",
-    "profile/airootfs/etc/systemd/system/neos-driver-manager.service",
-    "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service"
+    "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Restrict modifications strictly to the files listed in allowed_files.",
-    "Focus on resolving remaining High and Medium Priority items from docs/AUDIT_ACTION_PLAN.md.",
-    "Implement systemd sandboxing without breaking existing functionality. Specifically, do NOT use ProtectSystem=strict on neos-autoupdate.service as it breaks system updates."
+    "Only update the checkbox status of 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md from '[ ]' to '[x]'.",
+    "Do not alter any other text, links, or instructions."
   ]
 }

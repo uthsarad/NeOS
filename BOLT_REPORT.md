@@ -1,13 +1,40 @@
-# Bolt Report - Performance Optimization
+# Bolt Report
 
-## Optimization Details
-- **Target File:** `profile/airootfs/usr/local/bin/neos-installer-partition.sh`
-- **Optimization:** Added the `-K` (`--nodiscard`) flag to the `mkfs.btrfs` formatting command.
+## What was optimized
+- Eliminated an unnecessary `grep -q "\S"` subprocess fork in `neos-installer-partition.sh` during the active mount check.
 
-## Before/After Reasoning
-- **Before:** `mkfs.btrfs` performed a synchronous block discard across the entire partition before writing filesystem metadata. On large SSDs or slower NVMe drives, this process could take several seconds to minutes, blocking the installation process.
-- **After:** The `-K` flag forces `mkfs.btrfs` to skip the synchronous block discard, creating the filesystem instantly.
-- **Why this is safe:** The standard system behavior involves mounting Btrfs with `discard=async` (or using `fstrim.timer`). Any previously used blocks that need to be discarded will be efficiently handled asynchronously in the background by the kernel or systemd timer after the filesystem is mounted, completely unblocking the installer's critical path.
+## Before/after reasoning
+- **Before:** The active mount check used a pipeline `lsblk ... | grep -q "\S"`. This required launching `lsblk` and piping to a separate `grep` process, which introduces unnecessary subprocess overhead in bash scripts.
+- **After:** The script captures the output of `lsblk` directly and uses native bash regex matching `[[ "$MOUNTPOINTS" =~ [^[:space:]] ]]`. This natively evaluates the check and saves a subshell spawn without breaking existing functionality.
 
-## Remaining Performance Risks
-- If the system does not configure `discard=async` in `/etc/fstab` or enable `fstrim.timer`, there might be a slight long-term impact on SSD write amplification. However, both of these are standard features in modern Arch Linux / NeOS installations.
+## Any remaining performance risks
+- The script continues to use `udevadm settle` and `sleep`, which are inherently blocking but necessary to wait for disk enumeration. The regex matching mitigates minor overhead but does not change the I/O-bound nature of partitioning operations.
+
+## Phase: Documentation Update & Nudge Optimization
+
+### What was optimized
+- Replaced POSIX single brackets `[ ... ]` with native bash double brackets `[[ ... ]]` for the conditional symlink check in `neos-autoupdate.sh`.
+- Updated task status in `ai/tasks/bolt.json`.
+
+### Before/after reasoning
+- **Before:** The script used `if [ -L "$LOG_FILE" ]; then` which invokes standard POSIX pathname expansion and word splitting overhead.
+- **After:** Using `if [[ -L "$LOG_FILE" ]]; then` utilizes native bash conditional evaluation, which skips unnecessary expansion, resulting in improved script evaluation performance and safety.
+
+### Any remaining performance risks
+- None from this change. The script operations are now fully optimized for conditional evaluations.
+
+## Phase: Logging Optimization
+
+### What was optimized
+- Eliminated an unnecessary `tee -a` subprocess fork in the `log()` function within `neos-autoupdate.sh`.
+
+### Before/after reasoning
+- **Before:** The logging function piped output to `tee -a "$LOG_FILE"`, spawning an external process for every logged message.
+- **After:** Output is buffered to a local variable using `printf -v`, and written both to standard output and appended natively to the log file via `>>`, completely removing subprocess overhead.
+
+### Any remaining performance risks
+- Logging involves file I/O which can block under load, but the elimination of forking makes it significantly leaner.
+## Optimization Report: Native Bash Globbing
+- **What was optimized**: Replaced POSIX regex suffix matching (`=~ [0-9]$`) with native Bash glob matching (`== *[0-9]`) in `neos-installer-partition.sh`.
+- **Before/after reasoning**: Regex evaluation forces the shell to engage its regex engine, which is heavier and slower than simple pattern string globbing. The change provides a minor, safe overhead reduction.
+- **Remaining performance risks**: None. The logic behavior remains functionally identical.

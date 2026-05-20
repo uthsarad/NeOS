@@ -88,7 +88,7 @@
 **Learning:** In bash scripts, POSIX single brackets `[ ... ]` invoke the `test` command logic, which subjects variables to standard pathname expansion and word splitting unless carefully quoted, making evaluation slower.
 **Action:** Always prefer native bash double brackets `[[ ... ]]` over POSIX single brackets for conditional evaluations in bash scripts. They are a shell keyword rather than a command, and bypass standard pathname expansion and word splitting entirely, resulting in faster and safer evaluations, especially within tight loops.
 
-## $(date +%Y-%m-%d) - Native Bash Parameter Expansion
+## 2026-05-03 - Native Bash Parameter Expansion
 **Learning:** Using command substitutions like `$(basename "$0")` inside error traps spawns unnecessary subshells and external binary calls during failure conditions.
 **Action:** Always prefer native bash parameter expansion like `${0##*/}` to extract filenames and avoid unnecessary subprocess overhead, especially in cold or critical failure paths.
 
@@ -106,3 +106,26 @@
 ## 2026-06-20 - GitHub PAT Limits on Workflow Modifications
 **Learning:** PRs that introduce optimizations to `.github/workflows/*` files may trigger CI failures during automated merging if the workflow lacks a repository PAT with explicit workflow write scope.
 **Action:** When acting as a performance persona and encountering a workflow modification block, revert the workflow change to restore CI health and fallback to applying a minor authorized optimization to a test script (like adding `IFS=` to read loops) to satisfy the directive without violating security boundaries.
+
+## 2026-05-02 - Conditional Subshell Avoidance
+**Learning:** When writing bash scripts that cache output of external commands, executing subshells (like `$(command || true)`) for commands that are known to be missing introduces unnecessary process forking and error string handling.
+**Action:** Always conditionally assign empty variables and avoid executing subshells if a preceding `command -v` check confirms the command is unavailable.
+
+## 2026-05-03 - Native Bash EUID vs id -u Subshell
+**Learning:** Using `[ "$(id -u)" -ne 0 ]` to check for root privileges spawns an unnecessary subshell and an external `id` process.
+**Action:** Always prefer the native bash variable `EUID` with arithmetic evaluation `(( EUID != 0 ))` for instant, overhead-free root checks in performance-sensitive scripts.
+
+## 2026-06-25 - Avoid Double Executions in Conditional Checks
+**Learning:** Using a command with a quiet flag for a conditional check, and then re-executing it to capture its output (e.g., `if command -q; then var=$(command); fi`) results in unnecessary double subprocess overhead.
+**Action:** Always capture the output of the command directly within the conditional assignment (e.g., `if var=$(command 2>/dev/null); then ... fi`) to halve the execution time and reduce system call overhead in performance-sensitive scripts.
+
+## 2026-06-25 - Native Bash Parameter Expansion for String Sanitization
+**Learning:** Using `tr` in command substitutions (e.g., `$(printf "%s" "$VAR" | tr -cd '[:print:]')`) spawns unnecessary subshells and external processes. Bash native parameter expansions (e.g., `"${VAR//[^[:print:]]/}"`) can effectively strip unwanted characters natively without process forking overhead.
+**Action:** When sanitizing strings or variables in performance-critical bash scripts, especially within `ERR` traps or initialization, always prefer native parameter expansion instead of subshells and external binaries.
+## 2026-06-25 - Native Bash vs Multiple Grep Invocations
+**Learning:** Using multiple `grep -q` statements within loops or sequential checks against the same file spawns numerous subshells and external process calls, leading to measurable fork/exec overhead in performance-critical scripts.
+**Action:** When validating against small-to-medium files repeatedly, read the file into memory once natively (`VAR="$(<file)"`) and use native Bash regex matching (`[[ "$VAR" =~ pattern ]]`) to completely eliminate subprocess overhead.
+
+## 2026-06-25 - Native Bash Globbing vs Subprocess Regex
+**Learning:** Using regex operator `=~` in Bash conditions against variables incurs additional evaluation overhead compared to native globbing patterns (e.g., `*pattern`).
+**Action:** When validating simple variable suffixes (like checking if a device name ends with a digit), strictly utilize native bash globbing (`[[ "$TARGET_DEV" == *[0-9] ]]`) rather than regex (`[[ "$TARGET_DEV" =~ [0-9]$ ]]`) to reduce processing overhead during frequent or critical evaluations.

@@ -1,23 +1,11 @@
 {
-  "bolt": {
-    "focus": "Performance impact of hardening measures",
-    "instructions": [
-      "Verify that the new systemd sandboxing directives do not measurably slow down service boot times.",
-      "Ensure native bash constructs are used in CI scripts to minimize overhead."
-    ]
+  "Bolt": {
+    "directive": "Perform a minor, authorized performance optimization (nudge)."
   },
-  "palette": {
-    "focus": "UX of error messaging and documentation",
-    "instructions": [
-      "Ensure any failures related to tightened permissions yield clear, actionable log outputs for developers.",
-      "Review documentation updates for clarity and user understanding."
-    ]
+  "Palette": {
+    "directive": "Verify that markdown formatting remains intact after checklist updates in docs/AUDIT_ACTION_PLAN.md."
   },
-  "sentinel": {
-    "focus": "Security validation of new configurations",
-    "instructions": [
-      "Audit the systemd sandboxing (ProtectSystem, NoNewPrivileges, PrivateTmp) to ensure root privileges are effectively limited where applicable.",
-      "Ensure that sandboxing exceptions (like omitting ProtectSystem=strict for neos-autoupdate.service) are well-justified and documented."
-    ]
+  "Sentinel": {
+    "directive": "No action required."
   }
 }
