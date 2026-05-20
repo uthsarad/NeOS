@@ -1,15 +1,9 @@
 {
   "allowed_files": [
-    "tests/verify_iso_smoketest.sh",
-    ".github/workflows/build-iso.yml",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Enhance verify_iso_smoketest.sh to perform a QEMU boot test if an ISO is present.",
-    "Use lightweight QEMU parameters (e.g., -nographic) to verify kernel/initramfs loading without a display.",
-    "Ensure the test includes a strict timeout to prevent infinite hangs.",
-    "Gracefully skip the test if QEMU or virtualization support is missing.",
-    "Update AUDIT_ACTION_PLAN.md to mark the VM boot test task as completed if the implementation is successful.",
-    "Do not modify core OS build logic."
+    "Only update the checkbox status of 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md from '[ ]' to '[x]'.",
+    "Do not alter any other text, links, or instructions."
   ]
 }

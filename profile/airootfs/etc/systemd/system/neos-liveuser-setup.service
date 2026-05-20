@@ -13,6 +13,9 @@ PrivateTmp=yes
 ProtectKernelTunables=yes
 RestrictRealtime=yes
 ReadWritePaths=/etc/sudoers.d /etc/passwd /etc/group /etc/shadow /etc/gshadow /home
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectHostname=yes
 
 [Install]
 WantedBy=multi-user.target

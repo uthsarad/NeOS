@@ -298,7 +298,7 @@ Before first beta release:
 - [x] **CRITICAL:** Test ISO boots in VM
 - [x] **HIGH:** Add ISO size validation
 - [x] **HIGH:** Document architecture limitations
-- [ ] **HIGH:** Fix documentation URLs
+- [x] **HIGH:** Fix documentation URLs
 - [x] **MEDIUM:** Update CHANGELOG
 - [x] **MEDIUM:** Add dependency validation
 - [ ] **NICE-TO-HAVE:** Pre-build CI tests

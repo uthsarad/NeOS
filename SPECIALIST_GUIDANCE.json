@@ -1,14 +1,11 @@
 {
-  "bolt": {
-    "focus": "Test Execution Time",
-    "guidance": "Verify that the QEMU boot test incorporates an appropriate timeout (e.g., `timeout 5m qemu-system-x86_64 ...`) to avoid blocking the CI pipeline indefinitely in case of a boot failure."
+  "Bolt": {
+    "directive": "Perform a minor, authorized performance optimization (nudge)."
   },
-  "palette": {
-    "focus": "None",
-    "guidance": "No UX enhancements required for this task."
+  "Palette": {
+    "directive": "Verify that markdown formatting remains intact after checklist updates in docs/AUDIT_ACTION_PLAN.md."
   },
-  "sentinel": {
-    "focus": "CI Execution Context",
-    "guidance": "Audit the usage of QEMU within the GitHub Actions environment. Ensure it operates with least privilege and does not require `--privileged` container execution if avoidable."
+  "Sentinel": {
+    "directive": "No action required."
   }
 }

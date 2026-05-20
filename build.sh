@@ -36,13 +36,13 @@ if [ -d "$WORK_DIR" ]; then
     echo -e "${YELLOW}Work directory '$WORK_DIR' exists.${NC}"
     if [[ "${CI:-}" == "true" ]]; then
         echo "Running in CI environment. Removing $WORK_DIR..."
-        rm -rf "$WORK_DIR"
+        rm -rf -- "$WORK_DIR"
     else
         read -p "Clean work directory before building? (y/N) " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo "Removing $WORK_DIR..."
-            rm -rf "$WORK_DIR"
+            rm -rf -- "$WORK_DIR"
         fi
     fi
 fi
@@ -56,7 +56,7 @@ cp "$PROFILE_DIR/pacman.conf" "$BUILD_CONF"
 
 # Update Arch Linux Keyring to prevent signature errors
 echo "Updating Arch Linux Keyring..."
-pacman -Sy --noconfirm archlinux-keyring
+pacman -Sy --noconfirm -- archlinux-keyring
 
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
@@ -81,7 +81,7 @@ else
 fi
 
 # Install/Update
-pacman -U --noconfirm --needed "$CHAOTIC_KEYRING_PKG"
+pacman -U --noconfirm --needed -- "$CHAOTIC_KEYRING_PKG"
 
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)

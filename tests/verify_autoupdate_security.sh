@@ -3,7 +3,7 @@
 # This is a security check to prevent privilege escalation via log file symlinking
 
 SCRIPT_PATH="profile/airootfs/usr/local/bin/neos-autoupdate.sh"
-CHECK_PATTERN="if [ -L \"\$LOG_FILE\" ]; then"
+CHECK_PATTERN="if [[ -L \"\$LOG_FILE\" ]]; then"
 
 if [ ! -f "$SCRIPT_PATH" ]; then
     echo "❌ $SCRIPT_PATH not found!"

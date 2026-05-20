@@ -37,9 +37,9 @@
       "status": "completed"
     },
     {
-      "id": "palette-iso-boot",
-      "status": "pending",
-      "description": "Enhance console output readability for QEMU test logs in verify_iso_smoketest.sh."
+      "description": "Ensure markdown formatting is intact for checklist updates.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "pending"
     }
   ]
 }

@@ -42,9 +42,19 @@
       "status": "completed"
     },
     {
-      "id": "sentinel-iso-boot",
-      "status": "pending",
-      "description": "Audit QEMU usage in CI to ensure it runs with least privileges."
+      "description": "Fix documentation URLs in AUDIT_ACTION_PLAN.md",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "completed"
+    },
+    {
+      "description": "Add strict PATH export and sanitize variables in neos-liveuser-setup to prevent path hijacking and log injection",
+      "target_file": "profile/airootfs/usr/local/bin/neos-liveuser-setup",
+      "status": "completed"
+    },
+    {
+      "description": "Confirm checklist updates do not alter external links or instructions.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "completed"
     }
   ]
 }

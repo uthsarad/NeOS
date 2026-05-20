@@ -1,21 +1,26 @@
-# STRATEGIC DIRECTIVE: ISO Boot Verification in Virtual Environment
+# Strategic Directive
 
-## Phase 1: Product Alignment
-NeOS must deliver a reliable out-of-the-box experience. A successful ISO build is insufficient if the resulting image fails to boot or operate correctly in common environments. Verifying the ISO boot process directly supports the mission of delivering a stable, predictable foundation for users.
+## PHASE 1: Product Alignment Check
+- **Product Vision**: NeOS is a curated, snapshot-based Arch Linux distribution targeting stability and Windows-familiar UX.
+- **Current Alignment**: We are aligned, currently focusing on hardening and operational predictability.
+- **Highest Leverage Problem**: Synchronizing tracking documents with codebase reality to ensure accurate progress reporting and prevent duplicated effort.
 
-## Phase 2: Technical Posture
-The project has achieved a stable build pipeline and resolved critical configuration blockers. However, the `AUDIT_ACTION_PLAN.md` identifies "[ ] **CRITICAL:** Test ISO boots in VM" as an outstanding, high-risk item that must be addressed before beta release. The infrastructure exists to build the ISO, but end-to-end runtime validation is currently missing from the automated pipeline or documented manual processes.
+## PHASE 2: Technical Posture Review
+- **System Stability**: High. Verification scripts confirm strong baseline engineering hygiene.
+- **Tech Debt**: Documentation drift identified. `docs/AUDIT_ACTION_PLAN.md` does not reflect the completion of CI pre-build testing (`.github/workflows/build-iso.yml`) and the existence of the Troubleshooting Guide (`docs/TROUBLESHOOTING.md`).
+- **Overbuilding Risk**: Low.
 
-## Phase 3: Priority Selection
-Selected Priority: **Stabilization / hardening**. Ensuring the generated artifact is actually usable is paramount. Addressing the untested ISO boot risk directly targets the highest remaining critical item in the audit plan.
+## PHASE 3: Priority Selection
+- **Selected Priority**: Stabilization / hardening.
+- **Rationale**: Update tracking documentation to reflect the current state of the codebase, ensuring accurate reporting and alignment.
 
-## Phase 4: Controlled Scope
-- **Impacted Files:** `tests/verify_iso_smoketest.sh`, `.github/workflows/build-iso.yml`, `docs/AUDIT_ACTION_PLAN.md`
-- **Allowed Action:** Enhance the existing ISO smoke test script to utilize QEMU for a basic boot verification if an ISO is present, or document the manual VM testing procedure if automation is out of scope for the current environment. Update the audit checklist upon successful implementation.
-- **Constraints:** Do not introduce heavy dependencies (like full GUI testing frameworks) that exceed the current CI runner capabilities without explicit justification. Ensure the test degrades gracefully if virtualization is unavailable.
+## PHASE 4: Controlled Scope Definition
+- **Impacted Files**: `docs/AUDIT_ACTION_PLAN.md`
+- **Surface Area**: Minimal. Checkbox toggling in a single tracking document.
+- **Constraints**: The Architect must strictly update only the specified checkbox items (`Pre-build CI tests`, `Troubleshooting guide`) from incomplete `[ ]` to complete `[x]`. No other modifications are permitted.
 
-## Phase 5: Delegation Strategy
-- **Architect:** Implement the automated QEMU-based boot validation in `tests/verify_iso_smoketest.sh` or create the manual testing documentation.
-- **Bolt:** Ensure any automated boot test completes within a reasonable timeout to prevent CI hangs.
-- **Palette:** No direct UI/UX changes required, but ensure any test failure logs are clearly legible.
-- **Sentinel:** Verify that running QEMU in CI does not introduce privilege escalation risks or expose the runner to untrusted code execution.
+## PHASE 5: Delegation Strategy
+- **Architect**: Update the checklist status in `docs/AUDIT_ACTION_PLAN.md` for the completed tasks.
+- **Bolt**: Nudge (minor authorized performance optimization on a target file).
+- **Palette**: Ensure markdown formatting is intact for checklist updates in `docs/AUDIT_ACTION_PLAN.md`.
+- **Sentinel**: No immediate security task required for this documentation update.
