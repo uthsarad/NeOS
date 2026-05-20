@@ -301,8 +301,8 @@ Before first beta release:
 - [x] **HIGH:** Fix documentation URLs
 - [x] **MEDIUM:** Update CHANGELOG
 - [x] **MEDIUM:** Add dependency validation
-- [ ] **NICE-TO-HAVE:** Pre-build CI tests
-- [ ] **NICE-TO-HAVE:** Troubleshooting guide
+- [x] **NICE-TO-HAVE:** Pre-build CI tests
+- [x] **NICE-TO-HAVE:** Troubleshooting guide
 
 **Minimum for Release:** First 6 items checked
 
