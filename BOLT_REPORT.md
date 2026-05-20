@@ -34,3 +34,7 @@
 
 ### Any remaining performance risks
 - Logging involves file I/O which can block under load, but the elimination of forking makes it significantly leaner.
+## Optimization Report: Native Bash Globbing
+- **What was optimized**: Replaced POSIX regex suffix matching (`=~ [0-9]$`) with native Bash glob matching (`== *[0-9]`) in `neos-installer-partition.sh`.
+- **Before/after reasoning**: Regex evaluation forces the shell to engage its regex engine, which is heavier and slower than simple pattern string globbing. The change provides a minor, safe overhead reduction.
+- **Remaining performance risks**: None. The logic behavior remains functionally identical.

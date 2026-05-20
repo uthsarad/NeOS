@@ -125,3 +125,7 @@
 ## 2026-06-25 - Native Bash vs Multiple Grep Invocations
 **Learning:** Using multiple `grep -q` statements within loops or sequential checks against the same file spawns numerous subshells and external process calls, leading to measurable fork/exec overhead in performance-critical scripts.
 **Action:** When validating against small-to-medium files repeatedly, read the file into memory once natively (`VAR="$(<file)"`) and use native Bash regex matching (`[[ "$VAR" =~ pattern ]]`) to completely eliminate subprocess overhead.
+
+## 2026-06-25 - Native Bash Globbing vs Subprocess Regex
+**Learning:** Using regex operator `=~` in Bash conditions against variables incurs additional evaluation overhead compared to native globbing patterns (e.g., `*pattern`).
+**Action:** When validating simple variable suffixes (like checking if a device name ends with a digit), strictly utilize native bash globbing (`[[ "$TARGET_DEV" == *[0-9] ]]`) rather than regex (`[[ "$TARGET_DEV" =~ [0-9]$ ]]`) to reduce processing overhead during frequent or critical evaluations.
