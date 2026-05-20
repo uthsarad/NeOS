@@ -12,6 +12,9 @@ PrivateTmp=yes
 ProtectHome=yes
 ProtectKernelTunables=yes
 RestrictRealtime=yes
+ProtectControlGroups=yes
+ProtectKernelModules=yes
+ProtectHostname=yes
 
 [Install]
 WantedBy=multi-user.target

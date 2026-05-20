@@ -15,13 +15,17 @@ strings:
     versionedName:       NeOS 2026.04
     shortVersionedName:  NeOS 2026.04
     bootloaderEntryName: NeOS
-    productUrl:          https://github.com/uthsarad/NeOS
-    supportUrl:          https://github.com/uthsarad/NeOS/issues
-    releaseNotesUrl:     https://github.com/uthsarad/NeOS/blob/main/CHANGELOG.md
+    # Sentinel: [Security] Commented out external URLs to prevent Calamares from launching a web browser as root.
+    # productUrl:          https://github.com/uthsarad/NeOS
+    # supportUrl:          https://github.com/uthsarad/NeOS/issues
+    # releaseNotesUrl:     https://github.com/uthsarad/NeOS/blob/main/CHANGELOG.md
 
 slideshow:               "show.qml"
 
 style:
+   # Palette: [UX] Ensure Calamares branding correctly uses NeOS blue (#0078D4).
+   # Bolt: [Performance] Consider testing QML rendering speed with this background vs an image.
+   # Sentinel: [Security] Validate that external product URLs load in a secure sandbox context if clicked.
    sidebarBackground:    "#0078D4"
    sidebarText:          "#FFFFFF"
    sidebarTextSelect:    "#005A9E"

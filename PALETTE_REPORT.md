@@ -1,11 +1,27 @@
-# Palette UX Report
+# Palette Report
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Enhanced the graphical notification wrapper in `neos-autoupdate.sh` to accept dynamic titles, icons, and urgency levels.
+- Prevented a graceful exit (due to missing `snapper`) from presenting to the user as a critical system failure, changing it instead to an informational "System Update Skipped" dialog.
+## Remaining usability risks
+- Further system scripts using `notify-send` might also have hardcoded severities; these should be audited as well.
 
-## Accessibility & UX Improvements
-1. **NeOS Installer Partitioning**:
-   - Integrated milestone status directly into a progress file (`/tmp/neos-partition-progress`) to allow Calamares UI to render visual progress bars tightly via DBus or file monitoring.
-2. **NeOS Driver Manager**:
-   - Formatted the network detection output during boot. By utilizing ANSI bold and cyan color escape sequences (`\e[1m\e[36m`), the critical hardware detection lines are significantly more visible for the user, improving readability in a fast-scrolling TTY boot environment.
+---
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Improved the early dependency logging in `neos-autoupdate.sh` to provide actionable context when `snapper` is missing or the root filesystem is not Btrfs, guiding the user toward proper configuration.
+## Remaining usability risks
+- The failure message for pacman updates relies on manual review of pacman logs rather than surfacing specific actionable commands.
+
+# PALETTE REPORT
+
+## Accessibility & UX Enhancements
+- Improved error messaging clarity for missing `snapper` dependencies, providing actionable context in log outputs.
+- Enhanced graphical notification formats for missing dependencies by using multi-line text and descriptive titles.
+- Refined the disk space error notification to clearly display required vs. available space using readable multi-line formatting.
+- Enhanced the general system update failure notification to use HTML bolding for log paths, improving readability in KDE Plasma's `notify-send` system.
 
 ## Remaining Usability Risks
-- Ensure Calamares is appropriately configured to read `/tmp/neos-partition-progress` for the installer UI.
-- Further text improvements might be needed for the GPU detection outputs in the driver manager.
+- Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.

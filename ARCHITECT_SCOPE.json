@@ -1,8 +1,9 @@
 {
-  "allowed_files": [],
+  "allowed_files": [
+    "docs/AUDIT_ACTION_PLAN.md"
+  ],
   "constraints": [
-    "Do not modify any production code.",
-    "Verify system state with tests.",
-    "Ensure proper test completion."
+    "Only update the checkbox status of 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md from '[ ]' to '[x]'.",
+    "Do not alter any other text, links, or instructions."
   ]
 }

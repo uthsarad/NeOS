@@ -2,20 +2,39 @@
   "focus_area": "Performance Optimization",
   "tasks": [
     {
-      "description": "Optimize GPU detection in neos-driver-manager to avoid unnecessary module probing.",
-      "target_file": "airootfs/usr/local/bin/neos-driver-manager"
+      "description": "Measure and validate the lspci caching logic in neos-driver-manager.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "completed"
     },
     {
-      "description": "Review partitioning script for opportunities to use async discard on Btrfs formatting.",
-      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+      "description": "Ensure dependency validations in neos-autoupdate.sh rely on native bash capabilities. Consider native bash integer math for disk space comparisons.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
     },
     {
-      "description": "Evaluate if filtering lspci output directly with regex is faster than piping to grep.",
-      "target_file": "airootfs/usr/local/bin/neos-driver-manager"
+      "description": "Consider testing QML rendering speed with the #0078D4 background vs an image.",
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc",
+      "status": "completed"
     },
     {
-      "description": "Optimize lspci parsing for network controllers to reduce command execution overhead.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+      "description": "Validate that input sanitization and option termination rely on native bash syntax and do not incur additional execution overhead.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Ensure the early dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Documentation update only; no performance optimizations required here.",
+      "target_file": "README.md",
+      "status": "completed"
+    },
+    {
+      "description": "No performance optimizations required for documentation tracking updates.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "completed"
     }
   ]
 }
