@@ -13,6 +13,8 @@ ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes
 RestrictRealtime=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
 
 [Install]
 WantedBy=multi-user.target

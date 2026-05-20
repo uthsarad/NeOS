@@ -1,14 +1,11 @@
 {
-  "bolt": {
-    "focus": "No action",
-    "instructions": []
+  "Bolt": {
+    "directive": "Perform a minor, authorized performance optimization (nudge)."
   },
-  "palette": {
-    "focus": "No action",
-    "instructions": []
+  "Palette": {
+    "directive": "Verify that markdown formatting remains intact after checklist updates in docs/AUDIT_ACTION_PLAN.md."
   },
-  "sentinel": {
-    "focus": "No action",
-    "instructions": []
+  "Sentinel": {
+    "directive": "No action required."
   }
 }

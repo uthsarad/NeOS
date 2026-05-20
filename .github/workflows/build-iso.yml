@@ -79,7 +79,7 @@ jobs:
           pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
           # Use --overwrite to handle gcc-libs split into libgcc/libstdc++
           # Target specific library files to avoid masking other conflicts
-          pacman -Sy --noconfirm --overwrite='/usr/lib/libgcc*' --overwrite='/usr/lib/libstdc++*' --overwrite='/usr/share/licenses/gcc-libs/*' archiso git wget squashfs-tools grub syslinux rust
+          pacman -Sy --noconfirm --overwrite='/usr/lib/libgcc*' --overwrite='/usr/lib/libstdc++*' --overwrite='/usr/share/licenses/gcc-libs/*' archiso git wget squashfs-tools grub syslinux rust qemu-system-x86
 
       - name: Prepare Build Config
         run: |

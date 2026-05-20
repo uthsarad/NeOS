@@ -59,8 +59,7 @@ jobs:
           if gh pr merge "$PR_URL" --auto --squash --delete-branch; then
             echo "✅ Auto-merge enabled/completed successfully."
           else
-            echo "⚠️ WARNING: Failed to enable auto-merge. Auto-merge might not be allowed for this repository." >&2
-            echo "💡 Check: Ensure all status checks are passing, branch protection rules allow merging, and 'Allow auto-merge' is enabled in repo settings." >&2
-            # Gracefully degrade instead of failing the CI pipeline
+            echo "⚠️ WARNING: Failed to enable auto-merge. Repository may not allow auto-merge." >&2
+            echo "💡 Check: Ensure all status checks are passing and branch protection rules allow merging." >&2
             exit 0
           fi
