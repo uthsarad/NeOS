@@ -13,3 +13,15 @@
 
 ## Severity summary
 - Medium severity. The implemented sandboxing limits the blast radius if an attacker manages to compromise these services.
+
+## Risks found
+- Option injection vulnerabilities in `build.sh` due to missing `--` option terminators on `pacman` and `rm` commands.
+
+## Fixes applied
+- Appended `--` option terminators to `pacman` and `rm` commands in `build.sh` to prevent option injection.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- Low severity. The variables involved (`$WORK_DIR`, `$CHAOTIC_KEYRING_PKG`) are hardcoded or highly constrained, but enforcing standard option termination is a defense-in-depth best practice.
