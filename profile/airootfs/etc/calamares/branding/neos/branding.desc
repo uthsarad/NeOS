@@ -28,5 +28,5 @@ style:
    # Sentinel: [Security] Validate that external product URLs load in a secure sandbox context if clicked.
    sidebarBackground:    "#0078D4"
    sidebarText:          "#FFFFFF"
-   sidebarTextSelect:    "#005A9E"
+   sidebarTextSelect:    "#FFFFFF"
    sidebarTextHighlight: "#005A9E"
