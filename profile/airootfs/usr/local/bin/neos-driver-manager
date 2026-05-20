@@ -12,11 +12,13 @@ echo -e "\e[1m\e[36m🔍 NeOS Hardware Detection starting...\e[0m"
 # ⚡ Bolt: Use lspci -k for faster module association checks
 if ! command -v lspci &> /dev/null; then
     echo -e "\e[1m\e[33m⚠️  pciutils not found, hardware detection may be limited.\e[0m"
+    LSPCI_OUT=""
+else
+    # GPU Detection
+    # Cache lspci output to avoid repeated execution
+    # Bolt: [Performance] Conditionally execute lspci only if present to eliminate subshell/error overhead when missing.
+    LSPCI_OUT=$(lspci || true)
 fi
-
-# GPU Detection
-# Cache lspci output to avoid repeated execution
-LSPCI_OUT=$(lspci || true)
 
 # GPU and Network Detection parsed in a single pass using native bash matching
 GPU_INFO=""
@@ -34,24 +36,27 @@ GPU_INFO="${GPU_INFO%$'\n'}"
 NET_INFO="${NET_INFO%$'\n'}"
 
 # Bolt: [Performance] Avoided filtering lspci output directly with regex or grep to save subprocess overhead.
-printf "\e[1m\e[36m🖥️  Detected Graphics:\e[0m \n"
-if [ -n "$GPU_INFO" ]; then
-    while IFS= read -r line; do
+# Palette: [UX] Format multi-line graphics string variable with bullet points for readability
+printf "\e[1m\e[36m🖥️  Detected Graphics:\e[0m\n"
+while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
         printf "  - %s\n" "$line"
-    done <<< "$GPU_INFO"
-else
-    printf "  - (None)\n"
-fi
+    fi
+done <<< "$GPU_INFO"
+
+PROC_MODULES="$(</proc/modules)"
+is_loaded() { [[ "$PROC_MODULES" =~ (^|$'\n')$1[[:space:]] ]]; }
 
 if [[ "$GPU_INFO" == *nvidia* ]]; then
     echo -e "\e[1m\e[32m🎮 NVIDIA GPU detected!\e[0m"
     # Check if proprietary drivers are already installed (they should be in packages.x86_64)
-    if pacman -Qs nvidia &> /dev/null; then
+    if pacman -Qs -- nvidia &> /dev/null; then
         echo -e "\e[1m\e[32m✅ NVIDIA proprietary drivers are present.\e[0m"
         # Sentinel: Ensure kernel modules are loaded safely
-        if ! lsmod | grep -q nvidia; then
+        # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+        if ! is_loaded "nvidia"; then
             echo -e "\e[1m\e[34m🚀 Loading NVIDIA kernel modules...\e[0m"
-            modprobe nvidia nvidia_modeset nvidia_uvm nvidia_drm || echo -e "\e[1m\e[31m❌ Failed to load NVIDIA modules.\e[0m"
+            modprobe -- nvidia nvidia_modeset nvidia_uvm nvidia_drm || echo -e "\e[1m\e[31m❌ Failed to load NVIDIA modules.\e[0m"
         fi
     else
         echo -e "\e[1m\e[33m💡 Suggestion:\e[0m Install 'nvidia' and 'nvidia-utils' for optimal performance."
@@ -59,61 +64,74 @@ if [[ "$GPU_INFO" == *nvidia* ]]; then
 elif [[ "$GPU_INFO" == *intel* ]]; then
     echo -e "\e[1m\e[34m🔵 Intel Graphics detected.\e[0m"
     # Ensure i915 is loaded
-    modprobe i915 || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    is_loaded "i915" || modprobe -- i915 || true
 elif [[ "$GPU_INFO" == *amd* ]] || [[ "$GPU_INFO" == *ati* ]]; then
     echo -e "\e[1m\e[31m🔴 AMD/ATI Graphics detected.\e[0m"
     # Ensure amdgpu is loaded
-    modprobe amdgpu || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    is_loaded "amdgpu" || modprobe -- amdgpu || true
 fi
 
 # Network Detection
 # Bolt: [Performance] Optimized lspci parsing for network controllers to reduce command execution overhead.
 # Sentinel: [Security] Audit network detection regex for potential injection or parsing vulnerabilities.
-printf "\e[1m\e[36m🌐  Detected Network:\e[0m \n"
-if [ -n "$NET_INFO" ]; then
-    while IFS= read -r line; do
+# Palette: [UX] Format multi-line network string variable with bullet points for readability
+printf "\e[1m\e[36m🌐  Detected Network:\e[0m\n"
+while IFS= read -r line; do
+    if [[ -n "$line" ]]; then
         printf "  - %s\n" "$line"
-    done <<< "$NET_INFO"
-else
-    printf "  - (None)\n"
-fi
+    fi
+done <<< "$NET_INFO"
 
 if [[ "$NET_INFO" == *broadcom* ]] || [[ "$NET_INFO" == *bcm* ]]; then
     echo -e "\e[1m\e[36m📶 Broadcom network detected.\e[0m Ensuring broadcom-wl is available..."
-    modprobe wl || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    is_loaded "wl" || modprobe -- wl || true
 elif [[ "$NET_INFO" == *realtek* ]] || [[ "$NET_INFO" == *rtl* ]]; then
     echo -e "\e[1m\e[36m📶 Realtek network detected.\e[0m"
-    modprobe r8169 || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    is_loaded "r8169" || modprobe -- r8169 || true
 elif [[ "$NET_INFO" == *intel* ]]; then
     echo -e "\e[1m\e[36m📶 Intel network detected.\e[0m"
-    modprobe iwlwifi || true
+    # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+    is_loaded "iwlwifi" || modprobe -- iwlwifi || true
 fi
 shopt -u nocasematch
 
 # CPU Microcode
-CPU_INFO=$(grep -m1 "vendor_id" /proc/cpuinfo || true)
-if printf "%s\n" "$CPU_INFO" | grep -q "AuthenticAMD"; then
+# Bolt: [Performance] Avoid grep subprocess overhead by reading directly into native bash variable
+CPU_INFO="$(< /proc/cpuinfo)" || CPU_INFO=""
+if [[ "$CPU_INFO" == *AuthenticAMD* ]]; then
     echo -e "\e[1m\e[32m🧠 AMD CPU detected.\e[0m Ensuring amd-ucode is available..."
-elif printf "%s\n" "$CPU_INFO" | grep -q "GenuineIntel"; then
+elif [[ "$CPU_INFO" == *GenuineIntel* ]]; then
     echo -e "\e[1m\e[34m🧠 Intel CPU detected.\e[0m Ensuring intel-ucode is available..."
 fi
 
 # Virtualization Guest Support
-if systemd-detect-virt -q; then
-    VIRT_TYPE=$(systemd-detect-virt)
+if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
     printf "\e[1m\e[35m☁️  Virtualization detected:\e[0m %s\n" "$VIRT_TYPE"
     case "$VIRT_TYPE" in
         kvm|qemu)
             echo -e "\e[1m\e[36m🔧 Loading QEMU/KVM guest modules...\e[0m"
-            modprobe virtio_pci virtio_blk virtio_net virtio_balloon || true
+            # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+            for mod in virtio_pci virtio_blk virtio_net virtio_balloon; do
+            is_loaded "${mod//-/_}" || modprobe -- "$mod" || true
+            done
             ;;
         oracle)
             echo -e "\e[1m\e[36m🔧 Loading VirtualBox guest modules...\e[0m"
-            modprobe vboxguest vboxsf vboxvideo || true
+            # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+            for mod in vboxguest vboxsf vboxvideo; do
+            is_loaded "${mod//-/_}" || modprobe -- "$mod" || true
+            done
             ;;
         vmware)
             echo -e "\e[1m\e[36m🔧 Loading VMware guest modules...\e[0m"
-            modprobe vmw_balloon vmw_vmci vmwgfx || true
+            # Bolt: [Performance] Avoid unconditional modprobe subshells. Use /proc/modules native grep.
+            for mod in vmw_balloon vmw_vmci vmwgfx; do
+            is_loaded "${mod//-/_}" || modprobe -- "$mod" || true
+            done
             ;;
     esac
 fi

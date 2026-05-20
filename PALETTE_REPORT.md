@@ -1,7 +1,27 @@
-# Palette Report 🎨
+# Palette Report
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Enhanced the graphical notification wrapper in `neos-autoupdate.sh` to accept dynamic titles, icons, and urgency levels.
+- Prevented a graceful exit (due to missing `snapper`) from presenting to the user as a critical system failure, changing it instead to an informational "System Update Skipped" dialog.
+## Remaining usability risks
+- Further system scripts using `notify-send` might also have hardcoded severities; these should be audited as well.
 
-## UX & Accessibility Improvements
+---
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Improved the early dependency logging in `neos-autoupdate.sh` to provide actionable context when `snapper` is missing or the root filesystem is not Btrfs, guiding the user toward proper configuration.
+## Remaining usability risks
+- The failure message for pacman updates relies on manual review of pacman logs rather than surfacing specific actionable commands.
 
-1. **Visual Hierarchy in Boot Logs:** Structured multi-line hardware detection outputs (GPU & Network) in `neos-driver-manager` into bulleted lists. This significantly improves readability and scanning speed for admins watching the fast-scrolling boot sequence.
-2. **Terminal Progress Feedback:** Upgraded the visual progression bars in `neos-installer-partition.sh` to use standard ASCII equals characters (`==`) instead of `#` to provide a clearer, more distinct visual fill indicator.
-3. **Calamares Contrast Fix:** Fixed an accessibility contrast issue in `branding.desc` where `sidebarTextSelect` was the same color as the highlight background (`#005A9E`), rendering selected text invisible. Changed `sidebarTextSelect` to `#FFFFFF` for high contrast.
+# PALETTE REPORT
+
+## Accessibility & UX Enhancements
+- Improved error messaging clarity for missing `snapper` dependencies, providing actionable context in log outputs.
+- Enhanced graphical notification formats for missing dependencies by using multi-line text and descriptive titles.
+- Refined the disk space error notification to clearly display required vs. available space using readable multi-line formatting.
+- Enhanced the general system update failure notification to use HTML bolding for log paths, improving readability in KDE Plasma's `notify-send` system.
+
+## Remaining Usability Risks
+- Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.

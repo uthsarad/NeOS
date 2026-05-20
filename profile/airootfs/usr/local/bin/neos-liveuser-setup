@@ -5,14 +5,20 @@ set -euo pipefail
 # Bolt: Logging mechanism is optimized and avoids subshells, utilizing native variables like $LINENO.
 # ⚡ Bolt: Codebase pre-optimized. Applied minor token nudge as requested.
 # Palette: [task] Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.
+# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
 SCRIPT_NAME="${0##*/}"
+SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
+
 _error_handler() {
     local err=$1
     local line=$2
-    local cmd="$BASH_COMMAND"
+    local cmd="${BASH_COMMAND//[^[:print:]]/}"
     # Palette: Ensure logged error messages are clear and contain actionable steps for users. Use structural visual cues in terminal output for critical failures.
     # Bolt: Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.
-    echo -e "\n================================================================================\n🚨 CRITICAL ERROR: $SCRIPT_NAME\n================================================================================\n💡 What went wrong:\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n🔧 How to fix:\n  1. Review system journal: journalctl -t neos-$SCRIPT_NAME\n  2. Check system state and script configuration.\n================================================================================\n" >&2 || true
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 CRITICAL ERROR: %s\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 What went wrong:\e[0m\n  Command: \"%s\"\n  Failed at line: %s\n  Exit code: %s\n\n\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Review system journal: \e[1mjournalctl -t neos-%s\e[0m\n  2. Check system state and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }

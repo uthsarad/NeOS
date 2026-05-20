@@ -9,15 +9,16 @@ set -euo pipefail
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
-SCRIPT_NAME=$(printf "%s" "${0##*/}" | tr -cd 'a-zA-Z0-9_.-')
+SCRIPT_NAME="${0##*/}"
+SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
 
 _error_handler() {
     local err=$1
     local line=$2
-    local cmd; cmd=$(printf "%s" "$BASH_COMMAND" | tr -cd '[:print:]')
+    local cmd="${BASH_COMMAND//[^[:print:]]/}"
     # Bolt: Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.
-    echo -e "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 CRITICAL ERROR: $SCRIPT_NAME\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 What went wrong:\e[0m\n  Command: \"$cmd\"\n  Failed at line: $line\n  Exit code: $err\n\n\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Review system journal: \e[1mjournalctl -t neos-$SCRIPT_NAME\e[0m\n  2. Check system state and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n" >&2 || true
-    logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 CRITICAL ERROR: %s\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 What went wrong:\e[0m\n  Command: \"%s\"\n  Failed at line: %s\n  Exit code: %s\n\n\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Review system journal: \e[1mjournalctl -t neos-%s\e[0m\n  2. Check system state and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$line" "$err" "$SCRIPT_NAME" >&2 || true
+    logger -t "neos-$SCRIPT_NAME" -- "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
 
@@ -26,53 +27,83 @@ trap '_error_handler $? $LINENO' ERR
 
 TARGET_DEV="${1:-}"
 
+# Sentinel: [Security] Validate target device name to prevent arbitrary command execution or injection
+if [[ ! "$TARGET_DEV" =~ ^[a-zA-Z0-9_/:.-]+$ ]] && [[ -n "$TARGET_DEV" ]]; then
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target device name contains invalid characters.\e[0m\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  The provided device path contains characters that are not allowed.\n\n" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  Ensure the device path only contains letters, numbers, slashes, underscores, hyphens, colons, and periods.\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
+    exit 1
+fi
+
 if [[ -z "$TARGET_DEV" ]]; then
-    echo -e "\e[1m\e[31m❌ Error: Target device not provided.\e[0m" >&2
-    echo -e "\e[1m\e[36m💡 Usage:\e[0m $0 <device_path>" >&2
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target device not provided.\e[0m\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  No target device path was supplied to the script.\n\n" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  Run the script with a device path:\n  %s <device_path>\n" "$0" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
     exit 1
 fi
 
 if [[ ! -b "$TARGET_DEV" ]]; then
-    echo -e "\e[1m\e[31m❌ Error: Target '$TARGET_DEV' is not a valid block device.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1)." >&2
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target '%s' is not a valid block device.\e[0m\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  The provided path '%s' does not point to a valid block device.\n\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  1. List available block devices: \e[1mlsblk\e[0m\n  2. Ensure the device path is correct (e.g., /dev/sda or /dev/nvme0n1).\n" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure wipefs/mkfs operations strictly target only the intended device and check for active mounts.
-if lsblk -no MOUNTPOINT "$TARGET_DEV" | grep -q "\S"; then
-    echo -e "\e[1m\e[31m❌ Error: Target device '$TARGET_DEV' is currently mounted.\e[0m\n\e[1m\e[36m💡 How to fix:\e[0m Unmount the device before partitioning." >&2
+# Bolt: [Performance] Replaced grep -q with native bash regex match to eliminate subprocess overhead.
+MOUNTPOINTS=$(lsblk -no MOUNTPOINT -- "$TARGET_DEV" 2>/dev/null || true)
+if [[ "$MOUNTPOINTS" =~ [^[:space:]] ]]; then
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[31m❌ Error: Target device '%s' is currently mounted.\e[0m\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n" >&2
+    printf -- "\e[1m\e[36m💡 What went wrong:\e[0m\n  The block device '%s' has active mount points and cannot be safely partitioned.\n\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Unmount the device: \e[1mumount %s*\e[0m\n  2. Retry the partitioning script.\n" "$TARGET_DEV" >&2
+    printf -- "\e[1m\e[31m================================================================================\e[0m\n\n" >&2
     exit 1
 fi
 
-echo "🚀 Starting partitioning on $TARGET_DEV..."
+printf -- "🚀 Starting partitioning on %s...\n" "$TARGET_DEV"
 
 # Wipe existing signatures
-echo -e "\e[1m\e[36m[Step 1/5]\e[0m \e[32m[==........] 20%\e[0m 🧹 Wiping filesystem signatures..."
-echo "20" > /tmp/neos-partition-progress
+# Palette: [UX] Review ASCII text-based progress bars for correct rendering and standard compatibility.
+echo -e "\e[1m\e[36m[Step 1/5]\e[0m \e[32m[##........] 20%\e[0m 🧹 Wiping filesystem signatures..."
+echo "20" > /run/neos-partition-progress
 # Sentinel: [Security] Ensure milestone logging cannot be manipulated via environment variables.
-logger -t "neos-installer-partition" "Milestone: Wiping filesystem signatures"
+# Sentinel: [Audit] Verify milestone logging does not introduce injection vectors.
+logger -t "neos-installer-partition" -- "Milestone: Wiping filesystem signatures"
 # Bolt: [Performance] Review mkfs and partitioning commands for optimal block sizes and parameters.
-wipefs --all --force "$TARGET_DEV"
+wipefs --all --force -- "$TARGET_DEV"
 
 # Create a minimal partition table (GPT)
-parted -s "$TARGET_DEV" mklabel gpt
+parted -s -- "$TARGET_DEV" mklabel gpt
 
 # Create EFI boot partition (512MB)
-parted -s "$TARGET_DEV" mkpart ESP fat32 1MiB 513MiB
-parted -s "$TARGET_DEV" set 1 esp on
+parted -s -- "$TARGET_DEV" mkpart ESP fat32 1MiB 513MiB
+parted -s -- "$TARGET_DEV" set 1 esp on
 
 # Create root Btrfs partition (remaining space)
-parted -s "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
+parted -s -- "$TARGET_DEV" mkpart primary btrfs 513MiB 100%
 
 # Inform the kernel of partition table changes
-echo -e "\e[1m\e[36m[Step 2/5]\e[0m \e[32m[====......] 40%\e[0m 🔄 Updating partition table..."
-echo "40" > /tmp/neos-partition-progress
-logger -t "neos-installer-partition" "Milestone: Updating partition table"
-partprobe "$TARGET_DEV"
+echo -e "\e[1m\e[36m[Step 2/5]\e[0m \e[32m[####......] 40%\e[0m 🔄 Updating partition table..."
+echo "40" > /run/neos-partition-progress
+logger -t "neos-installer-partition" -- "Milestone: Updating partition table"
+partprobe -- "$TARGET_DEV"
 sleep 2
 
 # Define partition paths (Handle NVMe, MMC, and Loop devices correctly)
 # If the device path ends in a digit, the partition suffix is 'p' + number
-if [[ "$TARGET_DEV" =~ [0-9]$ ]]; then
+# Bolt: [Performance] Replaced regex with native bash glob match to eliminate regex evaluation overhead
+if [[ "$TARGET_DEV" == *[0-9] ]]; then
     PART_EFI="${TARGET_DEV}p1"
     PART_ROOT="${TARGET_DEV}p2"
 else
@@ -81,39 +112,39 @@ else
 fi
 
 # Wait for devices to be ready
-echo -e "\e[1m\e[36m[Step 3/5]\e[0m \e[32m[======....] 60%\e[0m ⏳ Waiting for device nodes..."
-echo "60" > /tmp/neos-partition-progress
-logger -t "neos-installer-partition" "Milestone: Waiting for device nodes"
+echo -e "\e[1m\e[36m[Step 3/5]\e[0m \e[32m[######....] 60%\e[0m ⏳ Waiting for device nodes..."
+echo "60" > /run/neos-partition-progress
+logger -t "neos-installer-partition" -- "Milestone: Waiting for device nodes"
 udevadm settle || sleep 2
 
 # Format EFI partition
-echo -e "\e[1m\e[36m[Step 4/5]\e[0m \e[32m[========..] 80%\e[0m 💾 Formatting partitions..."
-echo "80" > /tmp/neos-partition-progress
-logger -t "neos-installer-partition" "Milestone: Formatting partitions"
+echo -e "\e[1m\e[36m[Step 4/5]\e[0m \e[32m[########..] 80%\e[0m 💾 Formatting partitions..."
+echo "80" > /run/neos-partition-progress
+logger -t "neos-installer-partition" -- "Milestone: Formatting partitions"
 echo "Formatting EFI partition (FAT32)..."
-mkfs.fat -F32 "$PART_EFI"
+mkfs.fat -F32 -- "$PART_EFI"
 
 # Format Root partition (Btrfs)
 echo "Formatting Root partition (Btrfs)..."
 # Bolt: Use -K (--nodiscard) to skip synchronous block discard during formatting.
 # This significantly speeds up the installation process; discard is handled by async discard during mount.
-mkfs.btrfs -f -K -L "neos-root" "$PART_ROOT"
+mkfs.btrfs -f -K -L "neos-root" -- "$PART_ROOT"
 
 # Mount temporary for subvolume creation
 MNT_TMP=$(mktemp -d)
-mount "$PART_ROOT" "$MNT_TMP"
+mount -- "$PART_ROOT" "$MNT_TMP"
 
 # Create standard subvolumes
-echo -e "\e[1m\e[36m[Step 5/5]\e[0m \e[32m[==========] 100%\e[0m 📁 Creating Btrfs subvolumes..."
-echo "100" > /tmp/neos-partition-progress
-logger -t "neos-installer-partition" "Milestone: Creating Btrfs subvolumes"
-btrfs subvolume create "$MNT_TMP/@"
-btrfs subvolume create "$MNT_TMP/@home"
-btrfs subvolume create "$MNT_TMP/@var"
-btrfs subvolume create "$MNT_TMP/@snapshots"
+echo -e "\e[1m\e[36m[Step 5/5]\e[0m \e[32m[##########] 100%\e[0m 📁 Creating Btrfs subvolumes..."
+echo "100" > /run/neos-partition-progress
+logger -t "neos-installer-partition" -- "Milestone: Creating Btrfs subvolumes"
+btrfs subvolume create -- "$MNT_TMP/@"
+btrfs subvolume create -- "$MNT_TMP/@home"
+btrfs subvolume create -- "$MNT_TMP/@var"
+btrfs subvolume create -- "$MNT_TMP/@snapshots"
 
 # Unmount
-umount "$MNT_TMP"
-rmdir "$MNT_TMP"
+umount -- "$MNT_TMP"
+rmdir -- "$MNT_TMP"
 
 echo "✅ Partitioning complete."

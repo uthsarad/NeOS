@@ -1,32 +1,26 @@
-# STRATEGIC DIRECTIVE
+# Strategic Directive
 
-## PHASE 1 — Product Alignment Check
-- What is the product trying to become? NeOS is becoming a curated rolling-release, Arch-based desktop OS with predictable behavior, Windows-familiar UX, and automated hardware optimization.
-- Are we building toward that? Yes, the baseline ISO build, hardware detection, and installer scripts are functional.
-- Are we solving the highest leverage problem? The core foundation is stable. The highest leverage problem now is refining the recent feature implementations to ensure performance, clear UX during installation, and security without over-engineering.
+## PHASE 1: Product Alignment Check
+- **Product Vision**: NeOS is a curated, snapshot-based Arch Linux distribution targeting stability and Windows-familiar UX.
+- **Current Alignment**: We are aligned, currently focusing on hardening and operational predictability.
+- **Highest Leverage Problem**: Synchronizing tracking documents with codebase reality to ensure accurate progress reporting and prevent duplicated effort.
 
-## PHASE 2 — Technical Posture Review
-- Is the system stable? Yes, the automated build pipeline and basic partitioning are operational.
-- Is tech debt increasing? Minor UX/performance debt was incurred to achieve functional baseline (e.g., multiple subprocess calls in hardware detection, missing progress UI in partitioning).
-- Are we overbuilding? No. We have focused on minimal working components.
+## PHASE 2: Technical Posture Review
+- **System Stability**: High. Verification scripts confirm strong baseline engineering hygiene.
+- **Tech Debt**: Documentation drift identified. `docs/AUDIT_ACTION_PLAN.md` does not reflect the completion of CI pre-build testing (`.github/workflows/build-iso.yml`) and the existence of the Troubleshooting Guide (`docs/TROUBLESHOOTING.md`).
+- **Overbuilding Risk**: Low.
 
-## PHASE 3 — Priority Selection
-- Refinement of recent feature
+## PHASE 3: Priority Selection
+- **Selected Priority**: Stabilization / hardening.
+- **Rationale**: Update tracking documentation to reflect the current state of the codebase, ensuring accurate reporting and alignment.
 
-## PHASE 4 — Controlled Scope Definition
-- Exact files likely impacted:
-  - `profile/airootfs/usr/local/bin/neos-driver-manager`
-  - `profile/airootfs/usr/local/bin/neos-installer-partition.sh`
-  - `profile/airootfs/etc/calamares/branding/neos/branding.desc`
-- Maximum allowed surface area: 3 files
-- Constraints Architect must obey:
-  - Optimize the hardware detection without breaking existing functionality.
-  - Apply NeOS blue (`#0078D4`) to Calamares branding.
-  - Implement simple text-based progress bars using standard ASCII characters (`#`, `.`).
-  - Do not introduce new features outside this scope. Ensure tests pass.
+## PHASE 4: Controlled Scope Definition
+- **Impacted Files**: `docs/AUDIT_ACTION_PLAN.md`
+- **Surface Area**: Minimal. Checkbox toggling in a single tracking document.
+- **Constraints**: The Architect must strictly update only the specified checkbox items (`Pre-build CI tests`, `Troubleshooting guide`) from incomplete `[ ]` to complete `[x]`. No other modifications are permitted.
 
-## PHASE 5 — Delegation Strategy
-- Architect builds: Implement the refinement of driver manager and installer partition UX.
-- Bolt optimizes: Measure and validate the lspci caching logic in the driver manager.
-- Palette enhances: Ensure text-based progress indicators and terminal formatting follow UX standards.
-- Sentinel audits: Verify that any changes to script execution or log variables do not introduce injection vectors.
+## PHASE 5: Delegation Strategy
+- **Architect**: Update the checklist status in `docs/AUDIT_ACTION_PLAN.md` for the completed tasks.
+- **Bolt**: Nudge (minor authorized performance optimization on a target file).
+- **Palette**: Ensure markdown formatting is intact for checklist updates in `docs/AUDIT_ACTION_PLAN.md`.
+- **Sentinel**: No immediate security task required for this documentation update.

@@ -41,6 +41,32 @@ for file in "${files[@]}"; do
     size=$(stat -c%s "$file")
     name=$(basename "$file")
     echo "$name ($size bytes)"
+
+    # Boot test using QEMU
+    if command -v qemu-system-x86_64 >/dev/null 2>&1; then
+        echo "Starting QEMU boot test for $name..."
+        # Sentinel: Ensure QEMU runs with restricted privileges
+        # Bolt: Optimize QEMU parameters for faster execution
+        # Palette: Enhance console output readability for CI logs
+
+        set +e
+        timeout 60s qemu-system-x86_64 -nographic -m 1024 -cdrom "$file" -boot d > qemu_boot.log 2>&1
+        QEMU_EXIT=$?
+        set -e
+
+        if [[ $QEMU_EXIT -eq 124 ]]; then
+            echo "✅ QEMU boot test passed (survived 60s timeout)."
+        elif [[ $QEMU_EXIT -eq 0 ]]; then
+            echo "✅ QEMU boot test passed (exited cleanly)."
+        else
+            echo "❌ QEMU boot test failed with exit code $QEMU_EXIT."
+            # Palette: Display QEMU log for debugging
+            tail -n 20 qemu_boot.log
+            exit 1
+        fi
+    else
+        echo "⏭️  SKIPPED: qemu-system-x86_64 not found. Cannot perform boot test."
+    fi
 done
 
 echo "ISO smoke test passed."

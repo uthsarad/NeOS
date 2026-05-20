@@ -1,11 +1,10 @@
-# RISK REPORT
+# Risk & Priority Report
 
-## Risk Assessment
-- **Feature Creep:** There is a low risk of adding unnecessary complexity to the hardware detection and installer logic.
-- **Performance:** Subprocess spawning inside hardware detection loops previously introduced minor performance overhead.
-- **UX Consistency:** The text-mode installer progress might lack clarity compared to graphical alternatives.
+## Current Risk Posture
+- **Documentation Drift**: Medium. Key tracking documents (`docs/AUDIT_ACTION_PLAN.md`) do not accurately reflect the implemented state of the repository (e.g., CI tests and Troubleshooting guide). This can lead to misaligned priorities and duplicated effort.
+- **Security**: Low. Security posture remains strong.
+- **Performance**: Low. Pre-optimizations are robust.
 
 ## Mitigation Strategy
-- **Strict Scope Control:** The Architect is explicitly limited to refining three existing files to prevent feature creep.
-- **Performance Refinement:** Ensure native bash matching is used over external binaries where applicable.
-- **UX Standardization:** Adopt standard ASCII progress bars and consistent color themes to improve clarity in text interfaces.
+- Execute a targeted update to `docs/AUDIT_ACTION_PLAN.md` to synchronize it with the codebase reality.
+- Enforce strict scope boundaries to prevent unintended modifications to tracking documents.

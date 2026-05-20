@@ -1,25 +1,45 @@
 {
-  "focus_area": "Developer/Admin UX and Error Messages",
+  "focus_area": "UX & Accessibility",
   "tasks": [
     {
-      "description": "Add informative progress feedback to the neos-installer-partition.sh script using simple progress bars.",
-      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+      "description": "Review the text-based progress integration in neos-installer-partition.sh.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     },
     {
-      "description": "Ensure Calamares branding icons and colors are consistent with the NeOS brand identity.",
-      "target_file": "airootfs/etc/calamares/branding/neos/branding.desc"
+      "description": "Verify that Calamares branding correctly uses NeOS blue (#0078D4).",
+      "target_file": "profile/airootfs/etc/calamares/branding/neos/branding.desc",
+      "status": "completed"
     },
     {
-      "description": "Review milestone outputs in partitioning script. They are functional, but could be integrated into Calamares logs or visual progress bars more tightly.",
-      "target_file": "airootfs/usr/local/bin/neos-installer-partition.sh"
+      "description": "Ensure text-based progress indicators and terminal formatting follow UX standards.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "completed"
     },
     {
-      "description": "Format the network detection messages for better user visibility during boot.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager"
+      "description": "Ensure error messages logged when dependencies are missing are clear. Review graphical update notifier error surfaces for clarity.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
     },
     {
-      "description": "Consider integrating partitioning milestone status directly into the Calamares UI via DBus or a progress file.",
-      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
+      "description": "Ensure that error messaging regarding invalid device inputs maintains the structured, multi-line formatting standards.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Ensure the new architecture section utilizes clear hierarchy, bullet points, and visual indicators like emojis to aid comprehension.",
+      "target_file": "README.md",
+      "status": "completed"
+    },
+    {
+      "description": "Ensure markdown formatting is intact for checklist updates.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "pending"
     }
   ]
 }
