@@ -102,7 +102,8 @@ sleep 2
 
 # Define partition paths (Handle NVMe, MMC, and Loop devices correctly)
 # If the device path ends in a digit, the partition suffix is 'p' + number
-if [[ "$TARGET_DEV" =~ [0-9]$ ]]; then
+# Bolt: [Performance] Replaced regex with native bash glob match to eliminate regex evaluation overhead
+if [[ "$TARGET_DEV" == *[0-9] ]]; then
     PART_EFI="${TARGET_DEV}p1"
     PART_ROOT="${TARGET_DEV}p2"
 else
