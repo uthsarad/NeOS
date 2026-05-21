@@ -71,8 +71,11 @@ notify_users() {
     local icon="${3:-dialog-error}"
     local urgency="${4:-critical}"
 
-    # Sentinel: Strip single quotes from err_msg to prevent command injection in su -c
+    # Sentinel: Strip single quotes from all variables to prevent command injection in su -c
     err_msg="${err_msg//\'/}"
+    title="${title//\'/}"
+    icon="${icon//\'/}"
+    urgency="${urgency//\'/}"
     if command -v loginctl >/dev/null 2>&1; then
         while read -r uid user_name _; do
             # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.

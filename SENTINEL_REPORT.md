@@ -25,3 +25,15 @@
 
 ## Severity summary
 - Low severity. The variables involved (`$WORK_DIR`, `$CHAOTIC_KEYRING_PKG`) are hardcoded or highly constrained, but enforcing standard option termination is a defense-in-depth best practice.
+
+## Risks found
+- Command injection vulnerability in `neos-autoupdate.sh` via unsanitized variables (`$title`, `$icon`, `$urgency`) passed to `su -c` in the `notify_users` function.
+
+## Fixes applied
+- Sanitized `$title`, `$icon`, and `$urgency` by stripping single quotes (`${VAR//\'/}`) before they are evaluated within the nested `su -c` string.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- High severity. Allowed potential command injection and privilege escalation to logged-in users.
