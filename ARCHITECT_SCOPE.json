@@ -1,9 +1,12 @@
 {
+  "assigned_task": "Add Security Scanning to CI",
   "allowed_files": [
+    ".github/workflows/build-iso.yml",
     "docs/AUDIT_ACTION_PLAN.md"
   ],
   "constraints": [
-    "Only update the checkbox status of 'Pre-build CI tests' and 'Troubleshooting guide' in docs/AUDIT_ACTION_PLAN.md from '[ ]' to '[x]'.",
-    "Do not alter any other text, links, or instructions."
+    "Do not modify core OS build scripts.",
+    "Ensure scanning tools (ShellCheck, Trivy) run before the ISO build step.",
+    "Update AUDIT_ACTION_PLAN.md to mark item 14 as complete."
   ]
 }

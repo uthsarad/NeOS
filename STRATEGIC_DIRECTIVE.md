@@ -1,26 +1,12 @@
-# Strategic Directive
+# Strategic Directive: Phase 5 Application & Update UX (Focus on Security Scanning)
 
-## PHASE 1: Product Alignment Check
-- **Product Vision**: NeOS is a curated, snapshot-based Arch Linux distribution targeting stability and Windows-familiar UX.
-- **Current Alignment**: We are aligned, currently focusing on hardening and operational predictability.
-- **Highest Leverage Problem**: Synchronizing tracking documents with codebase reality to ensure accurate progress reporting and prevent duplicated effort.
+## Objective
+The primary objective of this cycle is to implement Security Scanning in the CI/CD pipeline. This aligns with Phase 5 of our roadmap (Application & Update UX - System Hardening).
 
-## PHASE 2: Technical Posture Review
-- **System Stability**: High. Verification scripts confirm strong baseline engineering hygiene.
-- **Tech Debt**: Documentation drift identified. `docs/AUDIT_ACTION_PLAN.md` does not reflect the completion of CI pre-build testing (`.github/workflows/build-iso.yml`) and the existence of the Troubleshooting Guide (`docs/TROUBLESHOOTING.md`).
-- **Overbuilding Risk**: Low.
+## Context
+Based on `docs/AUDIT_ACTION_PLAN.md`, critical and high-priority items have been addressed. The system is stable enough to proceed with medium-priority infrastructure improvements. Item 14 ("Add Security Scanning") is the next logical step to ensure long-term stability and security of the repository.
 
-## PHASE 3: Priority Selection
-- **Selected Priority**: Stabilization / hardening.
-- **Rationale**: Update tracking documentation to reflect the current state of the codebase, ensuring accurate reporting and alignment.
-
-## PHASE 4: Controlled Scope Definition
-- **Impacted Files**: `docs/AUDIT_ACTION_PLAN.md`
-- **Surface Area**: Minimal. Checkbox toggling in a single tracking document.
-- **Constraints**: The Architect must strictly update only the specified checkbox items (`Pre-build CI tests`, `Troubleshooting guide`) from incomplete `[ ]` to complete `[x]`. No other modifications are permitted.
-
-## PHASE 5: Delegation Strategy
-- **Architect**: Update the checklist status in `docs/AUDIT_ACTION_PLAN.md` for the completed tasks.
-- **Bolt**: Nudge (minor authorized performance optimization on a target file).
-- **Palette**: Ensure markdown formatting is intact for checklist updates in `docs/AUDIT_ACTION_PLAN.md`.
-- **Sentinel**: No immediate security task required for this documentation update.
+## Directives
+- **Focus:** Integrate automated security scanning into the CI pipeline.
+- **Constraints:** Do not modify core system behavior. Limit changes to CI configuration (`.github/workflows/build-iso.yml`) and documentation.
+- **Goal:** Add ShellCheck for bash scripts and Trivy for container/ISO scanning.
