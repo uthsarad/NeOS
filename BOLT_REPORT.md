@@ -38,3 +38,8 @@
 - **What was optimized**: Replaced POSIX regex suffix matching (`=~ [0-9]$`) with native Bash glob matching (`== *[0-9]`) in `neos-installer-partition.sh`.
 - **Before/after reasoning**: Regex evaluation forces the shell to engage its regex engine, which is heavier and slower than simple pattern string globbing. The change provides a minor, safe overhead reduction.
 - **Remaining performance risks**: None. The logic behavior remains functionally identical.
+
+## 2026-02-18 - Optimized Btrfs check in documentation
+**What:** Replaced the `findmnt -n -o FSTYPE / | grep -q btrfs` command with `[[ "$(stat -f -c %T / 2>/dev/null)" != "btrfs" ]]` in the `docs/AUDIT_ACTION_PLAN.md` file dependency validation snippet.
+**Reasoning:** To align the documented example with the performance optimization implemented in `neos-autoupdate.sh` and eliminate subprocess overhead.
+**Risks:** None, as this is a documentation update.
