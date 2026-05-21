@@ -95,7 +95,7 @@ if ! command -v snapper >/dev/null 2>&1; then
 fi
 
 # Check for Btrfs root
-if ! findmnt -n -o FSTYPE / | grep -q btrfs; then
+if [[ "$(stat -f -c %T / 2>/dev/null)" != "btrfs" ]]; then
     logger -t neos-autoupdate "WARNING: Root is not Btrfs. Snapshots disabled."
     exit 0
 fi
