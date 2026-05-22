@@ -1,19 +1,14 @@
 {
   "bolt": {
-    "focus": "Optimize CI execution time",
-    "tasks": [
-      "Ensure security scanning jobs run concurrently where possible to minimize CI delay."
-    ]
+    "directive": "Perform a minor authorized performance optimization on a target file (nudge) as fallback.",
+    "priority": "low"
   },
   "palette": {
-    "focus": "No UX changes required",
-    "tasks": []
+    "directive": "Ensure markdown formatting is intact for checklist updates in docs/AUDIT_ACTION_PLAN.md.",
+    "priority": "medium"
   },
   "sentinel": {
-    "focus": "Validate CI Security",
-    "tasks": [
-      "Ensure the added security scanning tools are configured with appropriately strict rules.",
-      "Verify that secrets (if any) are handled securely in the workflow."
-    ]
+    "directive": "Stand by. All explicit tasks are currently verified as complete.",
+    "priority": "low"
   }
 }
