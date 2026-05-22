@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml
+          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml shellcheck trivy
 
       - name: Run pre-build validations
         run: |
@@ -54,6 +54,15 @@ jobs:
               bash "$script"
             fi
           done
+
+      - name: Run Security Scans
+        run: |
+          set -euo pipefail
+          echo "Running ShellCheck..."
+          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+
+          echo "Running Trivy..."
+          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
 
   build:
     needs: test

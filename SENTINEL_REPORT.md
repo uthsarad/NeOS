@@ -37,3 +37,15 @@
 
 ## Severity summary
 - High severity. Allowed potential command injection and privilege escalation to logged-in users.
+
+## Risks found
+- Missing automated security scanning in the CI pipeline to proactively detect vulnerabilities and misconfigurations.
+
+## Fixes applied
+- Added Trivy and ShellCheck scanning to `.github/workflows/build-iso.yml` before the ISO build step.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- Security enhancement. Improves defense in depth.
