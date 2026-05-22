@@ -40,6 +40,11 @@
       "description": "Nudge (minor authorized performance optimization on a target file).",
       "target_file": "docs/AUDIT_ACTION_PLAN.md",
       "status": "completed"
+    },
+    {
+      "description": "Review performance of the new CI scanning commands.",
+      "target_file": ".github/workflows/build-iso.yml",
+      "status": "pending"
     }
   ]
 }

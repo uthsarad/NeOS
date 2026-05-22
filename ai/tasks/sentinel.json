@@ -55,6 +55,11 @@
       "description": "Confirm checklist updates do not alter external links or instructions.",
       "target_file": "docs/AUDIT_ACTION_PLAN.md",
       "status": "completed"
+    },
+    {
+      "description": "Validate that the new security scanning correctly identifies vulnerabilities and operates securely.",
+      "target_file": ".github/workflows/build-iso.yml",
+      "status": "pending"
     }
   ]
 }

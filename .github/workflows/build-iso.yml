@@ -32,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml
+          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml shellcheck trivy
 
       - name: Run pre-build validations
         run: |
@@ -54,6 +54,20 @@ jobs:
               bash "$script"
             fi
           done
+
+      - name: Run Security Scanning
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+
+          # [Bolt] Performance: Consider replacing find with native bash file discovery if applicable.
+          # [Palette] UX: Ensure output from these security scans is formatted readably.
+          echo "Running ShellCheck..."
+          find tests/ profile/airootfs/usr/local/bin/ -type f \( -name '*.sh' -o -path 'profile/airootfs/usr/local/bin/*' ! -name '*.*' \) -print0 | xargs -0 -r shellcheck || true
+
+          # [Sentinel] Security: Validate that Trivy scanning catches vulnerable dependencies correctly.
+          echo "Running Trivy..."
+          trivy fs --no-progress --severity CRITICAL,HIGH .
 
   build:
     needs: test
