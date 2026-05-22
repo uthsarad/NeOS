@@ -43,3 +43,8 @@
 **What:** Replaced the `findmnt -n -o FSTYPE / | grep -q btrfs` command with `[[ "$(stat -f -c %T / 2>/dev/null)" != "btrfs" ]]` in the `docs/AUDIT_ACTION_PLAN.md` file dependency validation snippet.
 **Reasoning:** To align the documented example with the performance optimization implemented in `neos-autoupdate.sh` and eliminate subprocess overhead.
 **Risks:** None, as this is a documentation update.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `docs/AUDIT_ACTION_PLAN.md`
+- **Optimization:** Replaced the external `$(basename "$0")` subprocess call with native Bash parameter expansion `${0##*/}` in the recommended error handler trap snippet.
+- **Impact:** Eliminates a fork/exec subprocess overhead during script initialization and error handling, fulfilling the minor authorized performance optimization mandate.
