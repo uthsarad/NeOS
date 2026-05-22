@@ -187,7 +187,8 @@ Add to all scripts:
 set -euo pipefail
 
 # Error handler
-trap 'logger -t "$(basename "$0")" "ERROR at line $LINENO"' ERR
+# Bolt: [Performance] Replaced $(basename "$0") with native bash parameter expansion ${0##*/} to eliminate subprocess overhead in the error trap.
+trap 'logger -t "${0##*/}" "ERROR at line $LINENO"' ERR
 ```
 
 ### 10. Update CHANGELOG
