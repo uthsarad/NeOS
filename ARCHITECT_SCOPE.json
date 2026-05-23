@@ -1,11 +1,8 @@
 {
-  "allowed_files": [
-    "docs/AUDIT_ACTION_PLAN.md"
-  ],
+  "allowed_files": [],
   "constraints": [
-    "Do not implement new features.",
-    "Do not modify production code.",
-    "Limit actions to administrative updates in the tracking checklist.",
-    "If no changes are necessary, perform a strategic pause and exit."
+    "Perform a strategic pause.",
+    "Do not implement new features or modify existing product source code or configurations.",
+    "Run existing test suite to verify stability."
   ]
 }

@@ -1,14 +1,20 @@
 {
-  "bolt": {
-    "directive": "Perform a minor authorized performance optimization on a target file (nudge) as fallback.",
-    "priority": "low"
+  "Bolt": {
+    "focus": "Performance optimization",
+    "directives": [
+      "Find an opportunity for a minor authorized performance optimization (nudge) as a fallback."
+    ]
   },
-  "palette": {
-    "directive": "Ensure markdown formatting is intact for checklist updates in docs/AUDIT_ACTION_PLAN.md.",
-    "priority": "medium"
+  "Palette": {
+    "focus": "UX & Accessibility",
+    "directives": [
+      "Ensure markdown formatting is intact for checklist updates."
+    ]
   },
-  "sentinel": {
-    "directive": "Stand by. All explicit tasks are currently verified as complete.",
-    "priority": "low"
+  "Sentinel": {
+    "focus": "Security Validation",
+    "directives": [
+      "Stand by. No active modifications required."
+    ]
   }
 }
