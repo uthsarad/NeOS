@@ -1,8 +1,9 @@
 {
-  "allowed_files": [],
+  "authorized_modifications": [],
   "constraints": [
-    "Perform a strategic pause.",
-    "Do not implement new features or modify existing product source code or configurations.",
-    "Run existing test suite to verify stability."
-  ]
+    "Perform a zero-modification scenario.",
+    "Do not alter any system files, tracking documents, or scripts.",
+    "Maintain a clean working tree."
+  ],
+  "target_files": []
 }
