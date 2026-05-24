@@ -1,20 +1,14 @@
 {
   "Bolt": {
-    "focus": "Performance optimization",
-    "directives": [
-      "Find an opportunity for a minor authorized performance optimization (nudge) as a fallback."
-    ]
+    "focus": "Stand by",
+    "guidance": "No active tasks. Perform authorized nudge optimization if required by fallbacks, otherwise maintain zero modifications."
   },
   "Palette": {
-    "focus": "UX & Accessibility",
-    "directives": [
-      "Ensure markdown formatting is intact for checklist updates."
-    ]
+    "focus": "Stand by",
+    "guidance": "No UI/UX tasks required. Maintain zero modifications."
   },
   "Sentinel": {
-    "focus": "Security Validation",
-    "directives": [
-      "Stand by. No active modifications required."
-    ]
+    "focus": "Stand by",
+    "guidance": "No security audits required. Maintain zero modifications."
   }
 }
