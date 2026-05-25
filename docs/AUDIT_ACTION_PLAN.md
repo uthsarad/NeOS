@@ -47,7 +47,7 @@ bash tests/verify_build_profile.sh  # Should pass
     ISO_SIZE=$(stat -c%s "$ISO_FILE")
     MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
     echo "ISO size: $ISO_SIZE bytes ($(numfmt --to=iec-i --suffix=B $ISO_SIZE))"
-    if [ $ISO_SIZE -ge $MAX_SIZE ]; then
+    if [[ $ISO_SIZE -ge $MAX_SIZE ]]; then
       echo "❌ ISO exceeds GitHub release limit!"
       exit 1
     fi
