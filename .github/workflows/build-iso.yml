@@ -55,19 +55,14 @@ jobs:
             fi
           done
 
-      - name: Run Security Scanning
+      - name: Run Security Scans
         run: |
           set -euo pipefail
-          cd "$GITHUB_WORKSPACE"
-
-          # [Bolt] Performance: Consider replacing find with native bash file discovery if applicable.
-          # [Palette] UX: Ensure output from these security scans is formatted readably.
           echo "Running ShellCheck..."
-          find tests/ profile/airootfs/usr/local/bin/ -type f \( -name '*.sh' -o -path 'profile/airootfs/usr/local/bin/*' ! -name '*.*' \) -print0 | xargs -0 -r shellcheck || true
+          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
 
-          # [Sentinel] Security: Validate that Trivy scanning catches vulnerable dependencies correctly.
           echo "Running Trivy..."
-          trivy fs --no-progress --severity CRITICAL,HIGH .
+          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
 
   build:
     needs: test

@@ -5,6 +5,12 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
   pull_request_review:
     types: [submitted]
+  workflow_dispatch:
+    inputs:
+      pr_url:
+        description: Pull request URL to approve and merge
+        required: true
+        type: string
 
 jobs:
   approve-and-merge:
@@ -12,9 +18,11 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    # SECURITY: This condition ensures only authorized actors can execute this workflow.
+    # SECURITY: workflow_dispatch runs require write access to the repository, so allow them
+    # explicitly; PR-triggered runs remain limited to known actors and approved reviews.
     if: >-
-      (github.actor == 'google-labs-jules[bot]' ||
+      (github.event_name == 'workflow_dispatch' ||
+       github.actor == 'google-labs-jules[bot]' ||
        github.actor == 'google-labs-jules' ||
        github.actor == 'NimuthuGanegoda' ||
        github.actor == github.repository_owner) &&
@@ -24,17 +32,22 @@ jobs:
         # Bolt: Removed actions/checkout as the gh CLI is API-driven and does not need local repo context
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_url || github.event.pull_request.html_url }}
           HAS_PAT: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' }}
         run: |
           set -euo pipefail
 
-          echo "🔍 Inspecting PR: $PR_URL"
+          if [[ -z "${PR_URL:-}" ]]; then
+            echo "PR_URL is required. For workflow_dispatch runs, provide the pr_url input." >&2
+            exit 1
+          fi
+
+          echo "Inspecting PR: $PR_URL"
           
           # Check if the PR is already merged or closed
           PR_STATE=$(gh pr view "$PR_URL" --json state --jq '.state')
           if [[ "$PR_STATE" != "OPEN" ]]; then
-            echo "⏭️  PR is in state $PR_STATE. Skipping auto-merge."
+            echo "PR is in state $PR_STATE. Skipping auto-merge."
             exit 0
           fi
 
@@ -42,24 +55,24 @@ jobs:
           # because app tokens do not have workflow scope. Use JULES_AUTO_MERGE_TOKEN for these PRs.
           if gh pr view "$PR_URL" --json files --jq '.files[].path' | grep -q '^.github/workflows/'; then
             if [[ "$HAS_PAT" != "true" ]]; then
-              echo "⚠️  PR modifies .github/workflows/* but JULES_AUTO_MERGE_TOKEN is missing."
-              echo "💬 Commenting on PR..."
-              gh pr comment "$PR_URL" --body "⚠️ **Auto-merge skipped**: This PR modifies workflow files but the required secret \`JULES_AUTO_MERGE_TOKEN\` (with \`repo\` and \`workflow\` scopes) is not configured in this repository. A maintainer must merge this PR manually." || true
+              echo "PR modifies .github/workflows/* but JULES_AUTO_MERGE_TOKEN is missing."
+              echo "Commenting on PR..."
+              gh pr comment "$PR_URL" --body "Auto-merge skipped: This PR modifies workflow files but the required secret \`JULES_AUTO_MERGE_TOKEN\` (with \`repo\` and \`workflow\` scopes) is not configured in this repository. A maintainer must merge this PR manually." || true
               exit 0
             fi
-            echo "✅ PR modifies workflows but JULES_AUTO_MERGE_TOKEN is available."
+            echo "PR modifies workflows but JULES_AUTO_MERGE_TOKEN is available."
           fi
 
-          echo "✍️  Approving PR..."
-          gh pr review "$PR_URL" --approve || echo "⚠️  Note: Could not approve (maybe already approved?)"
+          echo "Approving PR..."
+          gh pr review "$PR_URL" --approve || echo "Note: Could not approve (maybe already approved?)"
 
-          echo "🚀 Setting PR to ready and enabling auto-merge..."
-          gh pr ready "$PR_URL" || echo "⚠️  Note: Could not set to ready (maybe already ready?)"
+          echo "Setting PR to ready and enabling auto-merge..."
+          gh pr ready "$PR_URL" || echo "Note: Could not set to ready (maybe already ready?)"
           
           if gh pr merge "$PR_URL" --auto --squash --delete-branch; then
-            echo "✅ Auto-merge enabled/completed successfully."
+            echo "Auto-merge enabled/completed successfully."
           else
-            echo "⚠️ WARNING: Failed to enable auto-merge. Repository may not allow auto-merge." >&2
-            echo "💡 Check: Ensure all status checks are passing and branch protection rules allow merging." >&2
+            echo "WARNING: Failed to enable auto-merge. Repository may not allow auto-merge." >&2
+            echo "Check: Ensure all status checks are passing and branch protection rules allow merging." >&2
             exit 0
           fi
