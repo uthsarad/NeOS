@@ -1,19 +1,14 @@
 {
-  "bolt": {
-    "focus": "Optimize CI execution time",
-    "tasks": [
-      "Ensure security scanning jobs run concurrently where possible to minimize CI delay."
-    ]
+  "Bolt": {
+    "focus": "Stand by",
+    "guidance": "No active tasks. Perform authorized nudge optimization if required by fallbacks, otherwise maintain zero modifications."
   },
-  "palette": {
-    "focus": "No UX changes required",
-    "tasks": []
+  "Palette": {
+    "focus": "Stand by",
+    "guidance": "No UI/UX tasks required. Maintain zero modifications."
   },
-  "sentinel": {
-    "focus": "Validate CI Security",
-    "tasks": [
-      "Ensure the added security scanning tools are configured with appropriately strict rules.",
-      "Verify that secrets (if any) are handled securely in the workflow."
-    ]
+  "Sentinel": {
+    "focus": "Stand by",
+    "guidance": "No security audits required. Maintain zero modifications."
   }
 }

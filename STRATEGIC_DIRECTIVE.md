@@ -1,12 +1,14 @@
-# Strategic Directive: Phase 5 Application & Update UX (Focus on Security Scanning)
+# Strategic Directive
 
-## Objective
-The primary objective of this cycle is to implement Security Scanning in the CI/CD pipeline. This aligns with Phase 5 of our roadmap (Application & Update UX - System Hardening).
+## Product Alignment
+NeOS aims to be a stable, curated Arch Linux experience targeting Windows switchers and stability seekers. The system is currently aligned with these goals. The immediate priority is the first beta release.
 
-## Context
-Based on `docs/AUDIT_ACTION_PLAN.md`, critical and high-priority items have been addressed. The system is stable enough to proceed with medium-priority infrastructure improvements. Item 14 ("Add Security Scanning") is the next logical step to ensure long-term stability and security of the repository.
+## Technical Posture
+The system is stable. All critical and high-priority audit items have been resolved. Test coverage is strong and passing. No tech debt is actively blocking progress.
 
-## Directives
-- **Focus:** Integrate automated security scanning into the CI pipeline.
-- **Constraints:** Do not modify core system behavior. Limit changes to CI configuration (`.github/workflows/build-iso.yml`) and documentation.
-- **Goal:** Add ShellCheck for bash scripts and Trivy for container/ISO scanning.
+## Priority Selection
+**No-build day (strategic pause)**.
+With all release-blocking audit items completed, we must prioritize stabilization. The immediate focus is preparing for the beta release by avoiding unnecessary changes that could introduce regressions.
+
+## Controlled Scope Definition
+No codebase modifications are authorized. Architect is to perform a strict zero-modification scenario.
