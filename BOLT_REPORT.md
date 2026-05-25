@@ -48,3 +48,8 @@
 - **File:** `docs/AUDIT_ACTION_PLAN.md`
 - **Optimization:** Replaced the external `$(basename "$0")` subprocess call with native Bash parameter expansion `${0##*/}` in the recommended error handler trap snippet.
 - **Impact:** Eliminates a fork/exec subprocess overhead during script initialization and error handling, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `docs/AUDIT_ACTION_PLAN.md`
+- **Optimization:** Replaced POSIX single bracket `[ ]` with native bash double bracket `[[ ]]` in the ISO Size Validation CI snippet.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
