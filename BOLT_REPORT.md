@@ -53,3 +53,8 @@
 - **File:** `docs/AUDIT_ACTION_PLAN.md`
 - **Optimization:** Replaced POSIX single bracket `[ ]` with native bash double bracket `[[ ]]` in the ISO Size Validation CI snippet.
 - **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `docs/AUDIT_ACTION_PLAN.md`
+- **Optimization:** Replaced native Bash conditional `[[ $ISO_SIZE -ge $MAX_SIZE ]]` with arithmetic evaluation `(( ISO_SIZE >= MAX_SIZE ))`.
+- **Impact:** Eliminates string comparison evaluation overhead for purely numeric data, fulfilling the minor authorized performance optimization mandate.
