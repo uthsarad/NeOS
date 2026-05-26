@@ -1,9 +1,12 @@
 {
-  "authorized_modifications": [],
-  "constraints": [
-    "Perform a zero-modification scenario.",
-    "Do not alter any system files, tracking documents, or scripts.",
-    "Maintain a clean working tree."
+  "authorized_modifications": [
+    "Fix Build-Blocking pacman.conf Issue"
   ],
-  "target_files": []
+  "constraints": [
+    "Ensure changes only affect the build process, preserving installed-system pacman.conf.",
+    "Do not implement new features."
+  ],
+  "target_files": [
+    "pacman.conf"
+  ]
 }

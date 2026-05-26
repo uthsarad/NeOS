@@ -1,14 +1,14 @@
 {
   "Bolt": {
     "focus": "Stand by",
-    "guidance": "No active tasks. Perform authorized nudge optimization if required by fallbacks, otherwise maintain zero modifications."
+    "guidance": "Perform authorized minor fallback optimizations if required, otherwise maintain zero modifications."
   },
   "Palette": {
-    "focus": "Stand by",
-    "guidance": "No UI/UX tasks required. Maintain zero modifications."
+    "focus": "UX/UI formatting",
+    "guidance": "Review formatting of recent markdown and CI log changes, addressing any pending tasks."
   },
   "Sentinel": {
     "focus": "Stand by",
-    "guidance": "No security audits required. Maintain zero modifications."
+    "guidance": "Perform authorized minor security fallbacks or audits if required, otherwise maintain zero modifications."
   }
 }
