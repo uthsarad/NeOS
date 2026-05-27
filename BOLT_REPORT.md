@@ -58,3 +58,8 @@
 - **File:** `docs/AUDIT_ACTION_PLAN.md`
 - **Optimization:** Replaced native Bash conditional `[[ $ISO_SIZE -ge $MAX_SIZE ]]` with arithmetic evaluation `(( ISO_SIZE >= MAX_SIZE ))`.
 - **Impact:** Eliminates string comparison evaluation overhead for purely numeric data, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_airootfs_structure.sh`
+- **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
