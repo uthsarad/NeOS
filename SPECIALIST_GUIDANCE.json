@@ -1,14 +1,11 @@
 {
-  "Bolt": {
-    "focus": "Stand by",
-    "guidance": "Perform authorized minor fallback optimizations if required, otherwise maintain zero modifications."
+  "bolt": {
+    "directive": "Strategic Pause - No active tasks."
   },
-  "Palette": {
-    "focus": "UX/UI formatting",
-    "guidance": "Review formatting of recent markdown and CI log changes, addressing any pending tasks."
+  "palette": {
+    "directive": "Strategic Pause - No active tasks."
   },
-  "Sentinel": {
-    "focus": "Stand by",
-    "guidance": "Perform authorized minor security fallbacks or audits if required, otherwise maintain zero modifications."
+  "sentinel": {
+    "directive": "Strategic Pause - No active tasks."
   }
 }

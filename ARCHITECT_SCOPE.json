@@ -1,12 +1,10 @@
 {
-  "authorized_modifications": [
-    "Fix Build-Blocking pacman.conf Issue"
-  ],
+  "focus_area": "Strategic Pause",
+  "instructions": "Execute a zero-modification scenario. Maintain a clean working tree. Run tests. Use the `done` tool directly without requesting code review.",
+  "target_files": [],
   "constraints": [
-    "Ensure changes only affect the build process, preserving installed-system pacman.conf.",
-    "Do not implement new features."
-  ],
-  "target_files": [
-    "pacman.conf"
+    "No production code modifications.",
+    "No configuration modifications.",
+    "Do not modify administrative tracking logs like ARCHITECT_REPORT.md."
   ]
 }
