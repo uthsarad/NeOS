@@ -55,6 +55,11 @@
       "description": "Minor nudge optimization applied to tests/verify_airootfs_structure.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
       "target_file": "tests/verify_airootfs_structure.sh",
       "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_build_profile.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
+      "target_file": "tests/verify_build_profile.sh",
+      "status": "completed"
     }
   ]
 }
