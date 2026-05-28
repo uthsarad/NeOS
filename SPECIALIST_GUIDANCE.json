@@ -1,11 +1,5 @@
 {
-  "bolt": {
-    "directive": "Strategic Pause - No active tasks."
-  },
-  "palette": {
-    "directive": "Strategic Pause - No active tasks."
-  },
-  "sentinel": {
-    "directive": "Strategic Pause - No active tasks."
-  }
+  "Bolt": "Stand by.",
+  "Palette": "Stand by.",
+  "Sentinel": "Stand by."
 }

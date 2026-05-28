@@ -1,10 +1,8 @@
 {
-  "focus_area": "Strategic Pause",
-  "instructions": "Execute a zero-modification scenario. Maintain a clean working tree. Run tests. Use the `done` tool directly without requesting code review.",
-  "target_files": [],
-  "constraints": [
-    "No production code modifications.",
-    "No configuration modifications.",
-    "Do not modify administrative tracking logs like ARCHITECT_REPORT.md."
-  ]
+  "focus": "Strategic Pause",
+  "files_in_scope": [],
+  "allowed_actions": [
+    "none"
+  ],
+  "constraints": "No-build day. Make no code changes."
 }
