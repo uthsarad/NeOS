@@ -1,8 +1,16 @@
 {
-  "focus": "Strategic Pause",
-  "files_in_scope": [],
-  "allowed_actions": [
-    "none"
+  "focus_area": "CI/CD Pipeline Stabilization",
+  "allowed_files": [
+    ".github/workflows/build-iso.yml",
+    "docs/AUDIT_ACTION_PLAN.md"
   ],
-  "constraints": "No-build day. Make no code changes."
+  "forbidden_files": [
+    "profile/airootfs/**/*",
+    "tests/**/*"
+  ],
+  "constraints": [
+    "Do not modify production code scripts.",
+    "Only append python-yaml to the pacman dependencies.",
+    "Update markdown checkboxes to reflect task completion."
+  ]
 }
