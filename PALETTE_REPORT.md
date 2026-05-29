@@ -25,3 +25,7 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+
+## 2026-02-17 - Improved CI Log Formatting
+**Learning:** Raw terminal output in CI logs can be overwhelming; GitHub Actions provides native log grouping (`::group::`) that creates a cleaner, collapsible, and more accessible reading experience for developers.
+**Action:** Applied grouping and clear emoji indicators to the security scanning steps in `build-iso.yml`.

@@ -44,7 +44,7 @@
     {
       "description": "Review the CI scanning log output formatting and UX.",
       "target_file": ".github/workflows/build-iso.yml",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
