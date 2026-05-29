@@ -68,3 +68,8 @@
 - **File:** `tests/verify_build_profile.sh`
 - **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
 - **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_ufw.sh`
+- **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
