@@ -1,5 +1,10 @@
-# RISK REPORT
+# Risk & Priority Report
 
-- **Security Risks:** Low. DEEP_AUDIT.md confirms strong baseline engineering hygiene and low residual risk for installed-system security baseline.
-- **Performance Risks:** Medium. Mirror availability resilience and release artifact validation are noted as medium risks.
-- **Complexity Creep:** Monitored. Strategic pause implemented to prevent feature creep.
+## Current Risk Profile
+- **Build configuration integrity:** Low Risk.
+- **Release artifact validation (smoketest):** Medium Risk.
+- **Audit toolchain completeness:** Low Risk, but `python-yaml` is missing for YAML validation in CI.
+- **Mirror availability resilience:** Medium Risk.
+
+## Immediate Mitigation
+- Install `python-yaml` in the CI pipeline to eliminate the skipped YAML syntax check warning identified in DEEP_AUDIT.md.

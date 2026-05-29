@@ -1,5 +1,14 @@
 {
-  "Bolt": "Stand by.",
-  "Palette": "Stand by.",
-  "Sentinel": "Stand by."
+  "Bolt": {
+    "directive": "Review CI job output efficiency.",
+    "constraints": "Do not optimize pipeline logic, only review outputs."
+  },
+  "Palette": {
+    "directive": "Review CI scanning log output formatting.",
+    "constraints": "Focus on readability of YAML/Trivy outputs."
+  },
+  "Sentinel": {
+    "directive": "Verify python-yaml package source is trusted.",
+    "constraints": "No changes to core security profiles."
+  }
 }
