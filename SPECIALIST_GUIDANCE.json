@@ -1,14 +1,14 @@
 {
   "Bolt": {
-    "directive": "Review CI job output efficiency.",
-    "constraints": "Do not optimize pipeline logic, only review outputs."
+    "directive": "Zero-modification scenario. Review only.",
+    "constraints": "Do not modify any files."
   },
   "Palette": {
-    "directive": "Review CI scanning log output formatting.",
-    "constraints": "Focus on readability of YAML/Trivy outputs."
+    "directive": "Zero-modification scenario. Review only.",
+    "constraints": "Do not modify any files."
   },
   "Sentinel": {
-    "directive": "Verify python-yaml package source is trusted.",
-    "constraints": "No changes to core security profiles."
+    "directive": "Zero-modification scenario. Review only.",
+    "constraints": "Do not modify any files."
   }
 }
