@@ -73,3 +73,7 @@
 - **File:** `tests/verify_ufw.sh`
 - **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
 - **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## YYYY-MM-DD - Eliminating Subprocess Overhead in Test Scripts
+**Learning:** Subprocess calls like `$(basename ...)` inside loops add unnecessary execution time and overhead.
+**Action:** Replaced `$(basename "$file")` with native Bash parameter expansion `${file##*/}` in `tests/verify_iso_smoketest.sh` to improve script efficiency and reduce execution time.

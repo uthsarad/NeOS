@@ -39,7 +39,7 @@ echo "✅ Found $ISO_COUNT ISO file(s) in $OUT_DIR"
 for file in "${files[@]}"; do
     # Bolt: Use native bash globbing and stat instead of slow find subprocesses
     size=$(stat -c%s "$file")
-    name=$(basename "$file")
+    name="${file##*/}"
     echo "$name ($size bytes)"
 
     # Boot test using QEMU
