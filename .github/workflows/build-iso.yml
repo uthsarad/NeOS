@@ -58,11 +58,16 @@ jobs:
       - name: Run Security Scans
         run: |
           set -euo pipefail
-          echo "Running ShellCheck..."
+          echo "=== 🛡️ Starting Security Scans ==="
+          echo "🔍 Running ShellCheck on bash scripts..."
           find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          echo "✅ ShellCheck passed!"
 
-          echo "Running Trivy..."
+          echo "=== 🔒 Running Trivy filesystem scan ==="
           trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          echo "✅ Trivy scan passed!"
+          echo "=== ✅ All Security Scans Completed Successfully ==="
+
 
   build:
     needs: test

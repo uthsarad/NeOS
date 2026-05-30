@@ -25,3 +25,11 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+
+---
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Improved readability and structure of CI security scan log outputs in `.github/workflows/build-iso.yml` by adding visual separators and emojis.
+## Remaining usability risks
+- Other CI jobs and logs might still benefit from similar formatting enhancements.
