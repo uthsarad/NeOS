@@ -6,7 +6,7 @@ CONFIG_FILE="profile/airootfs/etc/calamares/modules/fstab.conf"
 
 echo "Verifying performance configuration in $CONFIG_FILE..."
 
-if [ -f "$CONFIG_FILE" ]; then
+if [[ -f "$CONFIG_FILE" ]]; then
     # Check for space_cache=v2 in btrfs mount options
     # We expect it alongside compress=zstd to ensure it's in the main mountOptions block, not just ssdExtraMountOptions
     if grep -E "btrfs:.*compress=zstd.*space_cache=v2" "$CONFIG_FILE"; then
@@ -26,7 +26,7 @@ SYSCTL_FILE="profile/airootfs/etc/sysctl.d/99-neos-performance.conf"
 
 echo "Verifying sysctl performance configuration in $SYSCTL_FILE..."
 
-if [ ! -f "$SYSCTL_FILE" ]; then
+if [[ ! -f "$SYSCTL_FILE" ]]; then
     echo "❌ Missing performance config file: $SYSCTL_FILE"
     exit 1
 fi
@@ -125,7 +125,7 @@ fi
 MODULES_FILE="profile/airootfs/etc/modules-load.d/neos-networking.conf"
 echo "Verifying network modules in $MODULES_FILE..."
 
-if [ ! -f "$MODULES_FILE" ]; then
+if [[ ! -f "$MODULES_FILE" ]]; then
     echo "❌ Missing network modules file: $MODULES_FILE"
     exit 1
 fi
