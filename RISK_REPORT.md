@@ -7,4 +7,4 @@
 - **Mirror availability resilience:** Medium Risk.
 
 ## Immediate Mitigation
-- Strategic pause to prevent feature creep. Continue monitoring medium risk areas.
+- Stabilize mirrorlist connectivity test to improve CI reliability.

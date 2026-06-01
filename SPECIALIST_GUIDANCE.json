@@ -1,14 +1,14 @@
 {
   "Bolt": {
-    "directive": "Zero-modification scenario. Review only.",
-    "constraints": "Do not modify any files."
+    "directive": "Review any new network requests for performance implications.",
+    "constraints": "Focus on script execution speed and network timeouts."
   },
   "Palette": {
-    "directive": "Zero-modification scenario. Review only.",
-    "constraints": "Do not modify any files."
+    "directive": "Ensure any error outputs are clear and actionable for the developer.",
+    "constraints": "Maintain current error messaging format."
   },
   "Sentinel": {
-    "directive": "Zero-modification scenario. Review only.",
-    "constraints": "Do not modify any files."
+    "directive": "Ensure curl commands safely handle potentially untrusted input.",
+    "constraints": "Validate URLs before processing."
   }
 }
