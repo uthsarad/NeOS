@@ -1,12 +1,13 @@
 {
-  "focus_area": "No-build day (strategic pause)",
-  "allowed_files": [],
+  "focus_area": "Stabilization / hardening",
+  "allowed_files": [
+    "tests/verify_mirrorlist_connectivity.sh"
+  ],
   "forbidden_files": [
     "*"
   ],
   "constraints": [
-    "No-build day (strategic pause)",
-    "Do not write production code.",
-    "Do not modify tracking files."
+    "Do not introduce complex mirror ranking systems yet.",
+    "Focus on making the existing connectivity test robust against temporary network anomalies or flaky mirrors."
   ]
 }
