@@ -330,6 +330,7 @@ Update this section as items are completed:
 - [x] High priority items addressed
 - [x] Medium priority items started
 - [x] Beta release published
+- [x] CI scanning UX improved
 
 **Last Updated:** 2026-02-17  
 **Next Review:** After critical fix

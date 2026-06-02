@@ -25,3 +25,11 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+
+---
+## Accessibility fixes
+- None required in the evaluated files.
+## UX improvements
+- Improved the developer experience (DX) and UX of the CI pipeline logs (`.github/workflows/build-iso.yml`) by wrapping the `pre-build validations` and `Security Scans` output in standard `::group::[Title]` and `::endgroup::` syntax. Added emojis for visual hierarchy and easy parsing, ensuring verbose test output is cleanly collapsible in GitHub Actions.
+## Remaining usability risks
+- Output from actual ISO building operations inside `build` could also be visually improved and grouped using the same mechanism, assuming the output isn't already grouped.

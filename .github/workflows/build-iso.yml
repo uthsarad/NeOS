@@ -46,23 +46,27 @@ jobs:
               continue
             fi
 
-            echo "Running $script..."
+            echo "::group::🧪 Running $script"
 
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
               bash "$script"
             fi
+
+            echo "::endgroup::"
           done
 
       - name: Run Security Scans
         run: |
           set -euo pipefail
-          echo "Running ShellCheck..."
+          echo "::group::🛡️ Running ShellCheck"
           find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          echo "::endgroup::"
 
-          echo "Running Trivy..."
+          echo "::group::🔒 Running Trivy"
           trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          echo "::endgroup::"
 
   build:
     needs: test
