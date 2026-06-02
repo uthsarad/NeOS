@@ -65,6 +65,11 @@
       "description": "Verify trap masking of error codes mitigated.",
       "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
       "status": "completed"
+    },
+    {
+      "description": "Ensure retry logic safely handles input and prevents DOS vulnerabilities",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh",
+      "status": "pending"
     }
   ]
 }
