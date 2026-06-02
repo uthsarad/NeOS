@@ -1,13 +1,14 @@
 {
-  "focus_area": "Stabilization / hardening",
+  "focus_area": "New feature implementation (Installer UX)",
   "allowed_files": [
-    "tests/verify_mirrorlist_connectivity.sh"
+    "profile/airootfs/etc/calamares/*",
+    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
   ],
   "forbidden_files": [
     "*"
   ],
   "constraints": [
-    "Do not introduce complex mirror ranking systems yet.",
-    "Focus on making the existing connectivity test robust against temporary network anomalies or flaky mirrors."
+    "Focus on simplifying the installer flow for standard users.",
+    "Do not break existing advanced partition features."
   ]
 }
