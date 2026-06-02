@@ -85,6 +85,11 @@
       "description": "Minor nudge optimization applied to tests/verify_unpackfs_exclude.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] and arithmetic evaluation (( )) for conditionals.",
       "target_file": "tests/verify_unpackfs_exclude.sh",
       "status": "completed"
+    },
+    {
+      "description": "Review if an exponential backoff strategy is needed for performance",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh",
+      "status": "pending"
     }
   ]
 }

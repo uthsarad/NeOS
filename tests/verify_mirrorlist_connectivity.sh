@@ -41,19 +41,27 @@ done < <(awk -F '=' '/^[ \t]*Server[ \t]*=/ {
 FAILED=0
 for i in "${!PIDS[@]}"; do
     if ! wait "${PIDS[i]}"; then
-        FAILED=1
         BASE_URL="${URLS[i]}"
-        # Palette: Ensure the format of the logged error message is clear and includes actionable steps
-        echo -e "\n================================================================================" >&2
-        echo -e "❌ ERROR: Failed to connect to $BASE_URL" >&2
-        echo -e "================================================================================\n" >&2
-        echo -e "💡 How to fix:" >&2
-        echo -e "  1. Check your internet connection." >&2
-        echo -e "  2. Verify the mirror is currently online." >&2
-        echo -e "  3. If the mirror is permanently down, remove it from:" >&2
-        echo -e "     profile/airootfs/etc/pacman.d/neos-mirrorlist" >&2
-        echo -e "  4. Update the mirrorlist using a tool like reflector or rankmirrors.\n" >&2
-        echo -e "================================================================================\n" >&2
+        echo "⚠️  Mirror $BASE_URL failed on first try. Retrying..."
+
+        # Bolt: Review if an exponential backoff strategy is needed for performance
+        # Sentinel: Ensure retry doesn't lead to DOS or exploit infinite loop vulnerabilities
+        if ! curl -I -s --connect-timeout 2 --max-time 5 "$BASE_URL" > /dev/null; then
+            FAILED=1
+            # Palette: Ensure the format of the logged error message is clear and includes actionable steps
+            echo -e "\n================================================================================" >&2
+            echo -e "❌ ERROR: Failed to connect to $BASE_URL after retry" >&2
+            echo -e "================================================================================\n" >&2
+            echo -e "💡 How to fix:" >&2
+            echo -e "  1. Check your internet connection." >&2
+            echo -e "  2. Verify the mirror is currently online." >&2
+            echo -e "  3. If the mirror is permanently down, remove it from:" >&2
+            echo -e "     profile/airootfs/etc/pacman.d/neos-mirrorlist" >&2
+            echo -e "  4. Update the mirrorlist using a tool like reflector or rankmirrors.\n" >&2
+            echo -e "================================================================================\n" >&2
+        else
+            echo "✅ Mirror $BASE_URL succeeded on retry."
+        fi
     fi
 done
 
