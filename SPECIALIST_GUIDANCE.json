@@ -1,14 +1,14 @@
 {
   "Bolt": {
-    "directive": "Review any new network requests for performance implications.",
-    "constraints": "Focus on script execution speed and network timeouts."
+    "directive": "Stand by.",
+    "constraints": "No changes."
   },
   "Palette": {
-    "directive": "Ensure any error outputs are clear and actionable for the developer.",
-    "constraints": "Maintain current error messaging format."
+    "directive": "Ensure installer steps follow standard UX paradigms.",
+    "constraints": "Focus on readability and flow."
   },
   "Sentinel": {
-    "directive": "Ensure curl commands safely handle potentially untrusted input.",
-    "constraints": "Validate URLs before processing."
+    "directive": "Stand by.",
+    "constraints": "No changes."
   }
 }
