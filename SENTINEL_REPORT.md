@@ -49,3 +49,15 @@
 
 ## Severity summary
 - Security enhancement. Improves defense in depth.
+
+## Risks found
+- Error masking vulnerability in script error trap handlers. Using trap '_error_handler $? $LINENO' ERR evaluates the trap action successfully, inadvertently masking the original failing error code.
+
+## Fixes applied
+- Modified the error trap in profile/airootfs/usr/local/bin/neos-installer-partition.sh and profile/airootfs/usr/local/bin/neos-liveuser-setup to explicitly capture and return the original error code.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- High severity. Allowed failed operations during installation or setup to appear successful and proceed, leading to potential inconsistent or vulnerable system states.

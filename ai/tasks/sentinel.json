@@ -60,6 +60,11 @@
       "description": "Stand by. All explicit tasks are currently verified as complete.",
       "target_file": "none",
       "status": "pending"
+    },
+    {
+      "description": "Verify trap masking of error codes mitigated.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-installer-partition.sh",
+      "status": "completed"
     }
   ]
 }
