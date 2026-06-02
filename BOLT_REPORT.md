@@ -89,3 +89,8 @@
 **Before/after reasoning:** This change eliminates pathname expansion and word splitting overhead in Bash scripts when evaluating conditions, replacing an external-like POSIX standard command `[ ]` with an internal native bash construct `[[ ]]`. It is considered a minor performance nudge optimization for environments that heavily execute bash verification loops.
 
 **Any remaining performance risks:** None. This is a very minor optimization and does not change the test's logical flow.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_unpackfs_exclude.sh`
+- **Optimization:** Replaced POSIX single bracket tests (`[ ]`) with native Bash double bracket tests (`[[ ]]`) and arithmetic evaluation (`(( ))`).
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
