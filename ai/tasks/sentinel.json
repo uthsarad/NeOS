@@ -70,6 +70,16 @@
       "description": "Ensure retry logic safely handles input and prevents DOS vulnerabilities",
       "target_file": "tests/verify_mirrorlist_connectivity.sh",
       "status": "completed"
+    },
+    {
+      "description": "Ensure that advanced partitioning options do not inadvertently allow users to mount insecure filesystems without appropriate safeguards.",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "pending"
+    },
+    {
+      "description": "Verify that internetCheckUrl in the welcome module does not leak sensitive telemetry data during ping.",
+      "target_file": "profile/airootfs/etc/calamares/modules/welcome.conf",
+      "status": "pending"
     }
   ]
 }
