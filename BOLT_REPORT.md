@@ -94,3 +94,7 @@
 - **File:** `tests/verify_unpackfs_exclude.sh`
 - **Optimization:** Replaced POSIX single bracket tests (`[ ]`) with native Bash double bracket tests (`[[ ]]`) and arithmetic evaluation (`(( ))`).
 - **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## 2026-06-25 - Network Retry Backoff
+**Learning:** Hardcoded single retry sleep values in network verification scripts cause CI to either fail early during temporary network blips or hang excessively if multiple mirrors are down.
+**Action:** Implemented exponential backoff for network retries using native bash arithmetic (`(( RETRY_DELAY *= 2 ))`) to ensure robust connectivity verification without hardcoding excessive static timeouts.
