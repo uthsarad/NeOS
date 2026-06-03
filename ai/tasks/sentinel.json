@@ -69,7 +69,7 @@
     {
       "description": "Ensure retry logic safely handles input and prevents DOS vulnerabilities",
       "target_file": "tests/verify_mirrorlist_connectivity.sh",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

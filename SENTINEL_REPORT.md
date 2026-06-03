@@ -61,3 +61,19 @@
 
 ## Severity summary
 - High severity. Allowed failed operations during installation or setup to appear successful and proceed, leading to potential inconsistent or vulnerable system states.
+
+## Sentinel Security Report
+
+### Risks Found
+- **DOS via Unthrottled Retries:** The retry mechanism in the mirrorlist connectivity test lacked throttling, potentially causing unnecessary rapid requests (DOS risk) against failing mirrors.
+- **Option Injection:** The `curl` command was missing POSIX option terminators (`--`) before variable inputs, technically allowing option injection if input validation were bypassed.
+
+### Fixes Applied
+- Added `sleep 1` before retry logic in `tests/verify_mirrorlist_connectivity.sh` to enforce a brief cooldown and prevent aggressive server hammering.
+- Enforced `--` in all `curl` commands in `tests/verify_mirrorlist_connectivity.sh` to neutralize potential option injection vectors.
+
+### Remaining Attack Surface
+- Minimal. The mirrorlist inputs are strictly regex-validated by `awk` before reaching curl.
+
+### Severity Summary
+- **Severity:** LOW (Defense-in-depth / Enhancement)
