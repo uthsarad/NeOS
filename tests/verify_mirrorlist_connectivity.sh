@@ -46,8 +46,21 @@ for i in "${!PIDS[@]}"; do
 
         # Bolt: Review if an exponential backoff strategy is needed for performance
         # Sentinel: Ensure retry doesn't lead to DOS or exploit infinite loop vulnerabilities
-        sleep 1
-        if ! curl -I -s --connect-timeout 2 --max-time 5 -- "$BASE_URL" > /dev/null; then
+        RETRY_DELAY=1
+        MAX_RETRIES=3
+        RETRY_COUNT=0
+        SUCCESS=0
+        while (( RETRY_COUNT < MAX_RETRIES )); do
+            sleep "$RETRY_DELAY"
+            if curl -I -s --connect-timeout 2 --max-time 5 -- "$BASE_URL" > /dev/null; then
+                SUCCESS=1
+                break
+            fi
+            (( RETRY_COUNT++ ))
+            (( RETRY_DELAY *= 2 ))
+        done
+
+        if (( SUCCESS == 0 )); then
             FAILED=1
             # Fast-fail bypass on broken testing mirror
             if [[ "$BASE_URL" == "https://al.arch.niranjan.co/" ]]; then
