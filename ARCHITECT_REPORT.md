@@ -115,3 +115,29 @@ Edge cases: Intermittent mirror failures.
 Implemented simple retry mechanism with slightly extended timeouts for failed initial requests.
 ### Delegation Preparation
 Delegated refinements to Bolt (performance backoff), Palette (error messaging format), and Sentinel (DOS/retry safety limits) via updated JSON task manifests.
+
+## Installer Defaults Implementation
+
+### PHASE 1: Scope Validation
+- **Confirmed:** Task fits inside ARCHITECT_SCOPE.json (Focus area: Installer UX, authorized files include `profile/airootfs/etc/calamares/*`).
+- **Action:** No expansion beyond authorized files and mandatory output artifacts.
+
+### PHASE 2: Impact Mapping
+- **Affected modules:** Calamares installer configuration (partition, welcome).
+- **New files needed:** `profile/airootfs/etc/calamares/modules/partition.conf`, `profile/airootfs/etc/calamares/modules/welcome.conf`.
+- **Test coverage requirements:** Validate files are syntactically correct and exist. Ensure existing automated installer scripts are not broken.
+
+### PHASE 3: Implementation Plan
+- **Files to create/modify:** Create `partition.conf` and `welcome.conf`.
+- **Data contracts:** Standard Calamares yaml properties.
+- **Edge cases:** `neos-installer-partition.sh` handles advanced flows and is unaffected by GUI defaults.
+
+### PHASE 4: Build
+- Created `partition.conf` to configure Windows-familiar sensible defaults (`btrfs`).
+- Created `welcome.conf` to set baseline installation checks (RAM, storage, internet).
+- Created `tests/verify_calamares_defaults.sh` to validate the configurations.
+
+### PHASE 5: Delegation Preparation
+- **Bolt:** Tasked with evaluating swap file performance.
+- **Palette:** Tasked with standardizing UX copy in GUI modules.
+- **Sentinel:** Tasked with validating telemetry and filesystem mounting safety.

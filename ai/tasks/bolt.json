@@ -90,6 +90,11 @@
       "description": "Review if an exponential backoff strategy is needed for performance",
       "target_file": "tests/verify_mirrorlist_connectivity.sh",
       "status": "completed"
+    },
+    {
+      "description": "Evaluate if enabling swap-to-file by default would improve system responsiveness on low-RAM devices without sacrificing Btrfs performance.",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "pending"
     }
   ]
 }
