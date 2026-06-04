@@ -1,25 +1,25 @@
 # Strategic Directive
 
-## PHASE 1: Product Alignment Check
-- What is the product trying to become? NeOS is a curated Arch Linux distribution delivering Windows-level usability with Linux-level power.
-- Are we building toward that? Yes, by progressing through the roadmap phases.
-- Are we solving the highest leverage problem? The beta release is now published. We need to begin work on Phase 3 (Installer and First-Boot UX).
+## PHASE 1 — Product Alignment Check
+- What is the product trying to become? NeOS aims to be a curated Arch Linux distribution delivering Windows-level usability with Linux-level power.
+- Are we building toward that? Yes, the baseline engineering hygiene is strong.
+- Are we solving the highest leverage problem? Currently, the highest leverage problem is acknowledging this stable state and formally pausing to avoid unnecessary drift.
 
-## PHASE 2: Technical Posture Review
-- Is the system stable? Core build is stable, and test infrastructure is robust.
-- Is tech debt increasing? No.
+## PHASE 2 — Technical Posture Review
+- Is the system stable? Yes, the core builds and basic validations pass. The deep audit confirms no active build-blocking config issues.
+- Is tech debt increasing? No, the system is well-defined.
 - Are we overbuilding? No.
 
-## PHASE 3: Priority Selection
-- New feature implementation (Phase 3: Installer UX)
+## PHASE 3 — Priority Selection
+- No-build day (strategic pause)
 
-## PHASE 4: Controlled Scope Definition
-- Exact files likely impacted: Calamares config (`profile/airootfs/etc/calamares/settings.conf`) or `neos-installer-partition.sh`.
-- Maximum allowed surface area: Installer configuration and related scripts.
-- Constraints Architect must obey: Focus on simplifying the installer flow for standard users (e.g., sensible defaults, Windows-like layout).
+## PHASE 4 — Controlled Scope Definition
+- Exact files likely impacted: None.
+- Maximum allowed surface area: Zero codebase modifications.
+- Constraints Architect must obey: Implement a strict zero-modification scenario. No codebase files are to be altered.
 
-## PHASE 5: Delegation Strategy
-- Architect: Implement installer defaults and clean up configuration.
-- Bolt: Stand by.
-- Palette: Ensure installer steps follow standard UX paradigms.
-- Sentinel: Stand by.
+## PHASE 5 — Delegation Strategy
+- Architect builds: Nothing.
+- Bolt optimizes: Nothing.
+- Palette enhances: Nothing.
+- Sentinel audits: Nothing.
