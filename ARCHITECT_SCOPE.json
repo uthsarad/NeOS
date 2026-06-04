@@ -1,14 +1,10 @@
 {
-  "focus_area": "New feature implementation (Installer UX)",
-  "allowed_files": [
-    "profile/airootfs/etc/calamares/*",
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
-  ],
+  "focus_area": "No-build day (strategic pause)",
+  "allowed_files": [],
   "forbidden_files": [
     "*"
   ],
   "constraints": [
-    "Focus on simplifying the installer flow for standard users.",
-    "Do not break existing advanced partition features."
+    "Implement a strict zero-modification scenario. No codebase files are to be altered."
   ]
 }

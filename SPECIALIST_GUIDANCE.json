@@ -1,14 +1,14 @@
 {
   "Bolt": {
-    "directive": "Stand by.",
+    "directive": "Nothing.",
     "constraints": "No changes."
   },
   "Palette": {
-    "directive": "Ensure installer steps follow standard UX paradigms.",
-    "constraints": "Focus on readability and flow."
+    "directive": "Nothing.",
+    "constraints": "No changes."
   },
   "Sentinel": {
-    "directive": "Stand by.",
+    "directive": "Nothing.",
     "constraints": "No changes."
   }
 }
