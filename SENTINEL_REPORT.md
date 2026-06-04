@@ -77,3 +77,9 @@
 
 ### Severity Summary
 - **Severity:** LOW (Defense-in-depth / Enhancement)
+
+## YYYY-MM-DD - Enforce HTTPS for installer connectivity check
+
+**Vulnerability:** The Calamares installer utilized a plaintext HTTP URL (`http://archlinux.org`) for its internet connectivity check.
+**Learning:** This exposed the ping to MITM monitoring and captive portal interception. Plaintext requests can be monitored on untrusted networks, and captive portals intercepting port 80 could result in false-positive connectivity reports.
+**Prevention:** Upgraded `internetCheckUrl` in `welcome.conf` to use `https://archlinux.org`.

@@ -79,7 +79,7 @@
     {
       "description": "Verify that internetCheckUrl in the welcome module does not leak sensitive telemetry data during ping.",
       "target_file": "profile/airootfs/etc/calamares/modules/welcome.conf",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
