@@ -94,7 +94,7 @@
     {
       "description": "Evaluate if enabling swap-to-file by default would improve system responsiveness on low-RAM devices without sacrificing Btrfs performance.",
       "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
