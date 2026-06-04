@@ -98,3 +98,8 @@
 ## 2026-06-25 - Network Retry Backoff
 **Learning:** Hardcoded single retry sleep values in network verification scripts cause CI to either fail early during temporary network blips or hang excessively if multiple mirrors are down.
 **Action:** Implemented exponential backoff for network retries using native bash arithmetic (`(( RETRY_DELAY *= 2 ))`) to ensure robust connectivity verification without hardcoding excessive static timeouts.
+
+## Optimization Evaluation: Swap-to-file in partition.conf
+- **What was optimized**: Evaluated enabling swap-to-file by default and updated the comment in `profile/airootfs/etc/calamares/modules/partition.conf` to reflect the decision to not enable it.
+- **Before/after reasoning**: The system is already highly optimized for ZRAM with `vm.swappiness=100` and `vm.page-cluster=0` in `99-neos-performance.conf`. Enabling physical disk swap on top of this would degrade SSD I/O performance without providing significant benefits.
+- **Any remaining performance risks**: None. The system remains optimized for ZRAM.
