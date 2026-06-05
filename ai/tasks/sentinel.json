@@ -74,7 +74,7 @@
     {
       "description": "Ensure that advanced partitioning options do not inadvertently allow users to mount insecure filesystems without appropriate safeguards.",
       "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "description": "Verify that internetCheckUrl in the welcome module does not leak sensitive telemetry data during ping.",
