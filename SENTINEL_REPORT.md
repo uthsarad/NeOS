@@ -83,3 +83,15 @@
 **Vulnerability:** The Calamares installer utilized a plaintext HTTP URL (`http://archlinux.org`) for its internet connectivity check.
 **Learning:** This exposed the ping to MITM monitoring and captive portal interception. Plaintext requests can be monitored on untrusted networks, and captive portals intercepting port 80 could result in false-positive connectivity reports.
 **Prevention:** Upgraded `internetCheckUrl` in `welcome.conf` to use `https://archlinux.org`.
+
+## Risks found
+- Advanced partitioning options lacked filesystem restrictions, allowing potential configuration of insecure or unsupported filesystems (e.g., non-fat32 EFI partitions).
+
+## Fixes applied
+- Added `directoryFilesystemRestrictions` to `profile/airootfs/etc/calamares/modules/partition.conf` explicitly enforcing `fat32` for the `efi` mountpoint.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- Medium severity. Prevents user misconfiguration that could lead to unbootable or insecure system states.
