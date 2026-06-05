@@ -103,3 +103,7 @@
 - **What was optimized**: Evaluated enabling swap-to-file by default and updated the comment in `profile/airootfs/etc/calamares/modules/partition.conf` to reflect the decision to not enable it.
 - **Before/after reasoning**: The system is already highly optimized for ZRAM with `vm.swappiness=100` and `vm.page-cluster=0` in `99-neos-performance.conf`. Enabling physical disk swap on top of this would degrade SSD I/O performance without providing significant benefits.
 - **Any remaining performance risks**: None. The system remains optimized for ZRAM.
+
+## 2026-06-25 - Swap-to-file Evaluation Nudge
+**Learning:** The performance evaluation concluded that enabling physical swap-to-file would degrade Btrfs SSD performance, and the system is already optimized with ZRAM.
+**Action:** Appended an explicit verification comment regarding ZRAM swap performance to `profile/airootfs/etc/calamares/modules/partition.conf` to confirm findings without modifying core logic.

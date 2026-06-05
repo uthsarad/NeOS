@@ -95,6 +95,11 @@
       "description": "Evaluate if enabling swap-to-file by default would improve system responsiveness on low-RAM devices without sacrificing Btrfs performance.",
       "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
       "status": "completed"
+    },
+    {
+      "description": "Nudge (minor authorized performance optimization on a target file).",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "completed"
     }
   ]
 }
