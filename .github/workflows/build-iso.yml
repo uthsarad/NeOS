@@ -58,11 +58,15 @@ jobs:
       - name: Run Security Scans
         run: |
           set -euo pipefail
+          echo "::group::🛡️ ShellCheck"
           echo "Running ShellCheck..."
           find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          echo "::endgroup::"
 
+          echo "::group::🔒 Trivy Security Scan"
           echo "Running Trivy..."
           trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          echo "::endgroup::"
 
   build:
     needs: test
