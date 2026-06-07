@@ -1,10 +1,11 @@
 {
-  "focus_area": "No-build day (strategic pause)",
-  "allowed_files": [],
-  "forbidden_files": [
-    "*"
+  "target_feature": "Infrastructure improvement: ISO size validation and PyYAML",
+  "allowed_files": [
+    ".github/workflows/build-iso.yml"
   ],
   "constraints": [
-    "Implement a strict zero-modification scenario. No codebase files are to be altered."
+    "Only add ISO size validation logic to the CI pipeline.",
+    "Add PyYAML dependency to the CI test environment.",
+    "Do not alter other pipeline functionality."
   ]
 }
