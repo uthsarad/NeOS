@@ -1,14 +1,5 @@
 {
-  "Bolt": {
-    "directive": "Nothing.",
-    "constraints": "No changes."
-  },
-  "Palette": {
-    "directive": "Nothing.",
-    "constraints": "No changes."
-  },
-  "Sentinel": {
-    "directive": "Nothing.",
-    "constraints": "No changes."
-  }
+  "bolt": "No action required.",
+  "palette": "No action required.",
+  "sentinel": "No action required."
 }
