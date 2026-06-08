@@ -34,6 +34,13 @@ jobs:
         run: |
           pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml shellcheck trivy
 
+      - name: Validate PyYAML Installation
+        run: |
+          set -euo pipefail
+          echo "::group::🐍 Validating PyYAML"
+          python -c "import yaml; print('PyYAML version:', yaml.__version__)"
+          echo "::endgroup::"
+
       - name: Run pre-build validations
         run: |
           set -euo pipefail
@@ -57,12 +64,22 @@ jobs:
 
       - name: Run Security Scans
         run: |
-          set -euo pipefail
-          echo "Running ShellCheck..."
-          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          set -uo pipefail
+          EXIT_CODE=0
 
-          echo "Running Trivy..."
-          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          # Palette: Review the CI scanning log output formatting and UX related to the new ::group:: usage.
+          echo "::group::🔍 Running ShellCheck"
+          # Sentinel: Audit the newly modified bash scripts in the CI pipeline for potential shell injection vulnerabilities when executing Trivy/Shellcheck.
+          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck || EXIT_CODE=$?
+          echo "::endgroup::"
+
+          if (( EXIT_CODE != 0 )); then exit "$EXIT_CODE"; fi
+
+          echo "::group::🛡️ Running Trivy"
+          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./ || EXIT_CODE=$?
+          echo "::endgroup::"
+
+          exit "$EXIT_CODE"
 
   build:
     needs: test
@@ -147,17 +164,17 @@ jobs:
           echo "PROFILE_DIR=$PROFILE_DIR"
           echo "PACMAN_CONF=$PACMAN_CONF"
 
-          if [ -z "$PROFILE_DIR" ]; then
+          if [[ -z "$PROFILE_DIR" ]]; then
             echo "PROFILE_DIR is empty" >&2
             exit 1
           fi
 
-          if [ ! -f "$PACMAN_CONF" ]; then
+          if [[ ! -f "$PACMAN_CONF" ]]; then
             echo "Missing pacman config at $PACMAN_CONF" >&2
             exit 1
           fi
 
-          if [ ! -f "$PROFILE_DIR/profiledef.sh" ]; then
+          if [[ ! -f "$PROFILE_DIR/profiledef.sh" ]]; then
             echo "Missing profiledef.sh in $PROFILE_DIR" >&2
             exit 1
           fi
@@ -178,7 +195,7 @@ jobs:
 
           parts=(neos-*.iso.part*)
 
-          if [ ${#parts[@]} -gt 0 ]; then
+          if (( ${#parts[@]} > 0 )); then
             echo "Found ISO part files, combining them..."
 
             base_name="${parts[0]%.part*}"
@@ -218,7 +235,7 @@ jobs:
           files=(out/*.iso)
           ISO_FILE="${files[0]:-}"
 
-          if [ -z "$ISO_FILE" ]; then
+          if [[ -z "$ISO_FILE" ]]; then
             echo "❌ No ISO file found to validate"
             exit 1
           fi
@@ -238,7 +255,8 @@ jobs:
           echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           echo "Max Size: $MAX_SIZE bytes (${MAX_SIZE_MB} MiB)"
 
-          if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
+          # Bolt: Review if further ISO size reduction is possible.
+          if (( ISO_SIZE >= MAX_SIZE )); then
             EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
 
             printf -v EXCESS_SIZE_MB "%d.%02d" \

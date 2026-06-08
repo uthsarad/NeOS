@@ -80,6 +80,11 @@
       "description": "Verify that internetCheckUrl in the welcome module does not leak sensitive telemetry data during ping.",
       "target_file": "profile/airootfs/etc/calamares/modules/welcome.conf",
       "status": "completed"
+    },
+    {
+      "description": "Audit the newly modified bash scripts in the CI pipeline for potential shell injection vulnerabilities when executing Trivy/Shellcheck.",
+      "target_file": ".github/workflows/build-iso.yml",
+      "status": "pending"
     }
   ]
 }

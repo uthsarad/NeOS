@@ -60,6 +60,11 @@
       "description": "Consider adding localized welcome messages or simplified requirement checklists in the welcome module.",
       "target_file": "profile/airootfs/etc/calamares/modules/welcome.conf",
       "status": "pending"
+    },
+    {
+      "description": "Review the CI scanning log output formatting and UX related to the new ::group:: usage in the workflows.",
+      "target_file": ".github/workflows/build-iso.yml",
+      "status": "pending"
     }
   ]
 }

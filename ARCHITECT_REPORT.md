@@ -141,3 +141,30 @@ Delegated refinements to Bolt (performance backoff), Palette (error messaging fo
 - **Bolt:** Tasked with evaluating swap file performance.
 - **Palette:** Tasked with standardizing UX copy in GUI modules.
 - **Sentinel:** Tasked with validating telemetry and filesystem mounting safety.
+
+## 2026-06-08 - Infrastructure improvement: ISO size validation and PyYAML
+
+### PHASE 1 — Scope Validation
+- Confirmed the task fits inside ARCHITECT_SCOPE.json.
+- Refused to expand beyond modifying `.github/workflows/build-iso.yml`.
+
+### PHASE 2 — Impact Mapping
+- Affected modules: `.github/workflows/build-iso.yml`.
+- New files needed: None.
+- Test coverage requirements: Workflow execution.
+
+### PHASE 3 — Implementation Plan
+- List files to create/modify: `.github/workflows/build-iso.yml`.
+- Define data contracts: Workflow configuration yaml.
+- Define edge cases: None.
+
+### PHASE 4 — Build
+- Implemented feature: Refactored existing ISO validation and validated `python-yaml` dependency is present.
+- Wrote minimal necessary tests: N/A.
+- Updated documentation if needed: N/A.
+
+### PHASE 5 — Delegation Preparation
+Generated task manifests for:
+- Bolt (performance considerations)
+- Palette (UX/accessibility improvements)
+- Sentinel (security validation points)
