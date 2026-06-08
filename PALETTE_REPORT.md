@@ -25,3 +25,10 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+
+## 2026-06-27 Updates
+### Accessibility & UX Enhancements
+- Improved CI scanning log output formatting in `.github/workflows/build-iso.yml` by using standard `::group::` and `::endgroup::` syntax along with emojis to visually categorize output, significantly reducing cognitive load and simplifying failure state debugging.
+- No direct code modifications were required for `tests/verify_mirrorlist_connectivity.sh`, `profile/airootfs/etc/calamares/modules/partition.conf`, or `profile/airootfs/etc/calamares/modules/welcome.conf` as existing configurations (e.g. zram handling) already fulfill requirements and structural changes were minimal.
+### Remaining Usability Risks
+- Multi-step forms within Calamares (like partitioning) could benefit from an overarching progress indicator.

@@ -98,3 +98,7 @@
 ## 2024-05-28 - Context-Aware Notification UX
 **Learning:** Hardcoding error states (like 'System Update Failed') for all background notification surfaces creates alarm fatigue and confusion when a script merely skips execution gracefully (e.g., missing optional snapshot dependencies).
 **Action:** Parameterize title, icon, and urgency in graphical notification wrappers to align the visual severity with the actual systemic impact.
+
+## 2026-06-27 - Actionable Visual Parsing for CI Logs
+**Learning:** Dense CI logs from GitHub Actions, specifically security scanning or shellscript executions, severely reduce debugging speed when errors are obscured.
+**Action:** Always use the `::group::[Title]` and `::endgroup::` syntax with standard emojis to visually cluster actions. This allows developers to immediately jump to the failure point by collapsing successful steps natively in the GitHub UI.
