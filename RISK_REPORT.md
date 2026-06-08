@@ -1,12 +1,13 @@
 # Risk & Priority Report
 
-## Current Risk Profile
-- **Build configuration integrity:** Low Risk. Deep audit confirms pacman.conf issue is already mitigated in codebase.
-- **Release artifact validation (smoketest):** Low Risk.
-- **Audit toolchain completeness:** Low Risk, but PyYAML is missing for full YAML lint coverage.
-- **Mirror availability resilience:** Low Risk.
-- **Release process:** High Risk. Missing ISO size validation in CI.
+## Current State Risk
+- Low: Build configuration integrity, Installed-system security baseline, Installer/live-user cleanup safety, Bootloader and initramfs consistency.
 
-## Immediate Mitigation
-- Add ISO size validation to CI pipeline.
-- Install PyYAML in CI for YAML linting.
+## Technical Debt Risk
+- Medium: Release artifact validation (smoketest), Mirror availability resilience.
+
+## Complexity Creep Risk
+- Low: A strategic pause is in effect to explicitly prevent complexity creep.
+
+## Action Plan
+Maintain current stable state. No new features or refinements are to be built until new high-leverage problems are identified.
