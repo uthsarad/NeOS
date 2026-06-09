@@ -1,4 +1,15 @@
 {
-  "focus_area": "Strategic Pause",
-  "tasks": []
+  "focus_area": "Installer UX - Missing Calamares Modules",
+  "tasks": [
+    {
+      "module": "profile/airootfs/etc/calamares/modules/fstab.conf",
+      "action": "create",
+      "constraints": "Must include Btrfs space_cache=v2 and compress=zstd"
+    },
+    {
+      "module": "profile/airootfs/etc/calamares/modules/users.conf",
+      "action": "create",
+      "constraints": "Define standard user groups (wheel, network, etc.)"
+    }
+  ]
 }
