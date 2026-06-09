@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "directive": "Stand by.",
-    "constraints": ["No modifications allowed"]
+    "directive": "Evaluate fstab.conf Btrfs mount options for performance.",
+    "constraints": ["Focus on I/O throughput"]
   },
   "palette": {
     "directive": "Stand by.",
     "constraints": ["No modifications allowed"]
   },
   "sentinel": {
-    "directive": "Stand by.",
-    "constraints": ["No modifications allowed"]
+    "directive": "Audit user group assignments in users.conf.",
+    "constraints": ["Ensure principle of least privilege"]
   }
 }

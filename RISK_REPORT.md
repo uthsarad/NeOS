@@ -1,13 +1,13 @@
 # Risk & Priority Report
 
 ## Current State Risk
-- Low: Build configuration integrity, Installed-system security baseline, Installer/live-user cleanup safety, Bootloader and initramfs consistency.
+- Low: The system is generally stable.
 
 ## Technical Debt Risk
-- Medium: Release artifact validation (smoketest), Mirror availability resilience.
+- Medium: The verification suite is logging warnings about missing Calamares configuration files (`fstab.conf` and `users.conf`). While not immediately fatal to the live session, it causes the automated tests to fail and leaves the installer in an unconfigured state.
 
 ## Complexity Creep Risk
-- Low: A strategic pause is in effect to explicitly prevent complexity creep.
+- Low: Adding the missing Calamares modules is a direct requirement of Phase 3 and resolves failing tests without introducing new architectural paradigms.
 
 ## Action Plan
-Maintain current stable state. No new features or refinements are to be built until new high-leverage problems are identified.
+The Architect must immediately create the missing `fstab.conf` and `users.conf` modules to satisfy the installer configuration requirements and silence the test suite warnings.
