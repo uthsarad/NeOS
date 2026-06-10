@@ -80,6 +80,11 @@
       "description": "Verify that internetCheckUrl in the welcome module does not leak sensitive telemetry data during ping.",
       "target_file": "profile/airootfs/etc/calamares/modules/welcome.conf",
       "status": "completed"
+    },
+    {
+      "description": "Audit user group assignments in users.conf. Ensure principle of least privilege.",
+      "target_file": "profile/airootfs/etc/calamares/modules/users.conf",
+      "status": "pending"
     }
   ]
 }
