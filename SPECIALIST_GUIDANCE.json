@@ -1,14 +1,14 @@
 {
   "bolt": {
-    "directive": "Stand by.",
-    "constraints": ["No modifications allowed"]
+    "directive": "Prepare to evaluate staging pipeline synchronization performance.",
+    "constraints": ["Focus on Phase 2 infrastructure planning"]
   },
   "palette": {
-    "directive": "Stand by.",
-    "constraints": ["No modifications allowed"]
+    "directive": "Prepare to review NeOS-curated repo branding and UX.",
+    "constraints": ["Focus on Phase 2 branding tasks"]
   },
   "sentinel": {
-    "directive": "Stand by.",
-    "constraints": ["No modifications allowed"]
+    "directive": "Prepare to audit package signing and update gate security.",
+    "constraints": ["Focus on Phase 2 infrastructure security"]
   }
 }

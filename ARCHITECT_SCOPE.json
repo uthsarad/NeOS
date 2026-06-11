@@ -1,10 +1,10 @@
 {
-  "focus_area": "Strategic Pause - Post Beta Release Stabilization",
+  "focus_area": "Phase 2 Initialization",
   "tasks": [
     {
-      "module": "none",
-      "action": "execute tests",
-      "constraints": "Strictly zero modifications to the codebase"
+      "module": "planning",
+      "action": "enqueue phase 2 tasks",
+      "constraints": "Update ai/tasks/*.json only. Do not modify production code."
     }
   ]
 }
