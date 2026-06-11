@@ -104,7 +104,7 @@
     {
       "description": "Evaluate fstab.conf Btrfs mount options for performance. Focus on I/O throughput.",
       "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
