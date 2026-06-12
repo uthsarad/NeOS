@@ -84,7 +84,7 @@
     {
       "description": "Audit user group assignments in users.conf. Ensure principle of least privilege.",
       "target_file": "profile/airootfs/etc/calamares/modules/users.conf",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
