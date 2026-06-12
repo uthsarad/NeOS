@@ -105,6 +105,11 @@
       "description": "Evaluate fstab.conf Btrfs mount options for performance. Focus on I/O throughput.",
       "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
       "status": "completed"
+    },
+    {
+      "description": "Prepare to evaluate staging pipeline synchronization performance.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }

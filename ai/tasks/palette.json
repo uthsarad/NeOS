@@ -65,6 +65,11 @@
       "description": "Stand by.",
       "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
       "status": "pending"
+    },
+    {
+      "description": "Prepare to review NeOS-curated repo branding and UX.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
