@@ -46,23 +46,32 @@ jobs:
               continue
             fi
 
-            echo "Running $script..."
-
+            echo "::group::🧪 Running $script..."
+            EXIT_CODE=0
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
-              bash "$script"
+              bash "$script" || EXIT_CODE=$?
             fi
+            echo "::endgroup::"
+            if [ $EXIT_CODE -ne 0 ]; then exit $EXIT_CODE; fi
           done
 
       - name: Run Security Scans
         run: |
           set -euo pipefail
-          echo "Running ShellCheck..."
-          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
 
-          echo "Running Trivy..."
-          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          echo "::group::🔍 Running ShellCheck..."
+          EXIT_CODE=0
+          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck || EXIT_CODE=$?
+          echo "::endgroup::"
+          if [ $EXIT_CODE -ne 0 ]; then exit $EXIT_CODE; fi
+
+          echo "::group::🛡️ Running Trivy..."
+          EXIT_CODE=0
+          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./ || EXIT_CODE=$?
+          echo "::endgroup::"
+          if [ $EXIT_CODE -ne 0 ]; then exit $EXIT_CODE; fi
 
   build:
     needs: test
