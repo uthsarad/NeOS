@@ -53,33 +53,37 @@ jobs:
               continue
             fi
 
-            echo "Running $script..."
+            echo "::group::🧪 Running $script..."
 
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
               bash "$script"
             fi
+            echo "::endgroup::"
           done
 
       - name: Run Security Scans
         run: |
-          set -uo pipefail
-          EXIT_CODE=0
+          set -euo pipefail
+          echo "=============================="
+          echo "🛡️ Initiating Security Scans"
+          echo "=============================="
+          echo ""
 
-          # Palette: Review the CI scanning log output formatting and UX related to the new ::group:: usage.
-          echo "::group::🔍 Running ShellCheck"
-          # Sentinel: Audit the newly modified bash scripts in the CI pipeline for potential shell injection vulnerabilities when executing Trivy/Shellcheck.
-          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck || EXIT_CODE=$?
-          echo "::endgroup::"
+          echo "Running ShellCheck..."
+          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          echo "✅ ShellCheck completed successfully."
+          echo ""
 
-          if (( EXIT_CODE != 0 )); then exit "$EXIT_CODE"; fi
+          echo "::group::🛡️ Trivy Vulnerability Scan"
+          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          echo "✅ Trivy vulnerability scan completed successfully."
+          echo ""
 
-          echo "::group::🛡️ Running Trivy"
-          trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./ || EXIT_CODE=$?
-          echo "::endgroup::"
-
-          exit "$EXIT_CODE"
+          echo "=============================="
+          echo "🎉 All Security Scans Passed!"
+          echo "=============================="
 
   build:
     needs: test
@@ -255,7 +259,6 @@ jobs:
           echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           echo "Max Size: $MAX_SIZE bytes (${MAX_SIZE_MB} MiB)"
 
-          # Bolt: Review if further ISO size reduction is possible.
           if (( ISO_SIZE >= MAX_SIZE )); then
             EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
 
@@ -269,6 +272,7 @@ jobs:
             echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
             echo "   - Utilize 'NoExtract' rules in 'pacman.conf'."
             echo "   - Check for large unintended assets in 'airootfs/'."
+            echo "   - Consult DEEP_AUDIT.md for more size reduction strategies."
 
             exit 1
           else

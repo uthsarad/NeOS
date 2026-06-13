@@ -102,8 +102,13 @@
       "status": "completed"
     },
     {
-      "description": "Review if further ISO size reduction is possible.",
-      "target_file": ".github/workflows/build-iso.yml",
+      "description": "Evaluate fstab.conf Btrfs mount options for performance. Focus on I/O throughput.",
+      "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Prepare to evaluate staging pipeline synchronization performance.",
+      "target_file": "none",
       "status": "pending"
     }
   ]

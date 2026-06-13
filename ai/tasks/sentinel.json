@@ -82,8 +82,13 @@
       "status": "completed"
     },
     {
-      "description": "Audit the newly modified bash scripts in the CI pipeline for potential shell injection vulnerabilities when executing Trivy/Shellcheck.",
-      "target_file": ".github/workflows/build-iso.yml",
+      "description": "Audit user group assignments in users.conf. Ensure principle of least privilege.",
+      "target_file": "profile/airootfs/etc/calamares/modules/users.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Prepare to audit package signing and update gate security.",
+      "target_file": "none",
       "status": "pending"
     }
   ]

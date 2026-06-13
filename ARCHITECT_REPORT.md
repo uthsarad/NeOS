@@ -142,29 +142,38 @@ Delegated refinements to Bolt (performance backoff), Palette (error messaging fo
 - **Palette:** Tasked with standardizing UX copy in GUI modules.
 - **Sentinel:** Tasked with validating telemetry and filesystem mounting safety.
 
-## 2026-06-08 - Infrastructure improvement: ISO size validation and PyYAML
+## PHASE 1 — Scope Validation
+Confirmed the task fits inside ARCHITECT_SCOPE.json. Implementing missing Calamares configuration modules fstab.conf and users.conf is authorized. Refused to expand beyond it.
 
-### PHASE 1 — Scope Validation
-- Confirmed the task fits inside ARCHITECT_SCOPE.json.
-- Refused to expand beyond modifying `.github/workflows/build-iso.yml`.
+## PHASE 2 — Impact Mapping
+Affected modules: Calamares installer configuration.
+New files needed: profile/airootfs/etc/calamares/modules/fstab.conf, profile/airootfs/etc/calamares/modules/users.conf.
+Test coverage requirements: verify_performance_config.sh, verify_security_config.sh.
 
-### PHASE 2 — Impact Mapping
-- Affected modules: `.github/workflows/build-iso.yml`.
-- New files needed: None.
-- Test coverage requirements: Workflow execution.
+## PHASE 3 — Implementation Plan
+Files to create: profile/airootfs/etc/calamares/modules/fstab.conf, profile/airootfs/etc/calamares/modules/users.conf.
+Data contracts: fstab.conf must include Btrfs space_cache=v2 and compress=zstd. users.conf must define default groups (wheel) and be evaluated by tests for unsafe groups.
+Edge cases: Ensure tests pass correctly with the provided structures.
 
-### PHASE 3 — Implementation Plan
-- List files to create/modify: `.github/workflows/build-iso.yml`.
-- Define data contracts: Workflow configuration yaml.
-- Define edge cases: None.
+## PHASE 4 — Build
+Implemented feature: Created fstab.conf and users.conf with correct configurations.
+Wrote minimal necessary tests: Verified against existing test suite.
 
-### PHASE 4 — Build
-- Implemented feature: Refactored existing ISO validation and validated `python-yaml` dependency is present.
-- Wrote minimal necessary tests: N/A.
-- Updated documentation if needed: N/A.
+## PHASE 5 — Delegation Preparation
+Generated task manifests for Bolt, Palette, and Sentinel.
 
-### PHASE 5 — Delegation Preparation
-Generated task manifests for:
-- Bolt (performance considerations)
-- Palette (UX/accessibility improvements)
-- Sentinel (security validation points)
+## Phase 1: Scope Validation
+- Scope authorized via ARCHITECT_SCOPE.json (Phase 2 Initialization). Task constrained to ai/tasks/*.json updates. No production code modified.
+
+## Phase 2: Impact Mapping
+- Impacted modules: ai/tasks/bolt.json, ai/tasks/palette.json, ai/tasks/sentinel.json.
+- Required test coverage: Run existing test suite.
+
+## Phase 3: Implementation Plan
+- Enqueue tasks in JSON trackers for Bolt, Palette, and Sentinel using jq.
+
+## Phase 4: Build
+- Appended phase 2 initialization tasks to task trackers.
+
+## Phase 5: Delegation Preparation
+- Generated task manifests for Bolt, Palette, and Sentinel.

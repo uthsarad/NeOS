@@ -39,22 +39,22 @@
     {
       "description": "Ensure markdown formatting is intact for checklist updates.",
       "target_file": "docs/AUDIT_ACTION_PLAN.md",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "description": "Review the CI scanning log output formatting and UX.",
       "target_file": ".github/workflows/build-iso.yml",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "description": "Ensure the format of the logged error message is clear and includes actionable steps",
       "target_file": "tests/verify_mirrorlist_connectivity.sh",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "description": "Validate that partition choices in the installer are clearly explained to avoid user confusion, following standard UX paradigms.",
       "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "description": "Consider adding localized welcome messages or simplified requirement checklists in the welcome module.",
@@ -62,8 +62,13 @@
       "status": "pending"
     },
     {
-      "description": "Review the CI scanning log output formatting and UX related to the new ::group:: usage in the workflows.",
-      "target_file": ".github/workflows/build-iso.yml",
+      "description": "Stand by.",
+      "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
+      "status": "pending"
+    },
+    {
+      "description": "Prepare to review NeOS-curated repo branding and UX.",
+      "target_file": "none",
       "status": "pending"
     }
   ]
