@@ -46,13 +46,14 @@ jobs:
               continue
             fi
 
-            echo "Running $script..."
+            echo "::group::🧪 Running $script..."
 
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
               bash "$script"
             fi
+            echo "::endgroup::"
           done
 
       - name: Run Security Scans
