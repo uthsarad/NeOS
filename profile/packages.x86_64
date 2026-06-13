@@ -59,7 +59,7 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
-nvidia-lts
+nvidia-dkms
 nvidia-utils
 broadcom-wl-dkms
 linux-lts-headers
@@ -68,7 +68,7 @@ sof-firmware
 alsa-firmware
 linux-firmware-marvell
 linux-firmware-qlogic
-linux-firmware-bnx2
+linux-firmware-broadcom
 xf86-video-amdgpu
 xf86-video-ati
 xf86-video-intel
