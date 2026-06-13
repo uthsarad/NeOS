@@ -45,8 +45,6 @@ ttf-dejavu
 # KDE Extra
 ark
 spectacle
-gwenview
-kate
 
 # Drivers & Hardware Support
 efibootmgr
@@ -59,11 +57,8 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
-nvidia-dkms
 nvidia-utils
 broadcom-wl-dkms
-linux-lts-headers
-base-devel
 sof-firmware
 alsa-firmware
 xf86-video-amdgpu
