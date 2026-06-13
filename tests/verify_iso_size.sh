@@ -30,7 +30,7 @@ echo "Checking compression settings in $PROFILE_FILE..."
 mapfile -t PROFILE_LINES < "$PROFILE_FILE"
 COMPRESSION_FOUND=false
 for line in "${PROFILE_LINES[@]}"; do
-    if [[ "$line" == *"airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M')"* ]]; then
+    if [[ "$line" == *"airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M'"* ]]; then
         COMPRESSION_FOUND=true
         break
     fi
