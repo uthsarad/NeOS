@@ -74,11 +74,21 @@
     {
       "description": "Ensure that advanced partitioning options do not inadvertently allow users to mount insecure filesystems without appropriate safeguards.",
       "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "description": "Verify that internetCheckUrl in the welcome module does not leak sensitive telemetry data during ping.",
       "target_file": "profile/airootfs/etc/calamares/modules/welcome.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Audit user group assignments in users.conf. Ensure principle of least privilege.",
+      "target_file": "profile/airootfs/etc/calamares/modules/users.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Prepare to audit package signing and update gate security.",
+      "target_file": "none",
       "status": "pending"
     }
   ]
