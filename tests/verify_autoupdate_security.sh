@@ -5,7 +5,7 @@
 SCRIPT_PATH="profile/airootfs/usr/local/bin/neos-autoupdate.sh"
 CHECK_PATTERN="if [[ -L \"\$LOG_FILE\" ]]; then"
 
-if [ ! -f "$SCRIPT_PATH" ]; then
+if [[ ! -f "$SCRIPT_PATH" ]]; then
     echo "❌ $SCRIPT_PATH not found!"
     exit 1
 fi

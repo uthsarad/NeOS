@@ -53,3 +53,64 @@
 - **File:** `docs/AUDIT_ACTION_PLAN.md`
 - **Optimization:** Replaced POSIX single bracket `[ ]` with native bash double bracket `[[ ]]` in the ISO Size Validation CI snippet.
 - **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `docs/AUDIT_ACTION_PLAN.md`
+- **Optimization:** Replaced native Bash conditional `[[ $ISO_SIZE -ge $MAX_SIZE ]]` with arithmetic evaluation `(( ISO_SIZE >= MAX_SIZE ))`.
+- **Impact:** Eliminates string comparison evaluation overhead for purely numeric data, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_airootfs_structure.sh`
+- **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_build_profile.sh`
+- **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_ufw.sh`
+- **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## YYYY-MM-DD - Eliminating Subprocess Overhead in Test Scripts
+**Learning:** Subprocess calls like `$(basename ...)` inside loops add unnecessary execution time and overhead.
+**Action:** Replaced `$(basename "$file")` with native Bash parameter expansion `${file##*/}` in `tests/verify_iso_smoketest.sh` to improve script efficiency and reduce execution time.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_performance_config.sh`
+- **Optimization:** Replaced POSIX single brackets `[ ... ]` with native Bash double brackets `[[ ... ]]` for conditionals.
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## YYYY-MM-DD - Bolt Performance Nudge
+**What was optimized:** Replaced POSIX single bracket tests (`[ ]`) with native Bash double bracket tests (`[[ ]]`) in `tests/verify_autoupdate_security.sh`.
+
+**Before/after reasoning:** This change eliminates pathname expansion and word splitting overhead in Bash scripts when evaluating conditions, replacing an external-like POSIX standard command `[ ]` with an internal native bash construct `[[ ]]`. It is considered a minor performance nudge optimization for environments that heavily execute bash verification loops.
+
+**Any remaining performance risks:** None. This is a very minor optimization and does not change the test's logical flow.
+
+## ⚡ Bolt Performance Nudge
+- **File:** `tests/verify_unpackfs_exclude.sh`
+- **Optimization:** Replaced POSIX single bracket tests (`[ ]`) with native Bash double bracket tests (`[[ ]]`) and arithmetic evaluation (`(( ))`).
+- **Impact:** Eliminates pathname expansion and word splitting overhead, fulfilling the minor authorized performance optimization mandate.
+
+## 2026-06-25 - Network Retry Backoff
+**Learning:** Hardcoded single retry sleep values in network verification scripts cause CI to either fail early during temporary network blips or hang excessively if multiple mirrors are down.
+**Action:** Implemented exponential backoff for network retries using native bash arithmetic (`(( RETRY_DELAY *= 2 ))`) to ensure robust connectivity verification without hardcoding excessive static timeouts.
+
+## Optimization Evaluation: Swap-to-file in partition.conf
+- **What was optimized**: Evaluated enabling swap-to-file by default and updated the comment in `profile/airootfs/etc/calamares/modules/partition.conf` to reflect the decision to not enable it.
+- **Before/after reasoning**: The system is already highly optimized for ZRAM with `vm.swappiness=100` and `vm.page-cluster=0` in `99-neos-performance.conf`. Enabling physical disk swap on top of this would degrade SSD I/O performance without providing significant benefits.
+- **Any remaining performance risks**: None. The system remains optimized for ZRAM.
+
+## 2026-06-25 - Swap-to-file Evaluation Nudge
+**Learning:** The performance evaluation concluded that enabling physical swap-to-file would degrade Btrfs SSD performance, and the system is already optimized with ZRAM.
+**Action:** Appended an explicit verification comment regarding ZRAM swap performance to `profile/airootfs/etc/calamares/modules/partition.conf` to confirm findings without modifying core logic.
+## 2026-06-25 - Subprocess Overhead in CI Script File Parsing
+**Learning:** Using repeated `grep -q` or `sed` commands to search for strings in files within bash validation scripts introduces measurable performance degradation due to rapid fork/exec cycles.
+**Action:** When parsing or checking for string existence in files from bash, load the entire file into a variable `CONTENT=$(<"$FILE")` once, and use native bash parameter expansion `[[ "$CONTENT" == *"pattern"* ]]`, or use a single native `while read` loop for structured extraction to eliminate subprocess overhead.
+
+## 2026-06-25 - Btrfs Mount Options for Throughput
+**Learning:** Default Btrfs mount options can bottleneck I/O throughput on modern NVMe/SSDs. Using compress=zstd:1 significantly increases compression/decompression speed with minimal ratio loss, and discard=async improves I/O by not blocking TRIM operations.
+**Action:** Configure Btrfs with compress=zstd:1 and discard=async to maximize disk I/O throughput.

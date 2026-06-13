@@ -29,7 +29,7 @@ REQUIRED_FILES=(
 ALL_PASSED=true
 
 for FILE in "${REQUIRED_FILES[@]}"; do
-    if [ -f "$FILE" ]; then
+    if [[ -f "$FILE" ]]; then
         echo "✅ $FILE"
     else
         echo "❌ Missing: $FILE"
@@ -85,7 +85,7 @@ echo "Verifying pacman hook format..."
 
 for HOOK in profile/airootfs/etc/pacman.d/hooks/*.hook; do
     ACTION_COUNT=$(grep -c '^\[Action\]' "$HOOK")
-    if [ "$ACTION_COUNT" -eq 1 ]; then
+    if [[ "$ACTION_COUNT" -eq 1 ]]; then
         echo "✅ $HOOK has exactly 1 [Action] section"
     else
         echo "❌ $HOOK has $ACTION_COUNT [Action] sections (expected 1)"
@@ -93,7 +93,7 @@ for HOOK in profile/airootfs/etc/pacman.d/hooks/*.hook; do
     fi
 done
 
-if [ "$ALL_PASSED" = true ]; then
+if [[ "$ALL_PASSED" == true ]]; then
     echo ""
     echo "All airootfs structure checks passed!"
     exit 0

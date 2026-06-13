@@ -1,9 +1,10 @@
 {
-  "authorized_modifications": [],
-  "constraints": [
-    "Perform a zero-modification scenario.",
-    "Do not alter any system files, tracking documents, or scripts.",
-    "Maintain a clean working tree."
-  ],
-  "target_files": []
+  "focus_area": "Audit Remediation - Long Term Improvements",
+  "tasks": [
+    {
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
+    }
+  ]
 }

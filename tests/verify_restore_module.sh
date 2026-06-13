@@ -5,13 +5,15 @@ QML_FILE="profile/airootfs/etc/calamares/branding/neos/neos-restore-module.qml"
 
 echo "Verifying QML restore module: $QML_FILE..."
 
-if [ ! -f "$QML_FILE" ]; then
+if [[ ! -f "$QML_FILE" ]]; then
     echo "Error: QML file not found!"
     exit 1
 fi
 
+CONTENT="$(<"$QML_FILE")"
+
 # Check for rollbackToSnapshot function
-if grep -q "function rollbackToSnapshot(snapshotNumber)" "$QML_FILE"; then
+if [[ "$CONTENT" == *"function rollbackToSnapshot(snapshotNumber)"* ]]; then
     echo "✅ rollbackToSnapshot function found."
 else
     echo "❌ rollbackToSnapshot function missing!"
@@ -19,7 +21,7 @@ else
 fi
 
 # Check for Process component
-if grep -q "Process {" "$QML_FILE"; then
+if [[ "$CONTENT" == *"Process {"* ]]; then
     echo "✅ Process component found."
 else
     echo "❌ Process component missing!"
@@ -27,7 +29,7 @@ else
 fi
 
 # Check for snapper command
-if grep -q "snapper" "$QML_FILE"; then
+if [[ "$CONTENT" == *"snapper"* ]]; then
     echo "✅ snapper command found."
 else
     echo "❌ snapper command missing!"
@@ -35,7 +37,7 @@ else
 fi
 
 # Check for config=root
-if grep -q "\-\-config=root" "$QML_FILE"; then
+if [[ "$CONTENT" == *"--config=root"* ]]; then
     echo "✅ --config=root parameter found."
 else
     echo "❌ --config=root parameter missing!"

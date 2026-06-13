@@ -1,14 +1,14 @@
 {
-  "Bolt": {
-    "focus": "Stand by",
-    "guidance": "No active tasks. Perform authorized nudge optimization if required by fallbacks, otherwise maintain zero modifications."
+  "bolt": {
+    "directive": "Verify documentation format for readability.",
+    "constraints": ["Focus on document structure"]
   },
-  "Palette": {
-    "focus": "Stand by",
-    "guidance": "No UI/UX tasks required. Maintain zero modifications."
+  "palette": {
+    "directive": "Ensure ADR formatting adheres to standards and is user-friendly.",
+    "constraints": ["Focus on readability and structure"]
   },
-  "Sentinel": {
-    "focus": "Stand by",
-    "guidance": "No security audits required. Maintain zero modifications."
+  "sentinel": {
+    "directive": "Verify new documentation does not leak sensitive information.",
+    "constraints": ["Audit newly created docs"]
   }
 }

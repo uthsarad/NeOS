@@ -45,6 +45,71 @@
       "description": "Perform a minor authorized performance optimization on a target file (nudge) as fallback.",
       "target_file": "docs/AUDIT_ACTION_PLAN.md",
       "status": "completed"
+    },
+    {
+      "description": "Replaced native Bash conditional with arithmetic evaluation for purely numeric data.",
+      "target_file": "docs/AUDIT_ACTION_PLAN.md",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_airootfs_structure.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
+      "target_file": "tests/verify_airootfs_structure.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_build_profile.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
+      "target_file": "tests/verify_build_profile.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_ufw.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
+      "target_file": "tests/verify_ufw.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_iso_smoketest.sh: replaced $(basename \"$file\") with native Bash parameter expansion ${file##*/} to eliminate subprocess overhead.",
+      "target_file": "tests/verify_iso_smoketest.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_performance_config.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
+      "target_file": "tests/verify_performance_config.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_autoupdate_security.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] for conditional statements.",
+      "target_file": "tests/verify_autoupdate_security.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Minor nudge optimization applied to tests/verify_unpackfs_exclude.sh: replaced POSIX single brackets [ ] with native Bash double brackets [[ ]] and arithmetic evaluation (( )) for conditionals.",
+      "target_file": "tests/verify_unpackfs_exclude.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Review if an exponential backoff strategy is needed for performance",
+      "target_file": "tests/verify_mirrorlist_connectivity.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Evaluate if enabling swap-to-file by default would improve system responsiveness on low-RAM devices without sacrificing Btrfs performance.",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Nudge (minor authorized performance optimization on a target file).",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Evaluate fstab.conf Btrfs mount options for performance. Focus on I/O throughput.",
+      "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Prepare to evaluate staging pipeline synchronization performance.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
