@@ -59,6 +59,11 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
+nvidia-lts
+nvidia-utils
+broadcom-wl
+linux-lts-headers
+base-devel
 xf86-video-amdgpu
 xf86-video-ati
 xf86-video-intel
