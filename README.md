@@ -1,6 +1,6 @@
 # NeOS (Next Evolution Operating System)
 
-[![Build NeOS ISO](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=main)](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml)
+[![Build NeOS ISO](https://github.com/NimuthuGanegoda/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=main)](https://github.com/NimuthuGanegoda/NeOS/actions/workflows/build-iso.yml)
 ![Status](https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square)
 ![Architecture](https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
@@ -47,11 +47,21 @@ NeOS is a collaborative effort brought to life by a dedicated team of developers
 
 Comprehensive documentation is available in the `docs/` directory:
 
-*   **[Deployment Handbook](docs/HANDBOOK.md)** - Installation and initial setup.
-*   **[System Architecture](docs/ARCHITECTURE.md)** - In-depth look at the NeOS stability model.
-*   **[Development Roadmap](docs/ROADMAP.md)** - Feature milestones and release phases.
-*   **[Hardware Support](docs/VM_STARTUP.md)** - Driver management and virtualization notes.
-*   **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Recovery and common issue resolution.
+*   **[Deployment Handbook](docs/user-guide/HANDBOOK.md)** - Installation and initial setup.
+*   **[System Architecture](docs/architecture/ARCHITECTURE.md)** - In-depth look at the NeOS stability model.
+*   **[Development Roadmap](docs/architecture/ROADMAP.md)** - Feature milestones and release phases.
+*   **[Hardware Support](docs/user-guide/VM_STARTUP.md)** - Driver management and virtualization notes.
+*   **[Troubleshooting](docs/user-guide/TROUBLESHOOTING.md)** - Recovery and common issue resolution.
+
+---
+
+## 🚀 Quick Start
+
+1.  **Download the ISO:** Head to the **[Releases](https://github.com/NimuthuGanegoda/NeOS/releases)** section and download the latest `neos-*-x86_64.iso`.
+2.  **Flash to USB:** Use Ventoy, Rufus, or BalenaEtcher.
+3.  **Boot & Install:** Follow the curated Calamares installation wizard.
+
+*Note: The ISO is automatically forged in the cloud upon every push to the main branch, ensuring our eternity is always up to date.*
 
 ---
 
@@ -63,11 +73,9 @@ To generate a NeOS ISO locally, ensure `archiso` is installed and execute the bu
 sudo ./build.sh
 ```
 
-The build process is fully automated via GitHub Actions, with verified ISOs available in the **[Releases](https://github.com/uthsarad/NeOS/releases)** section.
-
 ---
 
-## 🤝 Contributing
+## 📚 Technical Documentation
 
 We welcome technical contributions that align with our stability-first philosophy. Please consult the **[Contribution Guidelines](CONTRIBUTING.md)** before submitting pull requests.
 

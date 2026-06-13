@@ -23,7 +23,7 @@ _error_handler() {
 }
 
 # Sentinel: Verify that trap commands safely handle variable expansion without introducing command injection risks. Ensure TOCTOU vulnerabilities are not introduced during file creation or logging.
-trap 'status=$?; _error_handler $status $LINENO; exit $status' ERR
+trap '_error_handler $? $LINENO' ERR
 
 TARGET_DEV="${1:-}"
 

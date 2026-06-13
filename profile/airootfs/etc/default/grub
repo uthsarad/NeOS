@@ -16,3 +16,6 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos ext2 btrfs"
 
 # Disable submenus for a simpler boot menu experience.
 GRUB_DISABLE_SUBMENU=true
+
+# Set the GRUB theme
+GRUB_THEME="/usr/share/grub/themes/breeze/theme.txt"

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # NeOS CLI Netinstaller profile definition
+# shellcheck disable=SC2034
 
 iso_name="neos"
 iso_label="NEOS_ISO"

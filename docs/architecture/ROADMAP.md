@@ -147,7 +147,7 @@ graph TD
 
 1. **System hardening**
    - Adopt secure kernel/sysctl defaults where practical.
-   - Provide optional `linux-lts` fallback for stability-sensitive hardware.
+   - Adopt `linux-lts` as the default kernel for maximum stability and hardware compatibility.
 2. **App sandboxing**
    - Prefer Flatpak for GUI apps where appropriate.
    - Ensure KDE portals are correctly configured.
@@ -171,7 +171,8 @@ graph TD
    - Ship a taskbar and launcher layout aligned with Windows expectations.
    - Adjust default shortcuts to reduce surprises.
 2. **Theme and branding**
-   - Consistent default theme, iconography, boot visuals, and welcome app.
+   - Consistent default theme (Breeze), iconography, and boot visuals (Breeze GRUB theme).
+   - Polished welcome app to guide new users.
 3. **App defaults**
    - Set sensible default applications and file associations.
 

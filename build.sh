@@ -81,7 +81,7 @@ else
 fi
 
 # Install/Update
-pacman -U --noconfirm --needed -- "$CHAOTIC_KEYRING_PKG"
+yes | pacman -U --noconfirm --needed --noprogressbar -- "$CHAOTIC_KEYRING_PKG"
 
 # We point to the local mirrorlist using absolute path
 REPO_ROOT=$(pwd)
