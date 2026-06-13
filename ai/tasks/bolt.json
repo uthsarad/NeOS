@@ -1,0 +1,9 @@
+{
+  "tasks": [
+    {
+      "description": "Baseline initialization. No performance tasks required.",
+      "target_file": "none",
+      "status": "pending"
+    }
+  ]
+}
