@@ -7,7 +7,7 @@ WORKFLOW_FILE=".github/workflows/build-iso.yml"
 echo "Verifying mkarchiso build profile configuration..."
 
 # Verify workflow YAML is valid (prevents broken CI from heredoc/YAML conflicts)
-if [ -f "$WORKFLOW_FILE" ]; then
+if [[ -f "$WORKFLOW_FILE" ]]; then
     if python3 -c "import yaml" 2>/dev/null; then
         # Palette: Verify developers find YAML parsing errors readable and formatting of these errors is clean.
         # Capture the error output to display it clearly
@@ -36,7 +36,7 @@ except Exception as e:
 fi
 
 # Verify profiledef.sh exists
-if [ ! -f "$PROFILE_FILE" ]; then
+if [[ ! -f "$PROFILE_FILE" ]]; then
     echo "❌ Missing $PROFILE_FILE"
     echo ""
     echo "💡 How to fix:"
@@ -46,7 +46,7 @@ if [ ! -f "$PROFILE_FILE" ]; then
 fi
 
 # Verify packages file exists for x86_64
-if [ -f "profile/packages.x86_64" ]; then
+if [[ -f "profile/packages.x86_64" ]]; then
     echo "✅ profile/packages.x86_64 exists"
 else
     echo "❌ profile/packages.x86_64 does not exist"
@@ -58,7 +58,7 @@ else
 fi
 
 # Verify bootstrap_packages exists (required by newer archiso)
-if [ -f "profile/bootstrap_packages.x86_64" ]; then
+if [[ -f "profile/bootstrap_packages.x86_64" ]]; then
     echo "✅ profile/bootstrap_packages.x86_64 file exists"
 else
     echo "❌ profile/bootstrap_packages.x86_64 file does not exist"
@@ -69,13 +69,13 @@ else
     exit 1
 fi
 
-if [ -f "profile/bootstrap_packages.i686" ]; then
+if [[ -f "profile/bootstrap_packages.i686" ]]; then
     echo "✅ profile/bootstrap_packages.i686 file exists"
 else
     echo "⚠️ profile/bootstrap_packages.i686 file does not exist (recommended for i686 support)"
 fi
 
-if [ -f "profile/bootstrap_packages.aarch64" ]; then
+if [[ -f "profile/bootstrap_packages.aarch64" ]]; then
     echo "✅ profile/bootstrap_packages.aarch64 file exists"
 else
     echo "⚠️ profile/bootstrap_packages.aarch64 file does not exist (recommended for aarch64 support)"
@@ -85,7 +85,7 @@ fi
 # Verify grub/grub.cfg exists (required for uefi.grub boot mode)
 PROFILE_CONTENT=$(<"$PROFILE_FILE")
 if [[ "$PROFILE_CONTENT" == *"uefi.grub"* ]]; then
-    if [ -f "profile/grub/grub.cfg" ]; then
+    if [[ -f "profile/grub/grub.cfg" ]]; then
         echo "✅ profile/grub/grub.cfg exists (required for uefi.grub)"
     else
         echo "❌ profile/grub/grub.cfg missing (required for uefi.grub boot mode)"
@@ -100,7 +100,7 @@ fi
 echo "Build profile configuration checks passed."
 
 # Verify pacman.conf configuration for build environment
-if [ -f "profile/pacman.conf" ]; then
+if [[ -f "profile/pacman.conf" ]]; then
     # Bolt: Replace subprocess grep with native bash logic or read file lines if performance overhead becomes a concern during parallel validation.
     # Sentinel: The root pacman.conf requires 'DatabaseOptional' to unblock the build process for unsigned repos. Ensure this does not inadvertently leak to the installed system.
     CONTENT=$(<"profile/pacman.conf")

@@ -1,12 +1,10 @@
 {
-  "authorized_modifications": [
-    "Fix Build-Blocking pacman.conf Issue"
-  ],
-  "constraints": [
-    "Ensure changes only affect the build process, preserving installed-system pacman.conf.",
-    "Do not implement new features."
-  ],
-  "target_files": [
-    "pacman.conf"
+  "focus_area": "Audit Remediation - Long Term Improvements",
+  "tasks": [
+    {
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
+    }
   ]
 }

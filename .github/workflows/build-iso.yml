@@ -264,6 +264,7 @@ jobs:
             echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
             echo "   - Utilize 'NoExtract' rules in 'pacman.conf'."
             echo "   - Check for large unintended assets in 'airootfs/'."
+            echo "   - Consult DEEP_AUDIT.md for more size reduction strategies."
 
             exit 1
           else

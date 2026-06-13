@@ -1,14 +1,13 @@
 # Risk & Priority Report
 
-## Current System Risks
-- **Security**: Low. Verified controls are in place (UFW, systemd sandboxing).
-- **Performance**: Low. ISO size validation tests are present.
-- **Complexity Creep**: Low.
-- **Build Blocking**: Critical. The build process is currently failing due to a misconfiguration in `pacman.conf`, according to the audit action plan.
+## Current State Risk
+- Low: The system is stable and critical/high priority audit tasks are completed.
 
-## Prioritized Risks
-1. **Build Failure**: A known `CRITICAL` issue blocks the build and must be addressed before proceeding with the beta release.
+## Technical Debt Risk
+- Low: We are actively paying down technical debt by improving documentation.
 
-## Mitigation Strategy
-- Prioritize fixing the `pacman.conf` build issue.
-- Verify resolution by ensuring all tests, particularly `verify_build_profile.sh`, pass successfully.
+## Complexity Creep Risk
+- Low: Updating documentation does not introduce architectural complexity.
+
+## Action Plan
+Direct the Architect to implement the long-term improvement audit findings: creating Architecture Decision Records (ADRs). Specialists will follow up with UX and security validation.
