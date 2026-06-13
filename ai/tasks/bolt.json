@@ -89,6 +89,26 @@
     {
       "description": "Review if an exponential backoff strategy is needed for performance",
       "target_file": "tests/verify_mirrorlist_connectivity.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Evaluate if enabling swap-to-file by default would improve system responsiveness on low-RAM devices without sacrificing Btrfs performance.",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Nudge (minor authorized performance optimization on a target file).",
+      "target_file": "profile/airootfs/etc/calamares/modules/partition.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Evaluate fstab.conf Btrfs mount options for performance. Focus on I/O throughput.",
+      "target_file": "profile/airootfs/etc/calamares/modules/fstab.conf",
+      "status": "completed"
+    },
+    {
+      "description": "Prepare to evaluate staging pipeline synchronization performance.",
+      "target_file": "none",
       "status": "pending"
     }
   ]

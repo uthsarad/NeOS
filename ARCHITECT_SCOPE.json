@@ -1,14 +1,10 @@
 {
-  "focus_area": "New feature implementation (Installer UX)",
-  "allowed_files": [
-    "profile/airootfs/etc/calamares/*",
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
-  ],
-  "forbidden_files": [
-    "*"
-  ],
-  "constraints": [
-    "Focus on simplifying the installer flow for standard users.",
-    "Do not break existing advanced partition features."
+  "focus_area": "Audit Remediation - Long Term Improvements",
+  "tasks": [
+    {
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
+    }
   ]
 }

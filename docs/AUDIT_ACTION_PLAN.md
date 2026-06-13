@@ -295,16 +295,16 @@ Integrate:
 
 Before first beta release:
 
-- [x] **CRITICAL:** Fix pacman.conf DatabaseRequired issue
-- [x] **CRITICAL:** Verify ISO builds successfully
-- [x] **CRITICAL:** Test ISO boots in VM
-- [x] **HIGH:** Add ISO size validation
-- [x] **HIGH:** Document architecture limitations
-- [x] **HIGH:** Fix documentation URLs
-- [x] **MEDIUM:** Update CHANGELOG
-- [x] **MEDIUM:** Add dependency validation
-- [x] **NICE-TO-HAVE:** Pre-build CI tests
-- [x] **NICE-TO-HAVE:** Troubleshooting guide
+- [x] 🔴 **CRITICAL:** Fix pacman.conf DatabaseRequired issue
+- [x] 🔴 **CRITICAL:** Verify ISO builds successfully
+- [x] 🔴 **CRITICAL:** Test ISO boots in VM
+- [x] 🟠 **HIGH:** Add ISO size validation
+- [x] 🟠 **HIGH:** Document architecture limitations
+- [x] 🟠 **HIGH:** Fix documentation URLs
+- [x] 🟡 **MEDIUM:** Update CHANGELOG
+- [x] 🟡 **MEDIUM:** Add dependency validation
+- [x] 🟢 **NICE-TO-HAVE:** Pre-build CI tests
+- [x] 🟢 **NICE-TO-HAVE:** Troubleshooting guide
 
 **Minimum for Release:** First 6 items checked
 
@@ -330,6 +330,7 @@ Update this section as items are completed:
 - [x] High priority items addressed
 - [x] Medium priority items started
 - [x] Beta release published
+- [x] CI scanning UX improved
 
 **Last Updated:** 2026-02-17  
 **Next Review:** After critical fix
