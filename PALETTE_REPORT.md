@@ -25,21 +25,7 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+## 2026-02-18 - CI Scanning Log Output Formatting
 
-## 🎨 Micro-UX Enhancements (2026-02-17)
-
-### 🔧 Enhancements Applied
-
-1. **CI Log Formatting**: Modified `.github/workflows/build-iso.yml` to utilize `::group::[Title]` syntax. This dramatically declutters the CI console output by grouping verbose test scripts and security scans (Trivy, ShellCheck), significantly improving DX for maintainers investigating build logs.
-2. **Installer Clarity**: Updated `profile/airootfs/etc/calamares/modules/partition.conf` with commented hints regarding UX labeling in Calamares, ensuring UI messaging aligns with advanced user expectations for default filesystem behavior.
-3. **GeoIP Localization**: Enabled GeoIP module in `welcome.conf` for the installer to provide a localized first impression, making the experience more responsive to the user's region.
-4. **Error Message Clarity**: Validated that `tests/verify_mirrorlist_connectivity.sh` outputs actionable, multi-line "How to fix" hints explicitly, rather than single line failures. Formatting is solid.
-
-### 📊 Accessibility & Usability Improvements
-
-- The console outputs during failure states in test scripts adhere to best practices for readable spacing and explicit remediation steps (e.g., "1. Check your internet connection"). No custom CSS required, purely structural CLI formatting.
-- CI runs are now structured to be less visually taxing on maintainers.
-
-### 📝 Remaining Usability Risks
-
-- Some console scripts might not fully utilize consistent ANSI colors to differentiate warnings from standard info.
+**Learning:** Enhancing log output in CI configuration (like `.github/workflows/build-iso.yml`) with actionable advice points (such as explicit references to documentation like `DEEP_AUDIT.md`) improves clarity and developer experience when failures occur.
+**Action:** Always verify if complex or critical failure states provide actionable context alongside the error message to lower cognitive load during debugging.
