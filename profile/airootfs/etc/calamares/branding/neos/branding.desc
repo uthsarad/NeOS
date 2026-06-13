@@ -20,6 +20,11 @@ strings:
     # supportUrl:          https://github.com/uthsarad/NeOS/issues
     # releaseNotesUrl:     https://github.com/uthsarad/NeOS/blob/main/CHANGELOG.md
 
+images:
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
+    productWelcome:      "welcome.png"
+
 slideshow:               "show.qml"
 
 style:
