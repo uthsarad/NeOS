@@ -98,3 +98,5 @@ unzip
 xdg-user-dirs
 cups
 print-manager
+plymouth
+plymouth-kcm
