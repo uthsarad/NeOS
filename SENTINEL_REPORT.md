@@ -49,3 +49,61 @@
 
 ## Severity summary
 - Security enhancement. Improves defense in depth.
+
+## Risks found
+- Error masking vulnerability in script error trap handlers. Using trap '_error_handler $? $LINENO' ERR evaluates the trap action successfully, inadvertently masking the original failing error code.
+
+## Fixes applied
+- Modified the error trap in profile/airootfs/usr/local/bin/neos-installer-partition.sh and profile/airootfs/usr/local/bin/neos-liveuser-setup to explicitly capture and return the original error code.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- High severity. Allowed failed operations during installation or setup to appear successful and proceed, leading to potential inconsistent or vulnerable system states.
+
+## Sentinel Security Report
+
+### Risks Found
+- **DOS via Unthrottled Retries:** The retry mechanism in the mirrorlist connectivity test lacked throttling, potentially causing unnecessary rapid requests (DOS risk) against failing mirrors.
+- **Option Injection:** The `curl` command was missing POSIX option terminators (`--`) before variable inputs, technically allowing option injection if input validation were bypassed.
+
+### Fixes Applied
+- Added `sleep 1` before retry logic in `tests/verify_mirrorlist_connectivity.sh` to enforce a brief cooldown and prevent aggressive server hammering.
+- Enforced `--` in all `curl` commands in `tests/verify_mirrorlist_connectivity.sh` to neutralize potential option injection vectors.
+
+### Remaining Attack Surface
+- Minimal. The mirrorlist inputs are strictly regex-validated by `awk` before reaching curl.
+
+### Severity Summary
+- **Severity:** LOW (Defense-in-depth / Enhancement)
+
+## YYYY-MM-DD - Enforce HTTPS for installer connectivity check
+
+**Vulnerability:** The Calamares installer utilized a plaintext HTTP URL (`http://archlinux.org`) for its internet connectivity check.
+**Learning:** This exposed the ping to MITM monitoring and captive portal interception. Plaintext requests can be monitored on untrusted networks, and captive portals intercepting port 80 could result in false-positive connectivity reports.
+**Prevention:** Upgraded `internetCheckUrl` in `welcome.conf` to use `https://archlinux.org`.
+
+## Risks found
+- Advanced partitioning options lacked filesystem restrictions, allowing potential configuration of insecure or unsupported filesystems (e.g., non-fat32 EFI partitions).
+
+## Fixes applied
+- Added `directoryFilesystemRestrictions` to `profile/airootfs/etc/calamares/modules/partition.conf` explicitly enforcing `fat32` for the `efi` mountpoint.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- Medium severity. Prevents user misconfiguration that could lead to unbootable or insecure system states.
+
+## Risks found
+- `users.conf` assigned the `wheel` group (full sudo privileges) as a default group for new users created during installation, violating the principle of least privilege. Assigning hardware groups like `video` or `storage` is also an anti-pattern that bypasses systemd-logind ACLs.
+
+## Fixes applied
+- Replaced the unsafe `defaultGroups` list in `profile/airootfs/etc/calamares/modules/users.conf` with an empty array `[]` to rely entirely on systemd-logind for hardware access management.
+
+## Remaining attack surface
+- None identified related to this fix. The `sudoersGroup: wheel` configuration correctly remains, ensuring users can explicitly opt-in to administrative rights if checked in the installer GUI.
+
+## Severity summary
+- High severity. Allowed any locally created user unintended and complete root escalation capabilities by default or permanent background hardware access.

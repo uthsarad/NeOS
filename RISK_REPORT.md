@@ -1,5 +1,13 @@
-# RISK REPORT
+# Risk & Priority Report
 
-- **Security Risks:** Low. DEEP_AUDIT.md confirms strong baseline engineering hygiene and low residual risk for installed-system security baseline.
-- **Performance Risks:** Medium. Mirror availability resilience and release artifact validation are noted as medium risks.
-- **Complexity Creep:** Monitored. Strategic pause implemented to prevent feature creep.
+## Current State Risk
+- Low: The system is stable and critical/high priority audit tasks are completed.
+
+## Technical Debt Risk
+- Low: We are actively paying down technical debt by improving documentation.
+
+## Complexity Creep Risk
+- Low: Updating documentation does not introduce architectural complexity.
+
+## Action Plan
+Direct the Architect to implement the long-term improvement audit findings: creating Architecture Decision Records (ADRs). Specialists will follow up with UX and security validation.
