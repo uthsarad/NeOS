@@ -83,3 +83,27 @@
 **Vulnerability:** The Calamares installer utilized a plaintext HTTP URL (`http://archlinux.org`) for its internet connectivity check.
 **Learning:** This exposed the ping to MITM monitoring and captive portal interception. Plaintext requests can be monitored on untrusted networks, and captive portals intercepting port 80 could result in false-positive connectivity reports.
 **Prevention:** Upgraded `internetCheckUrl` in `welcome.conf` to use `https://archlinux.org`.
+
+## Risks found
+- Advanced partitioning options lacked filesystem restrictions, allowing potential configuration of insecure or unsupported filesystems (e.g., non-fat32 EFI partitions).
+
+## Fixes applied
+- Added `directoryFilesystemRestrictions` to `profile/airootfs/etc/calamares/modules/partition.conf` explicitly enforcing `fat32` for the `efi` mountpoint.
+
+## Remaining attack surface
+- None identified related to this fix.
+
+## Severity summary
+- Medium severity. Prevents user misconfiguration that could lead to unbootable or insecure system states.
+
+## Risks found
+- `users.conf` assigned the `wheel` group (full sudo privileges) as a default group for new users created during installation, violating the principle of least privilege. Assigning hardware groups like `video` or `storage` is also an anti-pattern that bypasses systemd-logind ACLs.
+
+## Fixes applied
+- Replaced the unsafe `defaultGroups` list in `profile/airootfs/etc/calamares/modules/users.conf` with an empty array `[]` to rely entirely on systemd-logind for hardware access management.
+
+## Remaining attack surface
+- None identified related to this fix. The `sudoersGroup: wheel` configuration correctly remains, ensuring users can explicitly opt-in to administrative rights if checked in the installer GUI.
+
+## Severity summary
+- High severity. Allowed any locally created user unintended and complete root escalation capabilities by default or permanent background hardware access.

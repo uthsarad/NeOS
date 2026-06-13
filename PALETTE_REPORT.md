@@ -25,6 +25,7 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
-## 2024-10-25 - CI Log UX Enhancements
-**Learning:** GitHub Actions logs can be difficult to parse, especially during long test runs or security scans.
-**Action:** Utilized the `::group::[Title]` and `::endgroup::` syntax along with emojis to organize and collapse verbose script executions and security scans, improving Developer Experience (DX) and UX.
+## 2026-02-18 - CI Scanning Log Output Formatting
+
+**Learning:** Enhancing log output in CI configuration (like `.github/workflows/build-iso.yml`) with actionable advice points (such as explicit references to documentation like `DEEP_AUDIT.md`) improves clarity and developer experience when failures occur.
+**Action:** Always verify if complex or critical failure states provide actionable context alongside the error message to lower cognitive load during debugging.
