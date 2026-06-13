@@ -1,0 +1,6 @@
+🎨 Palette: [UX improvement] Enhance CI logging and installer guidance
+
+💡 What: Wrapped verbose CI steps in `.github/workflows/build-iso.yml` with `::group::` and `::endgroup::` tags, enabled GeoIP detection in Calamares `welcome.conf` for localization, and clarified partitioning guidelines.
+🎯 Why: Verbose CI logs were overwhelming, making it hard to find relevant test failures. Utilizing groups allows for collapsible, scannable logs, improving DX. Calamares now attempts localized greetings, offering a warmer start.
+📸 Before/After: Before, logs were a continuous stream. After, logs are organized into neat, collapsible `::group::` sections.
+♿ Accessibility: Command-line error handling continues to feature clear, numbered list format for troubleshooting steps, aiding screen-reader readability of log output.
