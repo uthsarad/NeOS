@@ -6,7 +6,7 @@ UNPACKFS_CONF="profile/airootfs/etc/calamares/modules/unpackfs.conf"
 echo "Verifying unpackfs exclusion in $UNPACKFS_CONF..."
 
 # Check if file exists
-if [ ! -f "$UNPACKFS_CONF" ]; then
+if [[ ! -f "$UNPACKFS_CONF" ]]; then
     echo "⚠️ $UNPACKFS_CONF not found! Skipping unpackfs checks as Calamares is not present."
     exit 0
 fi
@@ -35,7 +35,7 @@ else
     FAIL=1
 fi
 
-if [ "${FAIL:-0}" -eq 1 ]; then
+if (( ${FAIL:-0} == 1 )); then
     echo "Verification failed!"
     exit 1
 fi

@@ -1,14 +1,14 @@
 {
-  "Bolt": {
-    "directive": "Zero-modification scenario. Review only.",
-    "constraints": "Do not modify any files."
+  "bolt": {
+    "directive": "Verify documentation format for readability.",
+    "constraints": ["Focus on document structure"]
   },
-  "Palette": {
-    "directive": "Zero-modification scenario. Review only.",
-    "constraints": "Do not modify any files."
+  "palette": {
+    "directive": "Ensure ADR formatting adheres to standards and is user-friendly.",
+    "constraints": ["Focus on readability and structure"]
   },
-  "Sentinel": {
-    "directive": "Zero-modification scenario. Review only.",
-    "constraints": "Do not modify any files."
+  "sentinel": {
+    "directive": "Verify new documentation does not leak sensitive information.",
+    "constraints": ["Audit newly created docs"]
   }
 }
