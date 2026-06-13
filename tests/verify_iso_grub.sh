@@ -17,8 +17,8 @@ fi
 echo "Verifying ISO GRUB entries in $GRUB_FILE..."
 
 REQUIRED_STRINGS=(
-    "linux /neos/boot/x86_64/vmlinuz-linux-zen"
-    "initrd /neos/boot/x86_64/initramfs-linux-zen.img"
+    "linux /neos/boot/x86_64/vmlinuz-linux-lts"
+    "initrd /neos/boot/x86_64/initramfs-linux-lts.img"
     "archisobasedir=neos"
     "archisolabel=NEOS_ISO"
     "cow_spacesize=4G"

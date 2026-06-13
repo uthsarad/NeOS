@@ -67,7 +67,7 @@ If you want to modify NeOS or build your own ISO, follow these steps.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/uthsarad/NeOS.git
+git clone https://github.com/NimuthuGanegoda/NeOS.git
 cd NeOS
 ```
 

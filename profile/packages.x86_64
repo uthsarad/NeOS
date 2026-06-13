@@ -1,6 +1,6 @@
 # Base System
 base
-linux-zen
+linux-lts
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
@@ -68,6 +68,7 @@ usbutils
 
 # Bootloader
 grub
+breeze-grub
 syslinux
 os-prober
 mtools
