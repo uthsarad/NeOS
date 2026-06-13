@@ -25,10 +25,7 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+## 2026-02-18 - CI Scanning Log Output Formatting
 
-## 2026-06-27 Updates
-### Accessibility & UX Enhancements
-- Improved CI scanning log output formatting in `.github/workflows/build-iso.yml` by using standard `::group::` and `::endgroup::` syntax along with emojis to visually categorize output, significantly reducing cognitive load and simplifying failure state debugging.
-- No direct code modifications were required for `tests/verify_mirrorlist_connectivity.sh`, `profile/airootfs/etc/calamares/modules/partition.conf`, or `profile/airootfs/etc/calamares/modules/welcome.conf` as existing configurations (e.g. zram handling) already fulfill requirements and structural changes were minimal.
-### Remaining Usability Risks
-- Multi-step forms within Calamares (like partitioning) could benefit from an overarching progress indicator.
+**Learning:** Enhancing log output in CI configuration (like `.github/workflows/build-iso.yml`) with actionable advice points (such as explicit references to documentation like `DEEP_AUDIT.md`) improves clarity and developer experience when failures occur.
+**Action:** Always verify if complex or critical failure states provide actionable context alongside the error message to lower cognitive load during debugging.

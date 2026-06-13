@@ -1,11 +1,10 @@
 {
-  "target_feature": "Infrastructure improvement: ISO size validation and PyYAML",
-  "allowed_files": [
-    ".github/workflows/build-iso.yml"
-  ],
-  "constraints": [
-    "Only add ISO size validation logic to the CI pipeline.",
-    "Add PyYAML dependency to the CI test environment.",
-    "Do not alter other pipeline functionality."
+  "focus_area": "Audit Remediation - Long Term Improvements",
+  "tasks": [
+    {
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
+    }
   ]
 }

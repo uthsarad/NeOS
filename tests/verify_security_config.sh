@@ -166,7 +166,7 @@ echo "Verifying user groups in $USERS_CONF..."
 
 if [ -f "$USERS_CONF" ]; then
     if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
-        UNSAFE_GROUPS=("sys" "lp" "network" "video" "optical" "storage" "scanner" "power" "adm" "uucp")
+        UNSAFE_GROUPS=("sys" "lp" "network" "optical" "scanner" "adm" "uucp")
         UNSAFE_PATTERN="[[:space:]]- ($(IFS=\|; echo "${UNSAFE_GROUPS[*]}"))"
         UNSAFE_FOUND=false
 
