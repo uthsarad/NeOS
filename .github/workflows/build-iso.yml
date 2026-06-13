@@ -34,6 +34,13 @@ jobs:
         run: |
           pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml shellcheck trivy
 
+      - name: Validate PyYAML Installation
+        run: |
+          set -euo pipefail
+          echo "::group::🐍 Validating PyYAML"
+          python -c "import yaml; print('PyYAML version:', yaml.__version__)"
+          echo "::endgroup::"
+
       - name: Run pre-build validations
         run: |
           set -euo pipefail
@@ -51,7 +58,7 @@ jobs:
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
-              bash "$script" || SCRIPT_EXIT=$?
+              bash "$script" || EXIT_CODE=$?
             fi
             echo "::endgroup::"
           done
@@ -161,17 +168,17 @@ jobs:
           echo "PROFILE_DIR=$PROFILE_DIR"
           echo "PACMAN_CONF=$PACMAN_CONF"
 
-          if [ -z "$PROFILE_DIR" ]; then
+          if [[ -z "$PROFILE_DIR" ]]; then
             echo "PROFILE_DIR is empty" >&2
             exit 1
           fi
 
-          if [ ! -f "$PACMAN_CONF" ]; then
+          if [[ ! -f "$PACMAN_CONF" ]]; then
             echo "Missing pacman config at $PACMAN_CONF" >&2
             exit 1
           fi
 
-          if [ ! -f "$PROFILE_DIR/profiledef.sh" ]; then
+          if [[ ! -f "$PROFILE_DIR/profiledef.sh" ]]; then
             echo "Missing profiledef.sh in $PROFILE_DIR" >&2
             exit 1
           fi
@@ -192,7 +199,7 @@ jobs:
 
           parts=(neos-*.iso.part*)
 
-          if [ ${#parts[@]} -gt 0 ]; then
+          if (( ${#parts[@]} > 0 )); then
             echo "Found ISO part files, combining them..."
 
             base_name="${parts[0]%.part*}"
@@ -232,7 +239,7 @@ jobs:
           files=(out/*.iso)
           ISO_FILE="${files[0]:-}"
 
-          if [ -z "$ISO_FILE" ]; then
+          if [[ -z "$ISO_FILE" ]]; then
             echo "❌ No ISO file found to validate"
             exit 1
           fi
