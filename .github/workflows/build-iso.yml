@@ -68,7 +68,7 @@ jobs:
           echo "✅ ShellCheck completed successfully."
           echo ""
 
-          echo "Running Trivy..."
+          echo "::group::🛡️ Trivy Vulnerability Scan"
           trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
           echo "✅ Trivy vulnerability scan completed successfully."
           echo ""
