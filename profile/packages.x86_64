@@ -61,13 +61,20 @@ intel-ucode
 mesa
 nvidia-lts
 nvidia-utils
-broadcom-wl
+broadcom-wl-dkms
 linux-lts-headers
 base-devel
+sof-firmware
+alsa-firmware
+linux-firmware-marvell
+linux-firmware-qlogic
+linux-firmware-bnx2
 xf86-video-amdgpu
 xf86-video-ati
 xf86-video-intel
 xf86-video-nouveau
+xf86-video-fbdev
+xf86-video-vesa
 pciutils
 usbutils
 
