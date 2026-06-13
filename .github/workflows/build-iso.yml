@@ -252,7 +252,7 @@ jobs:
           echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
           echo "Max Size: $MAX_SIZE bytes (${MAX_SIZE_MB} MiB)"
 
-          if [ "$ISO_SIZE" -ge "$MAX_SIZE" ]; then
+          if (( ISO_SIZE >= MAX_SIZE )); then
             EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
 
             printf -v EXCESS_SIZE_MB "%d.%02d" \
