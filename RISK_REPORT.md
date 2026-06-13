@@ -1,13 +1,13 @@
 # Risk & Priority Report
 
 ## Current State Risk
-- Low: The system is generally stable.
+- Low: The system is stable and critical/high priority audit tasks are completed.
 
 ## Technical Debt Risk
-- Medium: The verification suite is logging warnings about missing Calamares configuration files (`fstab.conf` and `users.conf`). While not immediately fatal to the live session, it causes the automated tests to fail and leaves the installer in an unconfigured state.
+- Low: We are actively paying down technical debt by improving documentation.
 
 ## Complexity Creep Risk
-- Low: Adding the missing Calamares modules is a direct requirement of Phase 3 and resolves failing tests without introducing new architectural paradigms.
+- Low: Updating documentation does not introduce architectural complexity.
 
 ## Action Plan
-The Architect must immediately create the missing `fstab.conf` and `users.conf` modules to satisfy the installer configuration requirements and silence the test suite warnings.
+Direct the Architect to implement the long-term improvement audit findings: creating Architecture Decision Records (ADRs). Specialists will follow up with UX and security validation.

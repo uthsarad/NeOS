@@ -1,15 +1,10 @@
 {
-  "focus_area": "Installer UX - Missing Calamares Modules",
+  "focus_area": "Audit Remediation - Long Term Improvements",
   "tasks": [
     {
-      "module": "profile/airootfs/etc/calamares/modules/fstab.conf",
-      "action": "create",
-      "constraints": "Must include Btrfs space_cache=v2 and compress=zstd"
-    },
-    {
-      "module": "profile/airootfs/etc/calamares/modules/users.conf",
-      "action": "create",
-      "constraints": "Define standard user groups (wheel, network, etc.)"
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
     }
   ]
 }
