@@ -23,6 +23,10 @@ if [[ ! -f "$LOG_FILE" ]]; then
     (umask 077; set -C; true > "$LOG_FILE") 2>/dev/null || true
 fi
 
+# SECURITY: Enforce ownership and permissions
+chown root:root "$LOG_FILE"
+chmod 600 "$LOG_FILE"
+
 # SECURITY: Prevent symlink attacks on lock file
 if [[ -L "$LOCK_FILE" ]]; then
     echo "Security error: $LOCK_FILE is a symlink. Aborting." >&2
@@ -33,6 +37,10 @@ fi
 if [[ ! -f "$LOCK_FILE" ]]; then
     (umask 077; set -C; true > "$LOCK_FILE") 2>/dev/null || true
 fi
+
+# SECURITY: Enforce ownership and permissions
+chown root:root "$LOCK_FILE"
+chmod 600 "$LOCK_FILE"
 
 # Apply flock
 exec 9> "$LOCK_FILE"

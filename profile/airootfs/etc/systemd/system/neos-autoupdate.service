@@ -4,17 +4,22 @@ Description=NeOS Autoupdate Service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-autoupdate.sh
-# Bolt: Verify that sandboxing additions do not measurably slow down service boot times.
-# Palette: Ensure any failures related to tightened permissions yield clear, actionable log outputs for developers.
-# Sentinel: Audit systemd sandboxing (ProtectSystem, NoNewPrivileges, PrivateTmp) to limit root privileges.
+# Sentinel: Hardened systemd sandboxing
+ProtectSystem=full
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectHome=yes
 ProtectKernelTunables=yes
-RestrictRealtime=yes
-ProtectControlGroups=yes
 ProtectKernelModules=yes
+ProtectControlGroups=yes
 ProtectHostname=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+DevicePolicy=closed
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target

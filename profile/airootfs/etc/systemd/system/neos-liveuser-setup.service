@@ -4,18 +4,19 @@ Description=NeOS Liveuser Setup
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-liveuser-setup
-# Bolt: Verify that sandboxing additions do not measurably slow down service boot times.
-# Palette: Ensure any failures related to tightened permissions yield clear, actionable log outputs for developers.
-# Sentinel: Audit systemd sandboxing rules to prevent privilege escalation or unauthorized file system access.
+# Sentinel: Hardened systemd sandboxing
 ProtectSystem=full
-# NoNewPrivileges=yes (Removed to allow useradd/passwd to function correctly)
 PrivateTmp=yes
 ProtectKernelTunables=yes
-RestrictRealtime=yes
-ReadWritePaths=/etc/sudoers.d /etc/passwd /etc/group /etc/shadow /etc/gshadow /home
-ProtectControlGroups=yes
 ProtectKernelModules=yes
+ProtectControlGroups=yes
 ProtectHostname=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=/etc/sudoers.d /etc/passwd /etc/group /etc/shadow /etc/gshadow /home
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target

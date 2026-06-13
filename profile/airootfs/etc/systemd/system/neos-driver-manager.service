@@ -5,16 +5,22 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-driver-manager
-# Bolt: Verify that sandboxing additions do not measurably slow down service boot times.
-# Palette: Ensure any failures related to tightened permissions yield clear, actionable log outputs for developers.
-# Sentinel: Audit systemd sandboxing rules to prevent privilege escalation or unauthorized file system access.
+# Sentinel: Hardened systemd sandboxing
 ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes
-RestrictRealtime=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=no
 ProtectControlGroups=yes
 ProtectHostname=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+DevicePolicy=closed
+CapabilityBoundingSet=CAP_SYS_MODULE CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target
