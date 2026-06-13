@@ -1,16 +1,10 @@
 {
-  "focus_area": "CI/CD Pipeline Stabilization",
-  "allowed_files": [
-    ".github/workflows/build-iso.yml",
-    "docs/AUDIT_ACTION_PLAN.md"
-  ],
-  "forbidden_files": [
-    "profile/airootfs/**/*",
-    "tests/**/*"
-  ],
-  "constraints": [
-    "Do not modify production code scripts.",
-    "Only append python-yaml to the pacman dependencies.",
-    "Update markdown checkboxes to reflect task completion."
+  "focus_area": "Audit Remediation - Long Term Improvements",
+  "tasks": [
+    {
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
+    }
   ]
 }

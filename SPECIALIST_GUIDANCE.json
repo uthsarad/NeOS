@@ -1,14 +1,14 @@
 {
-  "Bolt": {
-    "directive": "Review CI job output efficiency.",
-    "constraints": "Do not optimize pipeline logic, only review outputs."
+  "bolt": {
+    "directive": "Verify documentation format for readability.",
+    "constraints": ["Focus on document structure"]
   },
-  "Palette": {
-    "directive": "Review CI scanning log output formatting.",
-    "constraints": "Focus on readability of YAML/Trivy outputs."
+  "palette": {
+    "directive": "Ensure ADR formatting adheres to standards and is user-friendly.",
+    "constraints": ["Focus on readability and structure"]
   },
-  "Sentinel": {
-    "directive": "Verify python-yaml package source is trusted.",
-    "constraints": "No changes to core security profiles."
+  "sentinel": {
+    "directive": "Verify new documentation does not leak sensitive information.",
+    "constraints": ["Audit newly created docs"]
   }
 }
