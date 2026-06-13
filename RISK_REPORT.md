@@ -1,10 +1,13 @@
 # Risk & Priority Report
 
-## Current Risk Profile
-- **Build configuration integrity:** Low Risk.
-- **Release artifact validation (smoketest):** Medium Risk.
-- **Audit toolchain completeness:** Low Risk.
-- **Mirror availability resilience:** Medium Risk.
+## Current State Risk
+- Low: The system is stable and critical/high priority audit tasks are completed.
 
-## Immediate Mitigation
-- Stabilize mirrorlist connectivity test to improve CI reliability.
+## Technical Debt Risk
+- Low: We are actively paying down technical debt by improving documentation.
+
+## Complexity Creep Risk
+- Low: Updating documentation does not introduce architectural complexity.
+
+## Action Plan
+Direct the Architect to implement the long-term improvement audit findings: creating Architecture Decision Records (ADRs). Specialists will follow up with UX and security validation.

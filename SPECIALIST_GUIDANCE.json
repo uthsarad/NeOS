@@ -1,14 +1,14 @@
 {
-  "Bolt": {
-    "directive": "Review any new network requests for performance implications.",
-    "constraints": "Focus on script execution speed and network timeouts."
+  "bolt": {
+    "directive": "Verify documentation format for readability.",
+    "constraints": ["Focus on document structure"]
   },
-  "Palette": {
-    "directive": "Ensure any error outputs are clear and actionable for the developer.",
-    "constraints": "Maintain current error messaging format."
+  "palette": {
+    "directive": "Ensure ADR formatting adheres to standards and is user-friendly.",
+    "constraints": ["Focus on readability and structure"]
   },
-  "Sentinel": {
-    "directive": "Ensure curl commands safely handle potentially untrusted input.",
-    "constraints": "Validate URLs before processing."
+  "sentinel": {
+    "directive": "Verify new documentation does not leak sensitive information.",
+    "constraints": ["Audit newly created docs"]
   }
 }
