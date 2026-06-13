@@ -107,3 +107,10 @@
 ## 2026-06-25 - Swap-to-file Evaluation Nudge
 **Learning:** The performance evaluation concluded that enabling physical swap-to-file would degrade Btrfs SSD performance, and the system is already optimized with ZRAM.
 **Action:** Appended an explicit verification comment regarding ZRAM swap performance to `profile/airootfs/etc/calamares/modules/partition.conf` to confirm findings without modifying core logic.
+## 2026-06-25 - Subprocess Overhead in CI Script File Parsing
+**Learning:** Using repeated `grep -q` or `sed` commands to search for strings in files within bash validation scripts introduces measurable performance degradation due to rapid fork/exec cycles.
+**Action:** When parsing or checking for string existence in files from bash, load the entire file into a variable `CONTENT=$(<"$FILE")` once, and use native bash parameter expansion `[[ "$CONTENT" == *"pattern"* ]]`, or use a single native `while read` loop for structured extraction to eliminate subprocess overhead.
+
+## 2026-06-25 - Btrfs Mount Options for Throughput
+**Learning:** Default Btrfs mount options can bottleneck I/O throughput on modern NVMe/SSDs. Using compress=zstd:1 significantly increases compression/decompression speed with minimal ratio loss, and discard=async improves I/O by not blocking TRIM operations.
+**Action:** Configure Btrfs with compress=zstd:1 and discard=async to maximize disk I/O throughput.

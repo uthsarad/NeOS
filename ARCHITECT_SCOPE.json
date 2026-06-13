@@ -1,10 +1,10 @@
 {
-  "focus_area": "No-build day (strategic pause)",
-  "allowed_files": [],
-  "forbidden_files": [
-    "*"
-  ],
-  "constraints": [
-    "Implement a strict zero-modification scenario. No codebase files are to be altered."
+  "focus_area": "Audit Remediation - Long Term Improvements",
+  "tasks": [
+    {
+      "module": "documentation",
+      "action": "implement adrs",
+      "constraints": "Create Architecture Decision Records in docs/decisions/ as defined in AUDIT_ACTION_PLAN.md."
+    }
   ]
 }

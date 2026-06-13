@@ -95,3 +95,15 @@
 
 ## Severity summary
 - Medium severity. Prevents user misconfiguration that could lead to unbootable or insecure system states.
+
+## Risks found
+- `users.conf` assigned the `wheel` group (full sudo privileges) as a default group for new users created during installation, violating the principle of least privilege. Assigning hardware groups like `video` or `storage` is also an anti-pattern that bypasses systemd-logind ACLs.
+
+## Fixes applied
+- Replaced the unsafe `defaultGroups` list in `profile/airootfs/etc/calamares/modules/users.conf` with an empty array `[]` to rely entirely on systemd-logind for hardware access management.
+
+## Remaining attack surface
+- None identified related to this fix. The `sudoersGroup: wheel` configuration correctly remains, ensuring users can explicitly opt-in to administrative rights if checked in the installer GUI.
+
+## Severity summary
+- High severity. Allowed any locally created user unintended and complete root escalation capabilities by default or permanent background hardware access.
