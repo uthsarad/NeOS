@@ -1,0 +1,6 @@
+{
+  "allowed_files": [],
+  "forbidden_files": [
+    "**/*"
+  ]
+}
