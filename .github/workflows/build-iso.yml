@@ -51,7 +51,7 @@ jobs:
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
-              bash "$script"
+              bash "$script" || EXIT_CODE=$?
             fi
             echo "::endgroup::"
           done
