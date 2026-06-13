@@ -9,7 +9,7 @@ echo "Verifying performance configuration in $CONFIG_FILE..."
 if [[ -f "$CONFIG_FILE" ]]; then
     # Check for space_cache=v2 in btrfs mount options
     # We expect it alongside compress=zstd to ensure it's in the main mountOptions block, not just ssdExtraMountOptions
-    if grep -E "btrfs:.*compress=zstd.*space_cache=v2" "$CONFIG_FILE"; then
+    if grep -E "btrfs:.*compress=zstd:1.*discard=async.*space_cache=v2" "$CONFIG_FILE"; then
         echo "✅ space_cache=v2 found in main Btrfs mount options"
     else
         echo "❌ space_cache=v2 NOT found in main Btrfs mount options (or not correctly placed)"

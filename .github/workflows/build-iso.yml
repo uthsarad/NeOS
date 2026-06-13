@@ -46,23 +46,37 @@ jobs:
               continue
             fi
 
-            echo "Running $script..."
+            echo "::group::🧪 Running $script..."
 
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
               bash "$script"
             fi
+            echo "::endgroup::"
           done
 
       - name: Run Security Scans
         run: |
           set -euo pipefail
+          echo "=============================="
+          echo "🛡️ Initiating Security Scans"
+          echo "=============================="
+          echo ""
+
           echo "Running ShellCheck..."
           find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          echo "✅ ShellCheck completed successfully."
+          echo ""
 
-          echo "Running Trivy..."
+          echo "::group::🛡️ Trivy Vulnerability Scan"
           trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
+          echo "✅ Trivy vulnerability scan completed successfully."
+          echo ""
+
+          echo "=============================="
+          echo "🎉 All Security Scans Passed!"
+          echo "=============================="
 
   build:
     needs: test
@@ -251,6 +265,7 @@ jobs:
             echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
             echo "   - Utilize 'NoExtract' rules in 'pacman.conf'."
             echo "   - Check for large unintended assets in 'airootfs/'."
+            echo "   - Consult DEEP_AUDIT.md for more size reduction strategies."
 
             exit 1
           else
