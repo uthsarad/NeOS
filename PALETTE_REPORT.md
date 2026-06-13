@@ -25,3 +25,9 @@
 
 ## Remaining Usability Risks
 - Text-based installer scripts like `neos-installer-partition.sh` could further benefit from screen reader compatibility checks if executed via SSH or accessibility-focused terminal emulators.
+
+## Accessibility & UX Enhancements
+- Improved Developer Experience (DX) in GitHub Actions CI logs by utilizing `::group::` and `::endgroup::` syntax with emojis to organize and collapse verbose script executions and security scans.
+
+## Remaining Usability Risks
+- Additional CI steps, such as ISO building and validation, could also benefit from grouping to further streamline the logs.
