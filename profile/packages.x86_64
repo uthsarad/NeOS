@@ -27,7 +27,7 @@ konsole
 dolphin
 packagekit-qt6
 discover
-firefox
+falkon
 # Audio
 pipewire
 pipewire-alsa
@@ -44,7 +44,6 @@ ttf-liberation
 ttf-dejavu
 # KDE Extra
 ark
-spectacle
 
 # Drivers & Hardware Support
 efibootmgr
