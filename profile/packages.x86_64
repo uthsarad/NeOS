@@ -57,7 +57,13 @@ amd-ucode
 intel-ucode
 mesa
 nvidia-utils
+linux-lts-headers
+dkms
 broadcom-wl-dkms
+r8168-dkms
+rtl8821ce-dkms
+virtualbox-guest-utils
+open-vm-tools
 sof-firmware
 alsa-firmware
 xf86-video-amdgpu

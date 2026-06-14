@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-linux">
+  <Machine uuid="{4e454f53-0000-4000-8000-000000000001}" name="NeOS-Virtual-Appliance" OSType="ArchLinux_64" snapshotFolder="Snapshots">
+    <Hardware>
+      <CPU count="4">
+        <PAE enabled="false"/>
+        <LongMode enabled="true"/>
+        <X2APIC enabled="true"/>
+        <HardwareVirtExLargePages enabled="true"/>
+      </CPU>
+      <Memory RAMSize="4096"/>
+      <Firmware type="EFI"/>
+      <HID Pointing="USBTablet"/>
+      <Display VRAMSize="128" accelerate3D="true"/>
+      <BIOS>
+        <IOAPIC enabled="true"/>
+      </BIOS>
+      <USB>
+        <Controllers>
+          <Controller name="OHCI" type="OHCI"/>
+          <Controller name="EHCI" type="EHCI"/>
+          <Controller name="xHCI" type="USB3"/>
+        </Controllers>
+      </USB>
+      <Network>
+        <Adapter slot="0" enabled="true" MACAddress="080027ADDEBE" type="82540EM">
+          <NAT/>
+        </Adapter>
+      </Network>
+      <AudioAdapter controller="HDA" driver="Pulse" enabled="true"/>
+      <StorageControllers>
+        <StorageController name="SATA" type="AHCI" PortCount="2" useHostIOCache="false" Bootable="true">
+          <AttachedDevice type="HardDisk" hotpluggable="false" port="0" device="0">
+            <Image uuid="{4e454f53-0000-4000-8000-000000000002}"/>
+          </AttachedDevice>
+          <AttachedDevice passthrough="false" type="DVD" hotpluggable="false" port="1" device="0"/>
+        </StorageController>
+      </StorageControllers>
+    </Hardware>
+  </Machine>
+</VirtualBox>

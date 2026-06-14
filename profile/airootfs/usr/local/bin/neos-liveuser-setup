@@ -55,6 +55,17 @@ Icon=system-software-install
 X-KDE-autostart-after=panel
 EOF
 
+    # Add Driver Check shortcut
+    cat <<EOF > "$AUTOSTART_DIR/neos-driver-check.desktop"
+[Desktop Entry]
+Type=Application
+Name=NeOS Driver Check
+Comment=Check for missing hardware drivers
+Exec=konsole --hold -e /usr/local/bin/neos-driver-manager
+Icon=hwinfo
+Categories=System;
+EOF
+
     # Set Wallpaper and Dark Mode (Plasma 6)
     # We use a script that runs once on first login
     cat <<EOF > "$LIVE_USER_HOME/.zprofile"

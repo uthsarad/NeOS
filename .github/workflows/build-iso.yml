@@ -126,7 +126,9 @@ jobs:
             grub \
             syslinux \
             rust \
-            qemu-system-x86
+            qemu-system-x86 \
+            qemu-utils \
+            util-linux
 
       - name: Prepare Build Config
         run: |
@@ -302,12 +304,19 @@ jobs:
 
           ls -lh out/
 
+      - name: Generate VM Appliance Templates
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          chmod +x tools/gen-vm-appliance.sh
+          ./tools/gen-vm-appliance.sh
+
       - name: Generate release tag
         id: tag
         if: github.ref == 'refs/heads/main'
         run: echo "value=V${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
-      - name: Upload ISO to Release
+      - name: Upload ISO and VM Templates to Release
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
@@ -315,4 +324,6 @@ jobs:
           name: NeOS ${{ steps.tag.outputs.value }}
           generate_release_notes: true
           body: ${{ steps.iso.outputs.body || '' }}
-          files: out/neos-*
+          files: |
+            out/*.iso
+            out/vm/*
