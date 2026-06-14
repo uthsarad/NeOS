@@ -127,7 +127,7 @@ jobs:
             syslinux \
             rust \
             qemu-system-x86 \
-            qemu-utils \
+            qemu-img \
             util-linux
 
       - name: Prepare Build Config
