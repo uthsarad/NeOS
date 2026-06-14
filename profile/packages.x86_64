@@ -61,7 +61,7 @@ linux-lts-headers
 dkms
 broadcom-wl-dkms
 r8168-dkms
-rtl8821ce-dkms-git
+rtw88-dkms-git
 virtualbox-guest-utils
 open-vm-tools
 sof-firmware

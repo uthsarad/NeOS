@@ -62,8 +62,8 @@ declare -A DRIVER_MAP=(
     ["BCM43"]="broadcom-wl-dkms"
     ["RTL8111"]="r8168-dkms"
     ["RTL8168"]="r8168-dkms"
-    ["RTL8821CE"]="rtl8821ce-dkms"
-    ["RTL8822"]="rtw88_8822ce"
+    ["RTL8821CE"]="rtw88-dkms-git"
+    ["RTL8822"]="rtw88-dkms-git"
     ["MT7921"]="mt76-dkms-git"
 )
 
