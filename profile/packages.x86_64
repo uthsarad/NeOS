@@ -60,8 +60,6 @@ nvidia-utils
 linux-lts-headers
 dkms
 broadcom-wl-dkms
-r8168-dkms
-rtw88-dkms-git
 virtualbox-guest-utils
 open-vm-tools
 sof-firmware
