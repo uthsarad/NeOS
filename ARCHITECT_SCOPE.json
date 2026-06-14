@@ -1,0 +1,6 @@
+{
+  "status": "Strategic Pause",
+  "forbidden_files": ["**/*"],
+  "allowed_files": [],
+  "directive": "Halt all feature development and codebase modifications. Focus strictly on baseline stabilization and compliance with the strategic pause."
+}

@@ -1,0 +1,11 @@
+{
+  "Bolt": {
+    "focus": "Monitor system performance and identify potential optimization targets during the pause without implementing changes."
+  },
+  "Palette": {
+    "focus": "Review UI/UX consistency and accessibility documentation without altering production assets."
+  },
+  "Sentinel": {
+    "focus": "Conduct passive security audits and review recent hardening measures without modifying system configurations."
+  }
+}
