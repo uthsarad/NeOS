@@ -1,6 +1,6 @@
 {
-  "status": "Strategic Pause",
-  "forbidden_files": ["**/*"],
-  "allowed_files": [],
-  "directive": "Halt all feature development and codebase modifications. Focus strictly on baseline stabilization and compliance with the strategic pause."
+  "status": "Active Hardening",
+  "forbidden_files": [],
+  "allowed_files": ["**/*"],
+  "directive": "Implement medium-priority stability fixes and documentation from the DEEP_AUDIT.md report. Prioritize creating ADRs, troubleshooting guides, and standardizing error handling across core bash scripts."
 }

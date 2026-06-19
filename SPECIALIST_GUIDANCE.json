@@ -1,11 +1,11 @@
 {
   "Bolt": {
-    "focus": "Monitor system performance and identify potential optimization targets during the pause without implementing changes."
+    "focus": "Refine core script error handling to avoid subshell overhead. Do not introduce new features."
   },
   "Palette": {
-    "focus": "Review UI/UX consistency and accessibility documentation without altering production assets."
+    "focus": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX."
   },
   "Sentinel": {
-    "focus": "Conduct passive security audits and review recent hardening measures without modifying system configurations."
+    "focus": "Validate that improved error handling constructs do not introduce command injection risks or mask original exit codes."
   }
 }
