@@ -1,10 +1,10 @@
 # Strategic Directive
 
 ## Objective
-To stabilize the NeOS project by enforcing a strict zero-modification strategic pause. The codebase is currently in a state where critical issues have been resolved, but technical debt and uncompleted medium-to-long term architectural improvements remain. The immediate focus must shift from feature development to comprehensive system hardening and stabilization.
+To stabilize the NeOS project by transitioning from a "Strategic Pause" to an active hardening phase. The immediate focus must shift from a strict zero-modification state to resolving the remaining uncompleted medium-priority architectural and reliability tasks identified in the deep audit.
 
 ## Scope
-This directive applies to the entire NeOS repository, enforcing a complete halt on new feature implementation. All engineering efforts must be redirected towards stabilizing existing functionality, validating recent critical fixes, and preparing the infrastructure for the upcoming beta release.
+This directive applies to the entire NeOS repository. Feature development remains suspended, but engineering efforts are now explicitly authorized to address uncompleted documentation gaps and error handling improvements.
 
 ## Rationale
-Recent audits indicate that while immediate, release-blocking issues (e.g., pacman.conf DatabaseRequired, ISO build failures) have been addressed, several medium-priority tasks related to documentation, systemd sandboxing, and architecture decision records remain pending. Proceeding with new features without securing the foundation increases the risk of regressions and architectural drift. A strategic pause is necessary to consolidate gains and reduce technical debt.
+The previous strategic pause successfully halted feature creep. However, leaving medium-priority audit items—specifically missing Architecture Decision Records (ADRs) and troubleshooting documentation, as well as inconsistent error handling in core scripts—unresolved creates unacceptable technical debt. Controlled modifications are required to resolve these remaining items.
