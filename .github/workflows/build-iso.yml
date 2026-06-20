@@ -185,11 +185,13 @@ jobs:
             exit 1
           fi
 
+          set +o pipefail
           yes "" | mkarchiso -v \
             -C "$PACMAN_CONF" \
             -w "$WORK_DIR" \
             -o "$OUT_DIR" \
             "$PROFILE_DIR"
+          set -o pipefail
 
       - name: Combine ISO parts if split
         run: |
