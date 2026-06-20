@@ -56,7 +56,6 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
-nvidia-utils
 linux-lts-headers
 dkms
 broadcom-wl-dkms
