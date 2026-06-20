@@ -1,11 +1,11 @@
 {
   "Bolt": {
-    "focus": "Refine core script error handling to avoid subshell overhead. Do not introduce new features."
+    "focus": "Ensure that the addition of systemd sandboxing directives does not introduce unacceptable delays or overhead during service startup."
   },
   "Palette": {
-    "focus": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX."
+    "focus": "Ensure that if sandboxed services fail due to restricted privileges, the failure logs provide clear, actionable troubleshooting context."
   },
   "Sentinel": {
-    "focus": "Validate that improved error handling constructs do not introduce command injection risks or mask original exit codes."
+    "focus": "Audit the implementation of systemd sandboxing directives across all modified services. Verify that no services are granted unnecessary capabilities or filesystem access, strictly adhering to the principle of least privilege."
   }
 }

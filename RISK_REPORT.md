@@ -1,9 +1,16 @@
 # Risk & Priority Report
 
-## Current Risk Posture
-The immediate risk of build-blocking failures has been resolved. However, medium-term risks persist, primarily missing architectural documentation (ADRs), missing troubleshooting guides, and inconsistent error handling in core shell scripts (e.g., neos-driver-manager and neos-autoupdate.sh lack the robust error handler present in neos-liveuser-setup).
+## Current Risk Assessment
+The system is currently in the "Active Hardening" phase. Significant progress has been made on resolving high-priority and critical issues identified in the audit.
 
-## Priority Assessment
-1. Establish a clear technical foundation by creating the docs/decisions/ directory and writing Architecture Decision Records (ADRs).
-2. Improve system maintainability by standardizing error handling (_error_handler) across all core airootfs/usr/local/bin/ scripts.
-3. Support users by creating docs/TROUBLESHOOTING.md.
+**Identified Risks:**
+1. **Missing Security Controls:** While core scripts have improved error handling, the lack of complete `systemd` sandboxing across all system services represents a significant residual attack surface. Services running with unnecessary privileges could be exploited to compromise the broader system.
+
+## Priority Selection
+**Stabilization / Hardening**
+
+We must complete the remaining medium-priority systemd sandboxing items from the audit action plan to establish a secure baseline before resuming feature development.
+
+## Actionable Mitigation
+- Architect must strictly limit scope to implementing sandboxing in `.service` files.
+- Sentinel must heavily audit the sandboxing implementation for correctness and completeness.

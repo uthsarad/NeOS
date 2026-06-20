@@ -1,10 +1,10 @@
 # Strategic Directive
 
 ## Objective
-To stabilize the NeOS project by transitioning from a "Strategic Pause" to an active hardening phase. The immediate focus must shift from a strict zero-modification state to resolving the remaining uncompleted medium-priority architectural and reliability tasks identified in the deep audit.
+To stabilize the NeOS project by finalizing the "Active Hardening" phase. The immediate focus is strictly on completing the systemd sandboxing implementation across all remaining services.
 
 ## Scope
-This directive applies to the entire NeOS repository. Feature development remains suspended, but engineering efforts are now explicitly authorized to address uncompleted documentation gaps and error handling improvements.
+This directive applies to the NeOS repository. Feature development remains suspended. Engineering efforts are explicitly limited to a single coherent deliverable: applying standard systemd sandboxing directives to any unhardened `.service` files to reduce the system's attack surface.
 
 ## Rationale
-The previous strategic pause successfully halted feature creep. However, leaving medium-priority audit items—specifically missing Architecture Decision Records (ADRs) and troubleshooting documentation, as well as inconsistent error handling in core scripts—unresolved creates unacceptable technical debt. Controlled modifications are required to resolve these remaining items.
+The previous phase successfully addressed architecture decision records and error handling in core scripts. However, leaving the remaining systemd services without complete sandboxing represents an unacceptable residual security risk. By focusing solely on this one deliverable, we ensure high-quality security enforcement without risking feature creep or scope bloat.
