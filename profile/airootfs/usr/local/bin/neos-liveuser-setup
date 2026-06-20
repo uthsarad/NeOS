@@ -45,12 +45,12 @@ if [ -d "$LIVE_USER_HOME" ]; then
     echo "🎨 Polishing the Live Environment..."
     mkdir -p "$AUTOSTART_DIR"
 
-    # Launch Calamares automatically (Ubuntu style)
-    cat <<EOF > "$AUTOSTART_DIR/calamares.desktop"
+    # Launch NeOS Welcome Screen automatically on login
+    cat <<EOF > "$AUTOSTART_DIR/neos-welcome.desktop"
 [Desktop Entry]
 Type=Application
-Name=Install NeOS
-Exec=sh -c "xhost +SI:localuser:root && sudo calamares && xhost -SI:localuser:root"
+Name=NeOS Welcome
+Exec=/usr/local/bin/neos-welcome
 Icon=system-software-install
 X-KDE-autostart-after=panel
 EOF
