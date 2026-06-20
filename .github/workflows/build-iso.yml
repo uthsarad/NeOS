@@ -185,7 +185,7 @@ jobs:
             exit 1
           fi
 
-          mkarchiso -v \
+          yes "" | mkarchiso -v \
             -C "$PACMAN_CONF" \
             -w "$WORK_DIR" \
             -o "$OUT_DIR" \

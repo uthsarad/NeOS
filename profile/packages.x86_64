@@ -94,3 +94,8 @@ cups
 print-manager
 plymouth
 plymouth-kcm
+iptables
+polkit
+libglvnd
+qt6-multimedia-ffmpeg
+

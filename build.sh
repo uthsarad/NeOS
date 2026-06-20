@@ -103,7 +103,7 @@ fi
 
 # Run mkarchiso
 echo -e "${GREEN}Building ISO...${NC}"
-mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
+yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
 
 echo -e "${GREEN}Running ISO validation...${NC}"
 bash tests/verify_iso_grub.sh
