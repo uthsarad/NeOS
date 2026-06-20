@@ -1,8 +1,8 @@
 [Desktop Entry]
 Name=Install NeOS
-GenericName=Live Installer
+GenericName=System Installer
 Comment=Install the operating system to disk
-Exec=sh -c "xhost +SI:localuser:root && sudo calamares && xhost -SI:localuser:root"
+Exec=/usr/local/bin/neos-welcome
 Icon=system-software-install
 Terminal=false
 Type=Application

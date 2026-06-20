@@ -1,22 +1,22 @@
 #!/bin/bash
-# Welcome script for NeOS Live media
+# Installer launcher for NeOS installation media
 
-# Check if kdialog is available (it should be, since we run KDE Plasma)
-if command -v kdialog &>/dev/null; then
-    # Display an elegant welcome dialog matching NeOS colors (uses NeOS Blue #0078D4)
-    # The yes/no labels are customized: Yes means Try, No means Install.
-    if kdialog --icon system-software-install \
-               --title "Welcome to NeOS Live Medium" \
-               --yesno "<h2 style='color:#0078D4; font-family: Outfit, Inter, sans-serif; font-weight: 600;'>Welcome to the NeOS Installer Media!</h2><p style='font-family: Outfit, Inter, sans-serif; font-size: 13px;'>Would you like to try the live environment first, or proceed to install NeOS onto your computer?</p><p style='font-family: Outfit, Inter, sans-serif; font-size: 12px; color:#555555;'><b>Try NeOS</b> allows you to test the live desktop environment without modifying your disks. You can launch the installer anytime using the shortcut on your desktop.<br><br><b>Install NeOS</b> will start the installation helper directly.</p>" \
-               --yes-label "Try NeOS" \
-               --no-label "Install NeOS"; then
-        # User chose "Try NeOS"
-        exit 0
-    else
-        # User chose "Install NeOS"
-        xhost +SI:localuser:root && sudo calamares && xhost -SI:localuser:root
-    fi
-else
-    # Fallback to direct Calamares launch if no kdialog is found
-    xhost +SI:localuser:root && sudo calamares && xhost -SI:localuser:root
+set -euo pipefail
+
+if pgrep -x calamares >/dev/null 2>&1; then
+    exit 0
 fi
+
+if command -v kdialog >/dev/null 2>&1; then
+    kdialog --icon system-software-install \
+        --title "Install NeOS" \
+        --passivepopup "Starting the NeOS installer. This temporary session is only installation media." 5 || true
+fi
+
+cleanup_xhost() {
+    xhost -SI:localuser:root >/dev/null 2>&1 || true
+}
+
+trap cleanup_xhost EXIT
+xhost +SI:localuser:root >/dev/null 2>&1 || true
+sudo calamares

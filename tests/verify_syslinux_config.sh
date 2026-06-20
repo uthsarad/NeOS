@@ -19,6 +19,14 @@ for cfg in "$SYSLINUX_DIR"/*.cfg; do
     else
         echo "✅ $cfg does not contain redundant prefixes"
     fi
+
+    if grep -q "Try or Install" "$cfg"; then
+        echo "❌ $cfg uses live-OS wording instead of installer-media wording"
+        grep -Hn "Try or Install" "$cfg"
+        ALL_PASSED=false
+    else
+        echo "✅ $cfg uses installer-media wording"
+    fi
 done
 
 if [ "$ALL_PASSED" = true ]; then

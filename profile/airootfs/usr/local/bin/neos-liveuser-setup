@@ -42,28 +42,17 @@ LIVE_USER_HOME="/home/liveuser"
 AUTOSTART_DIR="$LIVE_USER_HOME/.config/autostart"
 
 if [ -d "$LIVE_USER_HOME" ]; then
-    echo "🎨 Polishing the Live Environment..."
+    echo "Preparing the NeOS installer session..."
     mkdir -p "$AUTOSTART_DIR"
 
-    # Launch NeOS Welcome Screen automatically on login
-    cat <<EOF > "$AUTOSTART_DIR/neos-welcome.desktop"
+    # Launch the installer automatically on login.
+    cat <<EOF > "$AUTOSTART_DIR/install-neos.desktop"
 [Desktop Entry]
 Type=Application
-Name=NeOS Welcome
+Name=Install NeOS
 Exec=/usr/local/bin/neos-welcome
 Icon=system-software-install
 X-KDE-autostart-after=panel
-EOF
-
-    # Add Driver Check shortcut
-    cat <<EOF > "$AUTOSTART_DIR/neos-driver-check.desktop"
-[Desktop Entry]
-Type=Application
-Name=NeOS Driver Check
-Comment=Check for missing hardware drivers
-Exec=konsole --hold -e /usr/local/bin/neos-driver-manager
-Icon=hwinfo
-Categories=System;
 EOF
 
     # Set Wallpaper and Dark Mode (Plasma 6)

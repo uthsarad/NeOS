@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# NeOS CLI Netinstaller profile definition
+# NeOS installation media profile definition
 # shellcheck disable=SC2034
 
 iso_name="neos"
 iso_label="NEOS_ISO"
 iso_publisher="NeOS Team <https://github.com/uthsarad>"
-iso_application="NeOS Desktop Live ISO"
+iso_application="NeOS Installation Media"
 iso_version="$(date +%Y.%m.%d)"
 install_dir="neos"
 buildmodes=('iso')
