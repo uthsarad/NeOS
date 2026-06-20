@@ -2,7 +2,7 @@
 Name=Install NeOS
 GenericName=Live Installer
 Comment=Install the operating system to disk
-Exec=sudo calamares
+Exec=sh -c "xhost +SI:localuser:root && sudo calamares && xhost -SI:localuser:root"
 Icon=system-software-install
 Terminal=false
 Type=Application

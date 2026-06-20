@@ -50,7 +50,7 @@ if [ -d "$LIVE_USER_HOME" ]; then
 [Desktop Entry]
 Type=Application
 Name=Install NeOS
-Exec=sudo calamares
+Exec=sh -c "xhost +SI:localuser:root && sudo calamares && xhost -SI:localuser:root"
 Icon=system-software-install
 X-KDE-autostart-after=panel
 EOF
