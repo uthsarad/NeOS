@@ -185,13 +185,19 @@ jobs:
             exit 1
           fi
 
-          set +o pipefail
+          set +e +o pipefail
           yes "" | mkarchiso -v \
             -C "$PACMAN_CONF" \
             -w "$WORK_DIR" \
             -o "$OUT_DIR" \
             "$PROFILE_DIR"
-          set -o pipefail
+          MKARCHISO_EXIT=${PIPESTATUS[1]:-$?}
+          set -e -o pipefail
+
+          if [[ "$MKARCHISO_EXIT" -ne 0 ]]; then
+            echo "::error::mkarchiso failed with exit code $MKARCHISO_EXIT"
+            exit "$MKARCHISO_EXIT"
+          fi
 
       - name: Combine ISO parts if split
         run: |
