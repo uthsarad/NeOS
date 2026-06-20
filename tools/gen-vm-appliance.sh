@@ -2,7 +2,28 @@
 # NeOS Virtual Appliance Generator
 # Creates a pre-configured VMDK and .vbox configuration for NeOS.
 
-set -e
+set -euo pipefail
+
+# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
+SCRIPT_NAME="${0##*/}"
+SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
+
+_error_handler() {
+    local err=$1
+    local line=$2
+    local cmd="${BASH_COMMAND//[^[:print:]]/}"
+    # Palette: Ensure logged error messages are clear and contain actionable steps for users.
+    # Bolt: Ensure trap commands and error logging minimize subshell overhead.
+    printf -- "\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[31m🚨 CRITICAL ERROR: %s\\e[0m\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[36m💡 What went wrong:\\e[0m\n  Command: \"%s\"\n  Failed at line: %s\n  Exit code: %s\n\n\\e[1m\\e[36m🔧 How to fix:\\e[0m\n  1. Review system journal: \\e[1mjournalctl -t neos-%s\\e[0m\n  2. Check system state and script configuration.\n\\e[1m\\e[31m================================================================================\\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$line" "$err" "$SCRIPT_NAME" >&2 || true
+    logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
+    exit "$err"
+}
+
+# Sentinel: Verify that trap commands safely handle variable expansion without introducing command injection risks.
+trap '_error_handler $? $LINENO' ERR
 
 # Colors for output
 GREEN='\033[0;32m'

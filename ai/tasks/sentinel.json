@@ -4,6 +4,11 @@
       "description": "Baseline initialization",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Validate that improved error handling constructs do not introduce command injection risks or mask original exit codes.",
+      "target_file": "build.sh",
+      "status": "pending"
     }
   ]
 }
