@@ -12,6 +12,7 @@ REQUIRED_FILES=(
     "profile/airootfs/etc/systemd/system/neos-autoupdate.timer"
     "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service"
     "profile/airootfs/etc/sddm.conf.d/autologin.conf"
+    "profile/airootfs/etc/skel/Desktop/install-neos.desktop"
     "profile/airootfs/etc/snapper/configs/root"
     "profile/airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
     "profile/airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
@@ -78,6 +79,36 @@ for PERM in "${REQUIRED_PERMS[@]}"; do
         ALL_PASSED=false
     fi
 done
+
+
+# Verify the live session behaves as installer media, not as a general-purpose live OS.
+LIVEUSER_SETUP="profile/airootfs/usr/local/bin/neos-liveuser-setup"
+INSTALLER_SHORTCUT="profile/airootfs/etc/skel/Desktop/install-neos.desktop"
+INSTALLER_LAUNCHER="profile/airootfs/usr/local/bin/neos-welcome"
+
+echo ""
+echo "Verifying installer-media startup behavior..."
+
+if grep -q 'install-neos.desktop' "$LIVEUSER_SETUP" && grep -q 'Exec=/usr/local/bin/neos-welcome' "$LIVEUSER_SETUP"; then
+    echo "✅ Installer autostart is configured for the live user"
+else
+    echo "❌ Installer autostart is not configured for the live user"
+    ALL_PASSED=false
+fi
+
+if grep -q '^Exec=/usr/local/bin/neos-welcome$' "$INSTALLER_SHORTCUT"; then
+    echo "✅ Desktop shortcut relaunches the installer"
+else
+    echo "❌ Desktop shortcut does not relaunch the installer"
+    ALL_PASSED=false
+fi
+
+if grep -q '^sudo calamares$' "$INSTALLER_LAUNCHER" && ! grep -q 'Try NeOS' "$INSTALLER_LAUNCHER"; then
+    echo "✅ Installer launcher starts Calamares directly"
+else
+    echo "❌ Installer launcher still offers live-OS behavior"
+    ALL_PASSED=false
+fi
 
 # Verify pacman hooks have correct format (single [Action] per file)
 echo ""
