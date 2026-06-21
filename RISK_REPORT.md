@@ -1,16 +1,17 @@
 # Risk & Priority Report
 
 ## Current Risk Assessment
-The system is currently in the "Active Hardening" phase. Significant progress has been made on resolving high-priority and critical issues identified in the audit.
+The system remains in the "Active Hardening" phase. Core services like `neos-liveuser-setup.service` and `neos-autoupdate.service` lack complete systemd sandboxing directives (e.g., missing `ProtectSystem=strict`, `NoNewPrivileges=yes`, and `ProtectHome=yes`).
 
 **Identified Risks:**
-1. **Missing Security Controls:** While core scripts have improved error handling, the lack of complete `systemd` sandboxing across all system services represents a significant residual attack surface. Services running with unnecessary privileges could be exploited to compromise the broader system.
+1. **Incomplete Sandboxing:** Unhardened services could be leveraged to gain unauthorized system access or modify protected filesystem areas.
+2. **Test Coverage Gap:** The current `verify_service_hardening.sh` only tests `neos-driver-manager.service`, creating a false sense of security for other services.
 
 ## Priority Selection
 **Stabilization / Hardening**
 
-We must complete the remaining medium-priority systemd sandboxing items from the audit action plan to establish a secure baseline before resuming feature development.
+The immediate priority is to finalize the implementation of systemd sandboxing for all services and update our verification tests to cover all `.service` files.
 
 ## Actionable Mitigation
-- Architect must strictly limit scope to implementing sandboxing in `.service` files.
-- Sentinel must heavily audit the sandboxing implementation for correctness and completeness.
+- Architect must strictly limit scope to implementing sandboxing in `.service` files and updating the corresponding verification test.
+- Sentinel must review the test changes to ensure proper security assertions are being made.
