@@ -7,11 +7,21 @@ if pgrep -x calamares >/dev/null 2>&1; then
 fi
 
 if command -v kdialog >/dev/null 2>&1; then
-    kdialog --icon calamares \
-        --title "Install NeOS" \
-        --passivepopup "Starting the NeOS installer. This temporary session is only installation media." 5 || true
+    kdialog --icon calamares --title "Install NeOS" --passivepopup "Starting the NeOS installer." 5 || true
 fi
 
-# Use kdesu which is native to Plasma and handles Wayland root GUI access perfectly
-kdesu -c "calamares"
+# Allow root to connect to XWayland
+if command -v xhost >/dev/null 2>&1; then
+    xhost +SI:localuser:root >/dev/null 2>&1 || true
+fi
+
+# Try kdesu first (native KDE way, handles Wayland properly)
+if [[ -x /usr/lib/kf6/kdesu ]]; then
+    /usr/lib/kf6/kdesu -c "/usr/bin/calamares"
+elif command -v kdesu >/dev/null 2>&1; then
+    kdesu -c "/usr/bin/calamares"
+else
+    # Fallback to sudo with environment preserved
+    sudo -E env QT_QPA_PLATFORM=xcb DISPLAY="${DISPLAY:-:0}" calamares
+fi
 
