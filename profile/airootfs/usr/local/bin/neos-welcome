@@ -1,14 +1,13 @@
 #!/bin/bash
 # Installer launcher for NeOS installation media
 
-set -euo pipefail
-
 if pgrep -x calamares >/dev/null 2>&1; then
+    kdialog --msgbox "The installer is already running." || true
     exit 0
 fi
 
 if command -v kdialog >/dev/null 2>&1; then
-    kdialog --icon system-software-install \
+    kdialog --icon calamares \
         --title "Install NeOS" \
         --passivepopup "Starting the NeOS installer. This temporary session is only installation media." 5 || true
 fi
@@ -20,5 +19,10 @@ cleanup_xhost() {
 trap cleanup_xhost EXIT
 xhost +SI:localuser:root >/dev/null 2>&1 || true
 
-# Force XCB (XWayland) for root GUI apps to prevent Wayland socket permission errors
-sudo -E env "QT_QPA_PLATFORM=xcb" "DISPLAY=$DISPLAY" calamares
+# Try pkexec first, fallback to sudo
+if command -v pkexec >/dev/null 2>&1; then
+    pkexec env DISPLAY="$DISPLAY" XAUTHORITY="$XAUTHORITY" QT_QPA_PLATFORM=xcb calamares
+else
+    sudo -E env DISPLAY="$DISPLAY" XAUTHORITY="$XAUTHORITY" QT_QPA_PLATFORM=xcb calamares
+fi
+

@@ -24,4 +24,5 @@ file_permissions=(
   ["/usr/local/bin/neos-installer-partition.sh"]="0:0:755"
   ["/usr/local/bin/neos-liveuser-setup"]="0:0:755"
   ["/usr/local/bin/neos-welcome"]="0:0:755"
+  ["/usr/local/bin/neos-desktop-setup"]="0:0:755"
 )
