@@ -1,0 +1,12 @@
+#!/bin/bash
+if [[ ! -f "$HOME/.neos_polished" ]]; then
+    # Set Breeze Dark Theme
+    plasma-apply-lookandfeel -a org.kde.breezedark.desktop || true
+    # Set Wallpaper
+    plasma-apply-wallpaperimage /usr/share/backgrounds/neos-wallpaper.png || true
+    # Ensure Calamares icon is on desktop and executable
+    if [[ -f "$HOME/Desktop/install-neos.desktop" ]]; then
+        chmod +x "$HOME/Desktop/install-neos.desktop"
+    fi
+    touch "$HOME/.neos_polished"
+fi

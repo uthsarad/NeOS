@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=NeOS Desktop Setup
+Exec=/usr/local/bin/neos-desktop-setup
+X-KDE-autostart-phase=1
+Hidden=false
+NoDisplay=true

@@ -45,34 +45,13 @@ if [ -d "$LIVE_USER_HOME" ]; then
     echo "Preparing the NeOS installer session..."
     mkdir -p "$AUTOSTART_DIR"
 
-    # Launch the installer automatically on login.
-    cat <<EOF > "$AUTOSTART_DIR/install-neos.desktop"
-[Desktop Entry]
-Type=Application
-Name=Install NeOS
-Exec=/usr/local/bin/neos-welcome
-Icon=system-software-install
-X-KDE-autostart-after=panel
-EOF
+    # Ensure Desktop directory exists
+    mkdir -p "$LIVE_USER_HOME/Desktop"
 
-    # Set Wallpaper and Dark Mode (Plasma 6)
-    # We use a script that runs once on first login
-    cat <<EOF > "$LIVE_USER_HOME/.zprofile"
-if [[ -z "\$DISPLAY" ]] && [[ \$(tty) = /dev/tty1 ]]; then
-  # Auto-start Plasma if on TTY1 (though SDDM should handle this)
-  # exec startplasma-wayland
-  :
-fi
-
-# Apply elite aesthetics on first run
-if [[ ! -f "\$HOME/.neos_polished" ]]; then
-    # Set Breeze Dark Global Theme
-    /usr/lib/plasma-dbus-runak-integration set-breeze-dark || true
-    # Set Wallpaper
-    /usr/bin/kwriteconfig6 --file \$HOME/.config/plasmarc --group 'Containments' --group '1' --group 'Applets' --group '2' --group 'Configuration' --group 'ConfigDialog' --key 'wallpaper' "/usr/share/backgrounds/neos-wallpaper.png" || true
-    touch "\$HOME/.neos_polished"
-fi
-EOF
+    # Make the installer icon executable on the desktop if it exists
+    if [ -f "$LIVE_USER_HOME/Desktop/install-neos.desktop" ]; then
+        chmod +x "$LIVE_USER_HOME/Desktop/install-neos.desktop"
+    fi
 
     chown -R liveuser:users "$LIVE_USER_HOME"
 fi

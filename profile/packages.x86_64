@@ -99,3 +99,8 @@ polkit
 libglvnd
 qt6-multimedia-ffmpeg
 
+qt6-svg
+qt5-svg
+breeze-icons
+kwayland
+kio-fuse
