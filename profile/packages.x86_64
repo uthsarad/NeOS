@@ -105,3 +105,6 @@ breeze-icons
 kwayland
 kio-fuse
 chaotic-keyring
+xorg-xhost
+kdialog
+kde-cli-tools
