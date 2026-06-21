@@ -8,7 +8,7 @@
     {
       "description": "Refine core script error handling to avoid subshell overhead. Do not introduce new features.",
       "target_file": "build.sh",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
