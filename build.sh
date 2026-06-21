@@ -106,7 +106,7 @@ fi
 yes | pacman -U --noconfirm --needed --noprogressbar -- "$CHAOTIC_KEYRING_PKG"
 
 # We point to the local mirrorlist using absolute path
-REPO_ROOT=$(pwd)
+REPO_ROOT="$PWD"
 MIRRORLIST_PATH="$REPO_ROOT/$PROFILE_DIR/airootfs/etc/pacman.d/neos-mirrorlist"
 CHAOTIC_MIRRORLIST_PATH="$REPO_ROOT/$PROFILE_DIR/airootfs/etc/pacman.d/chaotic-mirrorlist"
 
