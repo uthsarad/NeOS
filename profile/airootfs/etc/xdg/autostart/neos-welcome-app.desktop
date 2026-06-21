@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Welcome to NeOS
+Comment=NeOS Initial Setup and Welcome
+Exec=/usr/local/bin/neos-welcome-app
+Icon=system-software-install
+Type=Application
+Categories=System;
+X-KDE-autostart-phase=2
+NoDisplay=true

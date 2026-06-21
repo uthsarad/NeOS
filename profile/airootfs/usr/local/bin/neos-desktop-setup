@@ -4,9 +4,9 @@ if [[ ! -f "$HOME/.neos_polished" ]]; then
     plasma-apply-lookandfeel -a org.kde.breezedark.desktop || true
     # Set Wallpaper
     plasma-apply-wallpaperimage /usr/share/backgrounds/neos-wallpaper.png || true
-    # Ensure Calamares icon is on desktop and executable
-    if [[ -f "$HOME/Desktop/install-neos.desktop" ]]; then
-        chmod +x "$HOME/Desktop/install-neos.desktop"
+    # Ensure Welcome icon is on desktop and executable
+    if [[ -f "$HOME/Desktop/welcome-neos.desktop" ]]; then
+        chmod +x "$HOME/Desktop/welcome-neos.desktop"
     fi
     touch "$HOME/.neos_polished"
 fi

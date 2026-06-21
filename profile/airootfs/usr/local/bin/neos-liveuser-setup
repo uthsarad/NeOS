@@ -48,9 +48,9 @@ if [ -d "$LIVE_USER_HOME" ]; then
     # Ensure Desktop directory exists
     mkdir -p "$LIVE_USER_HOME/Desktop"
 
-    # Make the installer icon executable on the desktop if it exists
-    if [ -f "$LIVE_USER_HOME/Desktop/install-neos.desktop" ]; then
-        chmod +x "$LIVE_USER_HOME/Desktop/install-neos.desktop"
+    # Make the welcome icon executable on the desktop if it exists
+    if [ -f "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ]; then
+        chmod +x "$LIVE_USER_HOME/Desktop/welcome-neos.desktop"
     fi
 
     chown -R liveuser:users "$LIVE_USER_HOME"

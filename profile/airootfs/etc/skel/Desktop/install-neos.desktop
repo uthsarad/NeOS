@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Install NeOS
-GenericName=System Installer
-Comment=Install the operating system to disk
-Exec=/usr/local/bin/neos-welcome
-Icon=calamares
-Terminal=false
-Type=Application
-Categories=System;
