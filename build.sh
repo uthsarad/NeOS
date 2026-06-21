@@ -92,14 +92,32 @@ else
     echo "Chaotic-AUR key already imported."
 fi
 
+# Sentinel: [Security] Import and locally sign the package maintainer key required to verify the keyring package signature
+if ! pacman-key --list-keys BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 >/dev/null 2>&1; then
+    echo "Importing Chaotic-AUR package maintainer key..."
+    pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver keyserver.ubuntu.com
+    pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
+fi
+
 # ⚡ Bolt: Cache keyring package locally and only update if remote is newer
 CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
+CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
+
 if [ ! -f "$CHAOTIC_KEYRING_PKG" ]; then
     echo "Downloading Chaotic-AUR keyring..."
     curl -L -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+    curl -L -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
 else
     echo "Updating cached Chaotic-AUR keyring..."
     curl -L -z "$CHAOTIC_KEYRING_PKG" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+    curl -L -z "$CHAOTIC_KEYRING_SIG" -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
+fi
+
+# Sentinel: [Security] Mitigate supply chain attacks by verifying package signature before installation
+echo "Verifying Chaotic-AUR keyring signature..."
+if ! pacman-key --verify "$CHAOTIC_KEYRING_SIG" "$CHAOTIC_KEYRING_PKG"; then
+    echo -e "${RED}Error: Chaotic-AUR keyring signature verification failed!${NC}"
+    exit 1
 fi
 
 # Install/Update
