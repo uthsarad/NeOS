@@ -1,10 +1,10 @@
 # Strategic Directive
 
 ## Objective
-To stabilize the NeOS project by finalizing the "Active Hardening" phase. The immediate focus is strictly on completing the systemd sandboxing implementation across all remaining services.
+Finalize the "Active Hardening" phase by completing the implementation of systemd sandboxing.
 
 ## Scope
-This directive applies to the NeOS repository. Feature development remains suspended. Engineering efforts are explicitly limited to a single coherent deliverable: applying standard systemd sandboxing directives to any unhardened `.service` files to reduce the system's attack surface.
+The focus is strictly on extending the systemd sandboxing directives (`ProtectSystem=strict`, `ProtectHome=yes`, `PrivateTmp=yes`, `NoNewPrivileges=yes`, `ProtectKernelTunables=yes`, `RestrictRealtime=yes`) to `neos-liveuser-setup.service` and `neos-autoupdate.service`. In addition, the testing script `tests/verify_service_hardening.sh` must be updated to validate these properties across all `.service` files in `profile/airootfs/etc/systemd/system/`.
 
 ## Rationale
-The previous phase successfully addressed architecture decision records and error handling in core scripts. However, leaving the remaining systemd services without complete sandboxing represents an unacceptable residual security risk. By focusing solely on this one deliverable, we ensure high-quality security enforcement without risking feature creep or scope bloat.
+The previous iteration initiated systemd sandboxing but left `neos-liveuser-setup.service` and `neos-autoupdate.service` with incomplete protection. Completing this item from the AUDIT_ACTION_PLAN.md is critical to establish a secure baseline before any new feature development resumes.

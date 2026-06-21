@@ -1,8 +1,11 @@
 {
   "status": "Active Hardening",
-  "forbidden_files": [],
-  "allowed_files": [
-    "profile/airootfs/etc/systemd/system/*.service"
+  "forbidden_files": [
+    "profile/packages.*"
   ],
-  "directive": "Implement complete systemd sandboxing across all remaining unhardened .service files. Do not modify any other files or implement any other features."
+  "allowed_files": [
+    "profile/airootfs/etc/systemd/system/*.service",
+    "tests/verify_service_hardening.sh"
+  ],
+  "directive": "Implement complete systemd sandboxing across neos-liveuser-setup.service and neos-autoupdate.service using the strict directives from the audit plan. Update tests/verify_service_hardening.sh to verify all .service files instead of just neos-driver-manager.service."
 }

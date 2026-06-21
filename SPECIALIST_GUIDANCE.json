@@ -1,11 +1,11 @@
 {
   "Bolt": {
-    "focus": "Ensure that the addition of systemd sandboxing directives does not introduce unacceptable delays or overhead during service startup."
+    "focus": "Ensure any test script loops (like in verify_service_hardening.sh) use native bash features and avoid excessive subshell overhead."
   },
   "Palette": {
-    "focus": "Ensure that if sandboxed services fail due to restricted privileges, the failure logs provide clear, actionable troubleshooting context."
+    "focus": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX (e.g., build.sh)."
   },
   "Sentinel": {
-    "focus": "Audit the implementation of systemd sandboxing directives across all modified services. Verify that no services are granted unnecessary capabilities or filesystem access, strictly adhering to the principle of least privilege."
+    "focus": "Audit the systemd sandboxing directives in all modified .service files. Ensure no critical privileges are unnecessarily granted."
   }
 }
