@@ -15,13 +15,6 @@ if command -v xhost >/dev/null 2>&1; then
     xhost +SI:localuser:root >/dev/null 2>&1 || true
 fi
 
-# Try kdesu first (native KDE way, handles Wayland properly)
-if [[ -x /usr/lib/kf6/kdesu ]]; then
-    /usr/lib/kf6/kdesu -c "/usr/bin/calamares"
-elif command -v kdesu >/dev/null 2>&1; then
-    kdesu -c "/usr/bin/calamares"
-else
-    # Fallback to sudo with environment preserved
-    sudo -E env QT_QPA_PLATFORM=xcb DISPLAY="${DISPLAY:-:0}" calamares
-fi
+# Force XWayland platform since Wayland native root windows are blocked
+sudo -E env QT_QPA_PLATFORM=xcb DISPLAY="${DISPLAY:-:0}" calamares
 
