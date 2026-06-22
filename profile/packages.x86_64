@@ -29,10 +29,7 @@ kinfocenter
 sddm
 konsole
 dolphin
-dolphin-plugins
-kate
 spectacle
-gwenview
 packagekit-qt6
 discover
 
@@ -85,7 +82,7 @@ linux-lts-headers
 dkms
 broadcom-wl-dkms
 virtualbox-guest-utils
-open-vm-tools
+# open-vm-tools installed from repos if needed
 sof-firmware
 alsa-firmware
 alsa-utils
@@ -95,7 +92,6 @@ xf86-video-nouveau
 xf86-input-libinput
 pciutils
 usbutils
-fwupd
 
 # Bootloader
 grub
