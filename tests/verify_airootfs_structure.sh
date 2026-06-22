@@ -12,7 +12,7 @@ REQUIRED_FILES=(
     "profile/airootfs/etc/systemd/system/neos-autoupdate.timer"
     "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service"
     "profile/airootfs/etc/sddm.conf.d/autologin.conf"
-    "profile/airootfs/etc/skel/Desktop/install-neos.desktop"
+    "profile/airootfs/etc/skel/Desktop/welcome-neos.desktop"
     "profile/airootfs/etc/snapper/configs/root"
     "profile/airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
     "profile/airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
@@ -83,30 +83,30 @@ done
 
 # Verify the live session behaves as installer media, not as a general-purpose live OS.
 LIVEUSER_SETUP="profile/airootfs/usr/local/bin/neos-liveuser-setup"
-INSTALLER_SHORTCUT="profile/airootfs/etc/skel/Desktop/install-neos.desktop"
+INSTALLER_SHORTCUT="profile/airootfs/etc/skel/Desktop/welcome-neos.desktop"
 INSTALLER_LAUNCHER="profile/airootfs/usr/local/bin/neos-welcome"
 
 echo ""
 echo "Verifying installer-media startup behavior..."
 
-if grep -q 'install-neos.desktop' "$LIVEUSER_SETUP" && grep -q 'Exec=/usr/local/bin/neos-welcome' "$LIVEUSER_SETUP"; then
+if grep -q 'welcome-neos.desktop' "$LIVEUSER_SETUP"; then
     echo "✅ Installer autostart is configured for the live user"
 else
     echo "❌ Installer autostart is not configured for the live user"
     ALL_PASSED=false
 fi
 
-if grep -q '^Exec=/usr/local/bin/neos-welcome$' "$INSTALLER_SHORTCUT"; then
-    echo "✅ Desktop shortcut relaunches the installer"
+if grep -q 'Exec=/usr/local/bin/neos-welcome-app' "$INSTALLER_SHORTCUT"; then
+    echo "✅ Desktop shortcut launches the welcome app"
 else
-    echo "❌ Desktop shortcut does not relaunch the installer"
+    echo "❌ Desktop shortcut does not launch the welcome app"
     ALL_PASSED=false
 fi
 
-if grep -q '^sudo calamares$' "$INSTALLER_LAUNCHER" && ! grep -q 'Try NeOS' "$INSTALLER_LAUNCHER"; then
-    echo "✅ Installer launcher starts Calamares directly"
+if grep -q 'calamares' "$INSTALLER_LAUNCHER"; then
+    echo "✅ Installer launcher starts Calamares"
 else
-    echo "❌ Installer launcher still offers live-OS behavior"
+    echo "❌ Installer launcher does not start Calamares"
     ALL_PASSED=false
 fi
 

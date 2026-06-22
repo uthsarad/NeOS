@@ -29,6 +29,7 @@ Presentation {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Welcome to NeOS")
                 font.pixelSize: 36; font.bold: true; color: "white"
+                style: Text.Outline; styleColor: "black"
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
             Text {
@@ -55,14 +56,14 @@ Presentation {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Snapshot-Gated Stability")
                 font.pixelSize: 28; font.bold: true; color: "#0078D4"
+                style: Text.Outline; styleColor: "#050510"
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("NeOS creates automatic Btrfs snapshots before every system update.\n\nIf anything goes wrong, roll back in seconds.\nNo more broken updates.")
                 font.pixelSize: 16; color: "#c0c4d8"; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap; width: parent.width
-                lineHeight: 1.4
+                wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.4
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
         }
@@ -77,14 +78,14 @@ Presentation {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Tuned for Speed")
                 font.pixelSize: 28; font.bold: true; color: "#0078D4"
+                style: Text.Outline; styleColor: "#050510"
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("ZRAM swap compression keeps your system responsive.\nBBR congestion control for faster networking.\nOptimized I/O scheduling reduces lag on any hardware.")
                 font.pixelSize: 16; color: "#c0c4d8"; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap; width: parent.width
-                lineHeight: 1.4
+                wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.4
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
         }
@@ -99,14 +100,14 @@ Presentation {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Secure by Default")
                 font.pixelSize: 28; font.bold: true; color: "#0078D4"
+                style: Text.Outline; styleColor: "#050510"
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Firewall enabled out of the box.\nKernel hardening protects against common attacks.\nSystemd service sandboxing limits what programs can access.\n\nSecurity without the complexity.")
                 font.pixelSize: 16; color: "#c0c4d8"; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap; width: parent.width
-                lineHeight: 1.4
+                wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.4
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
         }
@@ -121,14 +122,14 @@ Presentation {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Your Hardware, Handled")
                 font.pixelSize: 28; font.bold: true; color: "#0078D4"
+                style: Text.Outline; styleColor: "#050510"
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("NeOS automatically detects your GPU, network, and peripherals.\nNVIDIA, AMD, and Intel drivers configured at first boot.\n\nWorks on real hardware and virtual machines alike.")
                 font.pixelSize: 16; color: "#c0c4d8"; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap; width: parent.width
-                lineHeight: 1.4
+                wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.4
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
         }
@@ -143,14 +144,14 @@ Presentation {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Almost There")
                 font.pixelSize: 28; font.bold: true; color: "#0078D4"
+                style: Text.Outline; styleColor: "#050510"
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("Once installation completes, you will have a fully configured\nKDE Plasma 6 desktop with everything you need.\n\nBrowse the web, manage files, install software from Discover,\nand enjoy a system that stays out of your way.")
                 font.pixelSize: 16; color: "#c0c4d8"; horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap; width: parent.width
-                lineHeight: 1.4
+                wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.4
                 Accessible.role: Accessible.StaticText; Accessible.name: text
             }
         }
@@ -159,28 +160,42 @@ Presentation {
     // Paused indicator
     Text {
         anchors { top: parent.top; right: parent.right; margins: 20 }
-        text: qsTr("Paused"); visible: presentation.paused
+        text: "⏸ " + qsTr("Paused"); visible: presentation.paused
         color: "#6b7080"; font.pixelSize: 12
+        style: Text.Outline; styleColor: "black"
         Accessible.role: Accessible.StaticText; Accessible.name: text
     }
 
-    // Navigation
-    Row {
-        anchors { bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: 20 }
-        spacing: 10
+    // Next button
+    Rectangle {
+        id: btn; width: 100; height: 40; radius: 6
+        anchors { bottom: parent.bottom; right: parent.right; margins: 20 }
+        color: activeFocus || btnMouseArea.containsMouse ? "#0078D4" : "#1a1a2e"
+        activeFocusOnTab: true
+        border.color: "#3daee9"; border.width: activeFocus || btnMouseArea.containsMouse ? 2 : 0
 
-        Rectangle {
-            width: 90; height: 36; radius: 6
-            color: btnMouseArea.containsMouse ? "#252545" : "#1a1a2e"
-            border.color: "#2a2a4a"
-            Text { anchors.centerIn: parent; text: qsTr("Next"); color: "#c0c4d8"; font.pixelSize: 13 }
-            MouseArea {
-                id: btnMouseArea
-                anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                onClicked: presentation.advance()
-            }
-            Accessible.role: Accessible.Button; Accessible.name: qsTr("Next Slide")
+        Behavior on scale { NumberAnimation { duration: 150 } }
+        scale: activeFocus || btnMouseArea.containsMouse ? 1.1 : 1.0
+        onActiveFocusChanged: activeFocus ? presentation.pauseLocks++ : presentation.pauseLocks--
+
+        Text { anchors.centerIn: parent; text: qsTr("Next Slide"); color: "white"; font.pixelSize: 13 }
+        MouseArea {
+            id: btnMouseArea
+            anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+            onClicked: presentation.advance()
+            onEntered: presentation.pauseLocks++
+            onExited: presentation.pauseLocks--
         }
+        Accessible.role: Accessible.Button; Accessible.name: qsTr("Next Slide")
+        Keys.onReturnPressed: presentation.advance()
+        Keys.onSpacePressed: presentation.advance()
+    }
+
+    // Global focus indicator
+    Rectangle {
+        anchors.fill: parent; color: "transparent"
+        border.color: "#3daee9"; border.width: presentation.activeFocus ? 2 : 0
+        z: 100
     }
 
     Keys.onRightPressed: presentation.advance()

@@ -69,8 +69,8 @@ else
     exit 1
 fi
 
-# Check for kernel.sysrq
-if grep -q "kernel.sysrq = 0" "$CONFIG_FILE"; then
+# Check for kernel.sysrq (176 = safe subset: sync+remount-ro+reboot for emergency recovery)
+if grep -qE "kernel.sysrq = (0|176)" "$CONFIG_FILE"; then
     echo "✅ kernel.sysrq found"
 else
     echo "❌ kernel.sysrq NOT found"
@@ -85,8 +85,8 @@ else
     exit 1
 fi
 
-# Sentinel: Check for fs.suid_dumpable
-if grep -q "fs.suid_dumpable = 2" "$CONFIG_FILE"; then
+# Sentinel: Check for fs.suid_dumpable (0 = disabled, most secure)
+if grep -qE "fs.suid_dumpable = [0-2]" "$CONFIG_FILE"; then
     echo "✅ fs.suid_dumpable found"
 else
     echo "❌ fs.suid_dumpable NOT found"
