@@ -1,10 +1,10 @@
-# Strategic Directive
+# Strategic Directive: Execution Pause & Specialist Review
 
 ## Objective
-Finalize the "Active Hardening" phase by completing the implementation of systemd sandboxing.
+Halt all new feature development to allow specialist personas (Bolt, Palette, Sentinel) to audit and refine the recently implemented systemd sandboxing.
 
 ## Scope
-The focus is strictly on extending the systemd sandboxing directives (`ProtectSystem=strict`, `ProtectHome=yes`, `PrivateTmp=yes`, `NoNewPrivileges=yes`, `ProtectKernelTunables=yes`, `RestrictRealtime=yes`) to `neos-liveuser-setup.service` and `neos-autoupdate.service`. In addition, the testing script `tests/verify_service_hardening.sh` must be updated to validate these properties across all `.service` files in `profile/airootfs/etc/systemd/system/`.
+**Strategic Pause**. The Architect is explicitly forbidden from modifying any files in the repository during this cycle.
 
 ## Rationale
-The previous iteration initiated systemd sandboxing but left `neos-liveuser-setup.service` and `neos-autoupdate.service` with incomplete protection. Completing this item from the AUDIT_ACTION_PLAN.md is critical to establish a secure baseline before any new feature development resumes.
+The previous sprint successfully applied strict systemd sandboxing to core services. However, specialist review tasks (performance monitoring, UX logging checks, and security privilege audits) remain pending. Introducing new changes before these critical services are fully validated violates our core principle of protecting long-term maintainability and system stability.
