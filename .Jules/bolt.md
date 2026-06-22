@@ -4,3 +4,7 @@
 ## 2026-02-17 - Avoid Subshell Overhead for PWD
 **Learning:** Using `$(pwd)` in bash scripts introduces subshell overhead, which can be inefficient, especially in loops or frequently called functions. The native environment variable `$PWD` provides the exact same information with zero overhead.
 **Action:** Always prefer the built-in `$PWD` environment variable over executing `$(pwd)` in bash scripts for improved performance.
+
+## 2026-02-17 - Shell Script Subprocess Overhead
+**Learning:** Repeated `grep` checks on the same file in shell scripts cause unnecessary fork/exec subprocess overhead.
+**Action:** Load the file into a variable once (`CONTENT=$(<"$FILE")`) and use native Bash string matching (`[[ "$CONTENT" == *"pattern"* ]]`) instead of repeated `grep -q` calls to eliminate overhead.

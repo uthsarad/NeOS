@@ -9,6 +9,11 @@
       "description": "Refine core script error handling to avoid subshell overhead. Do not introduce new features.",
       "target_file": "build.sh",
       "status": "completed"
+    },
+    {
+      "description": "Optimize repeated grep checks to eliminate fork/exec subprocess overhead",
+      "target_file": "tests/verify_service_hardening.sh",
+      "status": "completed"
     }
   ]
 }
