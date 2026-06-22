@@ -14,6 +14,11 @@
       "description": "Optimize repeated grep checks to eliminate fork/exec subprocess overhead",
       "target_file": "tests/verify_service_hardening.sh",
       "status": "completed"
+    },
+    {
+      "description": "Monitor startup time overhead after implementing systemd strict sandboxing in neos-autoupdate.service and neos-liveuser-setup.service.",
+      "target_file": "profile/airootfs/etc/systemd/system/*.service",
+      "status": "pending"
     }
   ]
 }

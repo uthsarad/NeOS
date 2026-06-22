@@ -2,10 +2,13 @@
 Description=NeOS Autoupdate Service
 
 [Service]
+# Bolt: Monitor startup time overhead
+# Palette: Ensure journal logs are clear
 Type=oneshot
 ExecStart=/usr/local/bin/neos-autoupdate.sh
 # Sentinel: Hardened systemd sandboxing
-ProtectSystem=full
+ProtectSystem=strict
+ReadWritePaths=/usr /boot /etc /var
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectHome=yes
