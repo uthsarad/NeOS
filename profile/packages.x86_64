@@ -33,8 +33,6 @@ dolphin-plugins
 kate
 spectacle
 gwenview
-okular
-kcalc
 packagekit-qt6
 discover
 
@@ -54,7 +52,6 @@ bluedevil
 # Fonts
 noto-fonts
 noto-fonts-emoji
-noto-fonts-cjk
 ttf-liberation
 ttf-dejavu
 
@@ -84,9 +81,6 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
-vulkan-radeon
-vulkan-intel
-vulkan-swrast
 linux-lts-headers
 dkms
 broadcom-wl-dkms
@@ -136,8 +130,6 @@ breeze-icons
 chaotic-keyring
 xorg-xhost
 python-pyqt6
-man-db
-man-pages
 firefox
 power-profiles-daemon
 ufw
@@ -146,5 +138,3 @@ less
 reflector
 bash-completion
 pacman-contrib
-rsync
-inxi
