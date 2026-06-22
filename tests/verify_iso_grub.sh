@@ -17,14 +17,14 @@ fi
 echo "Verifying ISO GRUB entries in $GRUB_FILE..."
 
 REQUIRED_STRINGS=(
-    "menuentry \"Install NeOS (LTS)\""
-    "menuentry \"Install NeOS (LTS, safe graphics)\""
+    "menuentry \"NeOS"
     "linux /neos/boot/x86_64/vmlinuz-linux-lts"
     "initrd /neos/boot/x86_64/initramfs-linux-lts.img"
     "archisobasedir=neos"
     "archisolabel=NEOS_ISO"
     "cow_spacesize=4G"
     "quiet splash"
+    "nomodeset"
 )
 
 FORBIDDEN_STRINGS=(

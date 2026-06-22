@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Welcome to NeOS
-GenericName=NeOS Welcome
-Comment=Start the NeOS experience
+Name=Install NeOS
+GenericName=NeOS Installer
+Comment=Install NeOS to your hard drive
 Exec=/usr/local/bin/neos-welcome-app
-Icon=system-software-install
+Icon=calamares
 Terminal=false
 Type=Application
 Categories=System;

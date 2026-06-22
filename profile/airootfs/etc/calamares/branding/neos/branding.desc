@@ -2,10 +2,11 @@
 componentName:  neos
 
 welcomeStyleCalamares:   false
-welcomeExpandingLogo:   false
-windowResizable:        true
-windowSize:             800,520
-windowCentered:         true
+welcomeExpandingLogo:    true
+windowResizable:         true
+windowSize:              900,580
+windowCentered:          true
+windowPlacement:         center
 
 strings:
     productName:         NeOS
@@ -15,10 +16,6 @@ strings:
     versionedName:       NeOS 2026.06
     shortVersionedName:  NeOS 2026.06
     bootloaderEntryName: NeOS
-    # Sentinel: [Security] Commented out external URLs to prevent Calamares from launching a web browser as root.
-    # productUrl:          https://github.com/uthsarad/NeOS
-    # supportUrl:          https://github.com/uthsarad/NeOS/issues
-    # releaseNotesUrl:     https://github.com/uthsarad/NeOS/blob/main/CHANGELOG.md
 
 images:
     productLogo:         "logo.png"
@@ -28,10 +25,7 @@ images:
 slideshow:               "show.qml"
 
 style:
-   # Palette: [UX] Ensure Calamares branding correctly uses NeOS blue (#0078D4).
-   # Bolt: [Performance] Consider testing QML rendering speed with this background vs an image.
-   # Sentinel: [Security] Validate that external product URLs load in a secure sandbox context if clicked.
-   sidebarBackground:    "#0078D4"
-   sidebarText:          "#FFFFFF"
+   sidebarBackground:    "#0f0f1a"
+   sidebarText:          "#c0c4d8"
    sidebarTextSelect:    "#FFFFFF"
-   sidebarTextHighlight: "#005A9E"
+   sidebarTextHighlight: "#0078D4"

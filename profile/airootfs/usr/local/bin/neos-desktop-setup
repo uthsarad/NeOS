@@ -1,12 +1,23 @@
 #!/bin/bash
 if [[ ! -f "$HOME/.neos_polished" ]]; then
-    # Set Breeze Dark Theme
-    plasma-apply-lookandfeel -a org.kde.breezedark.desktop || true
-    # Set Wallpaper
-    plasma-apply-wallpaperimage /usr/share/backgrounds/neos-wallpaper.png || true
-    # Ensure Welcome icon is on desktop and executable
+    # Set Breeze Dark theme
+    plasma-apply-lookandfeel -a org.kde.breezedark.desktop 2>/dev/null || true
+
+    # Set wallpaper
+    if [[ -f /usr/share/backgrounds/neos-wallpaper.png ]]; then
+        plasma-apply-wallpaperimage /usr/share/backgrounds/neos-wallpaper.png 2>/dev/null || true
+    fi
+
+    # Ensure welcome icon is executable on desktop
     if [[ -f "$HOME/Desktop/welcome-neos.desktop" ]]; then
         chmod +x "$HOME/Desktop/welcome-neos.desktop"
     fi
+
+    # Create user directories
+    xdg-user-dirs-update 2>/dev/null || true
+
+    # Set default browser
+    xdg-settings set default-web-browser firefox.desktop 2>/dev/null || true
+
     touch "$HOME/.neos_polished"
 fi
