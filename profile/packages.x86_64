@@ -82,7 +82,6 @@ linux-lts-headers
 dkms
 broadcom-wl-dkms
 virtualbox-guest-utils
-# open-vm-tools installed from repos if needed
 sof-firmware
 alsa-firmware
 alsa-utils

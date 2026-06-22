@@ -12,6 +12,6 @@ Item {
         id: snapperProcess
         property int snapshotNumber: 0
         command: "snapper"
-        args: ["--config=root", "undochange", snapshotNumber]
+        args: ["--config=root", "undochange", String(snapshotNumber)]
     }
 }
