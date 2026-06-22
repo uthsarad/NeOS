@@ -1,11 +1,11 @@
 {
   "Bolt": {
-    "focus": "Ensure any test script loops (like in verify_service_hardening.sh) use native bash features and avoid excessive subshell overhead."
+    "focus": "Execute the pending task: Monitor startup time overhead after implementing systemd strict sandboxing in neos-autoupdate.service and neos-liveuser-setup.service."
   },
   "Palette": {
-    "focus": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX (e.g., build.sh)."
+    "focus": "Execute the pending task: Ensure journal logs are clear for the restricted services to prevent debugging UX issues due to missing permissions."
   },
   "Sentinel": {
-    "focus": "Audit the systemd sandboxing directives in all modified .service files. Ensure no critical privileges are unnecessarily granted."
+    "focus": "Execute the pending task: Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure ReadWritePaths are strictly minimal."
   }
 }
