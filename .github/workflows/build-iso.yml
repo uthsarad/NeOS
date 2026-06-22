@@ -47,21 +47,30 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           shopt -s nullglob
+          FAILED=0
 
           for script in tests/verify_*.sh; do
             if [[ "$script" == *iso* ]]; then
               continue
             fi
 
-            echo "::group::🧪 Running $script..."
+            echo "::group::Running $script..."
 
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
-              bash "$script" || EXIT_CODE=$?
+              if ! bash "$script"; then
+                echo "::error::Test failed: $script"
+                FAILED=1
+              fi
             fi
             echo "::endgroup::"
           done
+
+          if (( FAILED )); then
+            echo "::error::One or more pre-build validations failed"
+            exit 1
+          fi
 
       - name: Run Security Scans
         run: |

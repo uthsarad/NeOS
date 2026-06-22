@@ -4,22 +4,12 @@ Description=NeOS Autoupdate Service
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/neos-autoupdate.sh
-# Sentinel: Hardened systemd sandboxing
-ProtectSystem=full
-NoNewPrivileges=yes
-PrivateTmp=yes
 ProtectHome=yes
-ProtectKernelTunables=yes
-ProtectKernelModules=yes
-ProtectControlGroups=yes
+PrivateTmp=yes
 ProtectHostname=yes
 RestrictRealtime=yes
-RestrictNamespaces=yes
-MemoryDenyWriteExecute=yes
 LockPersonality=yes
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-DevicePolicy=closed
-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target

@@ -79,18 +79,15 @@ notify_users() {
     local icon="${3:-dialog-error}"
     local urgency="${4:-critical}"
 
-    # Sentinel: Strip single quotes from all variables to prevent command injection in su -c
-    err_msg="${err_msg//\'/}"
-    title="${title//\'/}"
-    icon="${icon//\'/}"
-    urgency="${urgency//\'/}"
-    if command -v loginctl >/dev/null 2>&1; then
-        while read -r uid user_name _; do
-            # Run notify-send as the user. Requires DBUS_SESSION_BUS_ADDRESS which is usually set by systemd.
-            # Assuming wayland and x11 environments where DISPLAY and WAYLAND_DISPLAY might be set
-            su - "$user_name" -c "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus notify-send '$title' '$err_msg' --icon='$icon' --urgency='$urgency'" || true
-        done < <(loginctl list-users --no-legend)
+    if ! command -v loginctl >/dev/null 2>&1 || ! command -v notify-send >/dev/null 2>&1; then
+        return 0
     fi
+
+    while read -r uid user_name _; do
+        sudo -u "$user_name" \
+            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+            notify-send -- "$title" "$err_msg" --icon="$icon" --urgency="$urgency" || true
+    done < <(loginctl list-users --no-legend)
 }
 
 check_root() {

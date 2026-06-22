@@ -2,19 +2,22 @@
 # Installer launcher for NeOS installation media
 
 if pgrep -x calamares >/dev/null 2>&1; then
-    kdialog --msgbox "The installer is already running." || true
+    kdialog --msgbox "The installer is already running." 2>/dev/null || \
+        echo "The installer is already running."
     exit 0
 fi
 
 if command -v kdialog >/dev/null 2>&1; then
-    kdialog --icon calamares --title "Install NeOS" --passivepopup "Starting the NeOS installer." 5 || true
+    kdialog --icon calamares --title "Install NeOS" \
+        --passivepopup "Starting the NeOS installer..." 5 2>/dev/null || true
 fi
 
-# Allow root to connect to XWayland
 if command -v xhost >/dev/null 2>&1; then
     xhost +SI:localuser:root >/dev/null 2>&1 || true
 fi
 
-# Force XWayland platform since Wayland native root windows are blocked
-sudo -E env QT_QPA_PLATFORM=xcb DISPLAY="${DISPLAY:-:0}" calamares
-
+if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
+    sudo -E env QT_QPA_PLATFORM=xcb DISPLAY="${DISPLAY:-:0}" calamares
+else
+    sudo -E env DISPLAY="${DISPLAY:-:0}" calamares
+fi

@@ -98,7 +98,6 @@ iptables
 polkit
 libglvnd
 qt6-multimedia-ffmpeg
-
 qt6-svg
 qt5-svg
 breeze-icons
@@ -109,3 +108,12 @@ xorg-xhost
 kdialog
 kde-cli-tools
 python-pyqt6
+man-db
+man-pages
+firefox
+power-profiles-daemon
+ufw
+which
+less
+reflector
+bash-completion

@@ -10,10 +10,10 @@ windowCentered:         true
 strings:
     productName:         NeOS
     shortProductName:    NeOS
-    productVersion:      2026.04
-    shortProductVersion: 2026.04
-    versionedName:       NeOS 2026.04
-    shortVersionedName:  NeOS 2026.04
+    productVersion:      2026.06
+    shortProductVersion: 2026.06
+    versionedName:       NeOS 2026.06
+    shortVersionedName:  NeOS 2026.06
     bootloaderEntryName: NeOS
     # Sentinel: [Security] Commented out external URLs to prevent Calamares from launching a web browser as root.
     # productUrl:          https://github.com/uthsarad/NeOS

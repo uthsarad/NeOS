@@ -6,9 +6,12 @@ PermitRootLogin no
 # Allow password authentication (users must set password first)
 PasswordAuthentication yes
 # Standard security
-ChallengeResponseAuthentication no
+KbdInteractiveAuthentication no
 UsePAM yes
 X11Forwarding no
+MaxAuthTries 3
+ClientAliveInterval 300
+ClientAliveCountMax 2
 PrintMotd no
 # Allow sftp using internal-sftp (safer than hardcoded path)
 Subsystem sftp internal-sftp

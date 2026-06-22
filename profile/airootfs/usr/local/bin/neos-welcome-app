@@ -2,9 +2,11 @@
 import sys
 import os
 import subprocess
-from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
-                             QPushButton, QLabel)
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+                             QPushButton, QLabel, QGraphicsDropShadowEffect)
+from PyQt6.QtCore import Qt, QSize
+from PyQt6.QtGui import QColor, QFont, QLinearGradient, QPalette, QIcon
+
 
 class NeosWelcome(QWidget):
     def __init__(self):
@@ -13,87 +15,125 @@ class NeosWelcome(QWidget):
 
     def initUI(self):
         self.setWindowTitle('Welcome to NeOS')
-        self.setFixedSize(650, 450)
+        self.setFixedSize(750, 520)
         self.setStyleSheet("""
-            QWidget {
-                background-color: #11111b;
-                color: #cdd6f4;
-                font-family: 'Inter', sans-serif;
+            QWidget#main {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 #0f0f1a, stop:0.5 #141428, stop:1 #0f0f1a);
             }
             QLabel#title {
-                font-size: 36px;
+                font-size: 42px;
                 font-weight: 900;
-                color: #cba6f7;
-                margin-top: 30px;
+                color: #ffffff;
+                letter-spacing: 2px;
             }
             QLabel#subtitle {
-                font-size: 16px;
-                color: #a6adc8;
-                margin-bottom: 40px;
+                font-size: 15px;
+                color: #8b8fa3;
+                margin-bottom: 10px;
+            }
+            QLabel#version {
+                font-size: 12px;
+                color: #4a4e69;
+                margin-bottom: 30px;
+            }
+            QLabel#features {
+                font-size: 13px;
+                color: #a0a4b8;
+                line-height: 1.6;
+                margin-bottom: 20px;
             }
             QPushButton {
-                background-color: #1e1e2e;
-                border: 2px solid #585b70;
-                border-radius: 12px;
-                padding: 15px 40px;
-                font-size: 18px;
+                border-radius: 10px;
+                padding: 14px 36px;
+                font-size: 16px;
                 font-weight: bold;
-                color: #cdd6f4;
+                min-width: 200px;
             }
-            QPushButton:hover {
-                background-color: #313244;
-                border: 2px solid #cba6f7;
-                color: #cba6f7;
+            QPushButton#try_btn {
+                background-color: #1a1a2e;
+                border: 1px solid #2a2a4a;
+                color: #c0c4d8;
             }
-            QPushButton#primary {
-                background-color: #cba6f7;
-                border: 2px solid #cba6f7;
-                color: #11111b;
+            QPushButton#try_btn:hover {
+                background-color: #252545;
+                border: 1px solid #0078D4;
+                color: #ffffff;
             }
-            QPushButton#primary:hover {
-                background-color: #b4befe;
-                border: 2px solid #b4befe;
+            QPushButton#install_btn {
+                background-color: #0078D4;
+                border: none;
+                color: #ffffff;
+            }
+            QPushButton#install_btn:hover {
+                background-color: #1a8ae6;
             }
         """)
+        self.setObjectName('main')
 
         layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setContentsMargins(50, 40, 50, 40)
 
-        title = QLabel('Welcome to NeOS')
+        title = QLabel('NeOS')
         title.setObjectName('title')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        subtitle = QLabel('Hyper-optimized. Blazingly fast. Unapologetically elite.')
+
+        subtitle = QLabel('Arch Linux, refined for everyone.')
         subtitle.setObjectName('subtitle')
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        btn_layout = QHBoxLayout()
-        btn_layout.setSpacing(30)
+        version = QLabel('KDE Plasma 6  |  Btrfs Snapshots  |  Rolling Release')
+        version.setObjectName('version')
+        version.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        try_btn = QPushButton('Try Live Environment')
+        features = QLabel(
+            'Snapshot-gated stability  •  Automatic driver detection\n'
+            'Hardened security defaults  •  ZRAM-optimized performance\n'
+            'Pre-configured for Windows switchers'
+        )
+        features.setObjectName('features')
+        features.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(20)
+
+        try_btn = QPushButton('Explore Live')
+        try_btn.setObjectName('try_btn')
         try_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         try_btn.clicked.connect(self.close)
 
         install_btn = QPushButton('Install NeOS')
-        install_btn.setObjectName('primary')
+        install_btn.setObjectName('install_btn')
         install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         install_btn.clicked.connect(self.run_installer)
+
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(20)
+        shadow.setColor(QColor(0, 120, 212, 100))
+        shadow.setOffset(0, 4)
+        install_btn.setGraphicsEffect(shadow)
 
         btn_layout.addWidget(try_btn)
         btn_layout.addWidget(install_btn)
         btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addStretch(1)
+        layout.addStretch(2)
         layout.addWidget(title)
+        layout.addSpacing(8)
         layout.addWidget(subtitle)
+        layout.addWidget(version)
+        layout.addSpacing(20)
+        layout.addWidget(features)
+        layout.addSpacing(10)
         layout.addLayout(btn_layout)
-        layout.addStretch(1)
+        layout.addStretch(2)
 
         self.setLayout(layout)
 
     def run_installer(self):
         subprocess.Popen(['/usr/local/bin/neos-welcome'])
         self.close()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
