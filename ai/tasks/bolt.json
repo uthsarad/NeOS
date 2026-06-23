@@ -18,7 +18,7 @@
     {
       "description": "Monitor startup time overhead after implementing systemd strict sandboxing in neos-autoupdate.service and neos-liveuser-setup.service.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

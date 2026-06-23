@@ -5,6 +5,7 @@ Description=NeOS Liveuser Setup
 # Bolt: Monitor startup time overhead
 # Palette: Ensure journal logs are clear
 Type=oneshot
+Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-liveuser-setup
 # Sentinel: Hardened systemd sandboxing
 ProtectSystem=strict
