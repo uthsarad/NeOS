@@ -1,14 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-# Bolt: Performance optimizations deferred during strategic pause.
-# Sentinel: [task] Verify that the trap command does not inadvertently mask script exit codes. Ensure that evaluating $0 or other variables within the trap does not introduce arbitrary command execution risks if manipulated by an attacker.
-# Bolt: Logging mechanism is optimized and avoids subshells, utilizing native variables like $LINENO.
-# ⚡ Bolt: Codebase pre-optimized. Applied minor token nudge as requested.
-# Palette: [task] Ensure the format of the logged error message is clear, searchable in the system journal, and accurately represents a critical script failure to aid developers and administrators.
-# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
 
@@ -16,41 +10,33 @@ _error_handler() {
     local err=$1
     local line=$2
     local cmd="${BASH_COMMAND//[^[:print:]]/}"
-    # Palette: Ensure logged error messages are clear and contain actionable steps for users. Use structural visual cues in terminal output for critical failures.
-    # Bolt: Ensure trap commands and error logging minimize subshell overhead. Prefer native bash variables over external process calls in error paths.
-    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 CRITICAL ERROR: %s\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 What went wrong:\e[0m\n  Command: \"%s\"\n  Failed at line: %s\n  Exit code: %s\n\n\e[1m\e[36m🔧 How to fix:\e[0m\n  1. Review system journal: \e[1mjournalctl -t neos-%s\e[0m\n  2. Check system state and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$line" "$err" "$SCRIPT_NAME" >&2 || true
-    logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
+    logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\"." || true
     exit "$err"
 }
 
-# Sentinel: Verify that trap commands safely handle variable expansion without introducing command injection risks. Ensure TOCTOU vulnerabilities are not introduced during file creation or logging.
 trap '_error_handler $? $LINENO' ERR
 
-# Create the liveuser if it doesn't exist
 if ! id "liveuser" &>/dev/null; then
-    echo "👤 Creating liveuser..."
-    # Bolt: Use native bash regex for username validation if necessary, though liveuser is constant.
     useradd -m -g users -G wheel,video,audio,storage,power -s /bin/zsh liveuser
-    passwd -d liveuser # No password for liveuser
+    passwd -d liveuser
 fi
 
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
 chmod 0440 /etc/sudoers.d/zz-live-wheel
 
-# Elite GUI Optimizations for Live Session
 LIVE_USER_HOME="/home/liveuser"
 AUTOSTART_DIR="$LIVE_USER_HOME/.config/autostart"
 
 if [ -d "$LIVE_USER_HOME" ]; then
-    echo "Preparing the NeOS installer session..."
     mkdir -p "$AUTOSTART_DIR"
-
-    # Ensure Desktop directory exists
     mkdir -p "$LIVE_USER_HOME/Desktop"
 
-    # Make the welcome icon executable on the desktop if it exists
     if [ -f "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ]; then
         chmod +x "$LIVE_USER_HOME/Desktop/welcome-neos.desktop"
+        # Mark as trusted for KDE Plasma so it doesn't show "untrusted" warning
+        if command -v kwriteconfig6 >/dev/null 2>&1; then
+            sudo -u liveuser kwriteconfig6 --file "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" --group "Desktop Entry" --key "X-KDE-SubstituteUID" "false" 2>/dev/null || true
+        fi
     fi
 
     chown -R liveuser:users "$LIVE_USER_HOME"
