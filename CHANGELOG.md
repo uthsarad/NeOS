@@ -8,12 +8,18 @@ All notable changes to this project will be documented in this file.
 - **Critical**: Calamares now starts. The `alci-calamares` package (last built Feb 2025) links the removed `libyaml-cpp.so.0.8` and fails on current Arch (yaml-cpp 0.9) with exit 127. Replaced it with `calamares-garuda` from the Garuda repo — an actively-rebuilt Calamares that tracks current Arch libraries, provides `calamares`, and pulls no `qt6-webengine` (no ISO size impact). NeOS continues to supply its own `/etc/calamares` settings, modules, and branding.
 - **Critical**: "Install NeOS" no longer fails silently. On the live Wayland session the launcher hardcoded `DISPLAY=:0` (often wrong under XWayland), did not pass `XAUTHORITY`, and discarded all errors — so clicking Install showed only a "Starting…" popup and then nothing. The launcher now uses the session's real `DISPLAY`/`XAUTHORITY`, verifies Calamares is present, and surfaces any startup failure via a dialog instead of failing silently. (This is what exposed the `libyaml-cpp` error above.)
 
-### Changed
-- Calamares is now sourced from the Garuda repo (`[garuda]`) instead of `alci_repo`. See the build `pacman.conf`.
 - **Critical**: ISO no longer exceeds the 2 GiB GitHub release limit, which was blocking automated releases since V158. Switched squashfs compression from `zstd -19` to `xz` with the x86 BCJ filter for a significantly better compression ratio (trades a slightly slower live-boot for fitting under the limit with comfortable margin).
+- Btrfs installs now create a snapper-compatible subvolume layout (`@`, `@home`, `@cache`, `@log`, `@.snapshots`). Previously no subvolumes were created, so snapshot/rollback of the root filesystem could not work despite being a headline feature. Added `modules/mount.conf`.
+- `users.conf` now actually grants the `network` and `lp` groups (the prior CHANGELOG claimed these but they were missing).
+
+### Added
+- Build-time installer verification (`tests/verify_iso_calamares_libs.sh`): after the airootfs is built the build chroots in and confirms every Calamares shared library resolves and `calamares --version` runs. This gates the build, so a broken installer (e.g. a soname break) fails CI instead of being released.
+- Smoke test now exercises the UEFI/OVMF boot path in addition to BIOS, uses more RAM, and fails on kernel panic / emergency-mode / root-mount errors.
 
 ### Changed
+- Calamares is now sourced from the Garuda repo (`[garuda]`) instead of `alci_repo`. See the build `pacman.conf`.
 - Excluded additional datacenter/server-only NIC and HBA firmware from the live image (qed, bnx2x, bnx2, dpaa2, cavium, cnn55xx) — hardware never present on desktops/laptops — to reclaim space in `linux-firmware`.
+- Post-install cleanup removes the dangling `neos-liveuser-setup.service` symlink and uninstalls the now-orphaned Calamares package from the installed system.
 
 ## [2026.06] - 2026-06-22
 
