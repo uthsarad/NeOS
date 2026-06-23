@@ -116,6 +116,7 @@ yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DI
 
 echo -e "${GREEN}Running ISO validation...${NC}"
 bash tests/verify_iso_grub.sh
+REQUIRE_ISO=1 bash tests/verify_iso_calamares_libs.sh
 bash tests/verify_iso_smoketest.sh
 
 echo -e "${GREEN}Build complete! ISO is in $OUT_DIR${NC}"

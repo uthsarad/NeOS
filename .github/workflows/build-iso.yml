@@ -248,6 +248,7 @@ jobs:
 
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_size.sh
+          REQUIRE_ISO=1 bash tests/verify_iso_calamares_libs.sh
           bash tests/verify_iso_smoketest.sh
 
       - name: Validate ISO Size

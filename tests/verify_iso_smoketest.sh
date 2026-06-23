@@ -42,30 +42,60 @@ for file in "${files[@]}"; do
     name="${file##*/}"
     echo "$name ($size bytes)"
 
-    # Boot test using QEMU
-    if command -v qemu-system-x86_64 >/dev/null 2>&1; then
-        echo "Starting QEMU boot test for $name..."
-        # Sentinel: Ensure QEMU runs with restricted privileges
-        # Bolt: Optimize QEMU parameters for faster execution
-        # Palette: Enhance console output readability for CI logs
+    if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
+        echo "⏭️  SKIPPED: qemu-system-x86_64 not found. Cannot perform boot test."
+        continue
+    fi
 
+    # Locate an OVMF firmware image so we can also exercise the UEFI/GRUB boot
+    # path (previously only the BIOS/syslinux path was ever tested).
+    OVMF=""
+    for f in \
+        /usr/share/edk2/x64/OVMF_CODE.4m.fd \
+        /usr/share/edk2/x64/OVMF.4m.fd \
+        /usr/share/edk2-ovmf/x64/OVMF_CODE.fd \
+        /usr/share/OVMF/OVMF_CODE.fd \
+        /usr/share/ovmf/x64/OVMF.fd; do
+        [[ -f "$f" ]] && OVMF="$f" && break
+    done
+
+    # Treat a kernel panic or systemd emergency/failure as a boot failure even if
+    # QEMU itself survives the timeout window.
+    boot_log_is_clean() {
+        ! grep -qiE 'kernel panic|---\[ end Kernel panic|Entering emergency mode|Failed to mount|Cannot open root device|VFS: Unable to mount root' "$1"
+    }
+
+    run_boot() {
+        local mode="$1"; shift
+        local log="qemu_boot_${mode}.log"
+        echo "Starting QEMU $mode boot test for $name..."
         set +e
-        timeout 60s qemu-system-x86_64 -nographic -m 1024 -cdrom "$file" -boot d > qemu_boot.log 2>&1
-        QEMU_EXIT=$?
+        timeout 90s qemu-system-x86_64 -nographic -m 2048 -no-reboot \
+            -cdrom "$file" -boot d "$@" > "$log" 2>&1
+        local exit_code=$?
         set -e
 
-        if [[ $QEMU_EXIT -eq 124 ]]; then
-            echo "✅ QEMU boot test passed (survived 60s timeout)."
-        elif [[ $QEMU_EXIT -eq 0 ]]; then
-            echo "✅ QEMU boot test passed (exited cleanly)."
-        else
-            echo "❌ QEMU boot test failed with exit code $QEMU_EXIT."
-            # Palette: Display QEMU log for debugging
-            tail -n 20 qemu_boot.log
+        if ! boot_log_is_clean "$log"; then
+            echo "❌ QEMU $mode boot test failed: boot error detected in log."
+            grep -iE 'kernel panic|emergency mode|Failed to mount|Unable to mount root' "$log" | head -n 5
             exit 1
         fi
+
+        if [[ $exit_code -eq 124 || $exit_code -eq 0 ]]; then
+            echo "✅ QEMU $mode boot test passed (no boot errors detected)."
+        else
+            echo "❌ QEMU $mode boot test failed with exit code $exit_code."
+            tail -n 20 "$log"
+            exit 1
+        fi
+    }
+
+    run_boot "bios"
+
+    if [[ -n "$OVMF" ]]; then
+        run_boot "uefi" -drive "if=pflash,format=raw,readonly=on,file=$OVMF"
     else
-        echo "⏭️  SKIPPED: qemu-system-x86_64 not found. Cannot perform boot test."
+        echo "⏭️  SKIPPED: no OVMF firmware found; UEFI boot path not tested."
     fi
 done
 
