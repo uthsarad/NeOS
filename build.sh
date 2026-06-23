@@ -70,6 +70,15 @@ else
     echo "Chaotic-AUR key already imported."
 fi
 
+# Setup Garuda signing key (signs calamares-garuda in the [garuda] repo)
+if ! pacman-key --list-keys 349BC7808577C592 >/dev/null 2>&1; then
+    echo "Importing Garuda signing key..."
+    pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
+    pacman-key --lsign-key 349BC7808577C592
+else
+    echo "Garuda key already imported."
+fi
+
 # ⚡ Bolt: Cache keyring package locally and only update if remote is newer
 CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
 if [ ! -f "$CHAOTIC_KEYRING_PKG" ]; then

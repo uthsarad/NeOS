@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [2026.06.23] - 2026-06-23
 
 ### Fixed
-- **Critical**: "Install NeOS" now actually launches Calamares. On the live Wayland session the launcher hardcoded `DISPLAY=:0` (often wrong under XWayland), did not pass `XAUTHORITY`, and discarded all errors — so clicking Install showed only a "Starting…" popup and then nothing. The launcher now uses the session's real `DISPLAY`/`XAUTHORITY`, verifies Calamares is present, and surfaces any startup failure via a dialog instead of failing silently.
+- **Critical**: Calamares now starts. The `alci-calamares` package (last built Feb 2025) links the removed `libyaml-cpp.so.0.8` and fails on current Arch (yaml-cpp 0.9) with exit 127. Replaced it with `calamares-garuda` from the Garuda repo — an actively-rebuilt Calamares that tracks current Arch libraries, provides `calamares`, and pulls no `qt6-webengine` (no ISO size impact). NeOS continues to supply its own `/etc/calamares` settings, modules, and branding.
+- **Critical**: "Install NeOS" no longer fails silently. On the live Wayland session the launcher hardcoded `DISPLAY=:0` (often wrong under XWayland), did not pass `XAUTHORITY`, and discarded all errors — so clicking Install showed only a "Starting…" popup and then nothing. The launcher now uses the session's real `DISPLAY`/`XAUTHORITY`, verifies Calamares is present, and surfaces any startup failure via a dialog instead of failing silently. (This is what exposed the `libyaml-cpp` error above.)
+
+### Changed
+- Calamares is now sourced from the Garuda repo (`[garuda]`) instead of `alci_repo`. See the build `pacman.conf`.
 - **Critical**: ISO no longer exceeds the 2 GiB GitHub release limit, which was blocking automated releases since V158. Switched squashfs compression from `zstd -19` to `xz` with the x86 BCJ filter for a significantly better compression ratio (trades a slightly slower live-boot for fitting under the limit with comfortable margin).
 
 ### Changed
