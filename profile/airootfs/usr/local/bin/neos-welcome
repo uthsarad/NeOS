@@ -1,5 +1,20 @@
 #!/bin/bash
-# Installer launcher for NeOS installation media
+# Installer launcher for NeOS installation media.
+#
+# Launches Calamares as root on top of the live user's (X)Wayland session.
+# The live session is KDE Plasma on Wayland, so Calamares runs through
+# XWayland (QT_QPA_PLATFORM=xcb). Any failure is surfaced to the user via
+# kdialog instead of failing silently.
+
+LOG="${TMPDIR:-/tmp}/neos-installer.log"
+
+notify_error() {
+    local msg="$1"
+    if command -v kdialog >/dev/null 2>&1; then
+        kdialog --title "Install NeOS" --error "$msg" 2>/dev/null || true
+    fi
+    printf '%s\n' "$msg" >&2
+}
 
 if pgrep -x calamares >/dev/null 2>&1; then
     kdialog --msgbox "The installer is already running." 2>/dev/null || \
@@ -7,17 +22,37 @@ if pgrep -x calamares >/dev/null 2>&1; then
     exit 0
 fi
 
-if command -v kdialog >/dev/null 2>&1; then
-    kdialog --icon calamares --title "Install NeOS" \
-        --passivepopup "Starting the NeOS installer..." 5 2>/dev/null || true
+if ! command -v calamares >/dev/null 2>&1; then
+    notify_error "Calamares is not installed on this image. Cannot start the installer."
+    exit 1
 fi
 
+# Grant root access to the running (X)Wayland display.
 if command -v xhost >/dev/null 2>&1; then
     xhost +SI:localuser:root >/dev/null 2>&1 || true
 fi
 
-if [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
-    sudo -E env QT_QPA_PLATFORM=xcb DISPLAY="${DISPLAY:-:0}" calamares
-else
-    sudo -E env DISPLAY="${DISPLAY:-:0}" calamares
+# Use the live session's real display/auth rather than guessing :0.
+DISPLAY_TO_USE="${DISPLAY:-:0}"
+XAUTH_TO_USE="${XAUTHORITY:-$HOME/.Xauthority}"
+
+if command -v kdialog >/dev/null 2>&1; then
+    kdialog --icon calamares --title "Install NeOS" \
+        --passivepopup "Starting the NeOS installer..." 4 2>/dev/null || true
+fi
+
+# Launch Calamares as root via XWayland, capturing output so a failed start
+# is visible to the user instead of silently doing nothing.
+sudo --preserve-env=DISPLAY,XAUTHORITY \
+    env QT_QPA_PLATFORM=xcb \
+        DISPLAY="$DISPLAY_TO_USE" \
+        XAUTHORITY="$XAUTH_TO_USE" \
+        calamares >"$LOG" 2>&1
+status=$?
+
+if [ "$status" -ne 0 ]; then
+    notify_error "The installer could not start (exit code $status).
+
+$(tail -n 15 "$LOG" 2>/dev/null)"
+    exit "$status"
 fi
