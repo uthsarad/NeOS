@@ -28,6 +28,32 @@ else
     FAIL=1
 fi
 
+# Validate the sourcefs VALUE. Calamares unpackfs validates sourcefs against
+# ["file"] + /proc/filesystems. "directory" is NOT valid and fails at the END
+# of the install with "Bad unpackfs configuration ... not supported by your
+# current kernel". Only "squashfs", "erofs", or "file" are meaningful here.
+SOURCEFS_VALUE=$(grep -oP 'sourcefs:\s*"?\K[A-Za-z0-9]+' "$UNPACKFS_CONF" | head -1)
+case "$SOURCEFS_VALUE" in
+    squashfs|erofs|file)
+        echo "✅ sourcefs value '$SOURCEFS_VALUE' is valid"
+        ;;
+    *)
+        echo "❌ sourcefs value '$SOURCEFS_VALUE' is INVALID (must be squashfs/erofs/file, NOT 'directory')"
+        FAIL=1
+        ;;
+esac
+
+# When sourcefs is squashfs/erofs, source must point at the image FILE
+# (loop-mounted), not the already-mounted /run/archiso/airootfs directory.
+if [[ "$SOURCEFS_VALUE" == "squashfs" || "$SOURCEFS_VALUE" == "erofs" ]]; then
+    if grep -qE 'source:\s*"[^"]*\.(sfs|erofs)"' "$UNPACKFS_CONF"; then
+        echo "✅ source points at an image file"
+    else
+        echo "❌ sourcefs is '$SOURCEFS_VALUE' but source is not an image file (.sfs/.erofs)"
+        FAIL=1
+    fi
+fi
+
 # Check for zz-live-wheel exclusion
 if grep -q "etc/sudoers.d/zz-live-wheel" "$UNPACKFS_CONF"; then
     echo "✅ etc/sudoers.d/zz-live-wheel exclusion found"
