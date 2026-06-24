@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Terminal
+GenericName=Command Line
+Comment=Open a terminal to run commands
+Exec=konsole
+Icon=utilities-terminal
+Terminal=false
+Type=Application
+Categories=System;TerminalEmulator;
+StartupNotify=true

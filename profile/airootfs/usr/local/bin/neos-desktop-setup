@@ -8,10 +8,12 @@ if [[ ! -f "$HOME/.neos_polished" ]]; then
         plasma-apply-wallpaperimage /usr/share/backgrounds/neos-wallpaper.png 2>/dev/null || true
     fi
 
-    # Ensure welcome icon is executable on desktop
-    if [[ -f "$HOME/Desktop/welcome-neos.desktop" ]]; then
-        chmod +x "$HOME/Desktop/welcome-neos.desktop"
-    fi
+    # Ensure desktop launchers are executable/trusted on desktop
+    for launcher in welcome-neos.desktop neos-terminal.desktop; do
+        if [[ -f "$HOME/Desktop/$launcher" ]]; then
+            chmod +x "$HOME/Desktop/$launcher"
+        fi
+    done
 
     # Create user directories
     xdg-user-dirs-update 2>/dev/null || true
