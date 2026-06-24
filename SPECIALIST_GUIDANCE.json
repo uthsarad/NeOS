@@ -1,11 +1,11 @@
 {
   "Bolt": {
-    "focus": "Baseline initialization. No pending tasks."
+    "focus": "Baseline initialization. No pending tasks. Maintain current performance optimizations."
   },
   "Palette": {
-    "focus": "Execute the pending task: Ensure journal logs are clear for the restricted services (neos-autoupdate.service, neos-liveuser-setup.service) to prevent debugging UX issues due to missing permissions."
+    "focus": "Execute the pending task: Ensure journal logs are clear for the restricted services (neos-autoupdate.service, neos-liveuser-setup.service) to prevent debugging UX issues due to missing permissions. Ensure validation debt is cleared."
   },
   "Sentinel": {
-    "focus": "Execute the pending task: Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure no critical privileges are unnecessarily granted. Ensure ReadWritePaths are strictly minimal."
+    "focus": "Execute the pending task: Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure no critical privileges are unnecessarily granted. Ensure ReadWritePaths are strictly minimal. Prioritize this to unblock future features."
   }
 }
