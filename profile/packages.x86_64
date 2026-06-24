@@ -18,6 +18,8 @@ python
 
 # Desktop Environment - KDE Plasma 6
 plasma-desktop
+plasma-x11-session
+xorg-server
 plasma-pa
 plasma-nm
 plasma-systemmonitor
