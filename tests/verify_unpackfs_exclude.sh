@@ -19,6 +19,15 @@ else
     FAIL=1
 fi
 
+# Check for required 'sourcefs' key — without it Calamares unpackfs/main.py
+# raises a KeyError and the install fails with "main.py ... raised an exception"
+if grep -q "sourcefs:" "$UNPACKFS_CONF"; then
+    echo "✅ 'sourcefs:' key found"
+else
+    echo "❌ 'sourcefs:' key NOT found (unpackfs job will raise an exception)"
+    FAIL=1
+fi
+
 # Check for zz-live-wheel exclusion
 if grep -q "etc/sudoers.d/zz-live-wheel" "$UNPACKFS_CONF"; then
     echo "✅ etc/sudoers.d/zz-live-wheel exclusion found"
