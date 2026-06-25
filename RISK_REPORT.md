@@ -1,18 +1,17 @@
 # Risk & Priority Report
 
 ## Current Risk Assessment
-The system is currently carrying significant validation debt. The strict systemd sandboxing for `neos-autoupdate.service` and `neos-liveuser-setup.service` was implemented but still lacks specialist sign-off from Sentinel and Palette.
+The overall project is accumulating validation debt. Strict systemd sandboxing was implemented for `neos-autoupdate.service` and `neos-liveuser-setup.service`, but specialist reviews (Sentinel for security auditing, Palette for logging UX) remain pending.
 
 **Identified Risks:**
-1. **Validation Debt:** Palette and Sentinel have pending validation tasks in their task manifests.
-2. **Regression Blindspots:** Unverified strict sandboxing directives might silently break live-user initialization or autoupdate capabilities under specific edge cases.
-3. **Feature Creep:** Pushing new functionality before the active hardening phase is fully verified risks conflating unrelated bugs and reducing overall stability.
+1. **Validation Debt:** The core service hardening has not been fully verified by specialists.
+2. **Regression Blindspots:** Unverified strict systemd directives (`ProtectSystem=strict`, `ProtectHome=yes`) may silently break live-user initialization or system updates if `ReadWritePaths` are misconfigured.
+3. **Feature Creep:** Pushing new roadmap features (e.g., ISO build enhancements) before validating active hardening introduces instability.
 
 ## Priority Selection
 **No-build day (strategic pause)**
 
-The strategic priority is to freeze the implementation state, allowing the specialist team to fully audit the security posture and logging UX of the newly sandboxed services.
-
 ## Actionable Mitigation
-- **Architect:** Must observe a strict strategic pause and refrain from any code modifications.
-- **Specialists:** Must execute and clear their pending validation tasks regarding systemd sandboxing.
+- **Architect:** Must observe a strict strategic pause (zero file modifications).
+- **Specialists:** Must execute their pending validation tasks immediately.
+- **Governance:** We will resume Phase 1 roadmap implementation only after the validation debt queue is fully cleared.
