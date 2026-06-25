@@ -1,8 +1,9 @@
 {
   "status": "Strategic Pause",
+  "priority": "No-build day",
   "forbidden_files": [
     "**/*"
   ],
   "allowed_files": [],
-  "directive": "Execute a continued Strategic Pause. Do not modify any files. Allow specialist personas to clear their pending task queues regarding systemd sandboxing validation."
+  "directive": "Execute a strict Strategic Pause. Do not modify any codebase files. Allow specialist personas to clear their pending validation tasks regarding systemd sandboxing."
 }
