@@ -36,17 +36,27 @@ fi
 DISPLAY_TO_USE="${DISPLAY:-:0}"
 XAUTH_TO_USE="${XAUTHORITY:-$HOME/.Xauthority}"
 
+# In a VM without working hardware OpenGL, Calamares (Qt/Qt Quick) would render
+# black just like the desktop does. Calamares runs as root in its own process
+# tree, so it does NOT inherit the Plasma session's software-GL environment —
+# set it explicitly here when virtualized. Bare metal keeps hardware GL.
+GL_ENV=()
+if [ "$(systemd-detect-virt 2>/dev/null || echo none)" != "none" ]; then
+    GL_ENV=(LIBGL_ALWAYS_SOFTWARE=1 QT_QUICK_BACKEND=software)
+fi
+
 if command -v kdialog >/dev/null 2>&1; then
     kdialog --icon calamares --title "Install NeOS" \
         --passivepopup "Starting the NeOS installer..." 4 2>/dev/null || true
 fi
 
-# Launch Calamares as root via XWayland, capturing output so a failed start
-# is visible to the user instead of silently doing nothing.
+# Launch Calamares as root on the live session's X display, capturing output so
+# a failed start is visible to the user instead of silently doing nothing.
 sudo --preserve-env=DISPLAY,XAUTHORITY \
     env QT_QPA_PLATFORM=xcb \
         DISPLAY="$DISPLAY_TO_USE" \
         XAUTHORITY="$XAUTH_TO_USE" \
+        "${GL_ENV[@]}" \
         calamares >"$LOG" 2>&1
 status=$?
 
