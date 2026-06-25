@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=NeOS
+Description=NeOS boot splash — centered NeOS logo on a dark gradient
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/neos
+ScriptFile=/usr/share/plymouth/themes/neos/neos.script
