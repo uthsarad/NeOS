@@ -1,0 +1,14 @@
+[Unit]
+Description=NeOS VM graphics fallback (software OpenGL when no hardware GL)
+# Must apply before the display manager starts so the login session inherits
+# the environment. Skipped automatically on bare metal.
+Before=display-manager.service
+ConditionVirtualization=vm
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/neos-vm-graphics
+
+[Install]
+WantedBy=multi-user.target

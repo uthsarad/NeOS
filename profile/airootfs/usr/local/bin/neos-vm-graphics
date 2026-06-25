@@ -1,0 +1,29 @@
+#!/bin/bash
+# neos-vm-graphics — guarantee a visible desktop inside virtual machines.
+#
+# KDE Plasma 6 (SDDM greeter + the KWin compositor) needs OpenGL to draw. In
+# many VMs hardware GL is unavailable — e.g. VMware without "Accelerate 3D
+# graphics", or guests with no 3D passthrough — so the session comes up as a
+# black screen with only a mouse cursor (X11 is running, nothing renders on it).
+#
+# When we are in a VM, force Mesa's llvmpipe software renderer for user sessions
+# by adding LIBGL_ALWAYS_SOFTWARE=1 to /etc/environment (read by pam_env at
+# login, so the graphical session inherits it). On bare metal we do nothing and
+# hardware OpenGL is used as normal. The login screen already uses the software
+# Qt Quick backend via the static sddm.service drop-in.
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+virt="$(systemd-detect-virt 2>/dev/null || echo none)"
+if [ "$virt" = "none" ]; then
+    exit 0   # bare metal: keep hardware OpenGL
+fi
+
+if ! grep -q '^LIBGL_ALWAYS_SOFTWARE=' /etc/environment 2>/dev/null; then
+    {
+        echo "# NeOS: VM detected ($virt) — force software OpenGL so Plasma renders."
+        echo "# Remove these two lines if you enable real 3D acceleration in the VM."
+        echo "LIBGL_ALWAYS_SOFTWARE=1"
+    } >> /etc/environment
+fi

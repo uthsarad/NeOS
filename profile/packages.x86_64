@@ -84,6 +84,9 @@ linux-lts-headers
 dkms
 broadcom-wl-dkms
 virtualbox-guest-utils
+open-vm-tools
+qemu-guest-agent
+spice-vdagent
 sof-firmware
 alsa-firmware
 alsa-utils
