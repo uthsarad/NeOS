@@ -42,5 +42,24 @@ if [ -d "$LIVE_USER_HOME" ]; then
         fi
     fi
 
+    # In a VM there is no usable GPU. Plasma on Wayland has NO uncomposited mode,
+    # so KWin tries to composite through llvmpipe and the whole session locks up:
+    # the desktop paints once but input is never serviced — buttons appear dead.
+    # Force the live VM session onto X11 with compositing OFF so KWin runs as a
+    # plain, GL-free window manager: snappy and fully clickable on software
+    # rendering. Done deterministically here (root, before display-manager) rather
+    # than via the plasma env-script, which races KWin startup. Bare metal is left
+    # untouched — Wayland and hardware compositing stay available there.
+    if [ "$(systemd-detect-virt 2>/dev/null || echo none)" != "none" ]; then
+        # Remove the Wayland session so neither autologin nor the SDDM greeter can
+        # land on it in a VM. The installed system is pacstrapped fresh, so this
+        # only affects the live environment.
+        rm -f /usr/share/wayland-sessions/plasma.desktop
+
+        mkdir -p "$LIVE_USER_HOME/.config"
+        printf '[Compositing]\nEnabled=false\n' > "$LIVE_USER_HOME/.config/kwinrc"
+        printf '[KDE]\nAnimationDurationFactor=0\n' > "$LIVE_USER_HOME/.config/kdeglobals"
+    fi
+
     chown -R liveuser:users "$LIVE_USER_HOME"
 fi
