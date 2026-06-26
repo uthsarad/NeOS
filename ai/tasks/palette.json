@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {
+      "description": "Baseline initialization",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.",
+      "target_file": "build.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Ensure journal logs are clear for the restricted services (neos-autoupdate.service, neos-liveuser-setup.service) to prevent debugging UX issues due to missing permissions.",
+      "target_file": "profile/airootfs/etc/systemd/system/*.service",
+      "status": "pending"
+    }
+  ]
+}

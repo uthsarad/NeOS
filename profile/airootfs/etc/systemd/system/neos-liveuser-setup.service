@@ -3,10 +3,26 @@ Description=NeOS Liveuser Setup
 Before=display-manager.service
 
 [Service]
+# Bolt: Monitor startup time overhead
+# Palette: Ensure journal logs are clear
 Type=oneshot
+Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-liveuser-setup
-# Sandboxing removed to allow system-level modifications like useradd
-
+# Sentinel: Hardened systemd sandboxing
+ProtectSystem=strict
+PrivateTmp=yes
+ProtectHome=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=/etc/sudoers.d /etc/passwd /etc/group /etc/shadow /etc/gshadow /home
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target

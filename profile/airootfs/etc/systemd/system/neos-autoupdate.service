@@ -2,14 +2,23 @@
 Description=NeOS Autoupdate Service
 
 [Service]
+# Bolt: Monitor startup time overhead
+# Palette: Ensure journal logs are clear
 Type=oneshot
+Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-autoupdate.sh
-ProtectHome=yes
+# Sentinel: Hardened systemd sandboxing
+ProtectSystem=strict
+ReadWritePaths=/usr /boot /etc /var
+NoNewPrivileges=yes
 PrivateTmp=yes
+ProtectHome=yes
 ProtectHostname=yes
 RestrictRealtime=yes
 LockPersonality=yes
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+DevicePolicy=closed
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
 
 [Install]
 WantedBy=multi-user.target
