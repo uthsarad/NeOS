@@ -19,16 +19,20 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else \
 W, H = 3840, 2160
 SW, SH = 640, 360  # render gradients small, upscale for perfect smoothness
 
-# Brand palette (deep navy base, brand blue + indigo/cyan accents)
+# Brand palette: deep navy base, NeOS brand blue meeting a "Neo Red" accent.
+# Blue (identity) lower-left, red (named after Neo Red) upper-right, with a
+# magenta transition where they blend — a clean, premium fintech-app look.
 BASE_TOP = (6, 9, 18)
-BASE_BOTTOM = (10, 16, 34)
+BASE_BOTTOM = (12, 14, 28)
 BLOBS = [
     # (cx, cy as fractions, radius fraction, color, strength)
-    (0.24, 0.74, 0.55, (31, 111, 214), 0.85),   # brand blue, lower-left
-    (0.82, 0.30, 0.50, (40, 70, 150), 0.55),    # indigo, upper-right
-    (0.62, 0.85, 0.40, (22, 140, 170), 0.35),   # subtle cyan, bottom
-    (0.50, 0.10, 0.45, (30, 50, 110), 0.40),    # cool top fill
+    (0.20, 0.78, 0.55, (31, 111, 214), 0.90),   # brand blue, lower-left
+    (0.84, 0.26, 0.52, (214, 46, 58), 0.78),    # Neo Red, upper-right
+    (0.55, 0.50, 0.42, (150, 42, 120), 0.30),   # magenta blend, center
+    (0.78, 0.80, 0.34, (190, 60, 70), 0.28),    # warm red glow, lower-right
+    (0.30, 0.16, 0.40, (30, 60, 130), 0.34),    # cool blue top fill
 ]
+MONO_GLOW = (235, 90, 95)  # Neo Red tinted "N" monogram
 
 
 def lerp(a, b, t):
@@ -72,7 +76,7 @@ md.line([(cx - s * 0.5, cy + s * 0.5), (cx - s * 0.5, cy - s * 0.5)], fill=70, w
 md.line([(cx - s * 0.5, cy - s * 0.5), (cx + s * 0.5, cy + s * 0.5)], fill=70, width=lw)
 md.line([(cx + s * 0.5, cy - s * 0.5), (cx + s * 0.5, cy + s * 0.5)], fill=70, width=lw)
 mono = mono.filter(ImageFilter.GaussianBlur(3))
-glow = Image.new("RGB", (W, H), (120, 170, 235))
+glow = Image.new("RGB", (W, H), MONO_GLOW)
 img = Image.composite(glow, img, mono.point(lambda v: int(v * 0.35)))
 
 # --- vignette to keep edges calm ---
