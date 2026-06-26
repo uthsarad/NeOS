@@ -1,0 +1,63 @@
+#!/bin/bash
+# neos-pacstrap — NeOS netinstall backend.
+#
+# Invoked by the Calamares 'pacstrap' step (shellprocess, dontChroot) with the
+# target root mount point as $1. Instead of cloning the live squashfs, it
+# bootstraps a fresh base system straight from the repos with pacstrap, so the
+# installed system is a clean install rather than a copy of the live medium.
+set -euo pipefail
+
+ROOT="${1:?usage: neos-pacstrap <target-root>}"
+PKGLIST="/etc/calamares/neos-packages.txt"
+OVERLAY="/etc/calamares/neos-overlay.txt"
+
+if [[ ! -d "$ROOT" ]]; then
+    echo "neos-pacstrap: target root '$ROOT' is not a mounted directory" >&2
+    exit 1
+fi
+if [[ ! -f "$PKGLIST" ]]; then
+    echo "neos-pacstrap: package list '$PKGLIST' is missing" >&2
+    exit 1
+fi
+
+# Build the package array (skip comments / blank lines).
+mapfile -t PKGS < <(grep -vE '^[[:space:]]*(#|$)' "$PKGLIST")
+if [[ ${#PKGS[@]} -eq 0 ]]; then
+    echo "neos-pacstrap: package list is empty" >&2
+    exit 1
+fi
+
+# Make sure the live host keyring is ready so signed packages from the NeOS /
+# chaotic-aur / garuda repos verify during the bootstrap.
+pacman-key --init
+pacman-key --populate archlinux chaotic 2>/dev/null || true
+
+# -K bootstraps a fresh, empty pacman keyring inside the new root (the modern
+# default for a clean install). pacstrap uses the live host's /etc/pacman.conf,
+# which already points at the NeOS mirrors.
+echo "neos-pacstrap: installing ${#PKGS[@]} packages into $ROOT ..."
+pacstrap -K "$ROOT" "${PKGS[@]}"
+
+# Carry the NeOS repository configuration onto the installed system, otherwise
+# the target would inherit only the stock Arch pacman.conf shipped by the
+# 'pacman' package and lose chaotic-aur / garuda.
+install -Dm644 /etc/pacman.conf "$ROOT/etc/pacman.conf"
+for ml in neos-mirrorlist chaotic-mirrorlist mirrorlist; do
+    if [[ -f "/etc/pacman.d/$ml" ]]; then
+        install -Dm644 "/etc/pacman.d/$ml" "$ROOT/etc/pacman.d/$ml"
+    fi
+done
+
+# Apply the NeOS overlay (branding, Plymouth theme, wallpaper, hardening,
+# custom services …) onto the freshly pacstrapped target. pacstrap only lays
+# down packages, so without this the install would be vanilla Arch. The
+# manifest lists overlay files relative to /, with the live-/installer-only
+# ones already filtered out at build time.
+if [[ -f "$OVERLAY" ]]; then
+    echo "neos-pacstrap: applying NeOS overlay onto $ROOT ..."
+    rsync -a --files-from="$OVERLAY" / "$ROOT/"
+else
+    echo "neos-pacstrap: WARNING — overlay manifest '$OVERLAY' missing; installed system will lack NeOS branding" >&2
+fi
+
+echo "neos-pacstrap: base system installed into $ROOT"
