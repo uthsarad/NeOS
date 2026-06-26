@@ -117,14 +117,20 @@ else
     exit 1
 fi
 
-# Sentinel: Check for SigLevel = Required DatabaseRequired in airootfs/etc/pacman.conf
+# The installed-system pacman.conf must require signed PACKAGES but keep the
+# database signature OPTIONAL. Arch's official repos (core/extra/multilib) do
+# not sign their databases, so 'DatabaseRequired' makes pacman 404 on
+# core.db.sig and every install (pacstrap) fails to sync databases.
 PACMAN_CONF="profile/airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
 
-if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
-    echo "✅ SigLevel = Required DatabaseRequired found"
+if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseOptional" "$PACMAN_CONF"; then
+    echo "✅ SigLevel = Required DatabaseOptional found"
+elif grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
+    echo "❌ SigLevel = Required DatabaseRequired in $PACMAN_CONF — official repos do not sign databases, this breaks installs. Use DatabaseOptional."
+    exit 1
 else
-    echo "❌ SigLevel = Required DatabaseRequired NOT found in $PACMAN_CONF"
+    echo "❌ SigLevel must be 'Required DatabaseOptional' in $PACMAN_CONF (require signed packages, optional db sig)"
     exit 1
 fi
 
