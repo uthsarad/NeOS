@@ -8,6 +8,9 @@ ConditionVirtualization=vm
 [Service]
 Type=oneshot
 ProtectSystem=strict
+# The script appends LIBGL_ALWAYS_SOFTWARE to /etc/environment, so /etc must be
+# writable; ProtectSystem=strict alone makes it read-only and the write fails.
+ReadWritePaths=/etc
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes

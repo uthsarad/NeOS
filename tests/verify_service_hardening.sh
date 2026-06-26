@@ -13,6 +13,17 @@ verify_service() {
         return 0
     fi
 
+    # Exempt units that perform system-level account/setup work and therefore
+    # cannot run under ProtectSystem=strict / ProtectHome / NoNewPrivileges.
+    # neos-liveuser-setup runs `useradd -m` + `sudo -u` and must write /etc and
+    # /home; sandboxing it silently breaks live autologin (no user is created).
+    case "${SERVICE_FILE##*/}" in
+        neos-liveuser-setup.service)
+            echo "⏭️ Skipping $SERVICE_FILE (account-setup unit, must not be sandboxed)"
+            return 0
+            ;;
+    esac
+
     CONTENT=$(<"$SERVICE_FILE")
 
     # Check for ProtectSystem=strict

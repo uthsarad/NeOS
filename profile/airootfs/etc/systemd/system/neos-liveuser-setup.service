@@ -8,21 +8,12 @@ Before=display-manager.service
 Type=oneshot
 Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-liveuser-setup
-# Sentinel: Hardened systemd sandboxing
-ProtectSystem=strict
-PrivateTmp=yes
-ProtectHome=yes
-NoNewPrivileges=yes
-ProtectKernelTunables=yes
-ProtectKernelModules=yes
-ProtectControlGroups=yes
-ProtectHostname=yes
-RestrictRealtime=yes
-RestrictNamespaces=yes
-LockPersonality=yes
-RestrictAddressFamilies=AF_UNIX
-ReadWritePaths=/etc/sudoers.d /etc/passwd /etc/group /etc/shadow /etc/gshadow /home
-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
+# DO NOT sandbox this unit. Its whole job is system-level account creation:
+# `useradd -m` needs lock files in /etc and must create /home/liveuser, and
+# `sudo -u liveuser` needs new privileges. ProtectSystem=strict / ProtectHome=yes
+# / NoNewPrivileges make those fail, the script dies on `set -e`, liveuser is
+# never created, and SDDM drops to a manual greeter with no user (no autologin).
+# An upstream merge (bc64daa) re-added that sandboxing and broke the live boot.
 
 [Install]
 WantedBy=multi-user.target
