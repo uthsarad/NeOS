@@ -3,7 +3,7 @@
 ## Phase 1 — Product Alignment Check
 - **Product Vision:** Predictable rolling-release Arch-based OS with Windows-familiar UX.
 - **Alignment:** We are currently focused on system stability and core infrastructure hardening.
-- **Leverage:** The highest leverage problem is ensuring our strict systemd sandboxing does not cause regressions or UX degradation for live-user setup and autoupdate.
+- **Leverage:** The highest leverage problem is ensuring our strict systemd sandboxing does not cause regressions or UX degradation for live-user setup and autoupdate operations.
 
 ## Phase 2 — Technical Posture Review
 - **Stability:** The system has recently applied strict sandboxing.
