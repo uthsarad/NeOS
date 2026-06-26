@@ -4,6 +4,7 @@ linux-lts
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
+archlinux-keyring
 arch-install-scripts
 networkmanager
 iwd
