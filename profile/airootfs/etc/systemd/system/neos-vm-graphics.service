@@ -7,6 +7,7 @@ ConditionVirtualization=vm
 
 [Service]
 Type=oneshot
+ProtectSystem=strict
 RemainAfterExit=yes
 ExecStart=/usr/local/bin/neos-vm-graphics
 

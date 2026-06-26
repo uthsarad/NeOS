@@ -52,6 +52,7 @@ fi
 
 # Launch Calamares as root on the live session's X display, capturing output so
 # a failed start is visible to the user instead of silently doing nothing.
+# shellcheck disable=SC2024
 sudo --preserve-env=DISPLAY,XAUTHORITY \
     env QT_QPA_PLATFORM=xcb \
         DISPLAY="$DISPLAY_TO_USE" \
