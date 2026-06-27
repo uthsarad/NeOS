@@ -174,16 +174,17 @@ else
     exit 1
 fi
 
-# Check for Visual Focus Indicator on Button
-if [[ "$QML_CONTENT" == *"border.color: \"#3daee9\""* ]]; then
-    echo "✅ Visual focus indicator (blue border) found."
+# Check for Visual Focus Indicator on Button (Nations Trust Bank cyan #0096D5,
+# referenced via the presentation.cCyan brand property).
+if [[ "$QML_CONTENT" == *"border.color: presentation.cCyan"* ]]; then
+    echo "✅ Visual focus indicator (NTB cyan border) found."
 else
-    echo "❌ Visual focus indicator (blue border) missing!"
+    echo "❌ Visual focus indicator (NTB cyan border) missing!"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'border.color: \"#3daee9\"' to provide a clear visual indicator when the element has focus."
+    echo "   - Add 'border.color: presentation.cCyan' to provide a clear visual indicator when the element has focus."
     exit 1
 fi
 

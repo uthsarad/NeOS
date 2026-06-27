@@ -4,7 +4,7 @@ componentName:  neos
 welcomeStyleCalamares:   false
 welcomeExpandingLogo:    true
 windowResizable:         true
-windowSize:              900,580
+windowSize:              1010,680
 windowCentered:          true
 windowPlacement:         center
 
@@ -24,8 +24,9 @@ images:
 
 slideshow:               "show.qml"
 
+# Nations Trust Bank (NTB) brand palette: blue #0088CF / cyan #0096D5, magenta #EB008B.
 style:
-   sidebarBackground:    "#0f0f1a"
-   sidebarText:          "#c0c4d8"
+   sidebarBackground:    "#0b0e1a"
+   sidebarText:          "#aeb4c7"
    sidebarTextSelect:    "#FFFFFF"
-   sidebarTextHighlight: "#0078D4"
+   sidebarTextHighlight: "#0096D5"
