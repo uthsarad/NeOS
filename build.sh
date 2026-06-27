@@ -166,7 +166,7 @@ if command -v grub-mkfont >/dev/null 2>&1 && [ -n "$DEJAVU_TTF" ]; then
     grub-mkfont -s 18 -n "DejaVu Sans Regular 18" -o "$NEOS_PF2" "$DEJAVU_TTF"
 else
     echo -e "${YELLOW}WARNING: grub-mkfont or DejaVu TTF missing; trying a PF2 fallback.${NC}"
-    FALLBACK="$(ls /usr/share/grub/themes/breeze/*.pf2 /usr/share/grub/*.pf2 2>/dev/null | head -1 || true)"
+    FALLBACK="$(find /usr/share/grub -name '*.pf2' 2>/dev/null | head -1 || true)"
     if [ -n "$FALLBACK" ]; then
         cp "$FALLBACK" "$NEOS_PF2"
     else
