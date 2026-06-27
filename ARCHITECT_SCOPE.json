@@ -5,5 +5,5 @@
     "**/*"
   ],
   "allowed_files": [],
-  "directive": "Execute a strict Strategic Pause. Do not modify any codebase files. Allow specialist personas to clear their pending validation tasks regarding systemd sandboxing. This pause remains actively enforced."
+  "directive": "Execute a strict Strategic Pause. Do not modify any codebase files. Allow specialist personas to clear their pending validation tasks regarding systemd sandboxing. This pause remains actively enforced for this cycle."
 }
