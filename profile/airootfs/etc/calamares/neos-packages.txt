@@ -4,6 +4,8 @@ base
 linux-lts
 linux-firmware
 mkinitcpio
+archlinux-keyring
+haveged
 arch-install-scripts
 networkmanager
 iwd
@@ -89,6 +91,7 @@ breeze-grub
 syslinux
 os-prober
 mtools
+pv
 snapper
 parted
 zram-generator

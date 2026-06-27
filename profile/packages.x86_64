@@ -5,6 +5,7 @@ linux-firmware
 mkinitcpio
 mkinitcpio-archiso
 archlinux-keyring
+haveged
 arch-install-scripts
 networkmanager
 iwd
