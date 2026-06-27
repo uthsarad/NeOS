@@ -150,6 +150,30 @@ else
     exit 1
 fi
 
+# Generate the NeOS GRUB theme bitmap font (PF2) from DejaVu so the boot menu
+# renders in a real font rather than GRUB's built-in one. GRUB bitmap fonts are
+# one-size-per-file; the embedded name MUST match theme.txt ("DejaVu Sans Regular 18").
+# Done before the overlay manifest below so the .pf2 ships to installed disks.
+GRUB_THEME_DIR="$REPO_ROOT/$PROFILE_DIR/airootfs/usr/share/grub/themes/neos"
+NEOS_PF2="$GRUB_THEME_DIR/neos.pf2"
+DEJAVU_TTF=""
+for c in /usr/share/fonts/TTF/DejaVuSans.ttf \
+         /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf; do
+    [ -f "$c" ] && DEJAVU_TTF="$c" && break
+done
+if command -v grub-mkfont >/dev/null 2>&1 && [ -n "$DEJAVU_TTF" ]; then
+    echo "Generating GRUB theme font -> $NEOS_PF2"
+    grub-mkfont -s 18 -n "DejaVu Sans Regular 18" -o "$NEOS_PF2" "$DEJAVU_TTF"
+else
+    echo -e "${YELLOW}WARNING: grub-mkfont or DejaVu TTF missing; trying a PF2 fallback.${NC}"
+    FALLBACK="$(ls /usr/share/grub/themes/breeze/*.pf2 /usr/share/grub/*.pf2 2>/dev/null | head -1 || true)"
+    if [ -n "$FALLBACK" ]; then
+        cp "$FALLBACK" "$NEOS_PF2"
+    else
+        echo -e "${YELLOW}WARNING: no PF2 fallback found; GRUB will use its built-in font.${NC}"
+    fi
+fi
+
 # Generate the netinstall package list that Calamares pacstraps into the
 # target. It is derived from the live ISO package list (single source of
 # truth) minus packages that only make sense on the live medium itself:

@@ -1,7 +1,11 @@
 #!/bin/bash
 if [[ ! -f "$HOME/.neos_polished" ]]; then
-    # Set Breeze Dark theme
+    # Set Breeze Dark as the base look-and-feel
     plasma-apply-lookandfeel -a org.kde.breezedark.desktop 2>/dev/null || true
+
+    # Apply the NeOS (Nations Trust Bank) color scheme over it so the desktop
+    # matches the installer, login screen and boot splash (navy + NTB blue).
+    plasma-apply-colorscheme NeOS 2>/dev/null || true
 
     # Set wallpaper
     if [[ -f /usr/share/backgrounds/neos-wallpaper.png ]]; then

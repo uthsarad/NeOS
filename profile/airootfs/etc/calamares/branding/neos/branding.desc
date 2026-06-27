@@ -8,6 +8,10 @@ windowSize:              1010,680
 windowCentered:          true
 windowPlacement:         center
 
+# Traditional widget sidebar (progress) + bottom navigation buttons.
+sidebar:    widget
+navigation: widget
+
 strings:
     productName:         NeOS
     shortProductName:    NeOS
@@ -23,10 +27,20 @@ images:
     productWelcome:      "welcome.png"
 
 slideshow:               "show.qml"
+slideshowAPI:            2
 
 # Nations Trust Bank (NTB) brand palette: blue #0088CF / cyan #0096D5, magenta #EB008B.
+# NOTE: current Calamares uses the CAPITALISED Sidebar* keys; the old lowercase
+# sidebarBackground/sidebarTextHighlight names are ignored, so the previous theming
+# never applied. The current step gets an NTB-blue background with white text.
 style:
-   sidebarBackground:    "#0b0e1a"
-   sidebarText:          "#aeb4c7"
-   sidebarTextSelect:    "#FFFFFF"
-   sidebarTextHighlight: "#0096D5"
+   SidebarBackground:        "#0b0e1a"
+   SidebarText:              "#aeb4c7"
+   SidebarBackgroundCurrent: "#0088CF"
+   SidebarTextCurrent:       "#FFFFFF"
+
+# Let users upload installer logs for support (calamares "Upload" button).
+uploadServer:
+    type:      "fiche"
+    url:       "http://termbin.com:9999"
+    sizeLimit: -1

@@ -4,6 +4,7 @@ etc/modules-load.d/neos-vm.conf
 etc/os-release
 etc/plymouth/plymouthd.conf
 etc/sddm.conf.d/10-displayserver.conf
+etc/sddm.conf.d/20-theme.conf
 etc/skel/.bashrc
 etc/skel/Desktop/neos-terminal.desktop
 etc/snapper/configs/root
@@ -26,6 +27,9 @@ usr/local/bin/neos-desktop-setup
 usr/local/bin/neos-driver-manager
 usr/local/bin/neos-vm-graphics
 usr/share/backgrounds/neos-wallpaper.png
+usr/share/color-schemes/NeOS.colors
+usr/share/grub/themes/neos/background.png
+usr/share/grub/themes/neos/theme.txt
 usr/share/plymouth/themes/default.plymouth
 usr/share/plymouth/themes/neos/logo.png
 usr/share/plymouth/themes/neos/neos.plymouth
@@ -66,3 +70,7 @@ usr/share/plymouth/themes/neos/spinner-32.png
 usr/share/plymouth/themes/neos/spinner-33.png
 usr/share/plymouth/themes/neos/spinner-34.png
 usr/share/plymouth/themes/neos/spinner-35.png
+usr/share/sddm/themes/neos/Main.qml
+usr/share/sddm/themes/neos/metadata.desktop
+usr/share/sddm/themes/neos/preview.png
+usr/share/sddm/themes/neos/theme.conf
