@@ -1,7 +1,7 @@
 # Risk & Priority Report
 
 ## Current Risk Assessment
-The overall project is still accumulating validation debt. Strict systemd sandboxing was recently implemented for `neos-autoupdate.service` and `neos-liveuser-setup.service`, but specialist reviews (Sentinel for security auditing, Palette for logging UX) remain pending.
+The overall project is accumulating significant validation debt. Strict systemd sandboxing has been recently implemented for `neos-autoupdate.service` and `neos-liveuser-setup.service`, yet the specialist reviews (Sentinel for security auditing, Palette for logging UX) remain pending.
 
 **Identified Risks:**
 1. **Validation Debt:** The core service hardening has not been fully verified by specialists.

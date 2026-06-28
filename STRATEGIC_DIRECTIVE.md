@@ -2,11 +2,11 @@
 
 ## Phase 1 — Product Alignment Check
 - **Product Vision:** Predictable rolling-release Arch-based OS with Windows-familiar UX.
-- **Alignment:** We remain focused on system stability and core infrastructure hardening.
-- **Leverage:** The highest leverage priority is ensuring strict systemd sandboxing does not cause regressions or UX degradation for live-user setup and autoupdate operations.
+- **Alignment:** We remain firmly focused on system stability and core infrastructure hardening to ensure no regressions occur.
+- **Leverage:** The highest leverage priority is ensuring strict systemd sandboxing does not cause regressions or UX degradation for live-user setup and autoupdate operations. It is critical to resolve any pending validation debt.
 
 ## Phase 2 — Technical Posture Review
-- **Stability:** The system has recently applied strict sandboxing.
+- **Stability:** The system has recently applied strict sandboxing, but its stability needs full specialist verification.
 - **Tech Debt:** Validation debt remains present. Two specialist tasks (Sentinel and Palette) remain uncompleted regarding the new sandboxing.
 - **Overbuilding:** Yes, if we proceed with Phase 1 Roadmap items before verifying core systemd services.
 
