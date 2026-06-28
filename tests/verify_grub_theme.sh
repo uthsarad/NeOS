@@ -26,9 +26,22 @@ if ! grep -qE '^GRUB_FONT="/usr/share/grub/themes/neos/neos.pf2"' "$GRUB_DEFAULT
     exit 1
 fi
 
-# The .pf2 is generated at build time; make sure build.sh actually does it.
-if ! grep -q "grub-mkfont" build.sh; then
-    echo "FAIL: build.sh must generate the GRUB theme font via grub-mkfont"
+# neos.pf2 is a COMMITTED asset (CI builds with mkarchiso directly and never
+# runs build.sh, so the font must already exist in the tree). Verify it is
+# present and is a real GRUB PF2 font (header begins with "FILE...PFF2").
+PF2="$THEME_DIR/neos.pf2"
+if [[ ! -f "$PF2" ]]; then
+    echo "FAIL: $PF2 missing (run tools/gen-grub-theme.py to generate it)"
+    exit 1
+fi
+if [[ "$(head -c4 "$PF2")" != "FILE" ]] || ! head -c16 "$PF2" | grep -q "PFF2"; then
+    echo "FAIL: $PF2 is not a valid GRUB PF2 font"
+    exit 1
+fi
+# The font must ship to installed disks via the overlay manifest.
+if ! grep -qx "usr/share/grub/themes/neos/neos.pf2" \
+        profile/airootfs/etc/calamares/neos-overlay.txt; then
+    echo "FAIL: neos.pf2 missing from neos-overlay.txt (won't reach installed disks)"
     exit 1
 fi
 

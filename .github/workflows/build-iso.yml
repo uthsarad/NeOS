@@ -141,7 +141,6 @@ jobs:
             rust \
             qemu-system-x86 \
             qemu-img \
-            ttf-dejavu \
             util-linux
 
       - name: Prepare Build Config

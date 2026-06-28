@@ -9,10 +9,14 @@ tools/gen-wallpaper.py / tools/gen-boot-logo.py. Re-run to regenerate.
 Output: profile/airootfs/usr/share/grub/themes/neos/background.png  (1920x1080)
 """
 import os
+import shutil
+import subprocess
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "profile/airootfs/usr/share/grub/themes/neos/background.png")
+THEME_DIR = os.path.join(ROOT, "profile/airootfs/usr/share/grub/themes/neos")
+OUT = os.path.join(THEME_DIR, "background.png")
+PF2 = os.path.join(THEME_DIR, "neos.pf2")
 
 BLUE    = (0x00, 0x88, 0xCF)
 MAGENTA = (0xEB, 0x00, 0x8B)
@@ -66,6 +70,26 @@ def main():
 
     img.save(OUT)
     print("wrote", OUT, img.size)
+
+    gen_font()
+
+
+def gen_font():
+    """Generate the GRUB bitmap font (PF2) via grub-mkfont. Committed to the
+    repo because CI builds with mkarchiso directly and never runs build.sh, so
+    the font must already exist in profile/airootfs. The embedded name MUST
+    match theme.txt ("DejaVu Sans Regular 18")."""
+    mkfont = shutil.which("grub-mkfont") or shutil.which("grub2-mkfont")
+    ttf = next((p for p in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/TTF/DejaVuSans.ttf",
+    ) if os.path.exists(p)), None)
+    if not mkfont or not ttf:
+        print("WARNING: grub-mkfont or DejaVu TTF missing; left", PF2, "unchanged")
+        return
+    subprocess.run([mkfont, "-s", "18", "-n", "DejaVu Sans Regular 18",
+                    "-o", PF2, ttf], check=True)
+    print("wrote", PF2, os.path.getsize(PF2), "bytes")
 
 
 if __name__ == "__main__":
