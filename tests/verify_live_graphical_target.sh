@@ -46,7 +46,7 @@ fi
 #    neos-liveuser-setup.service; any failure in that service leaves SDDM
 #    with no autologin target and drops the live session to TTY.
 CUSTOMIZE="profile/airootfs/root/customize_airootfs.sh"
-if [[ -f "$CUSTOMIZE" ]] && grep -q "useradd.*liveuser" "$CUSTOMIZE"; then
+if [[ -f "$CUSTOMIZE" ]] && grep -q "useradd" "$CUSTOMIZE" && grep -q "liveuser" "$CUSTOMIZE"; then
     echo "✅ customize_airootfs.sh present and creates liveuser at build time"
 else
     echo "❌ $CUSTOMIZE missing or does not create liveuser — live session will be unreliable"; FAIL=1
