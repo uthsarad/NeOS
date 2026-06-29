@@ -49,8 +49,7 @@ desktop-image: "starfield.png"
 	item_font = "DejaVu Sans Regular 12"
 	item_color = "#000"
 	selected_item_font = "DejaVu Sans Bold 14"
-	selected_item_color= "#000"
-	selected_item_pixmap_style = "blob_*.png"
+	selected_item_color = "#3465a4"
 	icon_height = 25
 	icon_width = 25
 	item_height = 26

@@ -1,0 +1,19 @@
+#!/bin/bash
+# neos-accessibility — activate screen-reader speech in the live session when
+# the user chose the Accessibility boot entry.
+#
+# The GRUB/syslinux accessibility menu entry passes `accessibility=on` on the
+# kernel command line.  When present, this script starts espeakup so blind
+# users hear speech output on the virtual console immediately after login.
+# On a normal (non-accessibility) boot the script exits 0 and does nothing.
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+if ! grep -qw 'accessibility=on' /proc/cmdline 2>/dev/null; then
+    exit 0   # standard boot: no speech needed
+fi
+
+logger -t neos-accessibility "accessibility=on detected — starting espeakup"
+systemctl start espeakup.service
+logger -t neos-accessibility "espeakup started successfully"

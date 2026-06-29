@@ -16,8 +16,8 @@ It ships as a full **live installer** — boot into a working desktop, try it, t
 
 *   **Snapshot-Gated Stability**: Coherent package sets are validated and promoted via Btrfs snapshots to minimize breakage.
 *   **Refined User Experience**: A polished KDE Plasma 6 environment pre-configured with Windows-familiar defaults, branded boot splash, and wallpaper.
-*   **Automated Hardware Optimization**: Integrated driver management for NVIDIA, AMD, and Intel hardware, with software-rendering fallback so the desktop comes up even inside VMs without 3D acceleration.
-*   **Secure by Default**: Hardened kernel parameters, pre-configured UFW, and systemd service sandboxing.
+*   **Automated Hardware Optimization**: Integrated driver management for NVIDIA, AMD, and Intel hardware with DKMs support, Intel thermal management, software-rendering fallback so the desktop comes up even inside VMs without 3D acceleration, and modern wireless/modem support.
+*   **Secure by Default**: Hardened kernel parameters, pre-configured UFW, systemd service sandboxing, and user-initiated Secure Boot helpers (sbctl, mokutil, efitools).
 *   **Efficient Footprint**: Optimized build profile maintaining a sub-2GB ISO size for rapid deployment.
 
 ---

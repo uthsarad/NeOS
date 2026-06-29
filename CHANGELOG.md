@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.06.29] - 2026-06-29
+
+### Fixed
+- **GRUB theme**: Starfield theme's selected-menu-entry highlight was broken. The theme referenced a `blob_*.png` 9-slice pixmap set, but only `blob_w.png` was shipped; additionally, `selected_item_color` was set to `#000` (same as normal items), rendering the selected entry near-invisible. Fixed by removing the broken pixmap reference, setting `selected_item_color` to `#3465a4` (Arch blue) for clear visual feedback, and deleting the orphaned `blob_w.png` file. Boot menu selection is now clearly visible.
+
+### Added
+- **Firmware updates**: `fwupd` installed system-wide for hardware firmware management.
+- **Accessibility suite**: Added `orca`, `speech-dispatcher`, `espeak-ng`, `espeakup`, and `brltty` to the live image (speech stack only; kept minimal for ISO size). Added `neos-accessibility` oneshot systemd service that detects the `accessibility=on` kernel cmdline parameter and starts espeakup, enabling screen-reader support in the live session. The prior `accessibility=on` boot entry was a dead promise (no packages shipped); this release delivers functional accessibility.
+- **Flatpak support**: `flatpak` installed system-wide, providing a working backend for the already-shipped Discover app store.
+- **CJK fonts**: `noto-fonts-cjk` added to the installed system (not the live image, to respect the 2 GiB ISO size constraint).
+- **NVIDIA support**: `nvidia-dkms` added to the installed system, pairing with existing `dkms` and `linux-lts-headers` for seamless NVIDIA GPU driver compilation during post-install.
+- **Secure Boot helpers**: Added `sbctl`, `mokutil`, and `efitools` to the installed system, plus `neos-secureboot-setup` user-initiated helper script using sbctl's own-keys model (post-install, not auto-wired to avoid brick risk). Documented in new `docs/SECURE_BOOT.md`. Live USB still requires Secure Boot to be disabled (no MS-signed shim shipped).
+- **Hardware and connectivity**: Added `thermald` (Intel thermal management), `modemmanager` (WWAN support), `networkmanager-openvpn` (VPN UI in NetworkManager), `sane` and `sane-airscan` (scanner support). `thermald` and `modemmanager` are enabled on the installed system via Calamares services-systemd module.
+
+### Changed
+- ISO package discipline: Only the minimal a11y speech stack was added to the live squashfs (`profile/packages.x86_64`); all other new capabilities (fwupd, flatpak, CJK fonts, nvidia-dkms, Secure Boot helpers, etc.) are installed network-pacstrapped at installation time from `neos-packages.txt`, keeping the ISO under the 2 GiB GitHub release limit with comfortable margin.
+
 ## [2026.06.24] - 2026-06-24
 
 ### Fixed

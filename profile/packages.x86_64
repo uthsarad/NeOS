@@ -109,6 +109,13 @@ syslinux
 os-prober
 mtools
 
+# Accessibility (live session — supports accessibility=on boot entry)
+brltty
+espeak-ng
+espeakup
+orca
+speech-dispatcher
+
 # Utilities & Tools
 pv
 snapper

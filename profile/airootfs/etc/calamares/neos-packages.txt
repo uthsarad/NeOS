@@ -125,6 +125,37 @@ reflector
 bash-completion
 pacman-contrib
 rsync
+# --- firmware updates ---
+fwupd
+
+# --- app store backend ---
+flatpak
+
+# --- CJK fonts ---
+noto-fonts-cjk
+
+# --- accessibility ---
+brltty
+espeak-ng
+espeakup
+orca
+speech-dispatcher
+
+# --- NVIDIA proprietary (pairs with existing dkms + linux-lts-headers) ---
+nvidia-dkms
+
+# --- Secure Boot tooling ---
+efitools
+mokutil
+sbctl
+
+# --- thermal / connectivity / scanning ---
+modemmanager
+networkmanager-openvpn
+sane
+sane-airscan
+thermald
+
 # --- developer languages (installed-system only) ---
 nodejs
 npm
