@@ -29,9 +29,6 @@ usr/local/bin/neos-install-identity
 usr/local/bin/neos-vm-graphics
 usr/share/backgrounds/neos-wallpaper.png
 usr/share/color-schemes/NeOS.colors
-usr/share/grub/themes/neos/background.png
-usr/share/grub/themes/neos/neos.pf2
-usr/share/grub/themes/neos/theme.txt
 usr/share/plymouth/themes/default.plymouth
 usr/share/plymouth/themes/neos/cat-00.png
 usr/share/plymouth/themes/neos/cat-01.png

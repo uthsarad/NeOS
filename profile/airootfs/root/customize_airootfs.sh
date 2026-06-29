@@ -10,11 +10,22 @@
 # Arch-based desktop live ISOs.
 set -euo pipefail
 
-# At this point all packages are installed, so all system groups exist.
-useradd -m -u 1000 -g users \
-    -G wheel,video,audio,storage,power,rfkill,optical,scanner,lp \
-    -s /usr/bin/zsh \
-    liveuser
+# Generate the locale the live system is configured to use. /etc/locale.gen and
+# /etc/locale.conf ship en_US.UTF-8 in the overlay, but nothing compiles the
+# locale unless we run locale-gen here (stock archiso does this too). Without it
+# the live session falls back to the C locale and apps emit locale warnings.
+locale-gen
+
+# Create the live user with just a primary group, then add the desktop
+# supplementary groups one at a time and tolerate any that don't exist on this
+# build. A hard, comma-separated `-G a,b,c` aborts the whole build under
+# `set -e` if even one group is missing; this loop never breaks the build.
+useradd -m -u 1000 -g users -s /usr/bin/zsh liveuser
+for grp in wheel video audio storage power rfkill optical scanner lp input network; do
+    if getent group "$grp" >/dev/null 2>&1; then
+        gpasswd -a liveuser "$grp" >/dev/null 2>&1 || true
+    fi
+done
 
 # No password: SDDM autologin handles session start; the user never types one.
 passwd -d liveuser

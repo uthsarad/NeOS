@@ -17,10 +17,10 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos ext2 btrfs"
 # Disable submenus for a simpler boot menu experience.
 GRUB_DISABLE_SUBMENU=true
 
-# Set the GRUB theme (NeOS NTB-branded). GRUB_FONT is loaded by grub-mkconfig
-# so the theme's text renders in DejaVu instead of the built-in font; the .pf2
-# is generated in build.sh via grub-mkfont.
-GRUB_THEME="/usr/share/grub/themes/neos/theme.txt"
-GRUB_FONT="/usr/share/grub/themes/neos/neos.pf2"
+# Use the classic Arch 'starfield' GRUB theme, which ships natively with the
+# grub package at this path on the installed system — no overlay shipping or
+# generated font is needed. grub-mkconfig auto-loads the theme's bundled DejaVu
+# fonts, so GRUB_FONT is intentionally unset. Matches the ISO boot menu.
+GRUB_THEME="/usr/share/grub/themes/starfield/theme.txt"
 GRUB_GFXMODE="auto"
 GRUB_TERMINAL_OUTPUT="gfxterm"
