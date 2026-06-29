@@ -5,8 +5,9 @@
     "**/*"
   ],
   "constraints": [
-    "No-build day triggered due to unverified systemd sandboxing.",
+    "No-build day triggered due to unverified systemd sandboxing. The focus is entirely on clearing validation debt.",
     "Do not implement new features.",
-    "Do not modify any production code files."
+    "Do not modify any production code files.",
+    "Await specialist validation before resuming standard development."
   ]
 }
