@@ -24,6 +24,7 @@ airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '22' '-b' '1M'
 
 file_permissions=(
   ["/root"]="0:0:750"
+  ["/root/customize_airootfs.sh"]="0:0:755"
   ["/usr/local/bin/neos-driver-manager"]="0:0:755"
   ["/usr/local/bin/neos-autoupdate.sh"]="0:0:755"
   ["/usr/local/bin/neos-installer-partition.sh"]="0:0:755"

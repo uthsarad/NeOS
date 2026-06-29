@@ -40,16 +40,24 @@ else
     echo "❌ $AUTOLOGIN must set User=liveuser and Session=plasmax11"; FAIL=1
 fi
 
-# 4. neos-liveuser-setup.service must run before the display manager.
-#    We use both the alias (display-manager.service) and the real unit name
-#    (sddm.service) because the alias is only created by `systemctl enable`,
-#    which archiso does not run; without sddm.service in Before=, the ordering
-#    constraint is silently dropped and SDDM can start before liveuser exists.
+# 4. customize_airootfs.sh must exist — this script pre-creates liveuser
+#    inside the archiso chroot at build time so the user is baked into the
+#    squashfs. Without it, liveuser must be created at runtime by
+#    neos-liveuser-setup.service; any failure in that service leaves SDDM
+#    with no autologin target and drops the live session to TTY.
+CUSTOMIZE="profile/airootfs/root/customize_airootfs.sh"
+if [[ -f "$CUSTOMIZE" ]] && grep -q "useradd.*liveuser" "$CUSTOMIZE"; then
+    echo "✅ customize_airootfs.sh present and creates liveuser at build time"
+else
+    echo "❌ $CUSTOMIZE missing or does not create liveuser — live session will be unreliable"; FAIL=1
+fi
+
+# 5. neos-liveuser-setup.service must run before the display manager.
 SERVICE="$SYSDIR/neos-liveuser-setup.service"
 if grep -q "Before=.*sddm\.service" "$SERVICE"; then
     echo "✅ neos-liveuser-setup.service runs Before=sddm.service"
 else
-    echo "❌ neos-liveuser-setup.service missing Before=sddm.service — liveuser may not exist when SDDM autologin fires"; FAIL=1
+    echo "❌ neos-liveuser-setup.service missing Before=sddm.service"; FAIL=1
 fi
 
 if [[ "$FAIL" -ne 0 ]]; then
