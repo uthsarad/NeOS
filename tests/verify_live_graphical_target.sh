@@ -34,10 +34,10 @@ fi
 
 # 3. SDDM autologin must be configured for liveuser
 AUTOLOGIN="profile/airootfs/etc/sddm.conf.d/autologin.conf"
-if grep -q "User=liveuser" "$AUTOLOGIN" && grep -q "Session=plasmax11" "$AUTOLOGIN"; then
-    echo "✅ SDDM autologin configured for liveuser / plasmax11"
+if grep -q "User=liveuser" "$AUTOLOGIN" && grep -q "Session=plasma" "$AUTOLOGIN"; then
+    echo "✅ SDDM autologin configured for liveuser / plasma"
 else
-    echo "❌ $AUTOLOGIN must set User=liveuser and Session=plasmax11"; FAIL=1
+    echo "❌ $AUTOLOGIN must set User=liveuser and Session=plasma"; FAIL=1
 fi
 
 # 4. customize_airootfs.sh must exist — this script pre-creates liveuser
