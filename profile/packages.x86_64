@@ -20,7 +20,7 @@ python
 
 # Desktop Environment - KDE Plasma 6
 plasma-desktop
-plasma-x11-session
+plasma-workspace-x11
 xorg-server
 plasma-pa
 plasma-nm
@@ -149,3 +149,11 @@ reflector
 bash-completion
 pacman-contrib
 rsync
+
+# Architect Requirements
+fwupd
+flatpak
+noto-fonts-cjk
+nvidia-dkms
+sbctl
+mokutil

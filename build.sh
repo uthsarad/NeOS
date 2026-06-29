@@ -129,8 +129,10 @@ if ! pacman-key --verify "$CHAOTIC_KEYRING_SIG" "$CHAOTIC_KEYRING_PKG"; then
     exit 1
 fi
 
-# Install/Update
-yes | pacman -U --noconfirm --needed --noprogressbar -- "$CHAOTIC_KEYRING_PKG"
+# We intentionally DO NOT install the chaotic-keyring to the host via pacman -U.
+# The host already has the key imported via pacman-key above, which is enough
+# for mkarchiso to verify packages. The ISO will install its own chaotic-keyring
+# via packages.x86_64.
 
 # We point to the local mirrorlist using absolute path
 REPO_ROOT="$PWD"

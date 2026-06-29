@@ -19,7 +19,6 @@ RestrictNamespaces=yes
 MemoryDenyWriteExecute=yes
 LockPersonality=yes
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-DevicePolicy=closed
 CapabilityBoundingSet=CAP_SYS_MODULE CAP_SYS_ADMIN
 
 [Install]
