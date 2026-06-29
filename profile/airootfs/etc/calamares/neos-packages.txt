@@ -125,3 +125,11 @@ reflector
 bash-completion
 pacman-contrib
 rsync
+# --- developer languages (installed-system only) ---
+nodejs
+npm
+python-pip
+rust
+go
+deno
+base-devel

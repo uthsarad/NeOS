@@ -1,40 +1,67 @@
 #!/bin/bash
-# Verify the installed system can never inherit the live autologin / empty
-# password configuration.
+# Verify the installed-system login model.
 #
-# Under the netinstall model the target is a fresh pacstrap from the repos, not
-# a copy of the live medium, so the live-only autologin drop-ins are never
-# written to the target in the first place. This test guards that property:
-# the installer must NOT clone the live root (no unpackfs), while the live
-# session itself still autologins as the unprivileged 'liveuser'.
+# PRODUCT DECISION (full live parity): the installed NeOS system intentionally
+# mirrors the live ISO — it autologins a passwordless 'liveuser' straight into
+# Plasma, instead of asking for a username/password. This is a deliberate
+# kiosk-style choice, NOT the hardened multi-user model. This test guards that
+# the wiring for that decision is intact (and that the live session itself still
+# uses the unprivileged liveuser).
 set -euo pipefail
 
 SETTINGS="profile/airootfs/etc/calamares/settings.conf"
 SDDM_AUTOLOGIN="profile/airootfs/etc/sddm.conf.d/autologin.conf"
+IDENTITY="profile/airootfs/usr/local/bin/neos-install-identity"
+FAIL=0
 
-echo "Verifying autologin cannot leak to the installed system..."
+echo "Verifying installed-system login model (liveuser parity)..."
 
-# 1. Installer must not clone the live filesystem (which is where the live
-#    autologin drop-ins live). A fresh pacstrap cannot carry them over.
+# 1. The installer pacstraps a fresh base (it must NOT clone the live squashfs).
 if grep -qE '^\s*-\s*unpackfs\s*$' "$SETTINGS"; then
-    echo "FAIL: installer still runs unpackfs (would clone live autologin to target)"
-    exit 1
+    echo "❌ installer still runs unpackfs (live clone)"; FAIL=1
+else
+    echo "✅ no unpackfs (fresh pacstrap)"
 fi
-echo "PASS: installer does not clone the live root (no unpackfs)"
-
 if grep -q "shellprocess@pacstrap" "$SETTINGS"; then
-    echo "PASS: installer pacstraps a fresh base (no live autologin present)"
+    echo "✅ installer pacstraps a fresh base"
 else
-    echo "FAIL: installer does not pacstrap a fresh base"
-    exit 1
+    echo "❌ installer does not pacstrap a fresh base"; FAIL=1
 fi
 
-# 2. The live session autologin must use the unprivileged liveuser (not root).
+# 2. The Calamares users page is removed (no username/password is asked).
+if grep -qE '^\s*-\s*users\s*$' "$SETTINGS"; then
+    echo "❌ Calamares 'users' module still in sequence (would prompt for a user)"; FAIL=1
+else
+    echo "✅ Calamares users page removed (no username/password prompt)"
+fi
+
+# 3. The installer runs the liveuser identity step, which sets up the
+#    passwordless autologin user on the target.
+if grep -q "shellprocess@liveuser" "$SETTINGS"; then
+    echo "✅ installer runs shellprocess@liveuser"
+else
+    echo "❌ installer does not run shellprocess@liveuser"; FAIL=1
+fi
+if [[ -f "$IDENTITY" ]] \
+   && grep -q 'USERNAME="liveuser"' "$IDENTITY" \
+   && grep -q "useradd" "$IDENTITY" \
+   && grep -q "passwd -d" "$IDENTITY" \
+   && grep -q "autologin.conf" "$IDENTITY" \
+   && grep -q "NOPASSWD" "$IDENTITY"; then
+    echo "✅ neos-install-identity creates a passwordless liveuser with autologin + sudo"
+else
+    echo "❌ neos-install-identity missing/incomplete (liveuser/passwd/autologin/NOPASSWD)"; FAIL=1
+fi
+
+# 4. The live session autologin still uses the unprivileged liveuser (not root).
 if grep -q "^User=liveuser$" "$SDDM_AUTOLOGIN"; then
-    echo "PASS: live SDDM autologin user is liveuser in $SDDM_AUTOLOGIN"
+    echo "✅ live SDDM autologin user is liveuser"
 else
-    echo "FAIL: live SDDM autologin user is not liveuser in $SDDM_AUTOLOGIN"
-    exit 1
+    echo "❌ live SDDM autologin user is not liveuser"; FAIL=1
 fi
 
-echo "Security verification passed!"
+if [[ "$FAIL" -ne 0 ]]; then
+    echo "Login-model verification FAILED."
+    exit 1
+fi
+echo "Login-model verification passed!"

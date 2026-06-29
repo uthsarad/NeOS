@@ -166,6 +166,13 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     echo "# Packages pacstrapped onto the target by the Calamares 'pacstrap' step."
     grep -vE '^\s*(#|$)' "$REPO_ROOT/$PROFILE_DIR/packages.x86_64" \
         | grep -vxE 'mkinitcpio-archiso|calamares-garuda'
+    # Developer toolchains — INSTALLED-SYSTEM ONLY (deliberately NOT in the
+    # size-gated live ISO's packages.x86_64): modern languages so a fresh NeOS
+    # install is dev-ready out of the box. three.js is an npm library, not a
+    # system package — `npm install three` once nodejs/npm are present.
+    echo "# --- developer languages (installed-system only) ---"
+    printf '%s\n' \
+        nodejs npm python-pip rust go deno base-devel
 } > "$NETINSTALL_PKGS"
 
 # Generate the NeOS overlay manifest that Calamares copies onto the target
