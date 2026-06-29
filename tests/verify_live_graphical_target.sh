@@ -40,12 +40,16 @@ else
     echo "❌ $AUTOLOGIN must set User=liveuser and Session=plasmax11"; FAIL=1
 fi
 
-# 4. neos-liveuser-setup.service must run before display-manager
+# 4. neos-liveuser-setup.service must run before the display manager.
+#    We use both the alias (display-manager.service) and the real unit name
+#    (sddm.service) because the alias is only created by `systemctl enable`,
+#    which archiso does not run; without sddm.service in Before=, the ordering
+#    constraint is silently dropped and SDDM can start before liveuser exists.
 SERVICE="$SYSDIR/neos-liveuser-setup.service"
-if grep -q "Before=display-manager.service" "$SERVICE"; then
-    echo "✅ neos-liveuser-setup.service runs Before=display-manager.service"
+if grep -q "Before=.*sddm\.service" "$SERVICE"; then
+    echo "✅ neos-liveuser-setup.service runs Before=sddm.service"
 else
-    echo "❌ neos-liveuser-setup.service missing Before=display-manager.service"; FAIL=1
+    echo "❌ neos-liveuser-setup.service missing Before=sddm.service — liveuser may not exist when SDDM autologin fires"; FAIL=1
 fi
 
 if [[ "$FAIL" -ne 0 ]]; then

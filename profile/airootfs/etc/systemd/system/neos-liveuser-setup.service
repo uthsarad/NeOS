@@ -1,6 +1,6 @@
 [Unit]
 Description=NeOS Liveuser Setup
-Before=display-manager.service
+Before=display-manager.service sddm.service
 
 [Service]
 # Bolt: Monitor startup time overhead
