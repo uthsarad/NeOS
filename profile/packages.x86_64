@@ -20,7 +20,7 @@ python
 
 # Desktop Environment - KDE Plasma 6
 plasma-desktop
-plasma-workspace-x11
+plasma-x11-session
 xorg-server
 plasma-pa
 plasma-nm
