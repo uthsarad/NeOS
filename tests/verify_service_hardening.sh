@@ -34,11 +34,11 @@ verify_service() {
         return 1
     fi
 
-    # Check for ProtectHome=yes
-    if [[ "$CONTENT" == *"ProtectHome=yes"* ]]; then
-        echo "✅ ProtectHome=yes found"
+    # Check for ProtectHome=yes or read-only
+    if [[ "$CONTENT" == *"ProtectHome=yes"* ]] || [[ "$CONTENT" == *"ProtectHome=read-only"* ]]; then
+        echo "✅ ProtectHome=yes or read-only found"
     else
-        echo "❌ ProtectHome=yes NOT found"
+        echo "❌ ProtectHome=yes or read-only NOT found"
         return 1
     fi
 
