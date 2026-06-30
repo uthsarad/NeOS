@@ -14,8 +14,8 @@ REQUIRED_FILES=(
     "profile/airootfs/etc/sddm.conf.d/autologin.conf"
     "profile/airootfs/etc/skel/Desktop/welcome-neos.desktop"
     "profile/airootfs/etc/snapper/configs/root"
-    "profile/airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
-    "profile/airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
+    "profile/airootfs/usr/share/neos/hooks/49-neos-snapshot-pre.hook"
+    "profile/airootfs/usr/share/neos/hooks/99-neos-snapshot-post.hook"
     "profile/airootfs/etc/sysctl.d/90-neos-security.conf"
     "profile/airootfs/etc/default/grub"
     "profile/airootfs/etc/pacman.conf"
@@ -114,7 +114,7 @@ fi
 echo ""
 echo "Verifying pacman hook format..."
 
-for HOOK in profile/airootfs/etc/pacman.d/hooks/*.hook; do
+for HOOK in profile/airootfs/usr/share/neos/hooks/*.hook; do
     ACTION_COUNT=$(grep -c '^\[Action\]' "$HOOK")
     if [[ "$ACTION_COUNT" -eq 1 ]]; then
         echo "✅ $HOOK has exactly 1 [Action] section"
