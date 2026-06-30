@@ -173,9 +173,11 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     # size-gated live ISO's packages.x86_64): modern languages so a fresh NeOS
     # install is dev-ready out of the box. three.js is an npm library, not a
     # system package — `npm install three` once nodejs/npm are present.
-    echo "# --- developer languages (installed-system only) ---"
+    echo "# --- developer languages and frameworks (installed-system only) ---"
     printf '%s\n' \
-        nodejs npm python-pip rust go deno base-devel
+        nodejs npm python-pip rust go deno base-devel \
+        jdk-openjdk ruby php composer dotnet-sdk \
+        clang cmake ninja gdb docker docker-compose
     
     echo "# --- heavy desktop applications and drivers (installed-system only) ---"
     printf '%s\n' \
