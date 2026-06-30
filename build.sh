@@ -176,6 +176,12 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     echo "# --- developer languages (installed-system only) ---"
     printf '%s\n' \
         nodejs npm python-pip rust go deno base-devel
+    
+    echo "# --- heavy desktop applications and drivers (installed-system only) ---"
+    printf '%s\n' \
+        firefox discover packagekit-qt6 cups print-manager plymouth \
+        plymouth-kcm fwupd flatpak noto-fonts-cjk nvidia-dkms dkms \
+        linux-lts-headers broadcom-wl-dkms
 } > "$NETINSTALL_PKGS"
 
 # Generate the NeOS overlay manifest that Calamares copies onto the target
