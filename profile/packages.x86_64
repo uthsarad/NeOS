@@ -118,6 +118,8 @@ unrar
 unzip
 xdg-user-dirs
 xdg-utils
+plymouth
+plymouth-kcm
 iptables-nft
 polkit
 libglvnd

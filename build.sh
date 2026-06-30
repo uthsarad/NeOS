@@ -182,8 +182,8 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     
     echo "# --- heavy desktop applications and drivers (installed-system only) ---"
     printf '%s\n' \
-        firefox discover packagekit-qt6 cups print-manager plymouth \
-        plymouth-kcm fwupd flatpak noto-fonts-cjk nvidia-dkms dkms \
+        firefox discover packagekit-qt6 cups print-manager \
+        fwupd flatpak noto-fonts-cjk nvidia-dkms dkms \
         linux-lts-headers broadcom-wl-dkms
 } > "$NETINSTALL_PKGS"
 
