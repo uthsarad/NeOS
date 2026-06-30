@@ -70,8 +70,8 @@ for file in "${files[@]}"; do
         local log="qemu_boot_${mode}.log"
         echo "Starting QEMU $mode boot test for $name..."
         set +e
-        timeout 90s qemu-system-x86_64 -nographic -m 2048 -no-reboot \
-            -cdrom "$file" -boot d "$@" > "$log" 2>&1
+        timeout -k 5s 90s qemu-system-x86_64 -nographic -m 2048 -no-reboot \
+            -cdrom "$file" -boot d "$@" < /dev/null > "$log" 2>&1
         local exit_code=$?
         set -e
 
@@ -81,7 +81,7 @@ for file in "${files[@]}"; do
             exit 1
         fi
 
-        if [[ $exit_code -eq 124 || $exit_code -eq 0 ]]; then
+        if [[ $exit_code -eq 124 || $exit_code -eq 137 || $exit_code -eq 0 ]]; then
             echo "✅ QEMU $mode boot test passed (no boot errors detected)."
         else
             echo "❌ QEMU $mode boot test failed with exit code $exit_code."
