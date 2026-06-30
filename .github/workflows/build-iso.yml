@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         run: |
@@ -47,21 +47,30 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           shopt -s nullglob
+          FAILED=0
 
           for script in tests/verify_*.sh; do
             if [[ "$script" == *iso* ]]; then
               continue
             fi
 
-            echo "::group::🧪 Running $script..."
+            echo "::group::Running $script..."
 
             if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
               timeout 60s bash "$script" || true
             else
-              bash "$script" || EXIT_CODE=$?
+              if ! bash "$script"; then
+                echo "::error::Test failed: $script"
+                FAILED=1
+              fi
             fi
             echo "::endgroup::"
           done
+
+          if (( FAILED )); then
+            echo "::error::One or more pre-build validations failed"
+            exit 1
+          fi
 
       - name: Run Security Scans
         run: |
@@ -100,7 +109,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install dependencies
         run: |
@@ -111,6 +120,10 @@ jobs:
 
           pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
           pacman-key --lsign-key 3056513887B78AEB
+
+          # Garuda signing key (signs calamares-garuda in the [garuda] repo)
+          pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
+          pacman-key --lsign-key 349BC7808577C592
 
           pacman -U --noconfirm \
             'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
@@ -185,11 +198,19 @@ jobs:
             exit 1
           fi
 
-          mkarchiso -v \
+          set +e +o pipefail
+          yes "" | mkarchiso -v \
             -C "$PACMAN_CONF" \
             -w "$WORK_DIR" \
             -o "$OUT_DIR" \
             "$PROFILE_DIR"
+          MKARCHISO_EXIT=${PIPESTATUS[1]:-$?}
+          set -e -o pipefail
+
+          if [[ "$MKARCHISO_EXIT" -ne 0 ]]; then
+            echo "::error::mkarchiso failed with exit code $MKARCHISO_EXIT"
+            exit "$MKARCHISO_EXIT"
+          fi
 
       - name: Combine ISO parts if split
         run: |
@@ -227,6 +248,7 @@ jobs:
 
           bash tests/verify_iso_grub.sh
           bash tests/verify_iso_size.sh
+          REQUIRE_ISO=1 bash tests/verify_iso_calamares_libs.sh
           bash tests/verify_iso_smoketest.sh
 
       - name: Validate ISO Size
@@ -317,7 +339,7 @@ jobs:
         run: echo "value=V${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
       - name: Upload ISO and VM Templates to Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: ${{ steps.tag.outputs.value }}

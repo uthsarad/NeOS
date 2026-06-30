@@ -33,6 +33,7 @@ if ! command -v lspci &> /dev/null; then
 fi
 
 LSPCI_K_OUT=$(lspci -k || true)
+# shellcheck disable=SC2034
 LSUSB_OUT=$(lsusb || true)
 PROC_MODULES="$(</proc/modules)"
 
@@ -103,7 +104,7 @@ while IFS= read -r line; do
             # Try to suggest a package
             SUGGESTED=false
             for chip in "${!DRIVER_MAP[@]}"; do
-                if [[ "$DEVICE_DESC" =~ "$chip" ]]; then
+                if [[ "$DEVICE_DESC" =~ $chip ]]; then
                     PKG_NAME="${DRIVER_MAP[$chip]}"
                     if [[ "$PKG_NAME" == *"(AUR)"* ]]; then
                         echo -e "    \e[36m💡 Suggestion:\e[0m This chip often needs an AUR package: \e[1m${PKG_NAME% (AUR)}\e[0m"

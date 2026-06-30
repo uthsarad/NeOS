@@ -2,23 +2,24 @@
 componentName:  neos
 
 welcomeStyleCalamares:   false
-welcomeExpandingLogo:   false
-windowResizable:        true
-windowSize:             800,520
-windowCentered:         true
+welcomeExpandingLogo:    true
+windowResizable:         true
+windowSize:              1010,680
+windowCentered:          true
+windowPlacement:         center
+
+# Traditional widget sidebar (progress) + bottom navigation buttons.
+sidebar:    widget
+navigation: widget
 
 strings:
     productName:         NeOS
     shortProductName:    NeOS
-    productVersion:      2026.04
-    shortProductVersion: 2026.04
-    versionedName:       NeOS 2026.04
-    shortVersionedName:  NeOS 2026.04
+    productVersion:      2026.06
+    shortProductVersion: 2026.06
+    versionedName:       NeOS 2026.06
+    shortVersionedName:  NeOS 2026.06
     bootloaderEntryName: NeOS
-    # Sentinel: [Security] Commented out external URLs to prevent Calamares from launching a web browser as root.
-    # productUrl:          https://github.com/uthsarad/NeOS
-    # supportUrl:          https://github.com/uthsarad/NeOS/issues
-    # releaseNotesUrl:     https://github.com/uthsarad/NeOS/blob/main/CHANGELOG.md
 
 images:
     productLogo:         "logo.png"
@@ -26,12 +27,20 @@ images:
     productWelcome:      "welcome.png"
 
 slideshow:               "show.qml"
+slideshowAPI:            2
 
+# Nations Trust Bank (NTB) brand palette: blue #0088CF / cyan #0096D5, magenta #EB008B.
+# NOTE: current Calamares uses the CAPITALISED Sidebar* keys; the old lowercase
+# sidebarBackground/sidebarTextHighlight names are ignored, so the previous theming
+# never applied. The current step gets an NTB-blue background with white text.
 style:
-   # Palette: [UX] Ensure Calamares branding correctly uses NeOS blue (#0078D4).
-   # Bolt: [Performance] Consider testing QML rendering speed with this background vs an image.
-   # Sentinel: [Security] Validate that external product URLs load in a secure sandbox context if clicked.
-   sidebarBackground:    "#0078D4"
-   sidebarText:          "#FFFFFF"
-   sidebarTextSelect:    "#FFFFFF"
-   sidebarTextHighlight: "#005A9E"
+   SidebarBackground:        "#0b0e1a"
+   SidebarText:              "#aeb4c7"
+   SidebarBackgroundCurrent: "#0A64BC"
+   SidebarTextCurrent:       "#FFFFFF"
+
+# Let users upload installer logs for support (calamares "Upload" button).
+uploadServer:
+    type:      "fiche"
+    url:       "http://termbin.com:9999"
+    sizeLimit: -1

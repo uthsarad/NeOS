@@ -4,6 +4,8 @@ linux-lts
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
+archlinux-keyring
+haveged
 arch-install-scripts
 networkmanager
 iwd
@@ -16,34 +18,52 @@ wget
 zsh
 python
 
-# Desktop Environment
+# Desktop Environment - KDE Plasma 6
 plasma-desktop
+plasma-x11-session
+xorg-server
 plasma-pa
 plasma-nm
+plasma-systemmonitor
 powerdevil
 kscreen
+systemsettings
+kinfocenter
 sddm
 konsole
 dolphin
-packagekit-qt6
-discover
-falkon
+spectacle
+
 # Audio
 pipewire
 pipewire-alsa
 pipewire-pulse
 pipewire-jack
 wireplumber
+rtkit
+
 # Bluetooth
 bluez
 bluez-utils
+bluedevil
+
 # Fonts
 noto-fonts
 noto-fonts-emoji
 ttf-liberation
 ttf-dejavu
-# KDE Extra
+
+# KDE Integration
 ark
+kde-gtk-config
+breeze-gtk
+kwallet-pam
+kio-extras
+kio-fuse
+kde-cli-tools
+kdialog
+kwayland
+xdg-desktop-portal-kde
 
 # Drivers & Hardware Support
 efibootmgr
@@ -51,25 +71,23 @@ btrfs-progs
 dosfstools
 e2fsprogs
 erofs-utils
+exfatprogs
 xfsprogs
 ntfs-3g
 amd-ucode
 intel-ucode
 mesa
-nvidia-utils
-linux-lts-headers
-dkms
-broadcom-wl-dkms
 virtualbox-guest-utils
 open-vm-tools
+qemu-guest-agent
+spice-vdagent
 sof-firmware
 alsa-firmware
+alsa-utils
 xf86-video-amdgpu
 xf86-video-ati
-xf86-video-intel
 xf86-video-nouveau
-xf86-video-fbdev
-xf86-video-vesa
+xf86-input-libinput
 pciutils
 usbutils
 
@@ -80,18 +98,47 @@ syslinux
 os-prober
 mtools
 
+# Accessibility (live session — supports accessibility=on boot entry)
+brltty
+espeak-ng
+espeakup
+orca
+speech-dispatcher
+
 # Utilities & Tools
+pv
 snapper
 parted
 zram-generator
-alci-calamares
+calamares-garuda
 htop
 fastfetch
 p7zip
 unrar
 unzip
 xdg-user-dirs
-cups
-print-manager
+xdg-utils
 plymouth
 plymouth-kcm
+iptables-nft
+polkit
+libglvnd
+qt6-multimedia-ffmpeg
+qt6-svg
+qt5-svg
+breeze-icons
+chaotic-keyring
+xorg-xhost
+python-pyqt6
+power-profiles-daemon
+ufw
+which
+less
+reflector
+bash-completion
+pacman-contrib
+rsync
+
+# Architect Requirements
+sbctl
+mokutil

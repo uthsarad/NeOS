@@ -1,6 +1,2 @@
-echo -e "\n========================================"
-echo -e "          Welcome to NeOS"
-echo -e "========================================"
-echo -e "1. To connect to Wi-Fi, type: nmtui"
-echo -e "2. To start the installer, type: archinstall"
-echo -e "========================================\n"
+# NeOS Installation Media - root shell
+# The graphical installer starts automatically via SDDM.

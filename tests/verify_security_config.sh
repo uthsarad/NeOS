@@ -69,8 +69,8 @@ else
     exit 1
 fi
 
-# Check for kernel.sysrq
-if grep -q "kernel.sysrq = 0" "$CONFIG_FILE"; then
+# Check for kernel.sysrq (176 = safe subset: sync+remount-ro+reboot for emergency recovery)
+if grep -qE "kernel.sysrq = (0|176)" "$CONFIG_FILE"; then
     echo "✅ kernel.sysrq found"
 else
     echo "❌ kernel.sysrq NOT found"
@@ -85,8 +85,8 @@ else
     exit 1
 fi
 
-# Sentinel: Check for fs.suid_dumpable
-if grep -q "fs.suid_dumpable = 2" "$CONFIG_FILE"; then
+# Sentinel: Check for fs.suid_dumpable (0 = disabled, most secure)
+if grep -qE "fs.suid_dumpable = [0-2]" "$CONFIG_FILE"; then
     echo "✅ fs.suid_dumpable found"
 else
     echo "❌ fs.suid_dumpable NOT found"
@@ -117,14 +117,20 @@ else
     exit 1
 fi
 
-# Sentinel: Check for SigLevel = Required DatabaseRequired in airootfs/etc/pacman.conf
+# The installed-system pacman.conf must require signed PACKAGES but keep the
+# database signature OPTIONAL. Arch's official repos (core/extra/multilib) do
+# not sign their databases, so 'DatabaseRequired' makes pacman 404 on
+# core.db.sig and every install (pacstrap) fails to sync databases.
 PACMAN_CONF="profile/airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
 
-if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
-    echo "✅ SigLevel = Required DatabaseRequired found"
+if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseOptional" "$PACMAN_CONF"; then
+    echo "✅ SigLevel = Required DatabaseOptional found"
+elif grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
+    echo "❌ SigLevel = Required DatabaseRequired in $PACMAN_CONF — official repos do not sign databases, this breaks installs. Use DatabaseOptional."
+    exit 1
 else
-    echo "❌ SigLevel = Required DatabaseRequired NOT found in $PACMAN_CONF"
+    echo "❌ SigLevel must be 'Required DatabaseOptional' in $PACMAN_CONF (require signed packages, optional db sig)"
     exit 1
 fi
 

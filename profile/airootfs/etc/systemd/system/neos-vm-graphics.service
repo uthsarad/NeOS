@@ -1,0 +1,21 @@
+[Unit]
+Description=NeOS VM graphics fallback (software OpenGL when no hardware GL)
+# Must apply before the display manager starts so the login session inherits
+# the environment. Skipped automatically on bare metal.
+Before=display-manager.service sddm.service
+ConditionVirtualization=vm
+
+[Service]
+Type=oneshot
+ProtectSystem=strict
+# The script appends LIBGL_ALWAYS_SOFTWARE to /etc/environment, so /etc must be
+# writable; ProtectSystem=strict alone makes it read-only and the write fails.
+ReadWritePaths=/etc
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/neos-vm-graphics
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=NeOS
+Description=NeOS boot splash — animated loader cat on a dark background
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/neos
+ScriptFile=/usr/share/plymouth/themes/neos/neos.script

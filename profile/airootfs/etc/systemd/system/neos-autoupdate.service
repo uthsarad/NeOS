@@ -9,18 +9,15 @@ Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-autoupdate.sh
 # Sentinel: Hardened systemd sandboxing
 ProtectSystem=strict
-ReadWritePaths=/usr /boot /etc /var
+ReadWritePaths=/usr /boot /etc /var /opt /srv
 NoNewPrivileges=yes
 PrivateTmp=yes
-ProtectHome=yes
-ProtectKernelTunables=yes
-ProtectKernelModules=yes
-ProtectControlGroups=yes
+ProtectHome=read-only
 ProtectHostname=yes
 RestrictRealtime=yes
-RestrictNamespaces=yes
-MemoryDenyWriteExecute=yes
 LockPersonality=yes
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-DevicePolicy=closed
-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN
+CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN CAP_FSETID CAP_SETFCAP CAP_SYS_MODULE
+
+[Install]
+WantedBy=multi-user.target

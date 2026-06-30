@@ -52,7 +52,7 @@ Flash the ISO to your USB drive using a tool like:
 Insert the USB drive, restart your computer, and enter the Boot Menu (usually F12, F11, or Del). Select your USB drive.
 
 ### 4. Install
-Once booted into the live environment, you'll see a "Welcome to NeOS" window. Click "Install NeOS" to launch the Calamares installer. Follow the on-screen instructions:
+Once booted, the temporary installer session starts Calamares automatically. Use the desktop "Install NeOS" shortcut if you close the installer and need to open it again. Follow the on-screen instructions:
 *   **Location**: Set your timezone.
 *   **Keyboard**: Choose your layout.
 *   **Partitions**: "Erase Disk" is easiest for a clean install. "Manual Partitioning" is for advanced users.

@@ -1,0 +1,304 @@
+#!/bin/bash
+# neos-secureboot-setup — configure Secure Boot on the INSTALLED NeOS system.
+#
+# Uses the sbctl "own-keys" model: generate a personal Platform Key (PK) +
+# Key Exchange Key (KEK) + Signature Database (db) key set, optionally enroll
+# those keys into the UEFI firmware when it is already in Setup Mode, and sign
+# the GRUB EFI binary plus the LTS kernel so the full boot chain is verified.
+#
+# SAFE BY DESIGN — this script is never called automatically during installation.
+# Key *enrollment* requires the firmware to be in Setup Mode (Secure Boot keys
+# cleared).  Running this script when the firmware is NOT in Setup Mode will
+# still create the keys and sign all binaries; enrollment is then a separate
+# step the user performs via the firmware setup UI.  Read docs/SECURE_BOOT.md
+# before running.
+#
+# Usage (on the installed system, as root):
+#   neos-secureboot-setup
+#
+# Prerequisites: sbctl, efitools, mokutil (all installed by NeOS).
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
+SCRIPT_NAME="${0##*/}"
+SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
+
+_error_handler() {
+    local err=$1
+    local line=$2
+    local cmd="${BASH_COMMAND//[^[:print:]]/}"
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m[%s] CRITICAL SCRIPT FAILURE\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36mDIAGNOSTICS:\e[0m\n  * Failed Command: \"%s\"\n  * File / Line:    %s:%s\n  * Exit Status:    %s\n\n\e[1m\e[36mACTIONABLE STEPS:\e[0m\n  1. Inspect the system journal for detailed logs:\n     \e[1mjournalctl -t neos-%s -n 50 --no-pager\e[0m\n  2. Verify system state, permissions, and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" \
+        "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
+    logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
+    exit "$err"
+}
+
+# Sentinel: Verify that trap commands safely handle variable expansion without
+# introducing command injection risks.
+trap '_error_handler $? $LINENO' ERR
+
+# ---------------------------------------------------------------------------
+# Output helpers
+# ---------------------------------------------------------------------------
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+info()    { echo -e "${CYAN}[INFO]${NC}  $*"; }
+ok()      { echo -e "${GREEN}[OK]${NC}    $*"; }
+warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
+section() { echo -e "\n${BOLD}==> $*${NC}"; }
+
+# ---------------------------------------------------------------------------
+# Checks
+# ---------------------------------------------------------------------------
+
+check_root() {
+    if (( EUID != 0 )); then
+        echo -e "${RED}[ERROR]${NC} This script must be run as root." >&2
+        exit 1
+    fi
+}
+
+check_uefi() {
+    if [[ ! -d /sys/firmware/efi ]]; then
+        echo -e "${RED}[ERROR]${NC} System did not boot via UEFI. Secure Boot requires UEFI firmware." >&2
+        exit 1
+    fi
+}
+
+check_sbctl() {
+    if ! command -v sbctl >/dev/null 2>&1; then
+        echo -e "${RED}[ERROR]${NC} sbctl is not installed." >&2
+        echo    "  Install it with: pacman -S sbctl" >&2
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Setup Mode detection
+#
+# Returns 0 (true) when the firmware reports Setup Mode = enabled,
+# meaning the PK slot is empty and enroll-keys is safe to run.
+# Returns 1 otherwise.
+# ---------------------------------------------------------------------------
+
+detect_setup_mode() {
+    # sbctl status output contains a line like:
+    #   Setup Mode:   Enabled   (or Disabled)
+    # We normalise to lowercase and grep for "setup mode" then "enabled".
+    if sbctl status 2>/dev/null | grep -i "setup mode" | grep -qi "enabled"; then
+        return 0
+    fi
+    return 1
+}
+
+# ---------------------------------------------------------------------------
+# Key management — idempotent
+# ---------------------------------------------------------------------------
+
+SBCTL_KEYS_DIR="/usr/share/secureboot/keys"
+
+keys_exist() {
+    [[ -f "${SBCTL_KEYS_DIR}/PK/PK.key" ]]
+}
+
+create_keys_if_needed() {
+    section "Secure Boot key generation"
+
+    if keys_exist; then
+        ok "Keys already exist at ${SBCTL_KEYS_DIR} — skipping generation."
+        return 0
+    fi
+
+    info "Generating Platform Key (PK), Key Exchange Key (KEK), and db keys..."
+    sbctl create-keys
+    ok "Keys generated at ${SBCTL_KEYS_DIR}."
+}
+
+# ---------------------------------------------------------------------------
+# EFI binary discovery
+#
+# Calamares installs GRUB with grub-install; the resulting EFI binaries land
+# under the ESP at one of several possible mount points.  We search each in
+# priority order and collect every GRUB/fallback EFI we find.
+# ---------------------------------------------------------------------------
+
+ESP_SEARCH_ROOTS=(/boot /boot/efi /efi)
+
+find_efi_files() {
+    local -n _result=$1   # nameref: caller passes array variable name
+    local found
+
+    for root in "${ESP_SEARCH_ROOTS[@]}"; do
+        [[ -d "$root/EFI" ]] || continue
+        while IFS= read -r -d '' found; do
+            _result+=("$found")
+        done < <(find "$root/EFI" -maxdepth 4 \
+            \( -iname "grubx64.efi" -o -iname "BOOTX64.EFI" -o -iname "bootx64.efi" \) \
+            -print0 2>/dev/null)
+    done
+}
+
+KERNEL_PATH="/boot/vmlinuz-linux-lts"
+
+# ---------------------------------------------------------------------------
+# Signing — idempotent via sbctl's signing database (-s flag)
+# ---------------------------------------------------------------------------
+
+# Number of bootloader EFI binaries successfully signed in this run. Enrollment
+# is gated on this being > 0: enrolling keys while the bootloader is unsigned
+# would make the system unbootable the moment Secure Boot is enabled.
+SIGNED_EFI_COUNT=0
+
+sign_binaries() {
+    section "Signing boot-chain binaries"
+
+    local efi_files=()
+    find_efi_files efi_files
+
+    if (( ${#efi_files[@]} == 0 )); then
+        warn "No GRUB EFI binaries found under ${ESP_SEARCH_ROOTS[*]}."
+        warn "If your ESP is mounted elsewhere, sign manually:"
+        warn "  sbctl sign -s /path/to/EFI/GRUB/grubx64.efi"
+    else
+        for efi in "${efi_files[@]}"; do
+            info "Signing EFI binary: ${efi}"
+            # -s records the path in sbctl's database so pacman hooks
+            # automatically re-sign on GRUB package updates.
+            sbctl sign -s "$efi"
+            ok "Signed: ${efi}"
+            (( SIGNED_EFI_COUNT++ )) || true
+        done
+    fi
+
+    if [[ -f "$KERNEL_PATH" ]]; then
+        info "Signing kernel: ${KERNEL_PATH}"
+        sbctl sign -s "$KERNEL_PATH"
+        ok "Signed: ${KERNEL_PATH}"
+    else
+        warn "Kernel not found at ${KERNEL_PATH} — skipping kernel signing."
+        warn "Sign it manually once it is installed:"
+        warn "  sbctl sign -s /boot/vmlinuz-linux-lts"
+    fi
+
+    # Also sign a fallback initramfs if present (some GRUB configs reference it).
+    local fallback_initrd="/boot/initramfs-linux-lts-fallback.img"
+    if [[ -f "$fallback_initrd" ]]; then
+        info "Signing fallback initrd: ${fallback_initrd}"
+        sbctl sign -s "$fallback_initrd"
+        ok "Signed: ${fallback_initrd}"
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Enrollment — only when firmware is in Setup Mode
+# ---------------------------------------------------------------------------
+
+enroll_keys() {
+    section "Enrolling keys into UEFI firmware"
+
+    info "Firmware is in Setup Mode — enrolling keys (including Microsoft vendor certs)."
+    info "The -m flag adds Microsoft's UEFI CA so option-ROM drivers and dual-boot"
+    info "remain functional even after your own PK is set."
+
+    # -m / --microsoft  includes Microsoft's UEFI CA (db) and KEK — recommended
+    # for hardware with firmware that validates option ROMs or for dual-boot.
+    sbctl enroll-keys -m
+    ok "Keys enrolled. Secure Boot is now configured."
+    info "Reboot and enable Secure Boot in your firmware settings."
+    info "Run 'sbctl status' after reboot to confirm it is active."
+}
+
+print_manual_enrollment_guide() {
+    echo
+    echo -e "${YELLOW}================================================================================${NC}"
+    echo -e "${YELLOW} FIRMWARE IS NOT IN SETUP MODE — KEY ENROLLMENT SKIPPED (SAFE)${NC}"
+    echo -e "${YELLOW}================================================================================${NC}"
+    echo
+    echo "Your keys have been created and all binaries have been signed, but the"
+    echo "UEFI firmware is not currently in Setup Mode so keys cannot be enrolled"
+    echo "automatically. Choose one of the two options below:"
+    echo
+    echo -e "${BOLD}Option A — Use the firmware setup UI (recommended for most systems):${NC}"
+    echo "  1. Reboot into your firmware settings (usually F2 / DEL / F12)."
+    echo "  2. Locate the Secure Boot section."
+    echo "  3. Choose 'Clear keys' or 'Reset to Setup Mode' (wording varies)."
+    echo "  4. Save, boot back into NeOS, and run this script again."
+    echo "  5. The script will then enroll your generated keys automatically."
+    echo
+    echo -e "${BOLD}Option B — Use mokutil (if your firmware supports it):${NC}"
+    echo "  mokutil is pre-installed on NeOS but only works when a signed shim is"
+    echo "  in the boot chain (NeOS does not ship shim by default). This option is"
+    echo "  available if you install and configure shim-signed separately:"
+    echo "    mokutil --import /usr/share/secureboot/keys/db/db.pem"
+    echo "  Then reboot; the MOK enrollment screen will appear."
+    echo
+    echo -e "${BOLD}After enrollment:${NC}"
+    echo "  - Enable Secure Boot in firmware settings."
+    echo "  - Verify with: sbctl status"
+    echo "  - Future kernel/GRUB updates are re-signed automatically by sbctl's"
+    echo "    pacman hook.  No manual action required after initial enrollment."
+    echo
+    echo -e "${CYAN}Signed files are registered in sbctl's database. Run 'sbctl list-files'${NC}"
+    echo -e "${CYAN}to confirm.${NC}"
+    echo
+}
+
+# ---------------------------------------------------------------------------
+# Status summary
+# ---------------------------------------------------------------------------
+
+print_status() {
+    section "Current Secure Boot status"
+    sbctl status || true
+}
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+main() {
+    section "NeOS Secure Boot Setup"
+    info "This script configures Secure Boot for the installed NeOS system."
+    info "It will NEVER modify your firmware without your consent and will"
+    info "NEVER cause an unbootable system by default."
+    printf -- "\n"
+
+    check_root
+    check_uefi
+    check_sbctl
+
+    print_status
+    create_keys_if_needed
+    sign_binaries
+
+    printf -- "\n"
+    if detect_setup_mode; then
+        if (( SIGNED_EFI_COUNT > 0 )); then
+            enroll_keys
+        else
+            # Firmware is in Setup Mode, but no bootloader was signed (ESP not
+            # found). Enrolling now would brick boot once Secure Boot is enabled,
+            # so refuse and tell the user to sign the bootloader first.
+            warn "Firmware is in Setup Mode, but NO bootloader EFI binary was signed."
+            warn "Refusing to enroll keys — doing so would make the system unbootable"
+            warn "once Secure Boot is enabled. Sign your bootloader first:"
+            warn "  sbctl sign -s /path/to/EFI/.../grubx64.efi"
+            warn "then re-run this script."
+        fi
+    else
+        print_manual_enrollment_guide
+    fi
+
+    section "Done"
+    ok "Signing complete. See docs/SECURE_BOOT.md for next steps."
+}
+
+main

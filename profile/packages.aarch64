@@ -17,19 +17,13 @@ ntfs-3g
 mesa
 xf86-video-amdgpu
 xf86-video-nouveau
-xf86-video-fbdev
 networkmanager
 dhcpcd
 iwd
-plasma-meta
 sddm
 konsole
 dolphin
-packagekit
-discover
-vlc
 grub
-firefox
 # Audio
 pipewire
 pipewire-alsa
@@ -41,18 +35,11 @@ bluez
 bluez-utils
 # Fonts
 noto-fonts
-noto-fonts-cjk
 noto-fonts-emoji
 ttf-liberation
 ttf-dejavu
 # KDE Extra
 ark
-spectacle
-gwenview
-kate
-kcalc
-partitionmanager
-okular
 # Utils
 git
 wget
@@ -69,3 +56,5 @@ cups
 print-manager
 pciutils
 python
+curl
+zsh

@@ -35,7 +35,22 @@ HOOKS_LINE=""
 MODULES_SECTION=""
 IN_MODULES=0
 
+# Calamares' initcpiocfg rewrites these arrays with a line-based find/replace
+# that assumes a single, self-closing line. A multi-line array leaves stray
+# module names behind for mkinitcpio to execute as commands, failing the
+# install. Guard against any of these arrays being split across lines.
+MULTILINE_ARRAY=""
+
 while IFS= read -r line || [[ -n "$line" ]]; do
+    case "$line" in
+        MODULES=*|HOOKS=*|FILES=*|BINARIES=*)
+            # Opens an array but does not close it on the same line.
+            if [[ "$line" == *"("* && "$line" != *")"* ]]; then
+                MULTILINE_ARRAY="${MULTILINE_ARRAY}${MULTILINE_ARRAY:+, }${line%%=*}"
+            fi
+            ;;
+    esac
+
     if [[ "$line" == HOOKS=* ]]; then
         HOOKS_LINE="$line"
     elif [[ "$line" == MODULES=* ]]; then
@@ -48,6 +63,18 @@ while IFS= read -r line || [[ -n "$line" ]]; do
         fi
     fi
 done < "$MKINITCPIO_CONF"
+
+if [[ -n "$MULTILINE_ARRAY" ]]; then
+    echo "❌ Multi-line array(s) found in $MKINITCPIO_CONF: $MULTILINE_ARRAY"
+    echo ""
+    # Palette: Multi-line actionable formatting with bulleted list
+    echo "💡 How to fix:"
+    echo "   - Calamares' initcpiocfg rewrites these arrays with a single-line"
+    echo "     find/replace; a multi-line array breaks the installed mkinitcpio.conf."
+    echo "   - Put each of MODULES=(...), HOOKS=(...), FILES=(...), BINARIES=(...)"
+    echo "     on a single self-closing line (move any notes to comments above it)."
+    exit 1
+fi
 
 if [[ -z "$HOOKS_LINE" ]]; then
     echo "❌ HOOKS line not found in $MKINITCPIO_CONF"

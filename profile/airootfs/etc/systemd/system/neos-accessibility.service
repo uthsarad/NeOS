@@ -1,0 +1,18 @@
+[Unit]
+Description=NeOS accessibility bootstrap (start espeakup when accessibility=on)
+# Must run before the display manager starts so speech is available during
+# the graphical login screen as well as on the virtual console.
+After=sysinit.target
+Before=display-manager.service sddm.service
+
+[Service]
+Type=oneshot
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/neos-accessibility
+
+[Install]
+WantedBy=multi-user.target

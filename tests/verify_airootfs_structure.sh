@@ -12,9 +12,10 @@ REQUIRED_FILES=(
     "profile/airootfs/etc/systemd/system/neos-autoupdate.timer"
     "profile/airootfs/etc/systemd/system/neos-liveuser-setup.service"
     "profile/airootfs/etc/sddm.conf.d/autologin.conf"
+    "profile/airootfs/etc/skel/Desktop/welcome-neos.desktop"
     "profile/airootfs/etc/snapper/configs/root"
-    "profile/airootfs/etc/pacman.d/hooks/49-neos-snapshot-pre.hook"
-    "profile/airootfs/etc/pacman.d/hooks/99-neos-snapshot-post.hook"
+    "profile/airootfs/usr/share/neos/hooks/49-neos-snapshot-pre.hook"
+    "profile/airootfs/usr/share/neos/hooks/99-neos-snapshot-post.hook"
     "profile/airootfs/etc/sysctl.d/90-neos-security.conf"
     "profile/airootfs/etc/default/grub"
     "profile/airootfs/etc/pacman.conf"
@@ -79,11 +80,41 @@ for PERM in "${REQUIRED_PERMS[@]}"; do
     fi
 done
 
+
+# Verify the live session behaves as installer media, not as a general-purpose live OS.
+LIVEUSER_SETUP="profile/airootfs/usr/local/bin/neos-liveuser-setup"
+INSTALLER_SHORTCUT="profile/airootfs/etc/skel/Desktop/welcome-neos.desktop"
+INSTALLER_LAUNCHER="profile/airootfs/usr/local/bin/neos-welcome"
+
+echo ""
+echo "Verifying installer-media startup behavior..."
+
+if grep -q 'welcome-neos.desktop' "$LIVEUSER_SETUP"; then
+    echo "✅ Installer autostart is configured for the live user"
+else
+    echo "❌ Installer autostart is not configured for the live user"
+    ALL_PASSED=false
+fi
+
+if grep -q 'Exec=/usr/local/bin/neos-welcome-app' "$INSTALLER_SHORTCUT"; then
+    echo "✅ Desktop shortcut launches the welcome app"
+else
+    echo "❌ Desktop shortcut does not launch the welcome app"
+    ALL_PASSED=false
+fi
+
+if grep -q 'calamares' "$INSTALLER_LAUNCHER"; then
+    echo "✅ Installer launcher starts Calamares"
+else
+    echo "❌ Installer launcher does not start Calamares"
+    ALL_PASSED=false
+fi
+
 # Verify pacman hooks have correct format (single [Action] per file)
 echo ""
 echo "Verifying pacman hook format..."
 
-for HOOK in profile/airootfs/etc/pacman.d/hooks/*.hook; do
+for HOOK in profile/airootfs/usr/share/neos/hooks/*.hook; do
     ACTION_COUNT=$(grep -c '^\[Action\]' "$HOOK")
     if [[ "$ACTION_COUNT" -eq 1 ]]; then
         echo "✅ $HOOK has exactly 1 [Action] section"

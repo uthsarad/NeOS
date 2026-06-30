@@ -1,45 +1,52 @@
 #!/bin/bash
+# Verify the installed-system login model.
+#
+# PRODUCT DECISION: The installed NeOS system asks the user for their
+# username and password during installation, providing a public-ready
+# multi-user experience like Ubuntu Desktop.
 set -euo pipefail
 
-UNPACKFS_CONF="profile/airootfs/etc/calamares/modules/unpackfs.conf"
-SHELLPROCESS_CONF="profile/airootfs/etc/calamares/modules/shellprocess.conf"
-TARGET_FILE="etc/systemd/system/getty@tty1.service.d/autologin.conf"
-
-echo "Verifying security configuration for autologin cleanup..."
-
-# 1. Verify unpackfs exclusion
-if grep -q "$TARGET_FILE" "$UNPACKFS_CONF"; then
-    echo "PASS: $TARGET_FILE is excluded in $UNPACKFS_CONF"
-else
-    echo "FAIL: $TARGET_FILE is NOT excluded in $UNPACKFS_CONF"
-    exit 1
-fi
-
-# 2. Verify shellprocess removal
-# Note: shellprocess uses absolute path /etc/...
-TARGET_FILE_ABS="/$TARGET_FILE"
-if grep -q "rm -f $TARGET_FILE_ABS" "$SHELLPROCESS_CONF"; then
-    echo "PASS: removal command for $TARGET_FILE_ABS found in $SHELLPROCESS_CONF"
-else
-    echo "FAIL: removal command for $TARGET_FILE_ABS NOT found in $SHELLPROCESS_CONF"
-    exit 1
-fi
-
-# 3. Verify existence of the risk file
-if [ -f "profile/airootfs/$TARGET_FILE" ]; then
-    echo "INFO: Vulnerable file exists in source (as expected): profile/airootfs/$TARGET_FILE"
-else
-    echo "WARN: Vulnerable file NOT found in source. Is the fix necessary?"
-fi
-
-
-# 4. Verify display manager autologin uses the live ISO user
+SETTINGS="profile/airootfs/etc/calamares/settings.conf"
 SDDM_AUTOLOGIN="profile/airootfs/etc/sddm.conf.d/autologin.conf"
-if grep -q "^User=liveuser$" "$SDDM_AUTOLOGIN"; then
-    echo "PASS: SDDM autologin user is liveuser in $SDDM_AUTOLOGIN"
+FAIL=0
+
+echo "Verifying installed-system login model (multi-user public OS)..."
+
+# 1. The installer pacstraps a fresh base (it must NOT clone the live squashfs).
+if grep -qE '^\s*-\s*unpackfs\s*$' "$SETTINGS"; then
+    echo "❌ installer still runs unpackfs (live clone)"; FAIL=1
 else
-    echo "FAIL: SDDM autologin user is not liveuser in $SDDM_AUTOLOGIN"
-    exit 1
+    echo "✅ no unpackfs (fresh pacstrap)"
+fi
+if grep -q "shellprocess@pacstrap" "$SETTINGS"; then
+    echo "✅ installer pacstraps a fresh base"
+else
+    echo "❌ installer does not pacstrap a fresh base"; FAIL=1
 fi
 
-echo "Security verification passed!"
+# 2. The Calamares users page IS present so the user can configure their account.
+if grep -qE '^\s*-\s*users\s*$' "$SETTINGS"; then
+    echo "✅ Calamares 'users' module is in sequence (prompts for user/password)"
+else
+    echo "❌ Calamares 'users' module missing (no username/password prompt)"; FAIL=1
+fi
+
+# 3. The installer does NOT run the liveuser identity step on the installed system.
+if grep -q "shellprocess@liveuser" "$SETTINGS"; then
+    echo "❌ installer runs shellprocess@liveuser (kiosk mode left over)"; FAIL=1
+else
+    echo "✅ installer does not run shellprocess@liveuser"
+fi
+
+# 4. The live session autologin still uses the unprivileged liveuser (not root).
+if grep -q "^User=liveuser$" "$SDDM_AUTOLOGIN"; then
+    echo "✅ live SDDM autologin user is liveuser"
+else
+    echo "❌ live SDDM autologin user is not liveuser"; FAIL=1
+fi
+
+if [[ "$FAIL" -ne 0 ]]; then
+    echo "Login-model verification FAILED."
+    exit 1
+fi
+echo "Login-model verification passed!"

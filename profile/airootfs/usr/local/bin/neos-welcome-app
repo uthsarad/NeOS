@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+import sys
+import subprocess
+from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+                             QPushButton, QLabel, QGraphicsDropShadowEffect,
+                             QSpacerItem, QSizePolicy)
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor, QScreen
+
+
+class NeosWelcome(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('NeOS')
+        self.setFixedSize(820, 560)
+        self.setWindowFlags(
+            Qt.WindowType.Window |
+            Qt.WindowType.WindowStaysOnTopHint
+        )
+        self.setStyleSheet("""
+            QWidget#main {
+                background: qlineargradient(x1:0, y1:0, x2:0.5, y2:1,
+                    stop:0 #0a0a14, stop:0.4 #0f0f20, stop:1 #0a0a14);
+            }
+            QLabel#title {
+                font-size: 48px;
+                font-weight: 900;
+                color: #ffffff;
+                letter-spacing: 3px;
+            }
+            QLabel#subtitle {
+                font-size: 17px;
+                color: #9498b0;
+            }
+            QLabel#divider {
+                color: #1a1a30;
+                font-size: 1px;
+                max-height: 1px;
+                background-color: #1a1a30;
+            }
+            QLabel#features {
+                font-size: 13px;
+                color: #7a7e96;
+                line-height: 1.8;
+            }
+            QPushButton {
+                border-radius: 12px;
+                padding: 16px 44px;
+                font-size: 17px;
+                font-weight: bold;
+                min-width: 220px;
+                min-height: 24px;
+            }
+            QPushButton#try_btn {
+                background-color: transparent;
+                border: 2px solid #2a2a4a;
+                color: #b0b4c8;
+            }
+            QPushButton#try_btn:hover {
+                background-color: #15152a;
+                border-color: #4a4a7a;
+                color: #ffffff;
+            }
+            QPushButton#install_btn {
+                background-color: #0078D4;
+                border: none;
+                color: #ffffff;
+            }
+            QPushButton#install_btn:hover {
+                background-color: #1a8ae6;
+            }
+            QPushButton#install_btn:pressed {
+                background-color: #006abc;
+            }
+        """)
+        self.setObjectName('main')
+
+        layout = QVBoxLayout()
+        layout.setContentsMargins(60, 50, 60, 50)
+
+        title = QLabel('NeOS')
+        title.setObjectName('title')
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        subtitle = QLabel('Arch Linux, refined for everyone.')
+        subtitle.setObjectName('subtitle')
+        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        divider = QLabel()
+        divider.setObjectName('divider')
+        divider.setFixedHeight(1)
+
+        features = QLabel(
+            'KDE Plasma 6 desktop  •  Btrfs snapshot protection\n'
+            'Automatic hardware detection  •  Firewall enabled\n'
+            'Rolling release  •  Ready to use out of the box'
+        )
+        features.setObjectName('features')
+        features.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(24)
+
+        try_btn = QPushButton('Try NeOS')
+        try_btn.setObjectName('try_btn')
+        try_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        try_btn.clicked.connect(self.close)
+        try_btn.setToolTip('Explore NeOS without installing')
+
+        install_btn = QPushButton('Install NeOS')
+        install_btn.setObjectName('install_btn')
+        install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        install_btn.clicked.connect(self.run_installer)
+        install_btn.setToolTip('Install NeOS to your computer')
+
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(30)
+        shadow.setColor(QColor(0, 120, 212, 80))
+        shadow.setOffset(0, 6)
+        install_btn.setGraphicsEffect(shadow)
+
+        btn_layout.addWidget(try_btn)
+        btn_layout.addWidget(install_btn)
+        btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        layout.addStretch(3)
+        layout.addWidget(title)
+        layout.addSpacing(12)
+        layout.addWidget(subtitle)
+        layout.addSpacing(30)
+        layout.addWidget(divider)
+        layout.addSpacing(30)
+        layout.addWidget(features)
+        layout.addSpacing(40)
+        layout.addLayout(btn_layout)
+        layout.addStretch(3)
+
+        self.setLayout(layout)
+        self.center_on_screen()
+
+    def center_on_screen(self):
+        screen = QApplication.primaryScreen()
+        if screen:
+            geo = screen.availableGeometry()
+            x = (geo.width() - self.width()) // 2
+            y = (geo.height() - self.height()) // 2
+            self.move(x, y)
+
+    def run_installer(self):
+        subprocess.Popen(['/usr/local/bin/neos-welcome'])
+        self.close()
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    app.setApplicationName('NeOS')
+    app.setDesktopFileName('neos-welcome')
+    window = NeosWelcome()
+    window.show()
+    sys.exit(app.exec())

@@ -17,15 +17,18 @@ fi
 echo "Verifying ISO GRUB entries in $GRUB_FILE..."
 
 REQUIRED_STRINGS=(
+    "menuentry \"NeOS"
     "linux /neos/boot/x86_64/vmlinuz-linux-lts"
     "initrd /neos/boot/x86_64/initramfs-linux-lts.img"
     "archisobasedir=neos"
     "archisolabel=NEOS_ISO"
     "cow_spacesize=4G"
     "quiet splash"
+    "nomodeset"
 )
 
 FORBIDDEN_STRINGS=(
+    "Try or Install"
     "nowatchdog"
     "intel_pstate=enable"
     "amd_pstate=active"
@@ -54,6 +57,7 @@ echo "Verifying profile settings in $PROFILE_FILE..."
 PROFILE_STRINGS=(
     "iso_label=\"NEOS_ISO\""
     "install_dir=\"neos\""
+    "iso_application=\"NeOS Installation Media\""
 )
 
 for STR in "${PROFILE_STRINGS[@]}"; do

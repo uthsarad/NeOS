@@ -17,5 +17,10 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos ext2 btrfs"
 # Disable submenus for a simpler boot menu experience.
 GRUB_DISABLE_SUBMENU=true
 
-# Set the GRUB theme
-GRUB_THEME="/usr/share/grub/themes/breeze/theme.txt"
+# Use the classic Arch 'starfield' GRUB theme, which ships natively with the
+# grub package at this path on the installed system — no overlay shipping or
+# generated font is needed. grub-mkconfig auto-loads the theme's bundled DejaVu
+# fonts, so GRUB_FONT is intentionally unset. Matches the ISO boot menu.
+GRUB_THEME="/usr/share/grub/themes/starfield/theme.txt"
+GRUB_GFXMODE="auto"
+GRUB_TERMINAL_OUTPUT="gfxterm"
