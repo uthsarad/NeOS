@@ -177,7 +177,8 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     printf '%s\n' \
         nodejs npm python-pip rust go deno base-devel \
         jdk-openjdk ruby php composer dotnet-sdk \
-        clang cmake ninja gdb docker docker-compose
+        clang cmake ninja gdb docker docker-compose \
+        zig nim bun gleam elixir odin crystal
     
     echo "# --- heavy desktop applications and drivers (installed-system only) ---"
     printf '%s\n' \
