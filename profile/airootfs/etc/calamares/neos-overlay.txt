@@ -23,9 +23,7 @@ etc/xdg/plasma-workspace/env/10-neos-vm-graphics.sh
 root/.bash_profile
 root/.zprofile
 usr/local/bin/neos-autoupdate.sh
-usr/local/bin/neos-desktop-setup
 usr/local/bin/neos-driver-manager
-usr/local/bin/neos-install-identity
 usr/local/bin/neos-vm-graphics
 usr/share/backgrounds/neos-wallpaper.png
 usr/share/color-schemes/NeOS.colors

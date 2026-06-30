@@ -1,20 +1,16 @@
 #!/bin/bash
 # Verify the installed-system login model.
 #
-# PRODUCT DECISION (full live parity): the installed NeOS system intentionally
-# mirrors the live ISO — it autologins a passwordless 'liveuser' straight into
-# Plasma, instead of asking for a username/password. This is a deliberate
-# kiosk-style choice, NOT the hardened multi-user model. This test guards that
-# the wiring for that decision is intact (and that the live session itself still
-# uses the unprivileged liveuser).
+# PRODUCT DECISION: The installed NeOS system asks the user for their
+# username and password during installation, providing a public-ready
+# multi-user experience like Ubuntu Desktop.
 set -euo pipefail
 
 SETTINGS="profile/airootfs/etc/calamares/settings.conf"
 SDDM_AUTOLOGIN="profile/airootfs/etc/sddm.conf.d/autologin.conf"
-IDENTITY="profile/airootfs/usr/local/bin/neos-install-identity"
 FAIL=0
 
-echo "Verifying installed-system login model (liveuser parity)..."
+echo "Verifying installed-system login model (multi-user public OS)..."
 
 # 1. The installer pacstraps a fresh base (it must NOT clone the live squashfs).
 if grep -qE '^\s*-\s*unpackfs\s*$' "$SETTINGS"; then
@@ -28,29 +24,18 @@ else
     echo "❌ installer does not pacstrap a fresh base"; FAIL=1
 fi
 
-# 2. The Calamares users page is removed (no username/password is asked).
+# 2. The Calamares users page IS present so the user can configure their account.
 if grep -qE '^\s*-\s*users\s*$' "$SETTINGS"; then
-    echo "❌ Calamares 'users' module still in sequence (would prompt for a user)"; FAIL=1
+    echo "✅ Calamares 'users' module is in sequence (prompts for user/password)"
 else
-    echo "✅ Calamares users page removed (no username/password prompt)"
+    echo "❌ Calamares 'users' module missing (no username/password prompt)"; FAIL=1
 fi
 
-# 3. The installer runs the liveuser identity step, which sets up the
-#    passwordless autologin user on the target.
+# 3. The installer does NOT run the liveuser identity step on the installed system.
 if grep -q "shellprocess@liveuser" "$SETTINGS"; then
-    echo "✅ installer runs shellprocess@liveuser"
+    echo "❌ installer runs shellprocess@liveuser (kiosk mode left over)"; FAIL=1
 else
-    echo "❌ installer does not run shellprocess@liveuser"; FAIL=1
-fi
-if [[ -f "$IDENTITY" ]] \
-   && grep -q 'USERNAME="liveuser"' "$IDENTITY" \
-   && grep -q "useradd" "$IDENTITY" \
-   && grep -q "passwd -d" "$IDENTITY" \
-   && grep -q "autologin.conf" "$IDENTITY" \
-   && grep -q "NOPASSWD" "$IDENTITY"; then
-    echo "✅ neos-install-identity creates a passwordless liveuser with autologin + sudo"
-else
-    echo "❌ neos-install-identity missing/incomplete (liveuser/passwd/autologin/NOPASSWD)"; FAIL=1
+    echo "✅ installer does not run shellprocess@liveuser"
 fi
 
 # 4. The live session autologin still uses the unprivileged liveuser (not root).
