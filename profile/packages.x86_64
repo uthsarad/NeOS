@@ -25,7 +25,6 @@ xorg-server
 plasma-pa
 plasma-nm
 plasma-systemmonitor
-plasma-browser-integration
 powerdevil
 kscreen
 systemsettings
@@ -34,8 +33,6 @@ sddm
 konsole
 dolphin
 spectacle
-packagekit-qt6
-discover
 
 # Audio
 pipewire
@@ -60,8 +57,6 @@ ttf-dejavu
 ark
 kde-gtk-config
 breeze-gtk
-kdegraphics-thumbnailers
-ffmpegthumbs
 kwallet-pam
 kio-extras
 kio-fuse
@@ -123,10 +118,6 @@ unrar
 unzip
 xdg-user-dirs
 xdg-utils
-cups
-print-manager
-plymouth
-plymouth-kcm
 iptables-nft
 polkit
 libglvnd
@@ -147,7 +138,5 @@ pacman-contrib
 rsync
 
 # Architect Requirements
-fwupd
-flatpak
 sbctl
 mokutil
