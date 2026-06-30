@@ -26,8 +26,8 @@ cat.sprite = Sprite();
 cat.width  = cat[0].GetWidth();
 cat.height = cat[0].GetHeight();
 cat.sprite.SetImage(cat[0]);
-cat.sprite.SetX(Window.GetWidth()  / 2 - cat.width  / 2);
-cat.sprite.SetY(Window.GetHeight() / 2 - cat.height / 2);
+cat.sprite.SetX(Window.GetX() + Window.GetWidth()  / 2 - cat.width  / 2);
+cat.sprite.SetY(Window.GetY() + Window.GetHeight() / 2 - cat.height / 2);
 cat.sprite.SetZ(10);
 
 # --- Animate: advance one frame every other refresh (~25 fps, calm loop) ---
@@ -52,8 +52,8 @@ fun display_password_callback(prompt, bullets) {
     }
     txt = Image.Text(prompt + "   " + bullet_text, 0.85, 0.88, 0.95);
     prompt_sprite.SetImage(txt);
-    prompt_sprite.SetX(Window.GetWidth() / 2 - txt.GetWidth() / 2);
-    prompt_sprite.SetY(Window.GetHeight() / 2 + cat.height / 2 + 40);
+    prompt_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - txt.GetWidth() / 2);
+    prompt_sprite.SetY(Window.GetY() + Window.GetHeight() / 2 + cat.height / 2 + 40);
     prompt_sprite.SetZ(20);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
