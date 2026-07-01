@@ -5,8 +5,10 @@
 # - tty1 regression: the netinstalled system landed on a text console because
 #   nothing set its default systemd target. The services-systemd module must set
 #   graphical.target so it boots into SDDM/Plasma.
-# - Boot splash: the Plymouth 'neos' theme animates cat-NN.png frames generated
-#   from tools/loader-cat.gif (committed; CI does not run generators).
+# - Boot splash: the Plymouth 'neos' theme uses a Windows-11-style layout — the
+#   NeOS logo (logo.png) centered above mid-screen, with the animated cat-NN.png
+#   loader below it. Cat frames are generated from tools/loader-cat.gif
+#   (committed; CI does not run generators).
 set -euo pipefail
 
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
@@ -42,11 +44,23 @@ else
     echo "❌ neos.script does not reference the cat- frames"; FAIL=1
 fi
 
-# 3. The old spinner/logo assets must be gone (replaced by the plain cat).
-if find "$THEME_DIR" -maxdepth 1 \( -name 'spinner-*.png' -o -name 'logo.png' \) | grep -q .; then
-    echo "❌ stale spinner-*/logo.png assets still present in the theme"; FAIL=1
+# 3. The NeOS logo is present and wired in (Windows-11-style logo-above-cat).
+if [[ -f "$THEME_DIR/logo.png" ]]; then
+    echo "✅ NeOS logo.png present in the theme"
 else
-    echo "✅ stale spinner/logo assets removed"
+    echo "❌ theme is missing logo.png (Windows-11 layout needs it)"; FAIL=1
+fi
+if grep -q '"logo.png"' "$SCRIPT"; then
+    echo "✅ neos.script loads the logo"
+else
+    echo "❌ neos.script does not reference logo.png"; FAIL=1
+fi
+
+# 4. The old animated-spinner assets must stay gone (replaced by the cat loader).
+if find "$THEME_DIR" -maxdepth 1 -name 'spinner-*.png' | grep -q .; then
+    echo "❌ stale spinner-*.png assets still present in the theme"; FAIL=1
+else
+    echo "✅ stale spinner assets removed"
 fi
 if grep -q 'spinner' "$SCRIPT"; then
     echo "❌ neos.script still references removed spinner frames"; FAIL=1
