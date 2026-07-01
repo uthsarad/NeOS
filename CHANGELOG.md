@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.07.01] - 2026-07-01
+
+### Fixed
+- **Stuck mouse cursor in live session**: The live ISO autologged into the Wayland Plasma session (`Session=plasma`), contradicting the project's X11-everywhere decision. On GPUs that cannot get hardware GL (marginal/hybrid GPUs, NVIDIA/nouveau, non-3D VMs), KWin-Wayland composites via llvmpipe and stops servicing input, freezing the cursor. Switched live autologin to the X11 session (`Session=plasmax11`) in `sddm.conf.d/autologin.conf`.
+- **Calamares welcome page missing info buttons**: `welcome.conf` had all `show*Url=false` and `branding.desc` carried no URL strings, so no Support / Known-Issues / Release-Notes links rendered. Enabled the buttons and populated the URLs from os-release.
+- **Dead installer instance**: Removed an orphaned `liveuser` shellprocess instance left in `settings.conf` after the earlier public-installer switch.
+
+### Added
+- **NeOS logo branding**: Integrated the official NeOS "neo" badge. Added a transparent-background `logo.png` to the Plymouth theme and refreshed the Calamares `logo.png` / `welcome.png` branding assets from the source artwork.
+
+### Changed
+- **Windows-11-style boot splash**: Reworked the Plymouth `neos.script` layout so the NeOS logo sits centered just above the vertical middle with the animated cat acting as a spinner below it (LUKS prompt below the cat). Previously the cat sat dead-center with no logo.
+- Bumped branding version string to 2026.07.
+
 ## [2026.06.29] - 2026-06-29
 
 ### Fixed
