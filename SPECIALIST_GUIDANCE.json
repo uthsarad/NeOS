@@ -1,22 +1,22 @@
 {
   "bolt": {
     "focus": "none",
-    "directive": "Maintain current performance baseline. Await further architectural changes before considering new optimization tasks.",
+    "directive": "Maintain the current performance baseline. Defer any new optimization tasks until pending architectural shifts are resolved.",
     "tasks": []
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "Ensure journal logs remain consistently clear and accessible for restricted services (neos-autoupdate.service, neos-liveuser-setup.service) to prevent debugging issues due to missing permissions resulting from recent sandboxing.",
+    "directive": "Verify that journal logs are consistently clear and highly accessible for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions do not degrade debugging capabilities.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
   "sentinel": {
     "focus": "privilege auditing",
-    "directive": "Audit all systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure absolutely no critical privileges are granted unnecessarily, and thoroughly verify that ReadWritePaths are strictly minimal and appropriate.",
+    "directive": "Conduct a rigorous audit of the systemd sandboxing configurations in neos-autoupdate.service and neos-liveuser-setup.service. Ensure zero unnecessary privileges are granted, and thoroughly validate that ReadWritePaths directives remain strictly minimal and fit for purpose.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
-  "note": "Tasks specifically triggered by No-build day (strategic pause) to clear validation debt."
+  "note": "Immediate tasks mandated by the No-build day (strategic pause) to aggressively clear accumulating validation debt."
 }
