@@ -74,3 +74,6 @@ pacman-build.conf
 
 # Architect: CI/CD test hardening specific
 tests/*.log
+
+# CodeGraph local index (machine-specific)
+.codegraph/
