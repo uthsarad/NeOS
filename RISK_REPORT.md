@@ -1,17 +1,17 @@
 # Risk & Priority Report
 
 ## Current Risk Assessment
-The overall project is accumulating a significant and concerning amount of validation debt. Strict systemd sandboxing has been recently implemented for critical services (`neos-autoupdate.service` and `neos-liveuser-setup.service`), yet the strictly required specialist reviews (Sentinel for security auditing, Palette for logging UX) remain pending and uncompleted.
+We are currently accumulating a concerning and highly impactful level of validation debt. Strict systemd sandboxing has recently been applied to our core services (`neos-autoupdate.service` and `neos-liveuser-setup.service`); however, mandatory specialist reviews—Sentinel for security auditing and Palette for logging UX—remain pending and completely unverified.
 
 **Identified Risks:**
-1. **Validation Debt:** The core service hardening has not been fully verified by specialists, leaving a critical gap in our quality assurance.
-2. **Regression Blindspots:** Unverified strict systemd directives (`ProtectSystem=strict`, `ProtectHome=yes`) may silently break live-user initialization or critical system updates if `ReadWritePaths` are misconfigured or otherwise inadequate.
-3. **Feature Creep:** Pushing new roadmap features (e.g., ISO build enhancements) before thoroughly validating active hardening introduces severe instability and massively complicates troubleshooting.
+1. **Validation Debt:** The core service hardening has not yet been audited by our specialists, leaving a substantial gap in our quality assurance pipeline.
+2. **Regression Blindspots:** Unverified strict systemd sandboxing directives (e.g., `ProtectSystem=strict`, `ProtectHome=yes`) may silently break critical operations, such as live-user initialization or system updates, if `ReadWritePaths` are misconfigured or inadequate.
+3. **Feature Creep:** Pursuing further Phase 1 Roadmap features before rigorously validating our active infrastructure hardening creates severe instability risks and complicates subsequent troubleshooting efforts.
 
 ## Priority Selection
 **No-build day (strategic pause)**
 
 ## Actionable Mitigation
-- **Architect:** Must strictly observe a strategic pause (absolutely zero file modifications).
-- **Specialists:** Must execute and resolve their pending validation tasks immediately.
-- **Governance:** We will only resume Phase 1 roadmap implementation after the validation debt queue is completely cleared and the system's baseline stability is solidly re-established.
+- **Architect:** Must enforce a strict strategic pause, resulting in absolutely zero file modifications.
+- **Specialists:** Must urgently execute and resolve their pending validation and audit tasks.
+- **Governance:** We will resume our Phase 1 roadmap implementation only after the entire validation debt queue has been cleared and baseline system stability is definitively confirmed.

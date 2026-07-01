@@ -1,14 +1,14 @@
 # Strategic Directive
 
 ## Phase 1 — Product Alignment Check
-- **Product Vision:** Our core goal is to build a predictable, rolling-release Arch Linux-based OS with a highly polished, Windows-familiar user experience.
-- **Alignment:** Currently, we are maintaining strict alignment, but we must prioritize core infrastructure hardening to ensure no regressions occur before advancing to any new features.
-- **Leverage:** The absolute highest leverage priority right now is ensuring that the strict systemd sandboxing implemented recently does not cause regressions or UX degradation for live-user setup and autoupdate operations. Resolving pending validation debt is critical to achieving this stability.
+- **Product Vision:** Our primary goal is to build a highly predictable, rolling-release Arch Linux-based OS featuring a polished, Windows-familiar user experience.
+- **Alignment:** We remain strictly aligned with our product vision. However, we must prioritize robust infrastructure hardening to prevent regressions before developing any new features.
+- **Leverage:** The most critical priority right now is ensuring that the strict systemd sandboxing recently introduced does not degrade UX or cause regressions in live-user setup and autoupdate operations. Clearing our pending validation debt is essential to maintaining this stability.
 
 ## Phase 2 — Technical Posture Review
-- **Stability:** The system has recently undergone strict sandboxing applied to critical services, but overall stability needs comprehensive and immediate specialist verification.
-- **Tech Debt:** Significant validation debt remains. Two critical specialist tasks (Sentinel for security auditing and Palette for logging UX) remain uncompleted regarding the newly implemented sandboxing measures.
-- **Overbuilding:** Proceeding with any Phase 1 Roadmap items before fully verifying core systemd services would constitute overbuilding and introduce unacceptable regression risks.
+- **Stability:** We have applied strict sandboxing to critical system services. The overall stability now requires comprehensive, immediate verification by our specialists.
+- **Tech Debt:** We are accumulating significant validation debt. Specifically, two essential specialist tasks—Sentinel for security auditing and Palette for logging UX—are still uncompleted for the newly sandboxed services.
+- **Overbuilding:** Starting any Phase 1 Roadmap items before completely verifying the core systemd services would be considered overbuilding and would carry unacceptable regression risks.
 
 ## Phase 3 — Priority Selection
 **No-build day (strategic pause)**
@@ -16,10 +16,10 @@
 ## Phase 4 — Controlled Scope Definition
 - **Impacted Files:** None.
 - **Maximum allowed surface area:** 0 files.
-- **Constraints:** The Architect is explicitly forbidden from modifying any files (`forbidden_files: ["**/*"]`). We must focus our efforts entirely on clearing the accumulated validation debt.
+- **Constraints:** The Architect is explicitly forbidden from making any file modifications (`forbidden_files: ["**/*"]`). Our collective effort must be entirely focused on eliminating the accumulated validation debt.
 
 ## Phase 5 — Delegation Strategy
-- **Architect:** Halt all implementation immediately. Do not write any production code until the validation debt is fully cleared.
-- **Bolt:** Maintain the current performance baseline. No new optimization tasks are to be assigned at this time.
-- **Palette:** Must clear the pending validation task concerning logging UX for the restricted systemd services.
-- **Sentinel:** Must clear the pending validation task concerning systemd privilege auditing for the restricted services.
+- **Architect:** Immediately halt all implementation tasks. Do not write or modify any production code until the validation debt is completely cleared.
+- **Bolt:** Sustain the current performance baseline. No new optimization tasks are authorized at this time.
+- **Palette:** Prioritize and clear the pending validation task regarding logging UX for the restricted systemd services.
+- **Sentinel:** Prioritize and clear the pending validation task regarding systemd privilege auditing for the restricted systemd services.
