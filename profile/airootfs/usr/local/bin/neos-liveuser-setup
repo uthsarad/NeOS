@@ -59,7 +59,7 @@ if [ -d "$LIVE_USER_HOME" ]; then
         # Fix SDDM autologin: Since we removed the default Wayland session,
         # we must point the autologin target to the X11 session instead.
         if [ -f /etc/sddm.conf.d/autologin.conf ]; then
-            sed -i 's/^Session=plasma/Session=plasmax11/' /etc/sddm.conf.d/autologin.conf
+            sed -i 's/^Session=.*/Session=plasmax11/' /etc/sddm.conf.d/autologin.conf
         fi
 
         mkdir -p "$LIVE_USER_HOME/.config"
