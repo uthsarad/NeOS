@@ -1,9 +1,13 @@
 {
-  "status": "Strategic Pause",
-  "priority": "No-build day",
+  "target_features": [],
+  "allowed_files": [],
   "forbidden_files": [
     "**/*"
   ],
-  "allowed_files": [],
-  "directive": "Execute a strict Strategic Pause. Do not modify any codebase files. Allow specialist personas to clear their pending validation tasks regarding systemd sandboxing."
+  "constraints": [
+    "Strategic pause formally triggered due to unverified systemd sandboxing implementations. Focus shifts entirely to resolving specialist validation debt.",
+    "Do not implement any new features or capabilities.",
+    "Do not modify any production code files whatsoever.",
+    "Pause standard development tasks until comprehensive specialist validation confirms system stability."
+  ]
 }
