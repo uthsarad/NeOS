@@ -6,7 +6,7 @@
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "Verify that journal logs are consistently clear and highly accessible for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions do not degrade debugging capabilities.",
+    "directive": "Thoroughly verify that journal logs are consistently clear and highly accessible for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions do not degrade debugging capabilities.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]

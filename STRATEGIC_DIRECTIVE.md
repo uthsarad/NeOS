@@ -1,7 +1,7 @@
 # Strategic Directive
 
 ## Phase 1 — Product Alignment Check
-- **Product Vision:** Our primary goal is to build a highly predictable, rolling-release Arch Linux-based OS featuring a polished, Windows-familiar user experience.
+- **Product Vision:** Our fundamental goal is to build a highly predictable, rolling-release Arch Linux-based OS featuring a polished, Windows-familiar user experience.
 - **Alignment:** We remain strictly aligned with our product vision. However, we must prioritize robust infrastructure hardening to prevent regressions before developing any new features.
 - **Leverage:** The most critical priority right now is ensuring that the strict systemd sandboxing recently introduced does not degrade UX or cause regressions in live-user setup and autoupdate operations. Clearing our pending validation debt is essential to maintaining this stability.
 
