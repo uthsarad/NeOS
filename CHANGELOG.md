@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [2026.07.02] - 2026-07-02
 
+### Fixed
+- **Off-center / wobbling boot cat**: The source GIF anchors the cat in the top-left of its canvas, so the generated frames kept it pinned up-left of center and it jittered as each frame's content size changed. Re-trimmed all 32 `cat-NN.png` frames to their visible pixels and re-centered them on a uniform 320×320 transparent canvas, so the loader cat now sits perfectly centered and stable. Updated `tools/gen-bootlogo-frames.py` to crop-and-center frames on regeneration.
+
 ### Changed
 - **Faster, Windows-11-style boot**: Eliminated the visible boot-menu wait so the machine drops straight into the animated splash. GRUB now uses `timeout=0` with `timeout_style=hidden` (menu still reachable by holding ESC/SHIFT/F8); the syslinux/BIOS path drops from a 1s to a 0.5s `TIMEOUT` (any keypress still halts the countdown via `MENU IMMEDIATE`). Boot internals were already tuned for speed (squashfs `zstd -22` for smallest size at codec-constant decompress speed, Plymouth `ShowDelay=0` for instant splash), so no rebuild-time regression.
 
