@@ -1,7 +1,7 @@
 # Risk & Priority Report
 
 ## Current Risk Assessment
-We are currently accumulating a concerning and highly impactful level of validation debt. Strict systemd sandboxing has recently been applied to our core services (`neos-autoupdate.service` and `neos-liveuser-setup.service`); however, mandatory specialist reviews—Sentinel for security auditing and Palette for logging UX—remain pending and completely unverified.
+We are currently accumulating a highly concerning and impactful level of validation debt. Strict systemd sandboxing has recently been applied to our core services (`neos-autoupdate.service` and `neos-liveuser-setup.service`); however, mandatory specialist reviews—Sentinel for security auditing and Palette for logging UX—remain pending and completely unverified.
 
 **Identified Risks:**
 1. **Validation Debt:** The core service hardening has not yet been audited by our specialists, leaving a substantial gap in our quality assurance pipeline.
