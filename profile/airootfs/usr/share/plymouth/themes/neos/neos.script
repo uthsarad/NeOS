@@ -1,7 +1,7 @@
 # NeOS Plymouth boot splash (script module).
-# Windows-11-style layout: NeOS logo centered-horizontally slightly ABOVE the
-# vertical mid-point; the animated cat acts as the loader centered-horizontally
-# BELOW the logo.  A LUKS password prompt appears below the cat when needed.
+# Windows-11-style layout: the animated cat acts as the loader at the DEAD
+# CENTRE of the screen; the NeOS logo sits centered-horizontally just ABOVE it.
+# A LUKS password prompt appears below the cat when needed.
 #
 # Frames (cat-NN.png) are generated from tools/loader-cat.gif by
 # tools/gen-bootlogo-frames.py and committed (CI does not run generators).
@@ -10,16 +10,6 @@
 # --- Background: deep navy (#0A0E1A -> #16203A), matching NeOS branding ---
 Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
 Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
-
-# --- NeOS logo: centered horizontally, bottom edge ~20px above screen centre ---
-logo_img    = Image("logo.png");
-logo.width  = logo_img.GetWidth();
-logo.height = logo_img.GetHeight();
-logo_sprite = Sprite();
-logo_sprite.SetImage(logo_img);
-logo_sprite.SetX(Window.GetX() + Window.GetWidth()  / 2 - logo.width  / 2);
-logo_sprite.SetY(Window.GetY() + Window.GetHeight() / 2 - logo.height - 20);
-logo_sprite.SetZ(10);
 
 # --- Load the cat loader frames (cat-00.png .. cat-31.png) ---
 n_frames = 32;
@@ -33,14 +23,24 @@ while (i < n_frames) {
     i++;
 }
 
-# Cat loader: top edge ~20px below screen centre (directly under the logo) ---
+# Cat loader: dead-centre of screen (Windows-11-style centred loader) ---
 cat.sprite = Sprite();
 cat.width  = cat[0].GetWidth();
 cat.height = cat[0].GetHeight();
 cat.sprite.SetImage(cat[0]);
 cat.sprite.SetX(Window.GetX() + Window.GetWidth()  / 2 - cat.width  / 2);
-cat.sprite.SetY(Window.GetY() + Window.GetHeight() / 2 + 20);
+cat.sprite.SetY(Window.GetY() + Window.GetHeight() / 2 - cat.height / 2);
 cat.sprite.SetZ(10);
+
+# --- NeOS logo: centred horizontally, bottom edge ~20px above the cat loader ---
+logo_img    = Image("logo.png");
+logo.width  = logo_img.GetWidth();
+logo.height = logo_img.GetHeight();
+logo_sprite = Sprite();
+logo_sprite.SetImage(logo_img);
+logo_sprite.SetX(Window.GetX() + Window.GetWidth()  / 2 - logo.width  / 2);
+logo_sprite.SetY(Window.GetY() + Window.GetHeight() / 2 - cat.height / 2 - logo.height - 20);
+logo_sprite.SetZ(10);
 
 # --- Animate: advance one frame every other refresh (~25 fps, calm loop) ---
 tick = 0;
@@ -65,7 +65,7 @@ fun display_password_callback(prompt, bullets) {
     txt = Image.Text(prompt + "   " + bullet_text, 0.85, 0.88, 0.95);
     prompt_sprite.SetImage(txt);
     prompt_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - txt.GetWidth() / 2);
-    prompt_sprite.SetY(Window.GetY() + Window.GetHeight() / 2 + 20 + cat.height + 20);
+    prompt_sprite.SetY(Window.GetY() + Window.GetHeight() / 2 + cat.height / 2 + 20);
     prompt_sprite.SetZ(20);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
