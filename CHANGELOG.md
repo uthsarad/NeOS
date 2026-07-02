@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.07.02] - 2026-07-02
+
+### Changed
+- **Faster, Windows-11-style boot**: Eliminated the visible boot-menu wait so the machine drops straight into the animated splash. GRUB now uses `timeout=0` with `timeout_style=hidden` (menu still reachable by holding ESC/SHIFT/F8); the syslinux/BIOS path drops from a 1s to a 0.5s `TIMEOUT` (any keypress still halts the countdown via `MENU IMMEDIATE`). Boot internals were already tuned for speed (squashfs `zstd -22` for smallest size at codec-constant decompress speed, Plymouth `ShowDelay=0` for instant splash), so no rebuild-time regression.
+
 ## [2026.07.01] - 2026-07-01
 
 ### Fixed
