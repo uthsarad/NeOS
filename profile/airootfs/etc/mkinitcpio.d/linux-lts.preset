@@ -1,0 +1,12 @@
+# mkinitcpio preset for the NeOS live ISO (ArchWiki Archiso pattern).
+# Overrides the linux-lts package preset so only the archiso image is built:
+# the ISO's initramfs omits the autodetect hook, making the usual fallback
+# image redundant — skipping it cuts build time and image size.
+# The installed system is pacstrapped fresh, so it gets the stock preset.
+
+PRESETS=('archiso')
+
+ALL_config='/etc/mkinitcpio.conf'
+ALL_kver='/boot/vmlinuz-linux-lts'
+
+archiso_image='/boot/initramfs-linux-lts.img'

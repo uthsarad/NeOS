@@ -69,19 +69,6 @@ else
     exit 1
 fi
 
-if [[ -f "profile/bootstrap_packages.i686" ]]; then
-    echo "✅ profile/bootstrap_packages.i686 file exists"
-else
-    echo "⚠️ profile/bootstrap_packages.i686 file does not exist (recommended for i686 support)"
-fi
-
-if [[ -f "profile/bootstrap_packages.aarch64" ]]; then
-    echo "✅ profile/bootstrap_packages.aarch64 file exists"
-else
-    echo "⚠️ profile/bootstrap_packages.aarch64 file does not exist (recommended for aarch64 support)"
-fi
-
-
 # Verify grub/grub.cfg exists (required for uefi.grub boot mode)
 PROFILE_CONTENT=$(<"$PROFILE_FILE")
 if [[ "$PROFILE_CONTENT" == *"uefi.grub"* ]]; then

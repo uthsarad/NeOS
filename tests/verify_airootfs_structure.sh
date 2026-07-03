@@ -5,7 +5,6 @@ echo "Verifying required airootfs files exist..."
 REQUIRED_FILES=(
     "profile/airootfs/usr/local/bin/neos-driver-manager"
     "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
-    "profile/airootfs/usr/local/bin/neos-installer-partition.sh"
     "profile/airootfs/usr/local/bin/neos-liveuser-setup"
     "profile/airootfs/etc/systemd/system/neos-driver-manager.service"
     "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
@@ -64,7 +63,6 @@ PROFILE_FILE="profile/profiledef.sh"
 REQUIRED_PERMS=(
     "neos-driver-manager"
     "neos-autoupdate.sh"
-    "neos-installer-partition.sh"
     "neos-liveuser-setup"
 )
 

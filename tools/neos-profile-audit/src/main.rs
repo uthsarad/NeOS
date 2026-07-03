@@ -5,7 +5,9 @@ use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-const PACKAGE_FILES: [&str; 3] = ["packages.x86_64", "packages.i686", "packages.aarch64"];
+// NeOS ships x86_64 only (profiledef.sh arch="x86_64"); Arch dropped i686 in
+// 2017 and no aarch64 port exists, so only the built architecture is audited.
+const PACKAGE_FILES: [&str; 1] = ["packages.x86_64"];
 const REQUIRED_PROFILE_FILES: [&str; 6] = [
     "profiledef.sh",
     "pacman.conf",
@@ -14,7 +16,7 @@ const REQUIRED_PROFILE_FILES: [&str; 6] = [
     "airootfs/etc/pacman.d/neos-mirrorlist",
     "airootfs/etc/pacman.d/chaotic-mirrorlist",
 ];
-const REQUIRED_ALL_ARCH_PACKAGES: [&str; 6] = [
+const REQUIRED_PACKAGES: [&str; 6] = [
     "base",
     "mkinitcpio",
     "mkinitcpio-archiso",
@@ -267,7 +269,7 @@ fn parse_package_file(path: &Path) -> Result<HashSet<String>, String> {
 fn assert_required_packages(parsed_files: &[(String, HashSet<String>)]) -> Result<(), String> {
     for (name, packages) in parsed_files {
         let mut missing = Vec::new();
-        for required in REQUIRED_ALL_ARCH_PACKAGES {
+        for required in REQUIRED_PACKAGES {
             if !packages.contains(required) {
                 missing.push(required);
             }
@@ -287,36 +289,14 @@ fn assert_required_packages(parsed_files: &[(String, HashSet<String>)]) -> Resul
 fn assert_arch_specific_expectations(
     parsed_files: &[(String, HashSet<String>)],
 ) -> Result<(), String> {
-    let mut x86_opt = None;
-    let mut i686_opt = None;
-    let mut aarch64_opt = None;
-
-    // Single pass over parsed_files avoids repeated iterator setup and redundant linear scans
-    for (name, pkgs) in parsed_files {
-        match name.as_str() {
-            "packages.x86_64" => x86_opt = Some(pkgs),
-            "packages.i686" => i686_opt = Some(pkgs),
-            "packages.aarch64" => aarch64_opt = Some(pkgs),
-            _ => {}
-        }
-    }
-
-    let x86 = x86_opt.ok_or_else(|| "missing package set for packages.x86_64".to_string())?;
-    let i686 = i686_opt.ok_or_else(|| "missing package set for packages.i686".to_string())?;
-    let aarch64 =
-        aarch64_opt.ok_or_else(|| "missing package set for packages.aarch64".to_string())?;
+    let x86 = parsed_files
+        .iter()
+        .find(|(name, _)| name.as_str() == "packages.x86_64")
+        .map(|(_, pkgs)| pkgs)
+        .ok_or_else(|| "missing package set for packages.x86_64".to_string())?;
 
     if !x86.contains("linux") && !x86.contains("linux-zen") && !x86.contains("linux-lts") {
         return Err("packages.x86_64 must include at least one kernel (linux, linux-zen, or linux-lts)".to_string());
-    }
-
-    if i686.len() < 45 {
-        return Err("packages.i686 unexpectedly small (expected at least 45 packages)".to_string());
-    }
-    if aarch64.len() < 45 {
-        return Err(
-            "packages.aarch64 unexpectedly small (expected at least 45 packages)".to_string(),
-        );
     }
 
     Ok(())
@@ -327,20 +307,6 @@ fn build_summary(parsed_files: &[(String, HashSet<String>)]) -> String {
 
     for (name, packages) in parsed_files {
         lines.push(format!("- {name}: {} unique packages", packages.len()));
-    }
-
-    if let Some((_, baseline)) = parsed_files.first() {
-        let common = parsed_files
-            .iter()
-            .skip(1)
-            .fold(baseline.clone(), |acc, (_, packages)| {
-                acc.intersection(packages).cloned().collect()
-            });
-
-        lines.push(format!(
-            "- common across all architectures: {} packages",
-            common.len()
-        ));
     }
 
     lines.join("\n")

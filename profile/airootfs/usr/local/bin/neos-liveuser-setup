@@ -19,9 +19,12 @@ _error_handler() {
 
 trap '_error_handler $? $LINENO' ERR
 
+# liveuser is created at image build time by /root/customize_airootfs.sh (uid
+# 1000, full group set). This runtime unit only applies live-session state that
+# must happen on the booted system.
 if ! id "liveuser" &>/dev/null; then
-    useradd -m -g users -G wheel,video,audio,storage,power -s /bin/zsh liveuser
-    passwd -d liveuser
+    echo "liveuser missing — customize_airootfs.sh did not run at build time" >&2
+    exit 1
 fi
 
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel

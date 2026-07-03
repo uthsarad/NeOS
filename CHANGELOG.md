@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.07.03] - 2026-07-03
+
+### Added
+- **Deep repository & build audit** (`reports/v2026.07.03/deep-audit-report.md`): full audit of the archiso profile, build scripts, airootfs overlay, Calamares config, CI workflow, tests, and tooling, judged against the ArchWiki Archiso article and Ubuntu LiveCDCustomization image-hygiene practices. 3 High / 7 Medium / 6 Low findings with file:line evidence, an ArchWiki+Ubuntu compliance matrix, and a 14-item fix backlog. Headline findings: dormant kiosk installer path that could re-impose passwordless login on installed systems if re-enabled; CI gates weakened with `|| true`; `neos-secureboot-setup` never copied to installed systems; dead i686/aarch64 package lists enforced by the Rust profile audit.
+- `tools/gen-build-conf.sh` and `tools/gen-manifests.sh`: single source of truth for the build pacman.conf and the Calamares netinstall manifests, now called by both `build.sh` and CI. **Fixes a High-severity bug found during remediation: CI never regenerated `neos-packages.txt`/`neos-overlay.txt`, so systems installed from CI-built ISOs silently missed every overlay file added after the last committed manifest** (including `neos-secureboot-setup`, the snapshot pacman hooks, and the Plymouth logo).
+- `profile/airootfs/etc/mkinitcpio.d/linux-lts.preset` (ArchWiki pattern): builds only the archiso initramfs image, skipping the redundant fallback image (smaller ISO, faster build). Live-only — excluded from the installed-system overlay.
+- CI releases now ship `SHA256SUMS` alongside the ISO.
+- Regression test: `neos-liveuser-setup.service` must stay unsandboxed (sandboxing it silently breaks live autologin); the check ignores comments and fails if any `ProtectSystem`/`ProtectHome`/`PrivateTmp`/`NoNewPrivileges` directive reappears.
+
+### Fixed
+- **Removed the dormant kiosk installer path** (`liveuser-setup.conf`, `neos-install-identity`): orphaned since the public-installer switch, it would have re-imposed a passwordless autologin identity on installed disks if ever re-wired. Also removed the orphaned `neos-installer-partition.sh` (its Btrfs subvolume scheme contradicted the active `mount.conf`) and the broken, unwired `neos-restore-module.qml` (used a `Process` QML type no import provides), plus their tests.
+- **CI quality gates restored**: `verify_mkinitcpio.sh` and `verify_qml_enhancements.sh` no longer run under `|| true` — both pass and can now fail the build. ISO-dependent tests remain in the build job where an ISO exists.
+- **Overlay manifest hygiene**: live-only mechanics are now excluded from the installed-system overlay (`/root/*` including the build-time `customize_airootfs.sh` — which mkarchiso deletes from the ISO, so its manifest entry would have failed the Calamares rsync — plus `pacman-init.service`, `etc-pacman.d-gnupg.mount`, and `etc/mkinitcpio.d/`).
+- Pacman post-snapshot hook now pairs with the newest *pre* snapshot specifically instead of the newest snapshot of any type (concurrent timeline/autoupdate snapshots could mis-link the pair).
+- Duplicate liveuser creation removed from `neos-liveuser-setup`: the runtime branch drifted from the build-time `customize_airootfs.sh` (different shell path and groups); the script now fails loudly if the build-time user is missing.
+- `gen-vm-appliance.sh` randomizes the VirtualBox NIC MAC (template shipped a fixed one — two NeOS VMs on one LAN segment collided).
+- Stale comment in `profile/pacman.conf` claiming the installed system must switch to `DatabaseRequired` (the opposite is deliberate and enforced by the profile audit); publisher URL in `profiledef.sh` aligned with os-release.
+
+### Changed
+- **Releases now tag from the `VERSION` file** (`v<VERSION>-b<run>`) instead of the bare CI run number, and the release body carries the matching CHANGELOG section.
+- Dropped the never-built i686/aarch64 package lists (Arch dropped i686 in 2017; no aarch64 port exists — `profiledef.sh` builds x86_64 only). `tools/neos-profile-audit` and tests now audit only the shipped architecture.
+- `build.sh` warns that the local build mutates the host keyring (use a container for hermetic builds, as CI does).
+
 ## [2026.07.02] - 2026-07-02
 
 ### Fixed
