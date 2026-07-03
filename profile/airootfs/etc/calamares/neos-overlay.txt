@@ -67,9 +67,6 @@ usr/share/plymouth/themes/neos/cat-25.png
 usr/share/plymouth/themes/neos/cat-26.png
 usr/share/plymouth/themes/neos/cat-27.png
 usr/share/plymouth/themes/neos/cat-28.png
-usr/share/plymouth/themes/neos/cat-29.png
-usr/share/plymouth/themes/neos/cat-30.png
-usr/share/plymouth/themes/neos/cat-31.png
 usr/share/plymouth/themes/neos/logo.png
 usr/share/plymouth/themes/neos/neos.plymouth
 usr/share/plymouth/themes/neos/neos.script

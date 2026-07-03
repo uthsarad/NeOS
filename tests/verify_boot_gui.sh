@@ -8,7 +8,8 @@
 # - Boot splash: the Plymouth 'neos' theme uses a Windows-11-style layout — the
 #   NeOS logo (logo.png) centered above mid-screen, with the animated cat-NN.png
 #   loader below it. Cat frames are generated from tools/loader-cat.gif
-#   (committed; CI does not run generators).
+#   (committed; CI does not run generators). Repeated still frames at the end of
+#   the source GIF are trimmed so the Plymouth loop does not pause.
 set -euo pipefail
 
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
@@ -31,12 +32,12 @@ else
     echo "❌ sddm is not enabled"; FAIL=1
 fi
 
-# 2. Boot-splash cat frames are present (32 frames) and wired into the script.
+# 2. Boot-splash cat frames are present (29 frames) and wired into the script.
 frames=$(find "$THEME_DIR" -maxdepth 1 -name 'cat-*.png' | wc -l)
-if [[ "$frames" -eq 32 ]]; then
-    echo "✅ 32 cat boot-splash frames present"
+if [[ "$frames" -eq 29 ]]; then
+    echo "✅ 29 cat boot-splash frames present"
 else
-    echo "❌ expected 32 cat-NN.png frames, found $frames"; FAIL=1
+    echo "❌ expected 29 cat-NN.png frames, found $frames"; FAIL=1
 fi
 if grep -q 'cat-"' "$SCRIPT" || grep -q '"cat-' "$SCRIPT"; then
     echo "✅ neos.script animates the cat frames"

@@ -1,0 +1,897 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1782732960.5297685,
+    "ast_hash": "96e41611ab527db10d291672b34994e6",
+    "semantic_hash": "96e41611ab527db10d291672b34994e6"
+  },
+  "ARCHITECT_SCOPE.json": {
+    "mtime": 1782995463.551934,
+    "ast_hash": "88dae081e1d7d1f78b7513e1e1de3c55",
+    "semantic_hash": "88dae081e1d7d1f78b7513e1e1de3c55"
+  },
+  "SPECIALIST_GUIDANCE.json": {
+    "mtime": 1782995463.5558388,
+    "ast_hash": "9d9ecb902e94ac04742a910774aedb56",
+    "semantic_hash": "9d9ecb902e94ac04742a910774aedb56"
+  },
+  "ai/tasks/bolt.json": {
+    "mtime": 1782719171.3043866,
+    "ast_hash": "34f882a89d61a81df0e593abfbde87f8",
+    "semantic_hash": "34f882a89d61a81df0e593abfbde87f8"
+  },
+  "ai/tasks/palette.json": {
+    "mtime": 1782719171.304479,
+    "ast_hash": "2937bad07f5ac58a2046483ec38d9968",
+    "semantic_hash": "2937bad07f5ac58a2046483ec38d9968"
+  },
+  "ai/tasks/sentinel.json": {
+    "mtime": 1782719171.304479,
+    "ast_hash": "89d277f26adf2380a2d294c5b1bfe228",
+    "semantic_hash": "89d277f26adf2380a2d294c5b1bfe228"
+  },
+  "build.sh": {
+    "mtime": 1783048613.8485,
+    "ast_hash": "3eed6900e693f670bd304b935c018983",
+    "semantic_hash": "3eed6900e693f670bd304b935c018983"
+  },
+  "profile/airootfs/root/customize_airootfs.sh": {
+    "mtime": 1782731902.2726367,
+    "ast_hash": "23ce4a7243cce4c4b25092d67c11ad5d",
+    "semantic_hash": "23ce4a7243cce4c4b25092d67c11ad5d"
+  },
+  "profile/airootfs/usr/local/bin/neos-accessibility": {
+    "mtime": 1782741777.5545704,
+    "ast_hash": "8fa28e31e3e0c362214494f815168806",
+    "semantic_hash": "8fa28e31e3e0c362214494f815168806"
+  },
+  "profile/airootfs/usr/local/bin/neos-autoupdate.sh": {
+    "mtime": 1782719171.3202803,
+    "ast_hash": "d8efbf3dce7fe249a3c2df466adb96d8",
+    "semantic_hash": "d8efbf3dce7fe249a3c2df466adb96d8"
+  },
+  "profile/airootfs/usr/local/bin/neos-desktop-setup": {
+    "mtime": 1782719171.32063,
+    "ast_hash": "1191bd274f5ede13c5237c61d71696bd",
+    "semantic_hash": "1191bd274f5ede13c5237c61d71696bd"
+  },
+  "profile/airootfs/usr/local/bin/neos-driver-manager": {
+    "mtime": 1782719171.32063,
+    "ast_hash": "04733caa2da112c21128244e9435cddc",
+    "semantic_hash": "04733caa2da112c21128244e9435cddc"
+  },
+  "profile/airootfs/usr/local/bin/neos-liveuser-setup": {
+    "mtime": 1783048181.460943,
+    "ast_hash": "fafd0b11549879d5a30696bb48a7cbd3",
+    "semantic_hash": "fafd0b11549879d5a30696bb48a7cbd3"
+  },
+  "profile/airootfs/usr/local/bin/neos-pacstrap": {
+    "mtime": 1782719171.32063,
+    "ast_hash": "54a9419f3469f563a44c5a4c1362a9a2",
+    "semantic_hash": "54a9419f3469f563a44c5a4c1362a9a2"
+  },
+  "profile/airootfs/usr/local/bin/neos-secureboot-setup": {
+    "mtime": 1782741777.5545704,
+    "ast_hash": "c68cbfab6d3f792ac3b174b19e3f4bbd",
+    "semantic_hash": "c68cbfab6d3f792ac3b174b19e3f4bbd"
+  },
+  "profile/airootfs/usr/local/bin/neos-vm-graphics": {
+    "mtime": 1782719171.32063,
+    "ast_hash": "8765c62f06ce0818b33e5c48d110b8f9",
+    "semantic_hash": "8765c62f06ce0818b33e5c48d110b8f9"
+  },
+  "profile/airootfs/usr/local/bin/neos-welcome": {
+    "mtime": 1782719171.32063,
+    "ast_hash": "e8e47c1c6613d8d61d2129244ae53d4c",
+    "semantic_hash": "e8e47c1c6613d8d61d2129244ae53d4c"
+  },
+  "profile/airootfs/usr/local/bin/neos-welcome-app": {
+    "mtime": 1782719171.32063,
+    "ast_hash": "1ea8b6cf0a93a0740fcb69f5a6667766",
+    "semantic_hash": "1ea8b6cf0a93a0740fcb69f5a6667766"
+  },
+  "profile/profiledef.sh": {
+    "mtime": 1783048041.7123559,
+    "ast_hash": "ad51092755b1946e2a066b1eda347867",
+    "semantic_hash": "ad51092755b1946e2a066b1eda347867"
+  },
+  "tests/verify_airootfs_structure.sh": {
+    "mtime": 1783048194.4571226,
+    "ast_hash": "16e1e2815a8d1ffcd3767b1a75779e26",
+    "semantic_hash": "16e1e2815a8d1ffcd3767b1a75779e26"
+  },
+  "tests/verify_autoupdate_security.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "c4bf65950d3d77b0352412e0982e4ff4",
+    "semantic_hash": "c4bf65950d3d77b0352412e0982e4ff4"
+  },
+  "tests/verify_boot_gui.sh": {
+    "mtime": 1783069647.773975,
+    "ast_hash": "7c07a9b11141928f5feeaab5b965a31b",
+    "semantic_hash": ""
+  },
+  "tests/verify_build_profile.sh": {
+    "mtime": 1783048177.5367713,
+    "ast_hash": "8cb20a74e55525a19033493c368bce0d",
+    "semantic_hash": "8cb20a74e55525a19033493c368bce0d"
+  },
+  "tests/verify_calamares_defaults.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "8c2ea88a0a343bce4f63cfdd5389aa4d",
+    "semantic_hash": "8c2ea88a0a343bce4f63cfdd5389aa4d"
+  },
+  "tests/verify_cleanup.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "3526d74621db3497e371faed1b22da77",
+    "semantic_hash": "3526d74621db3497e371faed1b22da77"
+  },
+  "tests/verify_grub_config.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "fc3cccd157cbdb74d2a9cc489cefa2f1",
+    "semantic_hash": "fc3cccd157cbdb74d2a9cc489cefa2f1"
+  },
+  "tests/verify_grub_theme.sh": {
+    "mtime": 1782731963.9816608,
+    "ast_hash": "9a735d7f0d2636a1a619fe6dd46b28df",
+    "semantic_hash": "9a735d7f0d2636a1a619fe6dd46b28df"
+  },
+  "tests/verify_iso_calamares_libs.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "6c8fa63b531a3e679ec642378557601a",
+    "semantic_hash": "6c8fa63b531a3e679ec642378557601a"
+  },
+  "tests/verify_iso_grub.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "70a0c16f849cbdf53e80bd441592920e",
+    "semantic_hash": "70a0c16f849cbdf53e80bd441592920e"
+  },
+  "tests/verify_iso_size.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "ecde8d70a4a0772c1c64737c369a8885",
+    "semantic_hash": "ecde8d70a4a0772c1c64737c369a8885"
+  },
+  "tests/verify_iso_smoketest.sh": {
+    "mtime": 1782886603.1130013,
+    "ast_hash": "0ad73ce246b002dc0ac9308098b08c64",
+    "semantic_hash": "0ad73ce246b002dc0ac9308098b08c64"
+  },
+  "tests/verify_live_graphical_target.sh": {
+    "mtime": 1782886603.1130013,
+    "ast_hash": "bc554b8f40f456d758ed355cec400e44",
+    "semantic_hash": "bc554b8f40f456d758ed355cec400e44"
+  },
+  "tests/verify_mirrorlist_connectivity.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "15fcc543389d3a01456e2b0c9ec82f52",
+    "semantic_hash": "15fcc543389d3a01456e2b0c9ec82f52"
+  },
+  "tests/verify_mkinitcpio.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "4bd0865a8124b8240a4c354614790641",
+    "semantic_hash": "4bd0865a8124b8240a4c354614790641"
+  },
+  "tests/verify_module_matching.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "6fbaeea9072d9945af853385374d5e4e",
+    "semantic_hash": "6fbaeea9072d9945af853385374d5e4e"
+  },
+  "tests/verify_pacstrap.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "0d401a279d731c855af1324b1eb26f2f",
+    "semantic_hash": "0d401a279d731c855af1324b1eb26f2f"
+  },
+  "tests/verify_performance_config.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "849debaf42c64dd8c646d58e2f239660",
+    "semantic_hash": "849debaf42c64dd8c646d58e2f239660"
+  },
+  "tests/verify_qml_enhancements.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "3021d19e82350dda7552d046ac922922",
+    "semantic_hash": "3021d19e82350dda7552d046ac922922"
+  },
+  "tests/verify_rust_profile_audit.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "b6b94b8c7b21a92948220c327b9d905c",
+    "semantic_hash": "b6b94b8c7b21a92948220c327b9d905c"
+  },
+  "tests/verify_sddm_theme.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "2090f777839e9e5f5dd75b41a0b69678",
+    "semantic_hash": "2090f777839e9e5f5dd75b41a0b69678"
+  },
+  "tests/verify_security_autologin.sh": {
+    "mtime": 1782886603.1130013,
+    "ast_hash": "c975504314eb6a7d086b8d7f6c4abe5d",
+    "semantic_hash": "c975504314eb6a7d086b8d7f6c4abe5d"
+  },
+  "tests/verify_security_config.sh": {
+    "mtime": 1783048554.9162843,
+    "ast_hash": "305079820cc0ba5be9776455edf6c1fb",
+    "semantic_hash": "305079820cc0ba5be9776455edf6c1fb"
+  },
+  "tests/verify_service_hardening.sh": {
+    "mtime": 1783048540.4949746,
+    "ast_hash": "6716d5f4095eecacd4a65164493189f8",
+    "semantic_hash": "6716d5f4095eecacd4a65164493189f8"
+  },
+  "tests/verify_shellcheck.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "7617264f1d7d905d6c27f1e2e3cd04a8",
+    "semantic_hash": "7617264f1d7d905d6c27f1e2e3cd04a8"
+  },
+  "tests/verify_ssh_config.sh": {
+    "mtime": 1782719171.3369231,
+    "ast_hash": "4f9455bf4c2433e8cdf8e2cd9d9f56d0",
+    "semantic_hash": "4f9455bf4c2433e8cdf8e2cd9d9f56d0"
+  },
+  "tests/verify_sudoers_fix.sh": {
+    "mtime": 1782719171.3378294,
+    "ast_hash": "511a8bb15e7e5af700960c52de1a0452",
+    "semantic_hash": "511a8bb15e7e5af700960c52de1a0452"
+  },
+  "tests/verify_syslinux_config.sh": {
+    "mtime": 1782719171.3378294,
+    "ast_hash": "439ee811e80156bf32bfa360e9ea9e83",
+    "semantic_hash": "439ee811e80156bf32bfa360e9ea9e83"
+  },
+  "tests/verify_ufw.sh": {
+    "mtime": 1782719171.3378294,
+    "ast_hash": "f2a595d1b983db7aa2344ace1cfe45ba",
+    "semantic_hash": "f2a595d1b983db7aa2344ace1cfe45ba"
+  },
+  "tests/verify_umount_prep.sh": {
+    "mtime": 1782719171.3378294,
+    "ast_hash": "30ed95e3b82e48f5b14607d056d12e75",
+    "semantic_hash": "30ed95e3b82e48f5b14607d056d12e75"
+  },
+  "tools/fix-branding-alpha.sh": {
+    "mtime": 1783052393.3035014,
+    "ast_hash": "a29d0dd8f27ad9f582c7bb556227edab",
+    "semantic_hash": "a29d0dd8f27ad9f582c7bb556227edab"
+  },
+  "tools/gen-bootlogo-frames.py": {
+    "mtime": 1783070317.0902722,
+    "ast_hash": "a04ea57c2ec46a63cbd332b29e363b8d",
+    "semantic_hash": ""
+  },
+  "tools/gen-build-conf.sh": {
+    "mtime": 1783048258.9766018,
+    "ast_hash": "d3bab194471b166858f3dfb496e6f86a",
+    "semantic_hash": "d3bab194471b166858f3dfb496e6f86a"
+  },
+  "tools/gen-manifests.sh": {
+    "mtime": 1783048482.547188,
+    "ast_hash": "f0f0ff6285edfcbf121547aedb290e98",
+    "semantic_hash": "f0f0ff6285edfcbf121547aedb290e98"
+  },
+  "tools/gen-vm-appliance.sh": {
+    "mtime": 1783048241.1923091,
+    "ast_hash": "43ff60f547d768f98f2375f0d46111f6",
+    "semantic_hash": "43ff60f547d768f98f2375f0d46111f6"
+  },
+  "tools/gen-wallpaper.py": {
+    "mtime": 1782719171.338948,
+    "ast_hash": "e46cf8f6654523d3aab2bdc4a583218e",
+    "semantic_hash": "e46cf8f6654523d3aab2bdc4a583218e"
+  },
+  "tools/neos-profile-audit/src/main.rs": {
+    "mtime": 1783048589.6104803,
+    "ast_hash": "b8ac9464736331cb0475e6db468be4a4",
+    "semantic_hash": "b8ac9464736331cb0475e6db468be4a4"
+  },
+  ".Jules/bolt.md": {
+    "mtime": 1782719171.3011625,
+    "ast_hash": "63235af3a3e3df358f2b4c873017bb22",
+    "semantic_hash": "63235af3a3e3df358f2b4c873017bb22"
+  },
+  ".Jules/palette.md": {
+    "mtime": 1782719171.3011625,
+    "ast_hash": "cdd1bd307aac7d660476da1a85152740",
+    "semantic_hash": "cdd1bd307aac7d660476da1a85152740"
+  },
+  ".Jules/sentinel.md": {
+    "mtime": 1782719171.3011625,
+    "ast_hash": "f9567a577823091acad083575d1b41ae",
+    "semantic_hash": "f9567a577823091acad083575d1b41ae"
+  },
+  ".github/labeler.yml": {
+    "mtime": 1782719171.3011625,
+    "ast_hash": "82bb497cfc312ee09858e468b801b6cb",
+    "semantic_hash": "82bb497cfc312ee09858e468b801b6cb"
+  },
+  ".github/workflows/build-iso.yml": {
+    "mtime": 1783048351.8997257,
+    "ast_hash": "16830039e34c5e7744da75b78152403d",
+    "semantic_hash": "16830039e34c5e7744da75b78152403d"
+  },
+  ".github/workflows/jules-auto-merge.yml": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "0b9377c63c4178ed895c791f7f72563f",
+    "semantic_hash": "0b9377c63c4178ed895c791f7f72563f"
+  },
+  ".github/workflows/label.yml": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "f4398fa307e39d9b66fda64155aaf5cb",
+    "semantic_hash": "f4398fa307e39d9b66fda64155aaf5cb"
+  },
+  ".github/workflows/summary.yml": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "9dc6e227c6e5758202272c824e570fb6",
+    "semantic_hash": "9dc6e227c6e5758202272c824e570fb6"
+  },
+  "ARCHITECT_REPORT.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "e13e545a5beebd971ad0301dd4c777d3",
+    "semantic_hash": "e13e545a5beebd971ad0301dd4c777d3"
+  },
+  "BOLT_REPORT.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "e38ee62608895cb796f88b686fa3d7dd",
+    "semantic_hash": "e38ee62608895cb796f88b686fa3d7dd"
+  },
+  "CHANGELOG.md": {
+    "mtime": 1783052471.0884795,
+    "ast_hash": "034968a884257ed96b59e044abb2d06b",
+    "semantic_hash": "034968a884257ed96b59e044abb2d06b"
+  },
+  "CLAUDE.md": {
+    "mtime": 1782886603.1193838,
+    "ast_hash": "a60003ad1312707e6fd3e7cfd8739bd2",
+    "semantic_hash": "a60003ad1312707e6fd3e7cfd8739bd2"
+  },
+  "CODE_OF_CONDUCT.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "1cc2d9bef9a999d8870edf6f7a78fdf9",
+    "semantic_hash": "1cc2d9bef9a999d8870edf6f7a78fdf9"
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "1c03be3275b260f36fa334bb63a633c3",
+    "semantic_hash": "1c03be3275b260f36fa334bb63a633c3"
+  },
+  "PALETTE_REPORT.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "d2b8dd175035700884a703cf8e62f51c",
+    "semantic_hash": "d2b8dd175035700884a703cf8e62f51c"
+  },
+  "README.md": {
+    "mtime": 1782741777.5507848,
+    "ast_hash": "83d098e2d0e60e491fde42640be09233",
+    "semantic_hash": "83d098e2d0e60e491fde42640be09233"
+  },
+  "RISK_REPORT.md": {
+    "mtime": 1782995463.5558388,
+    "ast_hash": "95648d42561b2639d4ecb2e8c97a5390",
+    "semantic_hash": "95648d42561b2639d4ecb2e8c97a5390"
+  },
+  "SECURITY.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "0f12201e36adea7bf4656852b4b9e356",
+    "semantic_hash": "0f12201e36adea7bf4656852b4b9e356"
+  },
+  "SENTINEL_REPORT.md": {
+    "mtime": 1782719171.303163,
+    "ast_hash": "4743acafd15234b6e1b79d21649636e0",
+    "semantic_hash": "4743acafd15234b6e1b79d21649636e0"
+  },
+  "STRATEGIC_DIRECTIVE.md": {
+    "mtime": 1782995463.5558388,
+    "ast_hash": "ab59241909a93b44154c8e82679df4e5",
+    "semantic_hash": "ab59241909a93b44154c8e82679df4e5"
+  },
+  "docs/SECURE_BOOT.md": {
+    "mtime": 1782741777.5507848,
+    "ast_hash": "221cd980987d13d7ce38816b8cd5e7d6",
+    "semantic_hash": "221cd980987d13d7ce38816b8cd5e7d6"
+  },
+  "docs/TROUBLESHOOTING.md": {
+    "mtime": 1782719171.304479,
+    "ast_hash": "97dfa0ff7cd469a2859933eab18f1ed1",
+    "semantic_hash": "97dfa0ff7cd469a2859933eab18f1ed1"
+  },
+  "docs/architecture/ARCHITECTURE.md": {
+    "mtime": 1782719171.3050675,
+    "ast_hash": "a901ae30a4b79fe247d9c9765debeda0",
+    "semantic_hash": "a901ae30a4b79fe247d9c9765debeda0"
+  },
+  "docs/architecture/BOOTING.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "740431445230f01f074cf73f0feee390",
+    "semantic_hash": "740431445230f01f074cf73f0feee390"
+  },
+  "docs/architecture/BOOTLOADER.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "48518b697087cf333f9b2ab9c6e2b99d",
+    "semantic_hash": "48518b697087cf333f9b2ab9c6e2b99d"
+  },
+  "docs/architecture/BOOTSTRAP.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "cbe5aaae8a2b1d0ce2c72963c3f88c3d",
+    "semantic_hash": "cbe5aaae8a2b1d0ce2c72963c3f88c3d"
+  },
+  "docs/architecture/BRAND_STRUCTURE.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "fc817ae750ab880680b774a93b67ff69",
+    "semantic_hash": "fc817ae750ab880680b774a93b67ff69"
+  },
+  "docs/architecture/MISSION.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "38fd0c885dcc68a2396423facc41f481",
+    "semantic_hash": "38fd0c885dcc68a2396423facc41f481"
+  },
+  "docs/architecture/PERFORMANCE.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "f34810c081f37d7af029e7294e11ad21",
+    "semantic_hash": "f34810c081f37d7af029e7294e11ad21"
+  },
+  "docs/architecture/ROADMAP.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "6582aa6e12a59b4c54fde2fddf52e9e5",
+    "semantic_hash": "6582aa6e12a59b4c54fde2fddf52e9e5"
+  },
+  "docs/architecture/decisions/0001-core-architecture-decisions.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "5ee2bcf580fad7794cf6579b56c5d426",
+    "semantic_hash": "5ee2bcf580fad7794cf6579b56c5d426"
+  },
+  "docs/archive/AUDIT_ACTION_PLAN.md": {
+    "mtime": 1782719171.3052144,
+    "ast_hash": "cfd57188223fc239341126ad73b1b366",
+    "semantic_hash": "cfd57188223fc239341126ad73b1b366"
+  },
+  "docs/archive/DEEP_AUDIT.md": {
+    "mtime": 1782719171.3062167,
+    "ast_hash": "9b72b105b4454e7212bb1f665a431388",
+    "semantic_hash": "9b72b105b4454e7212bb1f665a431388"
+  },
+  "docs/archive/ISO_BUILD_FIX.md": {
+    "mtime": 1782719171.3062167,
+    "ast_hash": "7b3287daf2f47adb9832ab97f05cc44f",
+    "semantic_hash": "7b3287daf2f47adb9832ab97f05cc44f"
+  },
+  "docs/archive/PREREQUISITES_DRAFT.md": {
+    "mtime": 1782719171.3062167,
+    "ast_hash": "eb8a731a6687bf12fe86eaab21f869db",
+    "semantic_hash": "eb8a731a6687bf12fe86eaab21f869db"
+  },
+  "docs/archive/REMOVED_FEATURES.md": {
+    "mtime": 1782719171.3062167,
+    "ast_hash": "11362fdc28f48906b578fdcc46157b26",
+    "semantic_hash": "11362fdc28f48906b578fdcc46157b26"
+  },
+  "docs/decisions/0001-linux-lts.md": {
+    "mtime": 1782719171.3069086,
+    "ast_hash": "a9812411020be44940c58e5603a53f38",
+    "semantic_hash": "a9812411020be44940c58e5603a53f38"
+  },
+  "docs/decisions/0002-btrfs-snapper.md": {
+    "mtime": 1782719171.3082356,
+    "ast_hash": "9d8d56bc958232c58cd536252d9f0bbb",
+    "semantic_hash": "9d8d56bc958232c58cd536252d9f0bbb"
+  },
+  "docs/decisions/0003-calamares.md": {
+    "mtime": 1782719171.3082356,
+    "ast_hash": "7bb0313f705c80be720506902f25d3db",
+    "semantic_hash": "7bb0313f705c80be720506902f25d3db"
+  },
+  "docs/decisions/0004-plasma-meta.md": {
+    "mtime": 1782719171.3082356,
+    "ast_hash": "5836e6287a2c1ffb837cb74e37e3bcee",
+    "semantic_hash": "5836e6287a2c1ffb837cb74e37e3bcee"
+  },
+  "docs/decisions/0005-parallel-downloads.md": {
+    "mtime": 1782719171.3082356,
+    "ast_hash": "fae105d045cc5a4b87f797baabbc73a7",
+    "semantic_hash": "fae105d045cc5a4b87f797baabbc73a7"
+  },
+  "docs/decisions/0006-ubuntu-parity-capabilities.md": {
+    "mtime": 1782741777.5507848,
+    "ast_hash": "0c6f77f76c4c5a9798f46b3013ad8d72",
+    "semantic_hash": "0c6f77f76c4c5a9798f46b3013ad8d72"
+  },
+  "docs/user-guide/HANDBOOK.md": {
+    "mtime": 1782719171.3082356,
+    "ast_hash": "c6d1f87fa5af5c5cfc66f96b7403ef26",
+    "semantic_hash": "c6d1f87fa5af5c5cfc66f96b7403ef26"
+  },
+  "docs/user-guide/TROUBLESHOOTING.md": {
+    "mtime": 1782719171.3086905,
+    "ast_hash": "ade8de88d0c5176d23366a7445424357",
+    "semantic_hash": "ade8de88d0c5176d23366a7445424357"
+  },
+  "docs/user-guide/VM_STARTUP.md": {
+    "mtime": 1782719171.3086905,
+    "ast_hash": "6b0a50d0ef2c4bc762c837db1e10aea2",
+    "semantic_hash": "6b0a50d0ef2c4bc762c837db1e10aea2"
+  },
+  "profile/airootfs/etc/calamares/neos-overlay.txt": {
+    "mtime": 1783069647.9531791,
+    "ast_hash": "03ba566bcca1787720854d6679b051b4",
+    "semantic_hash": ""
+  },
+  "profile/airootfs/etc/calamares/neos-packages.txt": {
+    "mtime": 1783048489.2102501,
+    "ast_hash": "89fd863ded6704dfb9e540652194e4a8",
+    "semantic_hash": "89fd863ded6704dfb9e540652194e4a8"
+  },
+  "profile/grub/themes/starfield/theme.txt": {
+    "mtime": 1782741777.5545704,
+    "ast_hash": "411619df329a978a375e77aad2821044",
+    "semantic_hash": "411619df329a978a375e77aad2821044"
+  },
+  "reports/v2026.06.29/01-architect-report.md": {
+    "mtime": 1782741777.557693,
+    "ast_hash": "81eb4eaa76123dd0e673807375daa325",
+    "semantic_hash": "81eb4eaa76123dd0e673807375daa325"
+  },
+  "reports/v2026.06.29/02-builder-packages.md": {
+    "mtime": 1782741777.5580127,
+    "ast_hash": "45a39d83d96c94a1e7eb65846da50336",
+    "semantic_hash": "45a39d83d96c94a1e7eb65846da50336"
+  },
+  "reports/v2026.06.29/03-builder-secureboot.md": {
+    "mtime": 1782741777.5580127,
+    "ast_hash": "00b960e3980fa32ac4d0ad640be4bf10",
+    "semantic_hash": "00b960e3980fa32ac4d0ad640be4bf10"
+  },
+  "reports/v2026.06.29/04-security-secureboot.md": {
+    "mtime": 1782741777.5580127,
+    "ast_hash": "43097b6156be5f4914a2029d6288fbce",
+    "semantic_hash": "43097b6156be5f4914a2029d6288fbce"
+  },
+  "reports/v2026.06.29/05-scribe.md": {
+    "mtime": 1782741777.5580127,
+    "ast_hash": "35d77c9f305e52d6386786a949858c1d",
+    "semantic_hash": "35d77c9f305e52d6386786a949858c1d"
+  },
+  "reports/v2026.07.01/cursor-installer-report.md": {
+    "mtime": 1782915363.8674352,
+    "ast_hash": "52765cb1efce7022efb0412aefea8b56",
+    "semantic_hash": "52765cb1efce7022efb0412aefea8b56"
+  },
+  "reports/v2026.07.01/logo-boot-report.md": {
+    "mtime": 1782921774.8617935,
+    "ast_hash": "f8850e88169a4c349be83d83b26945c3",
+    "semantic_hash": "f8850e88169a4c349be83d83b26945c3"
+  },
+  "reports/v2026.07.03/deep-audit-report.md": {
+    "mtime": 1783048673.6201203,
+    "ast_hash": "857481f403717f410cd0e01569b2398f",
+    "semantic_hash": "857481f403717f410cd0e01569b2398f"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/background.png": {
+    "mtime": 1782719171.3097456,
+    "ast_hash": "a58685f258535079ce5cea9cf0807fac",
+    "semantic_hash": "a58685f258535079ce5cea9cf0807fac"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/partition-alongside.svg": {
+    "mtime": 1782719171.309956,
+    "ast_hash": "ba6b8b0ed5ec2c0750abce89470a21fb",
+    "semantic_hash": "ba6b8b0ed5ec2c0750abce89470a21fb"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/partition-disk.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "5df25bd2339903388eaef0ca62cb4aa2",
+    "semantic_hash": "5df25bd2339903388eaef0ca62cb4aa2"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/partition-erase-auto.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "76d2d0dc7bc36ff6a4609c32d95cf548",
+    "semantic_hash": "76d2d0dc7bc36ff6a4609c32d95cf548"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/partition-manual.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "ee34d593a67f64440ddd21afac9c28a3",
+    "semantic_hash": "ee34d593a67f64440ddd21afac9c28a3"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/partition-replace-os.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "e0df7a8e659fa9b4047bd5d1b1df03dc",
+    "semantic_hash": "e0df7a8e659fa9b4047bd5d1b1df03dc"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/partition-table.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "1bca380a294aeeb58510485d62f2bc7f",
+    "semantic_hash": "1bca380a294aeeb58510485d62f2bc7f"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/state-error.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "3a6a5054cf336652379871862b1a6d1f",
+    "semantic_hash": "3a6a5054cf336652379871862b1a6d1f"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/img/state-warning.svg": {
+    "mtime": 1782719171.3102436,
+    "ast_hash": "abbcd085cdb0b3abc8320620e57b6f84",
+    "semantic_hash": "abbcd085cdb0b3abc8320620e57b6f84"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/logo.png": {
+    "mtime": 1783052403.0916665,
+    "ast_hash": "092b7c6fb57363b741a9fa70e0f3a7fe",
+    "semantic_hash": "092b7c6fb57363b741a9fa70e0f3a7fe"
+  },
+  "profile/airootfs/etc/calamares/branding/neos/welcome.png": {
+    "mtime": 1782915242.6675043,
+    "ast_hash": "7e5af24e3b341115d6201064d2606370",
+    "semantic_hash": "7e5af24e3b341115d6201064d2606370"
+  },
+  "profile/airootfs/usr/share/backgrounds/neos-wallpaper.png": {
+    "mtime": 1782719171.3216786,
+    "ast_hash": "7cf595ca100ee4effcde468b7818bdc6",
+    "semantic_hash": "7cf595ca100ee4effcde468b7818bdc6"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-00.png": {
+    "mtime": 1783052404.8839576,
+    "ast_hash": "0db46b9f42e32d25aa1975d91679664e",
+    "semantic_hash": "0db46b9f42e32d25aa1975d91679664e"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-01.png": {
+    "mtime": 1783052404.923975,
+    "ast_hash": "b54e4c9342ae338d881cc2122458bcbd",
+    "semantic_hash": "b54e4c9342ae338d881cc2122458bcbd"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-02.png": {
+    "mtime": 1783052404.9639924,
+    "ast_hash": "e58bed5127ac595992b8358ad0c99648",
+    "semantic_hash": "e58bed5127ac595992b8358ad0c99648"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-03.png": {
+    "mtime": 1783052405.0040097,
+    "ast_hash": "7ee881730e1d4d403c81d0b0e7eb8f8a",
+    "semantic_hash": "7ee881730e1d4d403c81d0b0e7eb8f8a"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-04.png": {
+    "mtime": 1783052405.0440269,
+    "ast_hash": "be4733bc768fca6ab4ad1c8efcd29c1e",
+    "semantic_hash": "be4733bc768fca6ab4ad1c8efcd29c1e"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-05.png": {
+    "mtime": 1783052405.0840442,
+    "ast_hash": "1794f021256e03178d8a9ca02de63bc7",
+    "semantic_hash": "1794f021256e03178d8a9ca02de63bc7"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-06.png": {
+    "mtime": 1783052405.1240613,
+    "ast_hash": "9529339c14fa0645bd4fdfd67934095c",
+    "semantic_hash": "9529339c14fa0645bd4fdfd67934095c"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-07.png": {
+    "mtime": 1783052405.1680803,
+    "ast_hash": "61d2365411d956fbb8773b65cc924d10",
+    "semantic_hash": "61d2365411d956fbb8773b65cc924d10"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-08.png": {
+    "mtime": 1783052405.2080977,
+    "ast_hash": "ff644bbad647ee667ab392260214fc50",
+    "semantic_hash": "ff644bbad647ee667ab392260214fc50"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-09.png": {
+    "mtime": 1783052405.2481148,
+    "ast_hash": "7cf14ff98e4aa53566118612dd17e943",
+    "semantic_hash": "7cf14ff98e4aa53566118612dd17e943"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-10.png": {
+    "mtime": 1783052405.2881322,
+    "ast_hash": "8147d436ce256ef6759050efd9d4b3da",
+    "semantic_hash": "8147d436ce256ef6759050efd9d4b3da"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-11.png": {
+    "mtime": 1783052405.3281493,
+    "ast_hash": "c5669cf74498defc7f0638fcc98312e5",
+    "semantic_hash": "c5669cf74498defc7f0638fcc98312e5"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-12.png": {
+    "mtime": 1783052405.4281924,
+    "ast_hash": "3e90de83899bb7961fce3a3caed045b2",
+    "semantic_hash": "3e90de83899bb7961fce3a3caed045b2"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-13.png": {
+    "mtime": 1783052405.4722114,
+    "ast_hash": "db5d6f5250688179cb23ccc5f95ff9fd",
+    "semantic_hash": "db5d6f5250688179cb23ccc5f95ff9fd"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-14.png": {
+    "mtime": 1783052405.5122287,
+    "ast_hash": "fddf6f09677aea93e3a307f6af70744c",
+    "semantic_hash": "fddf6f09677aea93e3a307f6af70744c"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-15.png": {
+    "mtime": 1783052405.5522459,
+    "ast_hash": "893f549511fae2a372f119ea05120d94",
+    "semantic_hash": "893f549511fae2a372f119ea05120d94"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-16.png": {
+    "mtime": 1783052405.5962648,
+    "ast_hash": "331f6dd043d9510471790b5c55cc7f6b",
+    "semantic_hash": "331f6dd043d9510471790b5c55cc7f6b"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-17.png": {
+    "mtime": 1783052405.6362822,
+    "ast_hash": "17c4c759ac66d4b3246d58c95fbb8b83",
+    "semantic_hash": "17c4c759ac66d4b3246d58c95fbb8b83"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-18.png": {
+    "mtime": 1783052405.6803012,
+    "ast_hash": "43d58caca71aeaeed1dc01ac07c656f1",
+    "semantic_hash": "43d58caca71aeaeed1dc01ac07c656f1"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-19.png": {
+    "mtime": 1783052405.7243202,
+    "ast_hash": "a3b125abab8b0db570b2fd71b3fc296e",
+    "semantic_hash": "a3b125abab8b0db570b2fd71b3fc296e"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-20.png": {
+    "mtime": 1783052405.7643373,
+    "ast_hash": "98dd890c0e1ea0045800975c688d6754",
+    "semantic_hash": "98dd890c0e1ea0045800975c688d6754"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-21.png": {
+    "mtime": 1783052405.8083563,
+    "ast_hash": "19a4fe68e86f733c9843936523f1fbb0",
+    "semantic_hash": "19a4fe68e86f733c9843936523f1fbb0"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-22.png": {
+    "mtime": 1783052405.856377,
+    "ast_hash": "73d881265dae55dfb5c341a771bc3b6c",
+    "semantic_hash": "73d881265dae55dfb5c341a771bc3b6c"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-23.png": {
+    "mtime": 1783052405.9043977,
+    "ast_hash": "81e9dc44650728af47c614126ba79c39",
+    "semantic_hash": "81e9dc44650728af47c614126ba79c39"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-24.png": {
+    "mtime": 1783052405.9444149,
+    "ast_hash": "9cb8d158e983b4759881d51f2edafe04",
+    "semantic_hash": "9cb8d158e983b4759881d51f2edafe04"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-25.png": {
+    "mtime": 1783052405.9844322,
+    "ast_hash": "20c2cf633c57b136f455cbce1af6c18c",
+    "semantic_hash": "20c2cf633c57b136f455cbce1af6c18c"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-26.png": {
+    "mtime": 1783052406.028451,
+    "ast_hash": "e3b560e055b944b9c67a17f7e4c3c5e5",
+    "semantic_hash": "e3b560e055b944b9c67a17f7e4c3c5e5"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-27.png": {
+    "mtime": 1783052406.068468,
+    "ast_hash": "cb06457c294e03a41058448da69691b5",
+    "semantic_hash": "cb06457c294e03a41058448da69691b5"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/cat-28.png": {
+    "mtime": 1783052406.1084852,
+    "ast_hash": "a3eaf91430617b7c5186bcab8ccc7cf7",
+    "semantic_hash": "a3eaf91430617b7c5186bcab8ccc7cf7"
+  },
+  "profile/airootfs/usr/share/plymouth/themes/neos/logo.png": {
+    "mtime": 1783052402.9756866,
+    "ast_hash": "fc4aef5035f3342619192cc3c54ccaa9",
+    "semantic_hash": "fc4aef5035f3342619192cc3c54ccaa9"
+  },
+  "profile/airootfs/usr/share/sddm/themes/neos/preview.png": {
+    "mtime": 1782719171.3348064,
+    "ast_hash": "9b04e932a1eb3d26401bb072ac659664",
+    "semantic_hash": "9b04e932a1eb3d26401bb072ac659664"
+  },
+  "profile/grub/themes/starfield/boot_menu_c.png": {
+    "mtime": 1782728940.2947297,
+    "ast_hash": "43f0e45c0f1c185aa6748c526f6a9409",
+    "semantic_hash": "43f0e45c0f1c185aa6748c526f6a9409"
+  },
+  "profile/grub/themes/starfield/boot_menu_e.png": {
+    "mtime": 1782728940.2947786,
+    "ast_hash": "e2f10257e93e8d1bd30bf281ec40cf2a",
+    "semantic_hash": "e2f10257e93e8d1bd30bf281ec40cf2a"
+  },
+  "profile/grub/themes/starfield/boot_menu_n.png": {
+    "mtime": 1782728940.2948265,
+    "ast_hash": "c8eecce563ab923bcc96900c01a737da",
+    "semantic_hash": "c8eecce563ab923bcc96900c01a737da"
+  },
+  "profile/grub/themes/starfield/boot_menu_ne.png": {
+    "mtime": 1782728940.2948782,
+    "ast_hash": "64759fc96c6b58b48ccb1b2be43ff19f",
+    "semantic_hash": "64759fc96c6b58b48ccb1b2be43ff19f"
+  },
+  "profile/grub/themes/starfield/boot_menu_nw.png": {
+    "mtime": 1782728940.2949257,
+    "ast_hash": "2e0a22af07cbfebe0aa39dea59e92391",
+    "semantic_hash": "2e0a22af07cbfebe0aa39dea59e92391"
+  },
+  "profile/grub/themes/starfield/boot_menu_s.png": {
+    "mtime": 1782728940.294976,
+    "ast_hash": "52705df9b224eb4bb70658ad02dd3e2e",
+    "semantic_hash": "52705df9b224eb4bb70658ad02dd3e2e"
+  },
+  "profile/grub/themes/starfield/boot_menu_se.png": {
+    "mtime": 1782728940.2950394,
+    "ast_hash": "ff601590b2116b3bd516a9e16a07e50f",
+    "semantic_hash": "ff601590b2116b3bd516a9e16a07e50f"
+  },
+  "profile/grub/themes/starfield/boot_menu_sw.png": {
+    "mtime": 1782728940.2950954,
+    "ast_hash": "4fd1b517769df808fcb67e238b9eda00",
+    "semantic_hash": "4fd1b517769df808fcb67e238b9eda00"
+  },
+  "profile/grub/themes/starfield/boot_menu_w.png": {
+    "mtime": 1782728940.295153,
+    "ast_hash": "09eaa236748dd23e3d8ec08044268b6f",
+    "semantic_hash": "09eaa236748dd23e3d8ec08044268b6f"
+  },
+  "profile/grub/themes/starfield/slider_c.png": {
+    "mtime": 1782728940.2958188,
+    "ast_hash": "49666ca296f1accb69d09c2fb32cdaae",
+    "semantic_hash": "49666ca296f1accb69d09c2fb32cdaae"
+  },
+  "profile/grub/themes/starfield/slider_n.png": {
+    "mtime": 1782728940.2958663,
+    "ast_hash": "5f449750a71bb9ac2056405680fa6085",
+    "semantic_hash": "5f449750a71bb9ac2056405680fa6085"
+  },
+  "profile/grub/themes/starfield/slider_s.png": {
+    "mtime": 1782728940.2959127,
+    "ast_hash": "1cfb818d42268debecf120538b347d55",
+    "semantic_hash": "1cfb818d42268debecf120538b347d55"
+  },
+  "profile/grub/themes/starfield/starfield.png": {
+    "mtime": 1782728940.2959802,
+    "ast_hash": "703b805f1c572dc6a91443ffad1a338b",
+    "semantic_hash": "703b805f1c572dc6a91443ffad1a338b"
+  },
+  "profile/grub/themes/starfield/terminal_box_c.png": {
+    "mtime": 1782728940.2968438,
+    "ast_hash": "eb93e4b772427234043fcabde5ed799b",
+    "semantic_hash": "eb93e4b772427234043fcabde5ed799b"
+  },
+  "profile/grub/themes/starfield/terminal_box_e.png": {
+    "mtime": 1782728940.2969606,
+    "ast_hash": "62422bb71342c572fc9b8bc41e3b85b7",
+    "semantic_hash": "62422bb71342c572fc9b8bc41e3b85b7"
+  },
+  "profile/grub/themes/starfield/terminal_box_n.png": {
+    "mtime": 1782728940.2970228,
+    "ast_hash": "34cba513770f3292bfae66d4df775f09",
+    "semantic_hash": "34cba513770f3292bfae66d4df775f09"
+  },
+  "profile/grub/themes/starfield/terminal_box_ne.png": {
+    "mtime": 1782728940.2970707,
+    "ast_hash": "a393ff9bf48e18321c2ac50123bca803",
+    "semantic_hash": "a393ff9bf48e18321c2ac50123bca803"
+  },
+  "profile/grub/themes/starfield/terminal_box_nw.png": {
+    "mtime": 1782728940.2971675,
+    "ast_hash": "8d222f060c20b9001149545b31c2ed24",
+    "semantic_hash": "8d222f060c20b9001149545b31c2ed24"
+  },
+  "profile/grub/themes/starfield/terminal_box_s.png": {
+    "mtime": 1782728940.2972534,
+    "ast_hash": "6cbf513cd8404a99efe527b0b6b9878e",
+    "semantic_hash": "6cbf513cd8404a99efe527b0b6b9878e"
+  },
+  "profile/grub/themes/starfield/terminal_box_se.png": {
+    "mtime": 1782728940.2973275,
+    "ast_hash": "3758c3d8e1312d8d0129efee51c0d1f3",
+    "semantic_hash": "3758c3d8e1312d8d0129efee51c0d1f3"
+  },
+  "profile/grub/themes/starfield/terminal_box_sw.png": {
+    "mtime": 1782728940.2974486,
+    "ast_hash": "7901eab3cfaf93dd615405836e0143e2",
+    "semantic_hash": "7901eab3cfaf93dd615405836e0143e2"
+  },
+  "profile/grub/themes/starfield/terminal_box_w.png": {
+    "mtime": 1782728940.2974992,
+    "ast_hash": "ca46c8873eeabcd19c59105eecb7e814",
+    "semantic_hash": "ca46c8873eeabcd19c59105eecb7e814"
+  },
+  "profile/syslinux/splash.png": {
+    "mtime": 1782719171.3358216,
+    "ast_hash": "1ac1ac2a8637a0fbe8f02b0a2428d3f1",
+    "semantic_hash": "1ac1ac2a8637a0fbe8f02b0a2428d3f1"
+  },
+  "tools/loader-cat.gif": {
+    "mtime": 1782719171.338948,
+    "ast_hash": "6134e55f6cbe42b381976bdf80630690",
+    "semantic_hash": "6134e55f6cbe42b381976bdf80630690"
+  }
+}
