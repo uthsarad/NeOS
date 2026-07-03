@@ -6,6 +6,7 @@ etc/plymouth/plymouthd.conf
 etc/sddm.conf.d/10-displayserver.conf
 etc/sddm.conf.d/20-theme.conf
 etc/skel/.bashrc
+etc/skel/.config/ksplashrc
 etc/skel/Desktop/neos-terminal.desktop
 etc/snapper/configs/root
 etc/ssh/sshd_config
@@ -67,7 +68,6 @@ usr/share/plymouth/themes/neos/cat-25.png
 usr/share/plymouth/themes/neos/cat-26.png
 usr/share/plymouth/themes/neos/cat-27.png
 usr/share/plymouth/themes/neos/cat-28.png
-usr/share/plymouth/themes/neos/logo.png
 usr/share/plymouth/themes/neos/neos.plymouth
 usr/share/plymouth/themes/neos/neos.script
 usr/share/sddm/themes/neos/Main.qml

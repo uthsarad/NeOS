@@ -5,11 +5,13 @@
 # - tty1 regression: the netinstalled system landed on a text console because
 #   nothing set its default systemd target. The services-systemd module must set
 #   graphical.target so it boots into SDDM/Plasma.
-# - Boot splash: the Plymouth 'neos' theme uses a Windows-11-style layout — the
-#   NeOS logo (logo.png) centered above mid-screen, with the animated cat-NN.png
-#   loader below it. Cat frames are generated from tools/loader-cat.gif
-#   (committed; CI does not run generators). Repeated still frames at the end of
-#   the source GIF are trimmed so the Plymouth loop does not pause.
+# - Boot splash: the Plymouth 'neos' theme shows ONLY the animated cat-NN.png
+#   loader, dead centre — no logo, no other elements. Cat frames are generated
+#   from tools/loader-cat.gif (committed; CI does not run generators). Repeated
+#   still frames at the end of the source GIF are trimmed so the loop does not
+#   pause.
+# - No KDE splash: ksplash after SDDM login is disabled via skel ksplashrc so
+#   the Plymouth cat is the only boot screen.
 set -euo pipefail
 
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
@@ -45,16 +47,28 @@ else
     echo "❌ neos.script does not reference the cat- frames"; FAIL=1
 fi
 
-# 3. The NeOS logo is present and wired in (Windows-11-style logo-above-cat).
+# 3. The cat is the ONLY element on the boot splash — no logo in the theme or
+#    the script (user decision: plain cat-only boot screen).
 if [[ -f "$THEME_DIR/logo.png" ]]; then
-    echo "✅ NeOS logo.png present in the theme"
+    echo "❌ theme still ships logo.png (boot splash must be cat-only)"; FAIL=1
 else
-    echo "❌ theme is missing logo.png (Windows-11 layout needs it)"; FAIL=1
+    echo "✅ no logo.png in the theme (cat-only splash)"
 fi
-if grep -q '"logo.png"' "$SCRIPT"; then
-    echo "✅ neos.script loads the logo"
+# (gen-bootlogo-frames.py in the header comment is the frame generator, not a
+# logo reference — match only logo assets/sprites.)
+if grep -qE 'logo\.png|logo_|logo\.' "$SCRIPT"; then
+    echo "❌ neos.script still references a logo"; FAIL=1
 else
-    echo "❌ neos.script does not reference logo.png"; FAIL=1
+    echo "✅ neos.script draws only the cat"
+fi
+
+# 3b. The KDE/Plasma login splash (ksplash) is disabled — the Plymouth cat is
+#     the only boot screen users see.
+KSPLASHRC="profile/airootfs/etc/skel/.config/ksplashrc"
+if [[ -f "$KSPLASHRC" ]] && grep -q '^Engine=none' "$KSPLASHRC" && grep -q '^Theme=None' "$KSPLASHRC"; then
+    echo "✅ ksplash disabled via skel ksplashrc (no KDE boot screen)"
+else
+    echo "❌ $KSPLASHRC missing or does not disable ksplash"; FAIL=1
 fi
 
 # 4. The old animated-spinner assets must stay gone (replaced by the cat loader).

@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - CI releases now ship `SHA256SUMS` alongside the ISO.
 - Regression test: `neos-liveuser-setup.service` must stay unsandboxed (sandboxing it silently breaks live autologin); the check ignores comments and fails if any `ProtectSystem`/`ProtectHome`/`PrivateTmp`/`NoNewPrivileges` directive reappears.
 
+### Changed (boot experience)
+- **The cat IS the boot screen now**: removed the NeOS logo from the Plymouth splash — the animated cat alone, dead centre, transparent frames over the plain navy background. The unused theme `logo.png` was deleted (Calamares keeps its own branding logo).
+- **KDE/Plasma login splash disabled**: `etc/skel/.config/ksplashrc` (`Engine=none`, `Theme=None`) ships to the live user and installed users, so the Plymouth cat is the only boot screen — no second splash after SDDM login. Guarded by `tests/verify_boot_gui.sh`.
+
 ### Fixed
 - **Boot/installer logo rendered as a black box**: the NeOS badge (`logo.png` in the Plymouth theme and Calamares branding) shipped with an alpha channel but every pixel opaque — a black square with white corner remnants baked in, visible over the navy gradient on the boot splash and in the installer sidebar. Cut the circular badge out with an anti-aliased alpha mask (`tools/fix-branding-alpha.sh`, ImageMagick — reproducible, no Pillow needed).
 - **Boot cat sat on a grey box**: the committed `cat-NN.png` frames predated `tools/gen-bootlogo-frames.py` and carried an opaque `#31384C` rectangle from an older pipeline, even though the source `loader-cat.gif` is fully transparent. Regenerated all 32 frames from the GIF (composite disposal, per-cel trim, 2× Lanczos, centred on a shared 328×328 transparent canvas — same layout rules as the Python generator).

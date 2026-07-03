@@ -77,3 +77,6 @@ tests/*.log
 
 # CodeGraph local index (machine-specific)
 .codegraph/
+
+# graphify local knowledge-graph output (per-user, not part of the OS)
+graphify-out/
