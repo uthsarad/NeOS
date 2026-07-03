@@ -1,18 +1,17 @@
 #!/bin/bash
-# neos-pacstrap — NeOS netinstall backend.
+# neos-pacstrap — NeOS netinstall backend with offline fallback.
 #
 # Invoked by the Calamares 'pacstrap' step (shellprocess, dontChroot) with the
-# target root mount point as $1. Instead of cloning the live squashfs, it
-# bootstraps a fresh base system straight from the repos with pacstrap, so the
-# installed system is a clean install rather than a copy of the live medium.
+# target root mount point as $1.
 #
-# This step is where the installer parks the progress bar (~10%) while it pulls
-# the whole base over the network, so it MUST NEVER block waiting for something
-# that will never come. The three things that can hang it forever are guarded
-# below: (1) gpg keyring generation starving for entropy in a VM, (2) pacman
-# stopping for an interactive prompt (provider choice / conflict) when there is
-# no terminal to answer it, and (3) a not-yet-up network. Each is handled so the
-# step either makes progress or fails fast with a clear message — it never hangs.
+# Hybrid install model:
+#   ONLINE:  Download fresh packages from internet mirrors (always latest).
+#   OFFLINE: Install from the local ISO package repo at /run/archiso/bootmnt/neos/pkg/
+#            so the install completes without any network.
+#
+# The local repo is built by tools/gen-install-repo.sh during ISO creation and
+# embedded directly on the ISO at /neos/pkg/. It is accessible at
+# /run/archiso/bootmnt/neos/pkg/ when booted from the live ISO.
 set -euo pipefail
 
 ROOT="${1:?usage: neos-pacstrap <target-root>}"
@@ -46,52 +45,113 @@ if ! systemctl is-active --quiet haveged 2>/dev/null; then
     systemctl start haveged 2>/dev/null || haveged -w 1024 2>/dev/null || true
 fi
 
-# Make sure the live host keyring is ready so signed packages from the NeOS /
-# chaotic-aur / garuda repos verify during the bootstrap. The archiso live env
-# already initialised this at boot, so only init if the trust db is missing
-# (a full re-init is needless entropy/time); populate is cheap and idempotent.
+# Make sure the live host keyring is ready so signed packages verify.
 if [[ ! -s /etc/pacman.d/gnupg/trustdb.gpg ]]; then
     pacman-key --init
 fi
 pacman-key --populate archlinux chaotic 2>/dev/null || true
 
-# (3) Network: bail out fast with a readable message instead of letting pacman
-# spin on unreachable mirrors. Wait up to ~60s for the repos to be reachable
-# (NetworkManager may still be bringing the link up right after boot).
-log "waiting for network ..."
-net_ok=0
-for _ in $(seq 1 30); do
-    if curl -fsS --max-time 5 -o /dev/null https://geo.mirror.pkgbuild.com/ 2>/dev/null \
-       || ping -c1 -W2 geo.mirror.pkgbuild.com >/dev/null 2>&1; then
-        net_ok=1
-        break
-    fi
-    sleep 2
-done
-if [[ "$net_ok" -ne 1 ]]; then
-    echo "neos-pacstrap: no network after 60s — connect to the internet and retry the install" >&2
-    exit 1
+# ---- Detect the local ISO package repo (embedded by build.sh) --------------
+LOCAL_REPO=""
+ISO_MOUNT="/run/archiso/bootmnt"
+if [[ -d "$ISO_MOUNT/neos/pkg" ]] && [[ -n "$(ls -A "$ISO_MOUNT/neos/pkg"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+    LOCAL_REPO="$ISO_MOUNT/neos/pkg"
+    log "found local package repo at $LOCAL_REPO ($(find "$LOCAL_REPO" -name '*.pkg.tar.zst' 2>/dev/null | wc -l) packages)"
 fi
 
-# Refresh the package databases up front so pacstrap works from current indexes.
-pacman -Sy --noconfirm 2>/dev/null || true
+# ---- Check network availability (fast timeout for offline detection) -------
+NET_AVAILABLE=0
+if timeout 5 curl -fsS --max-time 3 -o /dev/null https://geo.mirror.pkgbuild.com/ 2>/dev/null; then
+    NET_AVAILABLE=1
+    log "network is available — will download latest packages"
+else
+    log "no network detected"
+fi
 
-# (2) Non-interactive: pacstrap runs pacman with no controlling terminal here,
-# so any prompt (":: Replace X? [Y/n]", provider "Enter a number") would block
-# forever. Feed an endless stream of empty lines as stdin so every prompt takes
-# its default and the install always proceeds. The same `yes ""` idiom is used
-# for mkarchiso in build.sh. Using a process substitution (not a pipe) keeps
-# pacstrap's own exit status intact under `set -o pipefail`.
-#
-# -K bootstraps a fresh, empty pacman keyring inside the new root (the modern
-# default for a clean install). pacstrap uses the live host's /etc/pacman.conf,
-# which already points at the NeOS mirrors.
-log "installing ${#PKGS[@]} packages into $ROOT ..."
-pacstrap -K "$ROOT" "${PKGS[@]}" < <(yes "")
+# ---- Helper: install from local ISO repo (no network needed) --------------
+do_offline_install() {
+    log "installing ${#PKGS[@]} packages from local ISO repo at $LOCAL_REPO ..."
+    TMP_LOCAL=$(mktemp /tmp/neos-pacman-local-XXXXXX)
+    # Build a minimal pacman.conf that has the local repo + essential options
+    {
+        echo "[options]"
+        grep -E '^(Architecture|ParallelDownloads|Color|VerbosePkgLists|CheckSpace)' /etc/pacman.conf 2>/dev/null || true
+        echo ""
+        echo "[neos-local]"
+        echo "SigLevel = Optional TrustAll"
+        echo "Server = file://${LOCAL_REPO}"
+    } > "$TMP_LOCAL"
+    pacman -Sy --noconfirm --config "$TMP_LOCAL" 2>/dev/null || true
+    pacstrap -K "$ROOT" "${PKGS[@]}" --config "$TMP_LOCAL" || {
+        status=$?
+        rm -f "$TMP_LOCAL"
+        log "offline install failed (exit $status)"
+        return "$status"
+    }
+    rm -f "$TMP_LOCAL"
+    log "offline install complete"
+}
 
-# Carry the NeOS repository configuration onto the installed system, otherwise
-# the target would inherit only the stock Arch pacman.conf shipped by the
-# 'pacman' package and lose chaotic-aur / garuda.
+# ---- Decide: online or offline install? UPFRONT (no mid-install fallback) --
+# We choose the mode before touching the target root. This avoids leaving
+# the target in a broken state from a partial install.
+if [[ -n "$LOCAL_REPO" ]]; then
+    # Local repo is available — use aggressive short timeout for network check
+    NET_TIMEOUT=3
+    NET_RETRIES=2
+else
+    # No local repo — be more patient waiting for network
+    NET_TIMEOUT=5
+    NET_RETRIES=12
+fi
+
+net_ok=0
+if [[ "$NET_AVAILABLE" -eq 1 ]]; then
+    log "waiting for network to be fully up ..."
+    for _ in $(seq 1 "$NET_RETRIES"); do
+        if curl -fsS --max-time "$NET_TIMEOUT" -o /dev/null https://geo.mirror.pkgbuild.com/ 2>/dev/null; then
+            net_ok=1
+            break
+        fi
+        sleep 2
+    done
+fi
+
+if [[ "$net_ok" -eq 1 ]]; then
+    # ---- ONLINE: download fresh packages ----------------------------------
+    log "online install — downloading latest ${#PKGS[@]} packages from internet..."
+    # Build a combined pacman.conf: local repo first (highest priority) when available
+    TMP_PACMAN_CONF=$(mktemp /tmp/neos-pacman-conf-XXXXXX)
+    trap 'rm -f "$TMP_PACMAN_CONF"' EXIT
+    if [[ -n "$LOCAL_REPO" ]]; then
+        {
+            echo "[neos-local]"
+            echo "SigLevel = Optional TrustAll"
+            echo "Server = file://${LOCAL_REPO}"
+            cat /etc/pacman.conf
+        } > "$TMP_PACMAN_CONF"
+    else
+        cp /etc/pacman.conf "$TMP_PACMAN_CONF"
+    fi
+    pacman -Sy --noconfirm --config "$TMP_PACMAN_CONF" 2>/dev/null || true
+    if ! pacstrap -K "$ROOT" "${PKGS[@]}" --config "$TMP_PACMAN_CONF"; then
+        echo "neos-pacstrap: online install failed — check internet connection and retry" >&2
+        exit 1
+    fi
+else
+    # ---- OFFLINE: install from local ISO repo ------------------------------
+    if [[ -z "$LOCAL_REPO" ]]; then
+        echo "neos-pacstrap: no network detected and no local package repo on the ISO." >&2
+        echo "neos-pacstrap: connect to the internet and retry the install." >&2
+        if [[ "$NET_AVAILABLE" -eq 0 ]]; then
+            echo "neos-pacstrap: network check failed immediately (check cable/WiFi)" >&2
+        fi
+        exit 1
+    fi
+    do_offline_install || exit 1
+fi
+
+# ---- Carry the NeOS repository configuration onto the installed system -----
 install -Dm644 /etc/pacman.conf "$ROOT/etc/pacman.conf"
 for ml in neos-mirrorlist chaotic-mirrorlist mirrorlist; do
     if [[ -f "/etc/pacman.d/$ml" ]]; then
@@ -99,11 +159,7 @@ for ml in neos-mirrorlist chaotic-mirrorlist mirrorlist; do
     fi
 done
 
-# Apply the NeOS overlay (branding, Plymouth theme, wallpaper, hardening,
-# custom services …) onto the freshly pacstrapped target. pacstrap only lays
-# down packages, so without this the install would be vanilla Arch. The
-# manifest lists overlay files relative to /, with the live-/installer-only
-# ones already filtered out at build time.
+# ---- Apply the NeOS overlay (branding, Plymouth theme, wallpaper, etc.) ----
 if [[ -f "$OVERLAY" ]]; then
     log "applying NeOS overlay onto $ROOT ..."
     rsync -a --files-from="$OVERLAY" / "$ROOT/"

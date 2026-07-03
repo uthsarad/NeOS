@@ -4,7 +4,7 @@ componentName:  neos
 welcomeStyleCalamares:   false
 welcomeExpandingLogo:    true
 windowResizable:         true
-windowSize:              1010,680
+windowSize:              1024,720
 windowCentered:          true
 windowPlacement:         center
 

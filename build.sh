@@ -155,6 +155,47 @@ bash tools/gen-manifests.sh "$REPO_ROOT"
 echo -e "${GREEN}Building ISO...${NC}"
 yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
 
+# ---- Build offline install repo (local package cache for the ISO) ---------
+# Downloads all packages listed in neos-packages.txt and creates a pacman
+# repo database. Reuses packages already cached by mkarchiso in work/pkgs/
+# to avoid redundant downloads. This repo sits OUTSIDE the SquashFS — it gets
+# added to the ISO root below — so it does not inflate the live environment.
+echo -e "${YELLOW}Building offline install package repo...${NC}"
+bash tools/gen-install-repo.sh \
+    --repo-dir "$REPO_ROOT/$PROFILE_DIR/install-repo" \
+    --work-dir "$REPO_ROOT/$WORK_DIR" \
+    --profile "$REPO_ROOT/$PROFILE_DIR" \
+    --build-conf "$REPO_ROOT/$BUILD_CONF"
+
+# ---- Embed the install repo into the ISO ----------------------------------
+# After mkarchiso produces the ISO, we add the local package repo as a new
+# directory on the ISO filesystem. This keeps packages accessible to the
+# installer at /run/archiso/bootmnt/neos/pkg/ without bloating the SquashFS.
+INSTALL_REPO="$REPO_ROOT/$PROFILE_DIR/install-repo"
+if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+    echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
+    ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+    if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
+        # Create a temporary ISO with the repo added
+        TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
+        xorriso -indev "$ISO_PATH" \
+                -outdev "$TMP_ISO" \
+                -map "$INSTALL_REPO" /neos/pkg \
+                -boot_image any replay 2>&1 | tail -n 5 || {
+            echo -e "${YELLOW}Warning: Could not add repo to ISO. Install will still work with internet.${NC}"
+            rm -f "$TMP_ISO" 2>/dev/null || true
+        }
+        if [[ -f "$TMP_ISO" ]]; then
+            mv -f "$TMP_ISO" "$ISO_PATH"
+            echo "Offline install repo added to ISO at /neos/pkg/"
+        fi
+    else
+        echo -e "${YELLOW}Warning: xorriso not found or no ISO to patch. Install will need internet.${NC}"
+    fi
+    # Clean up the build-time repo (no longer needed)
+    rm -rf "$INSTALL_REPO" 2>/dev/null || true
+fi
+
 echo -e "${GREEN}Running ISO validation...${NC}"
 bash tests/verify_iso_grub.sh
 REQUIRE_ISO=1 bash tests/verify_iso_calamares_libs.sh

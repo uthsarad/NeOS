@@ -1,26 +1,27 @@
 /* ===========================================================================
-   NeOS — Calamares installer stylesheet (dark premium)
-   Nations Trust Bank (NTB) palette on a deep-navy base:
+   NeOS — Calamares installer stylesheet (refined dark premium)
+   Inspired by Ubuntu's clean, modern Subiquity installer aesthetic with the
+   Nations Trust Bank (NTB) brand palette:
      NTB blue #0088CF · NTB cyan #0096D5 · NTB magenta #EB008B
-   Calamares applies this on the main window, so it cascades to the pages.
-   Every form widget is styled explicitly so nothing renders unreadable on
-   dark (combos, list/tree views, scrollbars, check/radio).
-   NOTE: CI cannot run Calamares — verify on a real install.
+   Uses a deep-navy base (#0b0e1a) with soft card surfaces and careful
+   typography for a polished, professional look.
    =========================================================================== */
 
 /* ---- Base surfaces & text ------------------------------------------------ */
+QWidget {
+    color: #e6e9f2;
+    font-family: "Noto Sans", "Cantarell", "DejaVu Sans", sans-serif;
+    font-size: 10pt;
+}
+
 #mainApp,
 QWidget#mainApp {
     background-color: #0b0e1a;
 }
 
-QWidget {
-    color: #e6e9f2;
-    font-size: 10pt;
-}
-
-/* Page containers stay transparent so they show the navy base */
-QFrame, QScrollArea, QStackedWidget, QScrollArea > QWidget > QWidget {
+/* Page containers — transparent to show the navy base */
+QFrame, QScrollArea, QStackedWidget,
+QScrollArea > QWidget > QWidget {
     background: transparent;
 }
 
@@ -28,52 +29,73 @@ QLabel {
     color: #e6e9f2;
     background: transparent;
 }
-QLabel:disabled { color: #6b7080; }
+QLabel:disabled { color: #5a607a; }
 
-/* Calamares page heading (the big title under the logo) */
+/* ---- Page headings (big title under logo) -------------------------------- */
 QLabel#titleLabel,
 QLabel[font-weight="bold"] {
     color: #ffffff;
-    font-size: 17pt;
-    font-weight: bold;
+    font-size: 20pt;
+    font-weight: 700;
+    padding-bottom: 4px;
 }
 
-/* ---- Sidebar (also set in branding.desc; reinforce here) ----------------- */
+/* ---- Sidebar (progress steps) -------------------------------------------- */
 #sidebarApp {
     background-color: #080b14;
 }
-#sidebarApp QLabel { color: #aeb4c7; }
+#sidebarApp QLabel {
+    color: #aeb4c7;
+    font-size: 10pt;
+    padding: 2px 8px;
+}
+#sidebarApp QLabel[font-weight="bold"] {
+    color: #ffffff;
+    font-weight: 600;
+}
 
 /* ---- Buttons ------------------------------------------------------------- */
-/* Secondary buttons (Back / Cancel): outlined, subtle */
 QPushButton {
     background-color: #141b33;
     color: #dfe3ef;
     border: 1px solid #2a3354;
-    border-radius: 6px;
-    padding: 7px 18px;
-    min-height: 18px;
+    border-radius: 8px;
+    padding: 8px 22px;
+    min-height: 20px;
     font-weight: 500;
+    font-size: 10pt;
 }
-QPushButton:hover  { background-color: #1c2546; border-color: #3a4670; }
-QPushButton:pressed { background-color: #0f1530; }
+QPushButton:hover {
+    background-color: #1c2546;
+    border-color: #3a4670;
+}
+QPushButton:pressed {
+    background-color: #0f1530;
+}
 QPushButton:disabled {
     background-color: #11162a;
     color: #5a607a;
     border-color: #1c2444;
 }
 
-/* Primary action (Next / Install / Done): NTB blue, filled */
+/* Primary action (Next / Install / Done) — NTB blue */
 QPushButton:default {
     background-color: #0088CF;
     color: #ffffff;
     border: 1px solid #0088CF;
-    border-radius: 6px;
-    padding: 7px 22px;
+    border-radius: 8px;
+    padding: 8px 28px;
     font-weight: 600;
+    font-size: 10.5pt;
 }
-QPushButton:default:hover   { background-color: #0096D5; border-color: #0096D5; }
-QPushButton:default:pressed { background-color: #006fa8; border-color: #006fa8; }
+QPushButton:default:hover {
+    background-color: #0096D5;
+    border-color: #0096D5;
+}
+QPushButton:default:pressed {
+    background-color: #006fa8;
+    border-color: #006fa8;
+}
 QPushButton:default:disabled {
     background-color: #1d3a4f;
     color: #7fa6bd;
@@ -85,45 +107,63 @@ QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
     background-color: #0f1428;
     color: #e6e9f2;
     border: 1px solid #2a3354;
-    border-radius: 5px;
-    padding: 6px 8px;
+    border-radius: 6px;
+    padding: 8px 10px;
     selection-background-color: #0088CF;
     selection-color: #ffffff;
+    font-size: 10pt;
 }
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus,
 QSpinBox:focus, QDoubleSpinBox:focus {
-    border: 1px solid #0096D5;
+    border: 2px solid #0096D5;
+    padding: 7px 9px; /* compensate for thicker border */
 }
 QLineEdit:disabled, QSpinBox:disabled {
     background-color: #0c1020;
     color: #5a607a;
 }
-/* Password-strength / inline error labels Calamares colours red — keep legible */
-QLabel[error="true"] { color: #ff6b74; }
+QLineEdit:error, QTextEdit:error, QPlainTextEdit:error {
+    border-color: #ff6b74;
+}
 
 /* ---- Combo boxes --------------------------------------------------------- */
 QComboBox {
     background-color: #0f1428;
     color: #e6e9f2;
     border: 1px solid #2a3354;
-    border-radius: 5px;
-    padding: 6px 8px;
-    min-height: 18px;
+    border-radius: 6px;
+    padding: 8px 10px;
+    min-height: 20px;
 }
-QComboBox:focus { border: 1px solid #0096D5; }
+QComboBox:focus { border: 2px solid #0096D5; padding: 7px 9px; }
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 22px;
+    width: 26px;
     border-left: 1px solid #2a3354;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+QComboBox::down-arrow {
+    width: 10px;
+    height: 10px;
 }
 QComboBox QAbstractItemView {
     background-color: #0f1428;
     color: #e6e9f2;
     border: 1px solid #2a3354;
+    border-radius: 6px;
     selection-background-color: #0088CF;
     selection-color: #ffffff;
     outline: 0;
+    padding: 4px;
+}
+QComboBox QAbstractItemView::item {
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+QComboBox QAbstractItemView::item:hover {
+    background-color: #18203c;
 }
 
 /* ---- List / tree / table views (partition list, summary) ----------------- */
@@ -132,10 +172,14 @@ QListView, QTreeView, QTableView, QListWidget, QTreeWidget {
     alternate-background-color: #11172e;
     color: #e6e9f2;
     border: 1px solid #222a47;
-    border-radius: 6px;
+    border-radius: 8px;
     selection-background-color: #0088CF;
     selection-color: #ffffff;
     outline: 0;
+}
+QListView::item, QTreeView::item, QTableView::item {
+    padding: 6px 8px;
+    border-radius: 4px;
 }
 QListView::item:hover, QTreeView::item:hover, QTableView::item:hover {
     background-color: #18203c;
@@ -145,85 +189,121 @@ QHeaderView::section {
     color: #c0c4d8;
     border: none;
     border-bottom: 1px solid #222a47;
-    padding: 6px 8px;
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 9.5pt;
+}
+QHeaderView::section:hover {
+    background-color: #1a2342;
 }
 
 /* ---- Group boxes --------------------------------------------------------- */
 QGroupBox {
     border: 1px solid #222a47;
-    border-radius: 8px;
-    margin-top: 14px;
-    padding-top: 8px;
+    border-radius: 10px;
+    margin-top: 16px;
+    padding-top: 10px;
     background: transparent;
+    font-size: 10pt;
+    color: #c0c4d8;
 }
 QGroupBox::title {
     subcontrol-origin: margin;
-    left: 12px;
-    padding: 0 4px;
+    left: 14px;
+    padding: 0 6px;
     color: #9aa0b6;
+    font-weight: 600;
 }
 
 /* ---- Check boxes & radio buttons (NTB accent) ---------------------------- */
-QCheckBox, QRadioButton { color: #e6e9f2; spacing: 8px; background: transparent; }
+QCheckBox, QRadioButton {
+    color: #e6e9f2;
+    spacing: 10px;
+    background: transparent;
+    font-size: 10pt;
+}
 QCheckBox::indicator, QRadioButton::indicator {
-    width: 18px; height: 18px;
+    width: 20px; height: 20px;
     border: 1px solid #3a4670;
     background-color: #0f1428;
+    border-radius: 4px;
 }
-QCheckBox::indicator { border-radius: 4px; }
-QRadioButton::indicator { border-radius: 9px; }
-QCheckBox::indicator:hover, QRadioButton::indicator:hover { border-color: #0096D5; }
-QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+QCheckBox::indicator:hover, QRadioButton::indicator:hover {
+    border-color: #0096D5;
+}
+QCheckBox::indicator:checked {
+    background-color: #0088CF;
+    border-color: #0088CF;
+}
+QRadioButton::indicator { border-radius: 10px; }
+QRadioButton::indicator:checked {
     background-color: #0088CF;
     border-color: #0088CF;
 }
 
-/* ---- Progress bar (NTB blue -> magenta) ---------------------------------- */
+/* ---- Progress bar (NTB blue accent) -------------------------------------- */
 QProgressBar {
     background-color: #0f1428;
     border: 1px solid #222a47;
     border-radius: 6px;
-    height: 10px;
+    height: 8px;
     text-align: center;
     color: #e6e9f2;
+    font-size: 9pt;
 }
 QProgressBar::chunk {
     border-radius: 6px;
-    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                      stop:0 #0088CF, stop:1 #EB008B);
+    background-color: #0088CF;
 }
 
 /* ---- Scroll bars --------------------------------------------------------- */
 QScrollBar:vertical {
-    background: transparent; width: 12px; margin: 0;
+    background: transparent; width: 10px; margin: 0;
 }
 QScrollBar::handle:vertical {
-    background: #2a3354; min-height: 28px; border-radius: 6px;
+    background: #2a3354; min-height: 28px; border-radius: 5px;
 }
 QScrollBar::handle:vertical:hover { background: #3a4670; }
 QScrollBar:horizontal {
-    background: transparent; height: 12px; margin: 0;
+    background: transparent; height: 10px; margin: 0;
 }
 QScrollBar::handle:horizontal {
-    background: #2a3354; min-width: 28px; border-radius: 6px;
+    background: #2a3354; min-width: 28px; border-radius: 5px;
 }
 QScrollBar::handle:horizontal:hover { background: #3a4670; }
 QScrollBar::add-line, QScrollBar::sub-line { height: 0; width: 0; }
 QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }
 
 /* ---- Tabs ---------------------------------------------------------------- */
-QTabWidget::pane { border: 1px solid #222a47; border-radius: 6px; }
-QTabBar::tab {
-    background: #131a31; color: #aeb4c7;
-    padding: 7px 16px; border: 1px solid #222a47; border-bottom: none;
-    border-top-left-radius: 6px; border-top-right-radius: 6px;
+QTabWidget::pane {
+    border: 1px solid #222a47;
+    border-radius: 8px;
+    background: transparent;
 }
-QTabBar::tab:selected { background: #0088CF; color: #ffffff; }
+QTabBar::tab {
+    background: #131a31;
+    color: #aeb4c7;
+    padding: 8px 20px;
+    border: 1px solid #222a47;
+    border-bottom: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    font-size: 10pt;
+    margin-right: 2px;
+}
+QTabBar::tab:hover { background: #1a2342; }
+QTabBar::tab:selected {
+    background: #0088CF;
+    color: #ffffff;
+    font-weight: 600;
+}
 
 /* ---- Tooltips ------------------------------------------------------------ */
 QToolTip {
     background-color: #0f1428;
     color: #e6e9f2;
     border: 1px solid #0096D5;
-    padding: 4px 6px;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 9.5pt;
 }

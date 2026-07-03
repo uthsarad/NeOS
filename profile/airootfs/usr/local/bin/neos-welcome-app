@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import sys
 import subprocess
+import math
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QGraphicsDropShadowEffect,
-                             QSpacerItem, QSizePolicy)
+                             QGraphicsOpacityEffect, QSpacerItem, QSizePolicy,
+                             QFrame)
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QScreen
+from PyQt6.QtGui import QColor, QFont, QScreen
 
 
 class NeosWelcome(QWidget):
@@ -14,37 +16,57 @@ class NeosWelcome(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('NeOS')
-        self.setFixedSize(820, 560)
+        self.setWindowTitle('Welcome to NeOS')
+        self.setFixedSize(860, 580)
         self.setWindowFlags(
             Qt.WindowType.Window |
             Qt.WindowType.WindowStaysOnTopHint
         )
+        self.setObjectName('main')
+
+        # ---- Main stylesheet ----
         self.setStyleSheet("""
             QWidget#main {
                 background: qlineargradient(x1:0, y1:0, x2:0.5, y2:1,
-                    stop:0 #0a0a14, stop:0.4 #0f0f20, stop:1 #0a0a14);
+                    stop:0 #0a0e1a, stop:0.4 #0d1224, stop:1 #16203a);
+                border: 1px solid #1c2444;
             }
             QLabel#title {
-                font-size: 48px;
+                font-size: 42px;
                 font-weight: 900;
                 color: #ffffff;
-                letter-spacing: 3px;
+                letter-spacing: 2px;
             }
             QLabel#subtitle {
-                font-size: 17px;
+                font-size: 18px;
                 color: #9498b0;
+                font-weight: 300;
             }
-            QLabel#divider {
-                color: #1a1a30;
-                font-size: 1px;
-                max-height: 1px;
-                background-color: #1a1a30;
+            QLabel#tagline {
+                font-size: 14px;
+                color: #7a7e96;
+            }
+            QFrame#divider {
+                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #0088CF, stop:0.5 #0096D5, stop:1 #EB008B);
+                max-height: 2px;
+                min-height: 2px;
+                border: none;
+                border-radius: 1px;
             }
             QLabel#features {
                 font-size: 13px;
                 color: #7a7e96;
                 line-height: 1.8;
+            }
+            QLabel#feature_icon {
+                font-size: 16px;
+                color: #0088CF;
+            }
+            QLabel#feature_text {
+                font-size: 13px;
+                color: #b0b4c8;
+                padding-left: 4px;
             }
             QPushButton {
                 border-radius: 12px;
@@ -56,51 +78,113 @@ class NeosWelcome(QWidget):
             }
             QPushButton#try_btn {
                 background-color: transparent;
-                border: 2px solid #2a2a4a;
+                border: 2px solid #2a3354;
                 color: #b0b4c8;
+                border-radius: 12px;
             }
             QPushButton#try_btn:hover {
-                background-color: #15152a;
-                border-color: #4a4a7a;
+                background-color: rgba(42, 51, 84, 0.4);
+                border-color: #4a5a8a;
                 color: #ffffff;
             }
             QPushButton#install_btn {
-                background-color: #0078D4;
+                background-color: #0088CF;
                 border: none;
                 color: #ffffff;
+                border-radius: 12px;
             }
             QPushButton#install_btn:hover {
-                background-color: #1a8ae6;
+                background-color: #0096D5;
             }
             QPushButton#install_btn:pressed {
-                background-color: #006abc;
+                background-color: #006fa8;
             }
         """)
-        self.setObjectName('main')
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(60, 50, 60, 50)
+        layout.setContentsMargins(60, 40, 60, 40)
+        layout.setSpacing(0)
 
+        # ---- NeOS wordmark ----
         title = QLabel('NeOS')
         title.setObjectName('title')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+        layout.addStretch(2)
+        layout.addWidget(title)
+        layout.addSpacing(6)
+
+        # ---- Subtitle ----
         subtitle = QLabel('Arch Linux, refined for everyone.')
         subtitle.setObjectName('subtitle')
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(subtitle)
+        layout.addSpacing(20)
 
-        divider = QLabel()
+        # ---- Gradient divider ----
+        divider = QFrame()
         divider.setObjectName('divider')
-        divider.setFixedHeight(1)
+        divider.setFixedWidth(120)
+        divider.setFixedHeight(2)
+        div_layout = QHBoxLayout()
+        div_layout.addStretch()
+        div_layout.addWidget(divider)
+        div_layout.addStretch()
+        layout.addLayout(div_layout)
 
-        features = QLabel(
-            'KDE Plasma 6 desktop  •  Btrfs snapshot protection\n'
-            'Automatic hardware detection  •  Firewall enabled\n'
-            'Rolling release  •  Ready to use out of the box'
-        )
-        features.setObjectName('features')
-        features.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addSpacing(20)
 
+        # ---- Feature grid ----
+        features_layout = QHBoxLayout()
+        features_layout.setSpacing(16)
+
+        features_data = [
+            ("🛡", "Security", "Firewall enabled\nKernel hardened"),
+            ("⚡", "Performance", "ZRAM compression\nBBR networking"),
+            ("↺", "Snapshots", "Btrfs auto-snapshots\nRollback support"),
+            ("💻", "Compatibility", "NVIDIA/AMD/Intel\nVM-ready"),
+        ]
+
+        for icon, title_text, desc in features_data:
+            card = QFrame()
+            card.setStyleSheet("""
+                QFrame {
+                    background-color: rgba(17, 23, 46, 0.8);
+                    border: 1px solid #1c2444;
+                    border-radius: 10px;
+                    padding: 12px;
+                }
+            """)
+            card_layout = QVBoxLayout()
+            card_layout.setSpacing(6)
+            card_layout.setContentsMargins(10, 10, 10, 10)
+
+            icon_lbl = QLabel(icon)
+            icon_lbl.setObjectName('feature_icon')
+            icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            card_layout.addWidget(icon_lbl)
+
+            name_lbl = QLabel(title_text)
+            name_lbl.setStyleSheet("font-size: 12px; font-weight: bold; color: #e6e9f2;")
+            name_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            card_layout.addWidget(name_lbl)
+
+            desc_lbl = QLabel(desc)
+            desc_lbl.setStyleSheet("font-size: 10px; color: #7a7e96;")
+            desc_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            card_layout.addWidget(desc_lbl)
+
+            card.setLayout(card_layout)
+            card.setFixedSize(160, 100)
+            features_layout.addWidget(card)
+
+        features_layout.addStretch()
+        features_layout.insertStretch(0)
+        layout.addLayout(features_layout)
+
+        layout.addStretch(2)
+
+        # ---- Buttons ----
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(24)
 
@@ -116,9 +200,10 @@ class NeosWelcome(QWidget):
         install_btn.clicked.connect(self.run_installer)
         install_btn.setToolTip('Install NeOS to your computer')
 
+        # Glow shadow on install button
         shadow = QGraphicsDropShadowEffect()
         shadow.setBlurRadius(30)
-        shadow.setColor(QColor(0, 120, 212, 80))
+        shadow.setColor(QColor(0, 136, 207, 100))
         shadow.setOffset(0, 6)
         install_btn.setGraphicsEffect(shadow)
 
@@ -126,17 +211,16 @@ class NeosWelcome(QWidget):
         btn_layout.addWidget(install_btn)
         btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        layout.addStretch(3)
-        layout.addWidget(title)
-        layout.addSpacing(12)
-        layout.addWidget(subtitle)
-        layout.addSpacing(30)
-        layout.addWidget(divider)
-        layout.addSpacing(30)
-        layout.addWidget(features)
-        layout.addSpacing(40)
         layout.addLayout(btn_layout)
-        layout.addStretch(3)
+        layout.addSpacing(10)
+
+        # ---- Version info ----
+        version_lbl = QLabel('v2026.07')
+        version_lbl.setObjectName('tagline')
+        version_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(version_lbl)
+
+        layout.addStretch(1)
 
         self.setLayout(layout)
         self.center_on_screen()

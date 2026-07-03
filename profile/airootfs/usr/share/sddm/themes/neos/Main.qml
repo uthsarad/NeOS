@@ -1,6 +1,7 @@
-// NeOS SDDM login theme — Nations Trust Bank (NTB) palette on deep navy.
-// Deliberately plain QtQuick (no QtQuick.Controls, no shaders/blur) so it
-// renders correctly under software rendering in VMs without a GPU.
+// NeOS SDDM login theme — Ubuntu-inspired polished design.
+// Nations Trust Bank (NTB) palette on deep navy.
+// Pure QtQuick (no QtQuick.Controls, no shaders/blur) for VM compatibility
+// with software rendering.
 import QtQuick 2.15
 
 Rectangle {
@@ -14,8 +15,13 @@ Rectangle {
     readonly property color cMagenta: "#EB008B"
     readonly property color cText:    "#e6e9f2"
     readonly property color cMuted:   "#9aa0b6"
+    readonly property color cDimmed:  "#6b7080"
     readonly property color cField:   "#0f1428"
     readonly property color cBorder:  "#2a3354"
+    readonly property color cCard:    "#0e1326"
+    readonly property color cError:   "#ff6b74"
+    readonly property color cBgTop:   "#0a0e1a"
+    readonly property color cBgBot:   "#16203a"
 
     // ---- Session list (extracted from sessionModel via a hidden Repeater) --
     property var sessionNames: []
@@ -25,12 +31,12 @@ Rectangle {
         Item { Component.onCompleted: root.sessionNames[index] = model.name }
     }
 
-    // ---- Background: wallpaper with navy gradient fallback ------------------
+    // ---- Background: gradient with optional wallpaper overlay --------------
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#0a0e1a" }
-            GradientStop { position: 1.0; color: "#16203a" }
+            GradientStop { position: 0.0; color: root.cBgTop }
+            GradientStop { position: 1.0; color: root.cBgBot }
         }
     }
     Image {
@@ -40,24 +46,44 @@ Rectangle {
         asynchronous: true
         visible: status === Image.Ready
     }
-    // Darkening scrim so the login card stays readable over any wallpaper
-    Rectangle { anchors.fill: parent; color: "#0b0e1a"; opacity: 0.55 }
+    // Darkening scrim for readability over any wallpaper
+    Rectangle {
+        anchors.fill: parent; color: "#0b0e1a"; opacity: 0.50
+    }
 
-    // ---- Clock -------------------------------------------------------------
+    // ---- Layout ------------------------------------------------------------
     Column {
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 90
+        anchors.top: parent.top; anchors.topMargin: 70
+        spacing: 4
+        Text {
+            id: titleText
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "NeOS"; color: root.cText
+            font.pixelSize: 28; font.bold: true
+            font.letterSpacing: 2
+        }
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 40; height: 2; radius: 1
+            color: root.cBlue; opacity: 0.6
+        }
+    }
+
+    // ---- Clock (centred above the login card) ------------------------------
+    Column {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top; anchors.topMargin: 140
         spacing: 4
         Text {
             id: clock
             anchors.horizontalCenter: parent.horizontalCenter
-            color: root.cText; font.pixelSize: 64; font.bold: true
+            color: root.cText; font.pixelSize: 56; font.weight: Font.Light
             text: Qt.formatDateTime(new Date(), "HH:mm")
         }
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            color: root.cMuted; font.pixelSize: 18
+            color: root.cMuted; font.pixelSize: 16; font.weight: Font.Light
             text: Qt.formatDateTime(new Date(), "dddd, d MMMM yyyy")
         }
     }
@@ -66,99 +92,113 @@ Rectangle {
         onTriggered: clock.text = Qt.formatDateTime(new Date(), "HH:mm")
     }
 
-    // ---- Login card --------------------------------------------------------
+    // ---- Login card (vertically centred, positioned below the clock) -----
     Rectangle {
         id: card
-        width: 380
+        width: 400
         height: contentCol.height + 56
-        anchors.centerIn: parent
-        radius: 14
-        color: "#0e1326"
-        border.color: root.cBorder
-        border.width: 1
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+            verticalCenterOffset: 40
+        }
+        radius: 16
+        color: root.cCard
+        border.color: root.cBorder; border.width: 1
+
+        // Subtle glow at the top of the card
+        Rectangle {
+            anchors { top: parent.top; horizontalCenter: parent.horizontalCenter }
+            width: 120; height: 2; radius: 1
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop { position: 0.0; color: "transparent" }
+                GradientStop { position: 0.5; color: root.cCyan }
+                GradientStop { position: 1.0; color: "transparent" }
+            }
+        }
 
         Column {
             id: contentCol
             width: parent.width - 56
             anchors.centerIn: parent
-            spacing: 18
+            spacing: 16
 
-            // NeOS wordmark
-            Text {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "NeOS"; color: root.cText
-                font.pixelSize: 34; font.bold: true
-            }
+            // Avatar circle
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: 70; height: 4; radius: 2
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: root.cBlue }
-                    GradientStop { position: 1.0; color: root.cMagenta }
+                width: 56; height: 56; radius: 28
+                color: Qt.rgba(0, 0.53, 0.81, 0.15)
+                border.color: root.cBorder; border.width: 1
+                Text {
+                    anchors.centerIn: parent
+                    text: "👤"; font.pixelSize: 24
                 }
             }
 
             // Username field
             Rectangle {
-                width: parent.width; height: 44; radius: 8
+                width: parent.width; height: 48; radius: 10
                 color: root.cField
                 border.color: userInput.activeFocus ? root.cCyan : root.cBorder
                 border.width: userInput.activeFocus ? 2 : 1
                 TextInput {
                     id: userInput
                     anchors.fill: parent
-                    anchors.leftMargin: 14; anchors.rightMargin: 14
+                    anchors.leftMargin: 16; anchors.rightMargin: 16
                     verticalAlignment: TextInput.AlignVCenter
-                    color: root.cText; font.pixelSize: 16
+                    color: root.cText; font.pixelSize: 15; font.weight: Font.Normal
                     clip: true
                     text: userModel.lastUser
+                    cursorVisible: userInput.activeFocus
                     onAccepted: passInput.forceActiveFocus()
                     KeyNavigation.tab: passInput
                 }
                 Text {
-                    anchors.fill: parent; anchors.leftMargin: 14
+                    anchors.fill: parent; anchors.leftMargin: 16
                     verticalAlignment: Text.AlignVCenter
-                    text: "Username"; color: root.cMuted; font.pixelSize: 16
+                    text: "Username"; color: root.cDimmed; font.pixelSize: 15
                     visible: userInput.text.length === 0 && !userInput.activeFocus
                 }
             }
 
             // Password field
             Rectangle {
-                width: parent.width; height: 44; radius: 8
+                width: parent.width; height: 48; radius: 10
                 color: root.cField
                 border.color: passInput.activeFocus ? root.cCyan : root.cBorder
                 border.width: passInput.activeFocus ? 2 : 1
                 TextInput {
                     id: passInput
                     anchors.fill: parent
-                    anchors.leftMargin: 14; anchors.rightMargin: 14
+                    anchors.leftMargin: 16; anchors.rightMargin: 16
                     verticalAlignment: TextInput.AlignVCenter
-                    color: root.cText; font.pixelSize: 16
+                    color: root.cText; font.pixelSize: 15
                     echoMode: TextInput.Password
                     passwordCharacter: "•"
                     clip: true
+                    cursorVisible: passInput.activeFocus
                     onAccepted: root.doLogin()
                 }
                 Text {
-                    anchors.fill: parent; anchors.leftMargin: 14
+                    anchors.fill: parent; anchors.leftMargin: 16
                     verticalAlignment: Text.AlignVCenter
-                    text: "Password"; color: root.cMuted; font.pixelSize: 16
+                    text: "Password"; color: root.cDimmed; font.pixelSize: 15
                     visible: passInput.text.length === 0 && !passInput.activeFocus
                 }
             }
 
-            // Login button (NTB blue)
+            // Login button (NTB blue, full-width)
             Rectangle {
                 id: loginBtn
-                width: parent.width; height: 46; radius: 8
+                width: parent.width; height: 48; radius: 10
                 color: loginArea.pressed ? "#006fa8"
                        : (loginArea.containsMouse ? root.cCyan : root.cBlue)
+                Behavior on color { ColorAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
                     text: "Log In"; color: "white"
-                    font.pixelSize: 17; font.bold: true
+                    font.pixelSize: 16; font.bold: true
                 }
                 MouseArea {
                     id: loginArea
@@ -175,16 +215,16 @@ Rectangle {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                color: "#ff6b74"; font.pixelSize: 13
+                color: root.cError; font.pixelSize: 13
                 text: ""
             }
 
-            // Session selector (click to cycle) + power actions
+            // Session selector + power actions
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 18
+                spacing: 20
                 Text {
-                    color: root.cMuted; font.pixelSize: 13
+                    color: root.cMuted; font.pixelSize: 12
                     text: "Session: " + (root.sessionNames[root.sessionIndex] || "Default")
                     MouseArea {
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor
@@ -196,17 +236,17 @@ Rectangle {
                 }
                 Text {
                     visible: sddm.canSuspend
-                    color: root.cMuted; font.pixelSize: 13; text: "Sleep"
+                    color: root.cMuted; font.pixelSize: 12; text: "Sleep"
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: sddm.suspend() }
                 }
                 Text {
                     visible: sddm.canReboot
-                    color: root.cMuted; font.pixelSize: 13; text: "Restart"
+                    color: root.cMuted; font.pixelSize: 12; text: "Restart"
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: sddm.reboot() }
                 }
                 Text {
                     visible: sddm.canPowerOff
-                    color: root.cMuted; font.pixelSize: 13; text: "Shut Down"
+                    color: root.cMuted; font.pixelSize: 12; text: "Shut Down"
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: sddm.powerOff() }
                 }
             }

@@ -11,7 +11,11 @@ All notable changes to this project will be documented in this file.
 - CI releases now ship `SHA256SUMS` alongside the ISO.
 - Regression test: `neos-liveuser-setup.service` must stay unsandboxed (sandboxing it silently breaks live autologin); the check ignores comments and fails if any `ProtectSystem`/`ProtectHome`/`PrivateTmp`/`NoNewPrivileges` directive reappears.
 
+### Added
+- **Offline install support**: `tools/gen-install-repo.sh` downloads every package from `neos-packages.txt` into a local pacman repo that `build.sh` embeds on the ISO at `/neos/pkg/` (outside the SquashFS, via xorriso). `neos-pacstrap` now installs hybrid: fresh packages from the network when online, from the on-ISO repo when offline — installation no longer requires internet.
+
 ### Changed (boot experience)
+- **Plymouth splash redesigned** (supersedes the cat-only layout below): NeOS wordmark + tagline top-third, animated cat centred, pulsing dot indicator and status text beneath — Ubuntu-style polish, still no logo image and no KDE splash. Calamares slideshow (`show.qml`), SDDM theme, and welcome app refreshed to match; slideshow keeps keyboard-focus border and accessibility roles.
 - **The cat IS the boot screen now**: removed the NeOS logo from the Plymouth splash — the animated cat alone, dead centre, transparent frames over the plain navy background. The unused theme `logo.png` was deleted (Calamares keeps its own branding logo).
 - **KDE/Plasma login splash disabled**: `etc/skel/.config/ksplashrc` (`Engine=none`, `Theme=None`) ships to the live user and installed users, so the Plymouth cat is the only boot screen — no second splash after SDDM login. Guarded by `tests/verify_boot_gui.sh`.
 
