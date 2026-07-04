@@ -1,15 +1,16 @@
 #!/bin/bash
 # Verify the installed system boots into the GUI, and the boot splash is the
-# "plain" animated loader cat.
+# cat-only loader with static body and animated tail.
 #
 # - tty1 regression: the netinstalled system landed on a text console because
 #   nothing set its default systemd target. The services-systemd module must set
 #   graphical.target so it boots into SDDM/Plasma.
 # - Boot splash: the Plymouth 'neos' theme shows ONLY the animated cat-NN.png
-#   loader, dead centre — no logo, no other elements. Cat frames are generated
-#   from tools/loader-cat.gif (committed; CI does not run generators). Repeated
-#   still frames at the end of the source GIF are trimmed so the loop does not
-#   pause.
+#   loader, dead centre — no wordmark, no tagline, no dots, no status text.
+#   The cat body is perfectly still; only the tail moves. Cat frames are
+#   generated from tools/loader-cat.gif (committed; CI does not run generators).
+#   Repeated still frames at the end of the source GIF are trimmed so the loop
+#   does not pause.
 # - No KDE splash: ksplash after SDDM login is disabled via skel ksplashrc so
 #   the Plymouth cat is the only boot screen.
 set -euo pipefail
@@ -41,25 +42,42 @@ if [[ "$frames" -eq 29 ]]; then
 else
     echo "❌ expected 29 cat-NN.png frames, found $frames"; FAIL=1
 fi
-if grep -q 'cat-"' "$SCRIPT" || grep -q '"cat-' "$SCRIPT"; then
+if grep -q 'cat-\"' "$SCRIPT" || grep -q '\"cat-' "$SCRIPT"; then
     echo "✅ neos.script animates the cat frames"
 else
     echo "❌ neos.script does not reference the cat- frames"; FAIL=1
 fi
 
-# 3. The cat is the ONLY element on the boot splash — no logo in the theme or
-#    the script (user decision: plain cat-only boot screen).
+# 3. The cat is the ONLY element on the boot splash — no logo, wordmark,
+#    tagline, dots, or status text in the theme or the script.
 if [[ -f "$THEME_DIR/logo.png" ]]; then
     echo "❌ theme still ships logo.png (boot splash must be cat-only)"; FAIL=1
 else
     echo "✅ no logo.png in the theme (cat-only splash)"
 fi
-# (gen-bootlogo-frames.py in the header comment is the frame generator, not a
-# logo reference — match only logo assets/sprites.)
-if grep -qE 'logo\.png|logo_|logo\.' "$SCRIPT"; then
-    echo "❌ neos.script still references a logo"; FAIL=1
+# No wordmark or brand text
+if grep -qE '"NeOS"' "$SCRIPT"; then
+    echo "❌ neos.script still shows the NeOS wordmark"; FAIL=1
 else
-    echo "✅ neos.script draws only the cat"
+    echo "✅ neos.script has no wordmark"
+fi
+# No tagline
+if grep -qE '"Arch Linux' "$SCRIPT"; then
+    echo "❌ neos.script still shows the tagline"; FAIL=1
+else
+    echo "✅ neos.script has no tagline"
+fi
+# No dot indicator
+if grep -qE 'dot_' "$SCRIPT"; then
+    echo "❌ neos.script still has dot indicator elements"; FAIL=1
+else
+    echo "✅ neos.script has no dot indicator"
+fi
+# No status text
+if grep -qE 'Starting\.\.\.' "$SCRIPT"; then
+    echo "❌ neos.script still has status text"; FAIL=1
+else
+    echo "✅ neos.script has no status text"
 fi
 
 # 3b. The KDE/Plasma login splash (ksplash) is disabled — the Plymouth cat is

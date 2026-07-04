@@ -1,7 +1,7 @@
-# NeOS Plymouth boot splash (script module) — Ubuntu-inspired polished boot.
-# Shows the NeOS wordmark centred with a subtle dot-indicator below, plus the
-# animated cat as a companion loader. A LUKS password prompt appears below
-# the indicator when needed.
+# NeOS Plymouth boot splash (script module) — minimal cat with animated tail.
+# Shows only the cat centered on a dark background. The cat body is perfectly
+# still and only the tail animates. No wordmark, no tagline, no dots, no status
+# text — just the cat.
 #
 # Frames (cat-NN.png) are generated from tools/loader-cat.gif by
 # tools/gen-bootlogo-frames.py and committed.
@@ -10,26 +10,9 @@
 Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
 Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
 
-# --- NeOS wordmark (large, bold, centred above the loader) ---
-# NOTE: Image.Text(text, r, g, b) only — no font size param in Plymouth script.
-# Font size is fixed by the theme. We use the NTB blue (#0088CF).
-brand_text = Image.Text("NeOS", 0.0, 0.53, 0.81);
-brand_sprite = Sprite();
-brand_sprite.SetImage(brand_text);
-brand_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - brand_text.GetWidth() / 2);
-brand_sprite.SetY(Window.GetY() + Window.GetHeight() / 6);
-brand_sprite.SetZ(5);
-
-# --- Tagline ---
-tagline_text = Image.Text("Arch Linux, refined for everyone.", 0.60, 0.63, 0.71);
-tagline_sprite = Sprite();
-tagline_sprite.SetImage(tagline_text);
-tagline_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - tagline_text.GetWidth() / 2);
-tagline_sprite.SetY(Window.GetY() + Window.GetHeight() / 6 + brand_text.GetHeight() + 8);
-tagline_sprite.SetZ(5);
-
-# --- Load the cat loader frames (cat-00.png .. cat-28.png) ---
-n_frames = 29;
+# --- Load the cat animation frames (cat-00.png .. cat-28.png) ---
+# The frames have a static body with only the tail varying.
+n_frames = 29;  # Keep in sync with gen-bootlogo-frames.py output count
 i = 0;
 while (i < n_frames) {
     if (i < 10)
@@ -40,81 +23,32 @@ while (i < n_frames) {
     i++;
 }
 
-# --- Layout: centre the cat, below brand+tagline ---
+# --- Layout: centre the cat on screen ---
 cat.width  = cat[0].GetWidth();
 cat.height = cat[0].GetHeight();
 
 center_x = Window.GetX() + Window.GetWidth() / 2;
 center_y = Window.GetY() + Window.GetHeight() / 2;
 
-# Cat sits in the vertical centre of the screen
 cat_x = center_x - cat.width / 2;
 cat_y = center_y - cat.height / 2;
 
-# --- Cat loader sprite ---
+# --- Cat sprite ---
 cat.sprite = Sprite();
 cat.sprite.SetImage(cat[0]);
 cat.sprite.SetX(cat_x);
 cat.sprite.SetY(cat_y);
 cat.sprite.SetZ(10);
 
-# --- Simple dot indicator (built from filled dots) ---
-# Use o and O to make a simple pulsing indicator. We avoid Unicode characters
-# since Plymouth's font support varies.
-dot_base_y = cat_y + cat.height + 24;
-dot_count = 5;
-dot_center_x = center_x;
-dot_spacing = 20;
-dot_start_x = dot_center_x - (dot_count - 1) * dot_spacing / 2;
-
-dot_off = ". ";
-dot_on  = "O ";
-
-# Build dot sprites
-dot_sprites = [];
-d_i = 0;
-while (d_i < dot_count) {
-    dot = Sprite();
-    dot_img = Image.Text(dot_off, 0.42, 0.44, 0.51);
-    dot.SetImage(dot_img);
-    dot.SetX(dot_start_x + d_i * dot_spacing);
-    dot.SetY(dot_base_y);
-    dot.SetZ(15);
-    dot_sprites[d_i] = dot;
-    d_i++;
-}
-
-# --- Show status text ---
-status_text = Image.Text("Starting...", 0.42, 0.44, 0.51);
-status_sprite = Sprite();
-status_sprite.SetImage(status_text);
-status_sprite.SetX(center_x - status_text.GetWidth() / 2);
-status_sprite.SetY(dot_base_y + 18);
-status_sprite.SetZ(15);
-
-# --- Animate: advance cat frame every other refresh, pulse dots ---
+# --- Animate: cycle cat frames to move only the tail ---
 tick = 0;
 fun refresh_callback() {
     tick++;
 
-    # Animate cat
     frame = Math.Int(tick / 2);
     while (frame >= n_frames)
         frame -= n_frames;
     cat.sprite.SetImage(cat[frame]);
-
-    # Pulse dots: light up one dot at a time
-    active_dot = Math.Int(tick / 8) % dot_count;
-    dot_val = 0;
-    while (dot_val < dot_count) {
-        if (dot_val == active_dot) {
-            dot_img = Image.Text(dot_on, 0.0, 0.59, 0.83);
-        } else {
-            dot_img = Image.Text(dot_off, 0.42, 0.44, 0.51);
-        }
-        dot_sprites[dot_val].SetImage(dot_img);
-        dot_val++;
-    }
 }
 Plymouth.SetRefreshFunction(refresh_callback);
 
@@ -130,7 +64,7 @@ fun display_password_callback(prompt, bullets) {
     txt = Image.Text(prompt + "   " + bullet_text, 0.90, 0.91, 0.95);
     prompt_sprite.SetImage(txt);
     prompt_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - txt.GetWidth() / 2);
-    prompt_sprite.SetY(dot_base_y + 40);
+    prompt_sprite.SetY(cat_y + cat.height + 24);
     prompt_sprite.SetZ(20);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
