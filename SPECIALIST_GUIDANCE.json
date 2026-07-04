@@ -1,22 +1,22 @@
 {
   "bolt": {
     "focus": "none",
-    "directive": "Maintain the current performance baseline. Defer any new optimization tasks until pending architectural shifts are resolved.",
+    "directive": "Maintain the current performance baseline. Defer any new optimization tasks until pending architectural shifts and validation debts are resolved.",
     "tasks": []
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "Verify that journal logs are consistently clear and highly accessible for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions do not degrade debugging capabilities.",
+    "directive": "Execute the pending validation task. Thoroughly verify that journal logs are consistently clear and highly accessible for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions do not degrade debugging capabilities.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
   "sentinel": {
     "focus": "privilege auditing",
-    "directive": "Conduct a rigorous audit of the systemd sandboxing configurations in neos-autoupdate.service and neos-liveuser-setup.service. Ensure zero unnecessary privileges are granted, and thoroughly validate that ReadWritePaths directives remain strictly minimal and fit for purpose.",
+    "directive": "Execute the pending validation task. Conduct a rigorous audit of the systemd sandboxing configurations in neos-autoupdate.service and neos-liveuser-setup.service. Ensure zero unnecessary privileges are granted, and thoroughly validate that ReadWritePaths directives remain strictly minimal and fit for purpose.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
-  "note": "Immediate tasks mandated by the No-build day (strategic pause) to aggressively clear accumulating validation debt."
+  "note": "Immediate directives mandated by the No-build day (strategic pause) to aggressively clear accumulating validation debt from the newly applied strict sandboxing."
 }
