@@ -1,12 +1,18 @@
 #!/bin/bash
 # Verify the installed system boots into the GUI, and the boot splash is the
-# "plain" animated loader cat.
+# cat-only loader with static body and animated tail.
 #
 # - tty1 regression: the netinstalled system landed on a text console because
 #   nothing set its default systemd target. The services-systemd module must set
 #   graphical.target so it boots into SDDM/Plasma.
-# - Boot splash: the Plymouth 'neos' theme animates cat-NN.png frames generated
-#   from tools/loader-cat.gif (committed; CI does not run generators).
+# - Boot splash: the Plymouth 'neos' theme shows ONLY the animated cat-NN.png
+#   loader, dead centre — no wordmark, no tagline, no dots, no status text.
+#   The cat body is perfectly still; only the tail moves. Cat frames are
+#   generated from tools/loader-cat.gif (committed; CI does not run generators).
+#   Repeated still frames at the end of the source GIF are trimmed so the loop
+#   does not pause.
+# - No KDE splash: ksplash after SDDM login is disabled via skel ksplashrc so
+#   the Plymouth cat is the only boot screen.
 set -euo pipefail
 
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
@@ -29,24 +35,65 @@ else
     echo "❌ sddm is not enabled"; FAIL=1
 fi
 
-# 2. Boot-splash cat frames are present (32 frames) and wired into the script.
+# 2. Boot-splash cat frames are present (29 frames) and wired into the script.
 frames=$(find "$THEME_DIR" -maxdepth 1 -name 'cat-*.png' | wc -l)
-if [[ "$frames" -eq 32 ]]; then
-    echo "✅ 32 cat boot-splash frames present"
+if [[ "$frames" -eq 29 ]]; then
+    echo "✅ 29 cat boot-splash frames present"
 else
-    echo "❌ expected 32 cat-NN.png frames, found $frames"; FAIL=1
+    echo "❌ expected 29 cat-NN.png frames, found $frames"; FAIL=1
 fi
-if grep -q 'cat-"' "$SCRIPT" || grep -q '"cat-' "$SCRIPT"; then
+if grep -q 'cat-\"' "$SCRIPT" || grep -q '\"cat-' "$SCRIPT"; then
     echo "✅ neos.script animates the cat frames"
 else
     echo "❌ neos.script does not reference the cat- frames"; FAIL=1
 fi
 
-# 3. The old spinner/logo assets must be gone (replaced by the plain cat).
-if find "$THEME_DIR" -maxdepth 1 \( -name 'spinner-*.png' -o -name 'logo.png' \) | grep -q .; then
-    echo "❌ stale spinner-*/logo.png assets still present in the theme"; FAIL=1
+# 3. The cat is the ONLY element on the boot splash — no logo, wordmark,
+#    tagline, dots, or status text in the theme or the script.
+if [[ -f "$THEME_DIR/logo.png" ]]; then
+    echo "❌ theme still ships logo.png (boot splash must be cat-only)"; FAIL=1
 else
-    echo "✅ stale spinner/logo assets removed"
+    echo "✅ no logo.png in the theme (cat-only splash)"
+fi
+# No wordmark or brand text
+if grep -qE '"NeOS"' "$SCRIPT"; then
+    echo "❌ neos.script still shows the NeOS wordmark"; FAIL=1
+else
+    echo "✅ neos.script has no wordmark"
+fi
+# No tagline
+if grep -qE '"Arch Linux' "$SCRIPT"; then
+    echo "❌ neos.script still shows the tagline"; FAIL=1
+else
+    echo "✅ neos.script has no tagline"
+fi
+# No dot indicator
+if grep -qE 'dot_' "$SCRIPT"; then
+    echo "❌ neos.script still has dot indicator elements"; FAIL=1
+else
+    echo "✅ neos.script has no dot indicator"
+fi
+# No status text
+if grep -qE 'Starting\.\.\.' "$SCRIPT"; then
+    echo "❌ neos.script still has status text"; FAIL=1
+else
+    echo "✅ neos.script has no status text"
+fi
+
+# 3b. The KDE/Plasma login splash (ksplash) is disabled — the Plymouth cat is
+#     the only boot screen users see.
+KSPLASHRC="profile/airootfs/etc/skel/.config/ksplashrc"
+if [[ -f "$KSPLASHRC" ]] && grep -q '^Engine=none' "$KSPLASHRC" && grep -q '^Theme=None' "$KSPLASHRC"; then
+    echo "✅ ksplash disabled via skel ksplashrc (no KDE boot screen)"
+else
+    echo "❌ $KSPLASHRC missing or does not disable ksplash"; FAIL=1
+fi
+
+# 4. The old animated-spinner assets must stay gone (replaced by the cat loader).
+if find "$THEME_DIR" -maxdepth 1 -name 'spinner-*.png' | grep -q .; then
+    echo "❌ stale spinner-*.png assets still present in the theme"; FAIL=1
+else
+    echo "✅ stale spinner assets removed"
 fi
 if grep -q 'spinner' "$SCRIPT"; then
     echo "❌ neos.script still references removed spinner frames"; FAIL=1

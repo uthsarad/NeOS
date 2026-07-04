@@ -50,19 +50,17 @@ jobs:
           FAILED=0
 
           for script in tests/verify_*.sh; do
+            # *iso* tests need a built image; they run in the build job
+            # ("Validate ISO" step) after mkarchiso produces one.
             if [[ "$script" == *iso* ]]; then
               continue
             fi
 
             echo "::group::Running $script..."
 
-            if [[ "$script" == "tests/verify_mkinitcpio.sh" ]] || [[ "$script" == "tests/verify_qml_enhancements.sh" ]]; then
-              timeout 60s bash "$script" || true
-            else
-              if ! bash "$script"; then
-                echo "::error::Test failed: $script"
-                FAILED=1
-              fi
+            if ! timeout 120s bash "$script"; then
+              echo "::error::Test failed: $script"
+              FAILED=1
             fi
             echo "::endgroup::"
           done
@@ -149,27 +147,23 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
 
-          cp "$GITHUB_WORKSPACE/profile/pacman.conf" \
-             "$GITHUB_WORKSPACE/pacman-build.conf"
-
-          MIRRORLIST_PATH="$GITHUB_WORKSPACE/profile/airootfs/etc/pacman.d/neos-mirrorlist"
-          CHAOTIC_MIRRORLIST_PATH="$GITHUB_WORKSPACE/profile/airootfs/etc/pacman.d/chaotic-mirrorlist"
-
-          if ! grep -q "^[[:space:]]*Server" "$MIRRORLIST_PATH"; then
-            echo "No active servers in $MIRRORLIST_PATH" >&2
-            exit 1
-          fi
-
-          sed -i \
-            "s|/etc/pacman.d/neos-mirrorlist|$MIRRORLIST_PATH|g" \
-            "$GITHUB_WORKSPACE/pacman-build.conf"
-
-          sed -i \
-            "s|/etc/pacman.d/chaotic-mirrorlist|$CHAOTIC_MIRRORLIST_PATH|g" \
-            "$GITHUB_WORKSPACE/pacman-build.conf"
+          # Shared with build.sh — tools/gen-build-conf.sh is the single
+          # source of truth for the build pacman.conf logic.
+          bash tools/gen-build-conf.sh "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/pacman-build.conf"
 
           echo "Generated pacman-build.conf:"
           cat "$GITHUB_WORKSPACE/pacman-build.conf"
+
+      - name: Generate netinstall manifests
+        run: |
+          set -euo pipefail
+
+          cd "$GITHUB_WORKSPACE"
+
+          # CRITICAL: without this the ISO ships the stale committed
+          # neos-packages.txt / neos-overlay.txt, and systems installed from a
+          # CI ISO silently miss newer overlay files and packages.
+          bash tools/gen-manifests.sh "$GITHUB_WORKSPACE"
 
       - name: Build ISO
         run: |
@@ -333,10 +327,39 @@ jobs:
           chmod +x tools/gen-vm-appliance.sh
           ./tools/gen-vm-appliance.sh
 
-      - name: Generate release tag
+      - name: Generate checksums
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+
+          cd "$GITHUB_WORKSPACE/out"
+          sha256sum -- *.iso > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Generate release tag and notes
         id: tag
         if: github.ref == 'refs/heads/main'
-        run: echo "value=V${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+        run: |
+          set -euo pipefail
+
+          cd "$GITHUB_WORKSPACE"
+
+          # Tag from the repo VERSION file so releases map to CHANGELOG
+          # entries; the run number suffix keeps same-day rebuilds unique.
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          echo "value=v${VERSION}-b${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+          # Release body = the CHANGELOG section for this VERSION (empty file
+          # if the section is missing; generate_release_notes still fills in
+          # the commit list).
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "\\]" { flag = 1; next }
+            /^## \[/ { flag = 0 }
+            flag { print }
+          ' CHANGELOG.md > release-body.md
+
+          echo "Release body:"
+          cat release-body.md
 
       - name: Upload ISO and VM Templates to Release
         uses: softprops/action-gh-release@v3
@@ -345,7 +368,8 @@ jobs:
           tag_name: ${{ steps.tag.outputs.value }}
           name: NeOS ${{ steps.tag.outputs.value }}
           generate_release_notes: true
-          body: ${{ steps.iso.outputs.body || '' }}
+          body_path: release-body.md
           files: |
             out/*.iso
+            out/SHA256SUMS
             out/vm/*

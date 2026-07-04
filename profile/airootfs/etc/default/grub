@@ -1,7 +1,7 @@
 # NeOS GRUB defaults for boot reliability on common storage and VM targets.
 
 GRUB_DEFAULT=0
-GRUB_TIMEOUT=5
+GRUB_TIMEOUT=1
 GRUB_DISTRIBUTOR="NeOS"
 # ⚡ Bolt: Performance Optimizations
 # - nowatchdog: Disable watchdog timer to reduce CPU interrupts

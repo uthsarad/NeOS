@@ -19,7 +19,18 @@ verify_service() {
     # /home; sandboxing it silently breaks live autologin (no user is created).
     case "${SERVICE_FILE##*/}" in
         neos-liveuser-setup.service)
-            echo "⏭️ Skipping $SERVICE_FILE (account-setup unit, must not be sandboxed)"
+            # Regression guard (inverse check): an upstream merge once re-added
+            # sandboxing to this unit and silently broke live boot. Fail loudly
+            # if any sandboxing directive reappears. Comment lines are ignored —
+            # the unit's own comments name the forbidden directives.
+            CONTENT=$(grep -v '^[[:space:]]*#' "$SERVICE_FILE")
+            for directive in ProtectSystem ProtectHome PrivateTmp NoNewPrivileges; do
+                if [[ "$CONTENT" == *"$directive="* ]]; then
+                    echo "❌ $SERVICE_FILE contains $directive= — sandboxing this unit breaks live autologin (it must write /etc and /home)"
+                    return 1
+                fi
+            done
+            echo "⏭️ $SERVICE_FILE verified unsandboxed (account-setup unit, must not be sandboxed)"
             return 0
             ;;
     esac

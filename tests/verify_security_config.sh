@@ -155,14 +155,18 @@ else
     echo "✅ TrustAll NOT found in active configuration of $ROOT_PACMAN_CONF (secure)"
 fi
 
-# Sentinel: Check build.sh for secure pacman.conf usage
+# Sentinel: Check the build path uses the repo pacman.conf as its base.
+# The generation logic lives in tools/gen-build-conf.sh (shared by build.sh
+# and CI); build.sh must call it.
 BUILD_SCRIPT="build.sh"
-echo "Verifying security configuration in $BUILD_SCRIPT..."
+GEN_CONF_SCRIPT="tools/gen-build-conf.sh"
+echo "Verifying security configuration in $BUILD_SCRIPT / $GEN_CONF_SCRIPT..."
 
-if grep -q "cp \"\$PROFILE_DIR/pacman.conf\" \"\$BUILD_CONF\"" "$BUILD_SCRIPT"; then
-    echo "✅ build.sh uses repo pacman.conf"
+if grep -q "gen-build-conf.sh" "$BUILD_SCRIPT" \
+    && grep -q "cp \"\$PROFILE_DIR/pacman.conf\" \"\$BUILD_CONF\"" "$GEN_CONF_SCRIPT"; then
+    echo "✅ build path uses repo pacman.conf (via $GEN_CONF_SCRIPT)"
 else
-    echo "❌ build.sh does NOT use repo pacman.conf"
+    echo "❌ build path does NOT use repo pacman.conf"
     exit 1
 fi
 

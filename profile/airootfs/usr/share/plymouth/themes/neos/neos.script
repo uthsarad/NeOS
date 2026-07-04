@@ -1,17 +1,18 @@
-# NeOS Plymouth boot splash (script module).
-# "Plain": just the animated loader cat, centered on a deep-navy background, so
-# boot never looks frozen. A password prompt is included so encrypted (LUKS)
-# installs can unlock at boot.
+# NeOS Plymouth boot splash (script module) — minimal cat with animated tail.
+# Shows only the cat centered on a dark background. The cat body is perfectly
+# still and only the tail animates. No wordmark, no tagline, no dots, no status
+# text — just the cat.
 #
 # Frames (cat-NN.png) are generated from tools/loader-cat.gif by
-# tools/gen-bootlogo-frames.py and committed (CI does not run generators).
+# tools/gen-bootlogo-frames.py and committed.
 
-# --- Background: deep navy (#0A0E1A -> #16203A), matching NeOS branding ---
+# --- Background: deep navy gradient (#0A0E1A -> #16203A) ---
 Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
 Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
 
-# --- Load the cat loader frames (cat-00.png .. cat-31.png) ---
-n_frames = 32;
+# --- Load the cat animation frames (cat-00.png .. cat-28.png) ---
+# The frames have a static body with only the tail varying.
+n_frames = 29;  # Keep in sync with gen-bootlogo-frames.py output count
 i = 0;
 while (i < n_frames) {
     if (i < 10)
@@ -22,18 +23,28 @@ while (i < n_frames) {
     i++;
 }
 
-cat.sprite = Sprite();
+# --- Layout: centre the cat on screen ---
 cat.width  = cat[0].GetWidth();
 cat.height = cat[0].GetHeight();
+
+center_x = Window.GetX() + Window.GetWidth() / 2;
+center_y = Window.GetY() + Window.GetHeight() / 2;
+
+cat_x = center_x - cat.width / 2;
+cat_y = center_y - cat.height / 2;
+
+# --- Cat sprite ---
+cat.sprite = Sprite();
 cat.sprite.SetImage(cat[0]);
-cat.sprite.SetX(Window.GetWidth()  / 2 - cat.width  / 2);
-cat.sprite.SetY(Window.GetHeight() / 2 - cat.height / 2);
+cat.sprite.SetX(cat_x);
+cat.sprite.SetY(cat_y);
 cat.sprite.SetZ(10);
 
-# --- Animate: advance one frame every other refresh (~25 fps, calm loop) ---
+# --- Animate: cycle cat frames to move only the tail ---
 tick = 0;
 fun refresh_callback() {
     tick++;
+
     frame = Math.Int(tick / 2);
     while (frame >= n_frames)
         frame -= n_frames;
@@ -41,7 +52,7 @@ fun refresh_callback() {
 }
 Plymouth.SetRefreshFunction(refresh_callback);
 
-# --- Password prompt for encrypted disks (shown below the cat) ---
+# --- Password prompt for encrypted disks ---
 prompt_sprite = Sprite();
 fun display_password_callback(prompt, bullets) {
     bullet_text = "";
@@ -50,10 +61,10 @@ fun display_password_callback(prompt, bullets) {
         bullet_text += "*";
         i++;
     }
-    txt = Image.Text(prompt + "   " + bullet_text, 0.85, 0.88, 0.95);
+    txt = Image.Text(prompt + "   " + bullet_text, 0.90, 0.91, 0.95);
     prompt_sprite.SetImage(txt);
-    prompt_sprite.SetX(Window.GetWidth() / 2 - txt.GetWidth() / 2);
-    prompt_sprite.SetY(Window.GetHeight() / 2 + cat.height / 2 + 40);
+    prompt_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - txt.GetWidth() / 2);
+    prompt_sprite.SetY(cat_y + cat.height + 24);
     prompt_sprite.SetZ(20);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);

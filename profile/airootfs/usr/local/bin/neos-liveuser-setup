@@ -19,9 +19,12 @@ _error_handler() {
 
 trap '_error_handler $? $LINENO' ERR
 
+# liveuser is created at image build time by /root/customize_airootfs.sh (uid
+# 1000, full group set). This runtime unit only applies live-session state that
+# must happen on the booted system.
 if ! id "liveuser" &>/dev/null; then
-    useradd -m -g users -G wheel,video,audio,storage,power -s /bin/zsh liveuser
-    passwd -d liveuser
+    echo "liveuser missing — customize_airootfs.sh did not run at build time" >&2
+    exit 1
 fi
 
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
@@ -59,7 +62,7 @@ if [ -d "$LIVE_USER_HOME" ]; then
         # Fix SDDM autologin: Since we removed the default Wayland session,
         # we must point the autologin target to the X11 session instead.
         if [ -f /etc/sddm.conf.d/autologin.conf ]; then
-            sed -i 's/^Session=plasma/Session=plasmax11/' /etc/sddm.conf.d/autologin.conf
+            sed -i 's/^Session=.*/Session=plasmax11/' /etc/sddm.conf.d/autologin.conf
         fi
 
         mkdir -p "$LIVE_USER_HOME/.config"

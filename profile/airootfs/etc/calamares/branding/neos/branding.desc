@@ -4,7 +4,7 @@ componentName:  neos
 welcomeStyleCalamares:   false
 welcomeExpandingLogo:    true
 windowResizable:         true
-windowSize:              1010,680
+windowSize:              1024,720
 windowCentered:          true
 windowPlacement:         center
 
@@ -15,11 +15,18 @@ navigation: widget
 strings:
     productName:         NeOS
     shortProductName:    NeOS
-    productVersion:      2026.06
-    shortProductVersion: 2026.06
-    versionedName:       NeOS 2026.06
-    shortVersionedName:  NeOS 2026.06
+    productVersion:      2026.07
+    shortProductVersion: 2026.07
+    versionedName:       NeOS 2026.07
+    shortVersionedName:  NeOS 2026.07
     bootloaderEntryName: NeOS
+    # URLs for the welcome-page info buttons. Calamares reads the URLs from here;
+    # welcome.conf's show*Url booleans decide which buttons appear. Without these
+    # the welcome page rendered with no support/known-issues/release-notes links.
+    productUrl:          "https://github.com/NimuthuGanegoda/NeOS"
+    supportUrl:          "https://github.com/NimuthuGanegoda/NeOS/issues"
+    knownIssuesUrl:      "https://github.com/NimuthuGanegoda/NeOS/issues"
+    releaseNotesUrl:     "https://github.com/NimuthuGanegoda/NeOS/blob/main/CHANGELOG.md"
 
 images:
     productLogo:         "logo.png"

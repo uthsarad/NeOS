@@ -50,10 +50,17 @@ mkdir -p "$OUT_DIR"
 VM_UUID=$(uuidgen)
 DISK_UUID=$(uuidgen)
 
+# Randomize the NIC MAC (template ships a fixed one; two appliances on the same
+# LAN segment would collide). Locally-administered VirtualBox-style prefix
+# 080027 + 3 random bytes, uppercase hex without separators as .vbox expects.
+MAC_SUFFIX=$(od -An -N3 -tx1 /dev/urandom | tr -d ' \n' | tr 'a-f' 'A-F')
+VM_MAC="080027${MAC_SUFFIX}"
+
 echo -e "${GREEN}📦 Generating VirtualBox Configuration (.vbox)...${NC}"
 sed -e "s/{4e454f53-0000-4000-8000-000000000001}/{$VM_UUID}/g" \
     -e "s/{4e454f53-0000-4000-8000-000000000002}/{$DISK_UUID}/g" \
     -e "s/NeOS-Virtual-Appliance/$VM_NAME/g" \
+    -e "s/MACAddress=\"080027ADDEBE\"/MACAddress=\"$VM_MAC\"/" \
     profile/vm/neos.vbox > "$OUT_DIR/$VM_NAME.vbox"
 
 echo -e "${GREEN}📦 Generating VMware Configuration (.vmx)...${NC}"
