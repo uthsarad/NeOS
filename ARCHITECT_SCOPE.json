@@ -5,9 +5,9 @@
     "**/*"
   ],
   "constraints": [
-    "A strict strategic pause is unequivocally triggered due to unverified systemd sandboxing implementations and pending, critical specialist validation tasks that must be resolved.",
+    "A strict strategic pause is unequivocally triggered due to unverified systemd sandboxing implementations and critical pending specialist validation tasks that must be resolved immediately.",
     "Do not implement any new features, capabilities, enhancements, or modifications of any kind. Strictly zero code changes are authorized during this strategic pause.",
     "Do not modify any production code files whatsoever under any circumstances. Ensure the repository state remains completely pristine, unaltered, and free of any architectural drift.",
-    "Pause all standard development tasks, feature work, and optimization efforts until comprehensive specialist validation definitively confirms base system stability and clears all technical debt."
+    "Pause all standard development tasks, feature work, and optimization efforts until comprehensive specialist validation definitively confirms base system stability and clears all accumulated technical debt."
   ]
 }
