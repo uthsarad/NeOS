@@ -1,22 +1,22 @@
 {
   "bolt": {
     "focus": "none",
-    "directive": "Maintain the current performance baseline without regression. Defer any new optimization tasks until pending architectural shifts and critical validation debts are fully resolved.",
+    "directive": "Maintain the current performance baseline without regression. Defer any new optimization tasks entirely until pending architectural shifts and critical validation debts are fully resolved.",
     "tasks": []
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "URGENT: Execute the pending validation task immediately without delay. Thoroughly verify that journal logs are consistently clear, highly accessible, and actionable for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions absolutely do not degrade debugging capabilities or obscure critical failure modes.",
+    "directive": "URGENT: Execute the pending validation task immediately without delay. Thoroughly verify that journal logs are consistently clear, highly accessible, and completely actionable for strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent permission restrictions absolutely do not degrade debugging capabilities or obscure critical system failure modes.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
   "sentinel": {
     "focus": "privilege auditing",
-    "directive": "URGENT: Execute the pending validation task immediately without delay. Conduct a rigorous, uncompromising security audit of the systemd sandboxing configurations in neos-autoupdate.service and neos-liveuser-setup.service. Ensure strictly zero unnecessary privileges are granted, and thoroughly validate that ReadWritePaths directives remain strictly minimal, highly secure, and entirely fit for purpose.",
+    "directive": "URGENT: Execute the pending validation task immediately without delay. Conduct a rigorous, uncompromising security audit of the systemd sandboxing configurations deployed in neos-autoupdate.service and neos-liveuser-setup.service. Ensure strictly zero unnecessary privileges are granted, and thoroughly validate that ReadWritePaths directives remain strictly minimal, highly secure, and entirely fit for their designated purpose.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
-  "note": "Critical, immediate directives definitively mandated by the No-build day (strategic pause) to aggressively clear accumulating validation debt from the newly applied strict sandboxing. No further feature development or architectural shifts will proceed until these explicit tasks are rigorously verified as complete."
+  "note": "Critical, immediate directives definitively mandated by the No-build day (strategic pause) to aggressively clear accumulating validation debt from the newly applied strict sandboxing. Absolutely no further feature development or architectural shifts will proceed until these explicit tasks are rigorously verified as 100% complete."
 }
