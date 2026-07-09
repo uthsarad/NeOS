@@ -31,7 +31,14 @@ echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel
 chmod 0440 /etc/sudoers.d/zz-live-wheel
 
 LIVE_USER_HOME="/home/liveuser"
+# Sentinel: [Security] Prevent arbitrary file writes via symlink attacks
+if [[ -L "$LIVE_USER_HOME" ]]; then
+    echo "Security error: $LIVE_USER_HOME is a symlink. Aborting." >&2
+    exit 1
+fi
+
 AUTOSTART_DIR="$LIVE_USER_HOME/.config/autostart"
+
 
 if [ -d "$LIVE_USER_HOME" ]; then
     mkdir -p "$AUTOSTART_DIR"

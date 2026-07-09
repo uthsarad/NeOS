@@ -9,3 +9,8 @@
 - Fixes applied: Added signature verification (`pacman-key --verify`) for the downloaded Chaotic-AUR keyring package before installation in `build.sh`.
 - Remaining attack surface: Other downloaded dependencies inside mkarchiso might rely on their own verification steps, but base build configuration is now hardened.
 - Severity summary: High
+
+- Risks found: Potential arbitrary file write via symlink attack in `neos-liveuser-setup`. The script creates directories and modifies files in `/home/liveuser` as root before ultimately chowning the directory, allowing a compromised `liveuser` to pre-create `/home/liveuser` as a symlink pointing to sensitive system locations.
+- Fixes applied: Added a symlink check (`-L`) for `LIVE_USER_HOME` in `neos-liveuser-setup` before any directory creation or file writing occurs, aborting if a symlink is detected.
+- Remaining attack surface: Other root scripts operating on user directories must be carefully audited for symlink traversal vulnerabilities.
+- Severity summary: High
