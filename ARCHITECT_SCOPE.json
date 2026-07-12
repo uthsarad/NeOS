@@ -9,6 +9,7 @@
     "Do not implement any new features, capabilities, enhancements, or modifications of any kind. Strictly zero code changes are authorized during this critical strategic pause, including any minor bug fixes, structural refactoring, or superficial text updates to the codebase.",
     "Do not modify any production code files whatsoever under any circumstances. Ensure the repository state remains completely pristine, entirely unaltered, and absolutely free of any architectural drift to give specialists a stable, unchanging baseline for their rigorous audits of the restricted services. This specifically includes waiting for rigorous validation of ProtectSystem=strict impacts on neos-liveuser-setup.service and verifying explicit ReadWritePaths configurations for /home and /etc.",
     "Pause all standard development tasks, new feature work, and code optimization efforts completely until comprehensive specialist validation definitively confirms base system stability and fully clears all accumulated technical debt from the pending Sentinel and Palette tasks regarding systemd configuration.",
-    "The systemd service validation must occur before any other work proceeds."
+    "The systemd service validation must occur before any other work proceeds.",
+    "When conducting audits, Sentinel must definitively preserve access to /opt and /srv in ReadWritePaths, and CAP_SYS_MODULE in CapabilityBoundingSet to ensure third-party packages and kernel module hooks (dkms) function correctly."
   ]
 }
