@@ -1,22 +1,22 @@
 {
   "bolt": {
     "focus": "none",
-    "directive": "Maintain the current performance baseline perfectly without any performance regression whatsoever. Defer any new optimization tasks entirely until pending architectural shifts and critical validation debts from other specialists are fully resolved and system stability is definitively guaranteed. System stability is paramount during this phase.",
+    "directive": "Maintain the current performance baseline perfectly. Do not implement any new optimization tasks. Defer all performance enhancements until the critical validation debts from Palette and Sentinel regarding systemd sandboxing are fully resolved and system stability is definitively confirmed.",
     "tasks": []
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "URGENT: Execute the pending validation task immediately without any further delay. Thoroughly verify that journal logs are consistently clear, highly accessible, explicitly detailed, and completely actionable for the strictly sandboxed services (neos-autoupdate.service, neos-liveuser-setup.service). Ensure the recent stringent permission restrictions absolutely do not degrade our debugging capabilities. Specifically, verify that errors caused by read-only filesystem restrictions are explicitly and clearly bubbled up in journalctl, rather than masked by generic exit codes. We cannot accept regressions in logging clarity for these vital services.",
+    "directive": "URGENT: Execute the pending validation task immediately. Thoroughly verify that journal logs remain clear, accessible, and actionable for the strictly sandboxed services (`neos-autoupdate.service`, `neos-liveuser-setup.service`). Ensure that failures caused by read-only filesystem restrictions are explicitly bubbled up in `journalctl` and not masked by generic exit codes, which would degrade debugging capabilities.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
   "sentinel": {
     "focus": "privilege auditing",
-    "directive": "URGENT: Execute the pending validation task immediately without any further delay. Conduct a mathematically rigorous, uncompromising security audit of the strict systemd sandboxing configurations deployed in neos-autoupdate.service and neos-liveuser-setup.service. Ensure strictly zero unnecessary privileges are inadvertently granted. Thoroughly validate that ReadWritePaths directives remain strictly minimal but functionally adequate; for instance, audit that autoupdaters have explicitly configured access to /var/lib/pacman, /usr, and /boot, and liveuser scripts to /home/liveuser, while strictly preserving /opt and /srv in ReadWritePaths and CAP_SYS_MODULE in CapabilityBoundingSet, preventing systemic breakage from ProtectSystem=strict, specifically guaranteeing access to /var/lib/pacman, /etc/pacman.d, and /usr/lib/modules. Pay special attention to lockfile and directory creation requirements.",
+    "directive": "URGENT: Execute the pending validation task immediately. Conduct a mathematically rigorous security audit of the strict systemd sandboxing configurations in `neos-autoupdate.service` and `neos-liveuser-setup.service`. Ensure zero unnecessary privileges are granted while confirming `ReadWritePaths` remain minimal but functionally adequate. Definitively validate that autoupdaters retain access to `/var/lib/pacman`, `/usr`, `/boot`, `/opt`, and `/srv`, and that liveuser scripts can access `/home/liveuser`. Confirm `CAP_SYS_MODULE` is preserved in `CapabilityBoundingSet` for kernel module hooks. Prevent any systemic breakage from `ProtectSystem=strict`.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
-  "note": "Critical, immediate directives definitively mandated by the No-build day (strategic pause) to aggressively and decisively clear accumulating validation debt from the newly applied strict sandboxing. Absolutely no further feature development or architectural shifts will proceed until these explicit tasks are rigorously verified as 100% complete and fully audited by both Sentinel and Palette."
+  "note": "Critical, immediate directives mandated by the No-build day (strategic pause) to clear accumulated validation debt from recent strict sandboxing. No further development or architectural shifts will proceed until these tasks are verified as 100% complete and fully audited by Sentinel and Palette."
 }
