@@ -6,14 +6,14 @@
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "URGENT: Execute the pending validation task immediately. Thoroughly verify that journal logs remain clear, accessible, and actionable for the strictly sandboxed services (`neos-autoupdate.service`, `neos-liveuser-setup.service`). Ensure that failures caused by read-only filesystem restrictions are explicitly bubbled up in `journalctl` and not masked by generic exit codes, which would degrade debugging capabilities.",
+    "directive": "URGENT: Execute the pending validation task immediately. Thoroughly verify that journal logs remain clear, accessible, and actionable for the strictly sandboxed services (`neos-autoupdate.service`). Ensure that failures caused by read-only filesystem restrictions are explicitly bubbled up in `journalctl` and not masked by generic exit codes, which would degrade debugging capabilities. Also ensure failures in unsandboxed `neos-liveuser-setup.service` remain readable.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
   },
   "sentinel": {
     "focus": "privilege auditing",
-    "directive": "URGENT: Execute the pending validation task immediately. Conduct a mathematically rigorous security audit of the strict systemd sandboxing configurations in `neos-autoupdate.service` and `neos-liveuser-setup.service`. Ensure zero unnecessary privileges are granted while confirming `ReadWritePaths` remain minimal but functionally adequate. Definitively validate that autoupdaters retain access to `/var/lib/pacman`, `/usr`, `/boot`, `/opt`, and `/srv`, and that liveuser scripts can access `/home/liveuser`. Confirm `CAP_SYS_MODULE` is preserved in `CapabilityBoundingSet` for kernel module hooks. Prevent any systemic breakage from `ProtectSystem=strict`.",
+    "directive": "URGENT: Execute the pending validation task immediately. Conduct a mathematically rigorous security audit of the strict systemd sandboxing configurations in `neos-autoupdate.service`. Ensure zero unnecessary privileges are granted while confirming `ReadWritePaths` remain minimal but functionally adequate. Definitively validate that autoupdaters retain access to `/var/lib/pacman`, `/usr`, `/boot`, `/opt`, and `/srv`. Confirm `CAP_SYS_MODULE` is preserved in `CapabilityBoundingSet` for kernel module hooks. Prevent any systemic breakage from `ProtectSystem=strict`. In addition, strictly verify that `neos-liveuser-setup.service` remains unsandboxed so that essential commands such as `useradd -m` (writing to `/etc` and `/home`) can complete successfully without permission errors.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
