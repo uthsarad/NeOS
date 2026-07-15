@@ -19,5 +19,3 @@ LockPersonality=yes
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
 CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN CAP_FSETID CAP_SETFCAP CAP_SYS_MODULE
 
-[Install]
-WantedBy=multi-user.target
