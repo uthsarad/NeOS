@@ -6,7 +6,7 @@
   },
   "palette": {
     "focus": "logging UX",
-    "directive": "URGENT: Execute the pending validation task immediately. Thoroughly verify that journal logs remain clear, accessible, and actionable for the strictly sandboxed services (`neos-autoupdate.service`). Ensure that failures caused by read-only filesystem restrictions are explicitly bubbled up in `journalctl` and not masked by generic exit codes, which would degrade debugging capabilities. Also ensure failures in unsandboxed `neos-liveuser-setup.service` remain readable.",
+    "directive": "URGENT: Execute the pending validation task immediately. Thoroughly verify that journal logs remain clear, accessible, and actionable for the strictly sandboxed services (`neos-autoupdate.service`). Ensure that failures caused by read-only filesystem restrictions are explicitly bubbled up in `journalctl` and not masked by generic exit codes, which would degrade debugging capabilities. Also ensure failures in unsandboxed `neos-liveuser-setup.service` remain readable and actionable.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service"
     ]
