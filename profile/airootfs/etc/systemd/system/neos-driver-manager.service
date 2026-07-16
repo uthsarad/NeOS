@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Type=oneshot
+Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-driver-manager
 # Sentinel: Hardened systemd sandboxing
 ProtectSystem=strict
