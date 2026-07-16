@@ -7,6 +7,7 @@ Before=display-manager.service sddm.service
 
 [Service]
 Type=oneshot
+Environment=LC_ALL=C
 ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
