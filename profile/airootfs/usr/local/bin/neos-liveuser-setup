@@ -60,7 +60,7 @@ if [ -d "$LIVE_USER_HOME" ]; then
     # rendering. Done deterministically here (root, before display-manager) rather
     # than via the plasma env-script, which races KWin startup. Bare metal is left
     # untouched — Wayland and hardware compositing stay available there.
-    if [ "$(systemd-detect-virt 2>/dev/null || echo none)" != "none" ]; then
+    if systemd-detect-virt -q 2>/dev/null; then
         # Remove the Wayland session so neither autologin nor the SDDM greeter can
         # land on it in a VM. The installed system is pacstrapped fresh, so this
         # only affects the live environment.
