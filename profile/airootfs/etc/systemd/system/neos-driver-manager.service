@@ -4,6 +4,8 @@ After=network.target
 
 [Service]
 Type=oneshot
+# ⚡ Bolt: Set LC_ALL=C to eliminate locale-aware string parsing overhead in bash scripts
+Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-driver-manager
 # Sentinel: Hardened systemd sandboxing
 ProtectSystem=strict
