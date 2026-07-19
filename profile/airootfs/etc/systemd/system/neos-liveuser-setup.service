@@ -15,5 +15,12 @@ ExecStart=/usr/local/bin/neos-liveuser-setup
 # never created, and SDDM drops to a manual greeter with no user (no autologin).
 # An upstream merge (bc64daa) re-added that sandboxing and broke the live boot.
 
+# Sentinel: Safe systemd sandboxing (omitting ProtectSystem/ProtectHome/NoNewPrivileges which break useradd)
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
+RestrictRealtime=yes
+LockPersonality=yes
+
 [Install]
 WantedBy=multi-user.target
