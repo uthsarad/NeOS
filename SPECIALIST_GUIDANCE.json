@@ -1,22 +1,25 @@
 {
   "bolt": {
-    "focus": "none",
-    "directive": "Maintain the current performance baseline perfectly. Do not implement any new optimization tasks. Defer all performance enhancements (including subshell removals) until the critical validation debts from Palette and Sentinel regarding systemd sandboxing are fully resolved and base system stability is definitively confirmed across the board.",
-    "tasks": []
+    "focus": "UI performance and initialization",
+    "directive": "Monitor the performance impact of new UX configurations. Ensure that new autostart items or theme settings do not significantly degrade Plasma startup times.",
+    "tasks": [
+      "profile/airootfs/etc/xdg/autostart/*"
+    ]
   },
   "palette": {
-    "focus": "logging UX",
-    "directive": "URGENT: Execute the pending validation task immediately. Thoroughly verify that journal logs remain clear, accessible, and actionable for the strictly sandboxed services (`neos-autoupdate.service`). Ensure that failures caused by read-only filesystem restrictions are explicitly bubbled up in `journalctl` and not masked by generic exit codes (like 1 or 127), which would degrade our crucial debugging capabilities. Also ensure failures in unsandboxed `neos-liveuser-setup.service` remain readable and actionable.",
+    "focus": "UX consistency and accessibility",
+    "directive": "Validate the implementation of Windows-familiar shortcuts and default themes. Ensure contrast is adequate and navigation is intuitive for users transitioning from other OSes.",
     "tasks": [
-      "profile/airootfs/etc/systemd/system/*.service"
+      "profile/airootfs/etc/xdg/**/*",
+      "profile/airootfs/usr/share/**/*"
     ]
   },
   "sentinel": {
-    "focus": "privilege auditing",
-    "directive": "URGENT: Execute the pending validation task immediately. Conduct a mathematically rigorous security audit of the strict systemd sandboxing configurations in `profile/airootfs/etc/systemd/system/neos-autoupdate.service`. Ensure zero unnecessary privileges are granted while confirming `ReadWritePaths` remain minimal but functionally adequate. Definitively validate that autoupdaters retain explicit access to `/var/lib/pacman`, `/usr`, `/boot`, `/opt`, and `/srv`. Confirm `CAP_SYS_MODULE` is preserved in `CapabilityBoundingSet` for kernel module hooks. Prevent any systemic breakage from `ProtectSystem=strict`. In addition, strictly verify that `profile/airootfs/etc/systemd/system/neos-liveuser-setup.service` remains unsandboxed so that essential commands such as `useradd -m` (writing to `/etc` and `/home`) can complete successfully without permission errors during the critical live boot phase.",
+    "focus": "desktop configuration security",
+    "directive": "Audit newly introduced desktop entries and configuration files for potential privilege escalation vectors or unintended execution paths.",
     "tasks": [
-      "profile/airootfs/etc/systemd/system/*.service"
+      "profile/airootfs/etc/xdg/**/*"
     ]
   },
-  "note": "Critical, immediate directives mandated by the No-build day (strategic pause) to clear accumulated validation debt from recent strict sandboxing initiatives. No further development or architectural shifts will proceed until these tasks are verified as 100% complete and fully audited by Sentinel and Palette."
+  "note": "Standard development has resumed focusing on Phase 6 UX Polish. Ensure all refinements align with the core stability principles."
 }
