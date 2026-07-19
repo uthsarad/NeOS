@@ -41,7 +41,7 @@ XAUTH_TO_USE="${XAUTHORITY:-$HOME/.Xauthority}"
 # tree, so it does NOT inherit the Plasma session's software-GL environment —
 # set it explicitly here when virtualized. Bare metal keeps hardware GL.
 GL_ENV=()
-if [ "$(systemd-detect-virt 2>/dev/null || echo none)" != "none" ]; then
+if systemd-detect-virt -q 2>/dev/null; then
     GL_ENV=(LIBGL_ALWAYS_SOFTWARE=1 QT_QUICK_BACKEND=software)
 fi
 
