@@ -11,7 +11,7 @@
 # routing input. Forcing Mesa's llvmpipe software renderer and the software Qt
 # Quick backend lets KWin and plasmashell come up so the desktop actually works.
 # Bare metal is left untouched on hardware OpenGL.
-if [ "$(systemd-detect-virt 2>/dev/null || echo none)" != "none" ]; then
+if systemd-detect-virt -q 2>/dev/null; then
     # Software OpenGL + software Qt Quick for anything that still uses GL/QML.
     export LIBGL_ALWAYS_SOFTWARE=1
     export QT_QUICK_BACKEND=software

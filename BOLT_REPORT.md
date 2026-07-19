@@ -23,3 +23,7 @@
 - What was optimized: Added Environment=LC_ALL=C to neos-driver-manager.service.
 - Before/after reasoning: The service executes a bash script (neos-driver-manager) which performs extensive string manipulation (grep, awk, sed) on lspci outputs. Without LC_ALL=C, these tools use the default locale, adding significant overhead for locale-aware string parsing and sorting. Forcing the C locale eliminates this overhead and speeds up hardware detection during boot.
 - Any remaining performance risks: The script still relies on subprocesses like awk and grep. Further optimizations could rewrite these parsing logic natively in bash, though it might reduce readability.
+
+- What was optimized: Replaced the subshell and string evaluation `[ "$(systemd-detect-virt 2>/dev/null || echo none)" != "none" ]` with a lightweight direct exit-code evaluation `systemd-detect-virt -q 2>/dev/null` in `profile/airootfs/etc/xdg/plasma-workspace/env/10-neos-vm-graphics.sh` and `profile/airootfs/usr/local/bin/neos-welcome`.
+- Before/after reasoning: `$(...)` spawns a subshell process, executes the command, captures the output, and then the outer `[` command performs a string comparison. `systemd-detect-virt -q` performs the same check but suppresses output and sets the exit code directly, eliminating the need for a subshell, output capture, and string comparison overhead. This minimizes the overhead when executing graphical configuration scripts.
+- Any remaining performance risks: None. This is a pure optimization with no changes to application logic.
