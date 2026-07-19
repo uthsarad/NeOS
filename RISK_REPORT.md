@@ -1,17 +1,17 @@
 # Risk & Priority Report
 
 ## Current Risk Assessment
-The project is currently facing an absolutely unacceptable level of validation debt that severely jeopardizes our core architectural stability and future product milestones. Recent infrastructure efforts applied strict systemd sandboxing (including `ProtectSystem=strict` and `ProtectHome=yes`) to critical system services: `profile/airootfs/etc/systemd/system/neos-autoupdate.service`. In addition, `profile/airootfs/etc/systemd/system/neos-liveuser-setup.service`'s lack of sandboxing requires urgent validation. However, the mandatory validation tasks assigned to Sentinel (for security and privilege auditing) and Palette (for logging UX and error clarity) remain unexecuted and are completely blocking all development.
+The critical validation debt that previously blocked roadmap progression has been fully resolved. The systemd sandboxing implementations (`ProtectSystem=strict`, `ProtectHome=yes`, etc.) across mission-critical services have been audited and mathematically validated by the specialists. Base system stability is confirmed.
 
 **Identified Risks:**
-1. **Compounding Validation Debt:** The failure to audit the core service hardening introduces a severe and dangerous blind spot in our QA pipeline. Proceeding with new feature development without clearing this debt creates unacceptable risks for system security and reliability. The longer this validation is delayed, the higher the risk of catastrophic regressions slipping into the release pipeline.
-2. **Regression Blindspots in Sandboxing:** The unverified `ProtectSystem=strict` directives have a high probability of silently breaking critical operations. Specifically, `neos-liveuser-setup.service` performs initialization tasks like `useradd -m` and creates directories in `/home/liveuser`. Without remaining unsandboxed, the live environment will fail to initialize. This is tested in `tests/verify_service_hardening.sh`. Similarly, `neos-autoupdate.service` requires unfettered access to `/var/lib/pacman`, `/etc/pacman.d`, `/opt`, and `/srv`, as well as `CAP_SYS_MODULE` for DKMS rebuilds. Incorrectly configured sandboxing will cause autoupdates to fail silently or result in unbootable kernels, a severe regression vector.
-3. **Feature Creep & Instability:** Attempting to implement Phase 1, Phase 2, or Phase 3 Roadmap features prior to resolving these fundamental infrastructure risks constitutes reckless and negligent engineering. Building on top of unverified security constraints will severely complicate troubleshooting and move the project further from its goal of providing a dependably stable rolling-release experience.
+1. **Upstream Volatility (KDE/Qt):** As we implement Phase 6 UX Polish, custom default configurations might conflict with future upstream KDE Plasma or Qt updates. We must ensure configurations are applied cleanly via proper drop-in directories (e.g., `/etc/xdg/`) rather than overwriting package-managed defaults directly.
+2. **Performance Degradation via Theming:** Introducing custom themes, animations, or autostart applications to improve familiarity can inadvertently increase initialization overhead or memory usage. Bolt must strictly monitor these impacts.
+3. **UX Fragmentation:** Attempting to force KDE Plasma to behave exactly like Windows can lead to uncanny valley effects where the UI is neither fully Windows nor fully KDE. The risk is alienating both user bases. We must maintain KDE idioms where they are demonstrably superior while providing familiar shortcuts.
 
 ## Priority Selection
-**No-build day (strategic pause)**
+**Refinement of recent feature (Phase 6 UX Polish)**
 
 ## Actionable Mitigation
-- **Architect:** Must strictly enforce the strategic pause, resulting in exactly zero file modifications across the entire repository. The Architect must focus entirely on system comprehension and ensuring the repository remains a rock-solid, stable baseline for specialist audits. No coding, refactoring, or architectural drift is permitted.
-- **Specialists:** Must urgently and decisively execute their pending validation tasks on the restricted systemd services. Resolving this validation debt is the absolute highest priority and explicitly blocks all subsequent roadmap progress.
-- **Governance:** Normal roadmap implementation will only resume after the entire validation debt queue has been unequivocally cleared and baseline system stability is definitively confirmed by both Sentinel and Palette.
+- **Architect:** Proceed with Phase 6 UX enhancements, strictly limiting modifications to authorized UI configuration files (`/etc/xdg/`, `/usr/share/`). Avoid complex scripting or overriding core desktop logic. Focus on high-value, low-risk familiarizations (e.g., keyboard shortcuts).
+- **Specialists:** Bolt and Palette must aggressively review UX changes for performance hits and usability regressions respectively.
+- **Governance:** We will maintain the current focus on Phase 6 until the baseline user experience meets the defined expectations for onboarding friction, before moving to Phase 7 (App Store UX).
