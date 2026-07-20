@@ -41,10 +41,16 @@ AUTOSTART_DIR="$LIVE_USER_HOME/.config/autostart"
 
 
 if [ -d "$LIVE_USER_HOME" ]; then
+    # Sentinel: Prevent symlink attacks on subdirectories
+    if [[ -L "$AUTOSTART_DIR" || -L "$LIVE_USER_HOME/Desktop" || -L "$LIVE_USER_HOME/.config" ]]; then
+        echo "Security error: target subdirectory is a symlink. Aborting." >&2
+        exit 1
+    fi
+
     mkdir -p "$AUTOSTART_DIR"
     mkdir -p "$LIVE_USER_HOME/Desktop"
 
-    if [ -f "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ]; then
+    if [ -f "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ] && [ ! -L "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ]; then
         chmod +x "$LIVE_USER_HOME/Desktop/welcome-neos.desktop"
         # Mark as trusted for KDE Plasma so it doesn't show "untrusted" warning
         if command -v kwriteconfig6 >/dev/null 2>&1; then
@@ -73,6 +79,7 @@ if [ -d "$LIVE_USER_HOME" ]; then
         fi
 
         mkdir -p "$LIVE_USER_HOME/.config"
+        rm -f "$LIVE_USER_HOME/.config/kwinrc" "$LIVE_USER_HOME/.config/kdeglobals"
         printf '[Compositing]\nEnabled=false\n' > "$LIVE_USER_HOME/.config/kwinrc"
         printf '[KDE]\nAnimationDurationFactor=0\n' > "$LIVE_USER_HOME/.config/kdeglobals"
     fi

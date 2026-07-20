@@ -21,6 +21,9 @@ ProtectControlGroups=yes
 ProtectHostname=yes
 RestrictRealtime=yes
 LockPersonality=yes
+ProtectKernelModules=yes
+MemoryDenyWriteExecute=yes
+RestrictNamespaces=yes
 
 [Install]
 WantedBy=multi-user.target
