@@ -14,6 +14,11 @@
       "description": "Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure no critical privileges are unnecessarily granted. Ensure ReadWritePaths are strictly minimal.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
       "status": "pending"
+    },
+    {
+      "description": "Audit desktop configuration security. Audit newly introduced configuration files for potential privilege escalation vectors or unintended execution paths.",
+      "target_file": "profile/airootfs/etc/xdg/*",
+      "status": "pending"
     }
   ]
 }
