@@ -19,6 +19,11 @@
       "description": "Monitor startup time overhead after implementing systemd strict sandboxing in neos-autoupdate.service and neos-liveuser-setup.service.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
       "status": "completed"
+    },
+    {
+      "description": "Monitor the performance impact of new UX configurations. Ensure that setting default LookAndFeel and global shortcuts does not significantly degrade Plasma startup times.",
+      "target_file": "profile/airootfs/etc/xdg/*",
+      "status": "pending"
     }
   ]
 }
