@@ -1,25 +1,26 @@
 {
   "bolt": {
-    "focus": "UI performance and initialization",
-    "directive": "Monitor the performance impact of new UX configurations. Ensure that new autostart items or theme settings do not significantly degrade Plasma startup times.",
+    "focus": "Clearing UI performance validation debt",
+    "directive": "Execute your pending task to monitor Plasma startup overhead. Ensure that any default LookAndFeel or shortcut configurations in profile/airootfs/etc/xdg/ do not compromise the desktop's initialization speed.",
     "tasks": [
-      "profile/airootfs/etc/xdg/autostart/*"
+      "profile/airootfs/etc/xdg/*"
     ]
   },
   "palette": {
-    "focus": "UX consistency and accessibility",
-    "directive": "Validate the implementation of Windows-familiar shortcuts and default themes. Ensure contrast is adequate and navigation is intuitive for users transitioning from other OSes.",
+    "focus": "Clearing UX and logging validation debt",
+    "directive": "Complete your pending task regarding journal log clarity for sandboxed services, and validate the accessibility and contrast of Phase 6 Windows-familiar shortcut integrations.",
     "tasks": [
-      "profile/airootfs/etc/xdg/**/*",
-      "profile/airootfs/usr/share/**/*"
+      "profile/airootfs/etc/systemd/system/*.service",
+      "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "desktop configuration security",
-    "directive": "Audit newly introduced desktop entries and configuration files for potential privilege escalation vectors or unintended execution paths.",
+    "focus": "Clearing systemd and desktop security debt",
+    "directive": "Aggressively audit the pending systemd sandboxing directives. Ensure neos-autoupdate.service and neos-liveuser-setup.service in profile/airootfs/etc/systemd/system/ have strictly minimal ReadWritePaths and no unnecessary privileges. Additionally, audit newly introduced desktop entries in profile/airootfs/etc/xdg/ for unintended execution paths.",
     "tasks": [
-      "profile/airootfs/etc/xdg/**/*"
+      "profile/airootfs/etc/systemd/system/*.service",
+      "profile/airootfs/etc/xdg/*"
     ]
   },
-  "note": "Standard development has resumed focusing on Phase 6 UX Polish. Ensure all refinements align with the core stability principles."
+  "note": "All specialists must focus exclusively on resolving pending items in their respective ai/tasks/*.json manifests. Architect is paused."
 }
