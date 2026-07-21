@@ -41,6 +41,10 @@ AUTOSTART_DIR="$LIVE_USER_HOME/.config/autostart"
 
 
 if [ -d "$LIVE_USER_HOME" ]; then
+    if [[ -L "$LIVE_USER_HOME/.config" ]] || [[ -L "$LIVE_USER_HOME/Desktop" ]]; then
+        echo "Security error: target directories are symlinks. Aborting." >&2
+        exit 1
+    fi
     mkdir -p "$AUTOSTART_DIR"
     mkdir -p "$LIVE_USER_HOME/Desktop"
 
