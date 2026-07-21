@@ -1,15 +1,13 @@
-## Sentinel Report
+# Sentinel Security Report
 
 ### Risks found
-- Incomplete sandboxing on `neos-autoupdate.service` (e.g., `ProtectHome=read-only` instead of `yes`, missing kernel/cgroup protection).
-- Missing safe sandboxing directives on `neos-liveuser-setup.service`.
+- High: Symlink traversal vulnerability (CWE-59) in `profile/airootfs/usr/local/bin/neos-liveuser-setup`. The script runs as root and writes to `/home/liveuser/.config` and `/home/liveuser/Desktop` without verifying if these subdirectories are symlinks, potentially allowing arbitrary file writes if the live environment is compromised prior to setup.
 
 ### Fixes applied
-- Updated `neos-autoupdate.service` to use `ProtectHome=yes`, `ProtectKernelTunables=yes`, and `ProtectControlGroups=yes`.
-- Added safe sandboxing directives (`ProtectKernelTunables=yes`, `ProtectControlGroups=yes`, `ProtectHostname=yes`, `RestrictRealtime=yes`, `LockPersonality=yes`) to `neos-liveuser-setup.service`.
+- Added strict `[[ -L ]]` symlink checks for `.config` and `Desktop` directories before execution of `mkdir -p` and subsequent file creation.
 
 ### Remaining attack surface
-- `neos-liveuser-setup.service` still runs with significant privileges (no `ProtectSystem`, `ProtectHome`, `PrivateTmp`, or `NoNewPrivileges`) due to functional requirements for system-level account creation.
+- The overarching `neos-liveuser-setup.service` remains unsandboxed (`ProtectSystem=strict` and `ProtectHome=yes` cannot be applied because it must execute `useradd -m`). While safe systemd isolation is applied, the script inherently retains root access to the filesystem.
 
 ### Severity summary
-- Medium/Low priority enhancements applied to strengthen defense-in-depth through systemd sandboxing.
+- 1 HIGH risk mitigated.
