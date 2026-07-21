@@ -1,26 +1,26 @@
 {
   "bolt": {
-    "focus": "Clearing UI performance validation debt",
-    "directive": "Execute your pending task to monitor Plasma startup overhead. Ensure that any default LookAndFeel or shortcut configurations in profile/airootfs/etc/xdg/ do not compromise the desktop's initialization speed.",
+    "focus": "Clearing UI performance validation debt for Phase 6 configurations",
+    "directive": "Execute your pending task to monitor Plasma startup overhead. Quantify any boot time degradation caused by the new default LookAndFeel and global shortcut configurations specifically in profile/airootfs/etc/xdg/*.",
     "tasks": [
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "palette": {
-    "focus": "Clearing UX and logging validation debt",
-    "directive": "Complete your pending task regarding journal log clarity for sandboxed services, and validate the accessibility and contrast of Phase 6 Windows-familiar shortcut integrations.",
+    "focus": "Clearing UX, accessibility, and journal logging validation debt",
+    "directive": "Complete your pending tasks. Ensure journalctl output properly surfaces permission errors from the sandboxed services in profile/airootfs/etc/systemd/system/*.service. Validate the accessibility of Phase 6 Windows-familiar shortcut integrations in profile/airootfs/etc/xdg/*.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "Clearing systemd and desktop security debt",
-    "directive": "Aggressively audit the pending systemd sandboxing directives. Ensure neos-autoupdate.service and neos-liveuser-setup.service in profile/airootfs/etc/systemd/system/ have strictly minimal ReadWritePaths and no unnecessary privileges. Additionally, audit newly introduced desktop entries in profile/airootfs/etc/xdg/ for unintended execution paths.",
+    "focus": "Clearing systemd strict sandboxing and desktop security debt",
+    "directive": "Aggressively audit the pending systemd sandboxing directives. Verify that services in profile/airootfs/etc/systemd/system/*.service have strictly minimal ReadWritePaths (e.g., /usr, /boot, /etc, /var) and no unnecessary capabilities. Additionally, audit the newly introduced desktop entries in profile/airootfs/etc/xdg/* for arbitrary command execution vulnerabilities.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
-  "note": "All specialists must focus exclusively on resolving pending items in their respective ai/tasks/*.json manifests. Architect is paused."
+  "note": "All specialists must focus exclusively on resolving pending items in their respective ai/tasks/*.json manifests. Architect remains completely paused."
 }
