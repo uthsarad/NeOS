@@ -1,14 +1,14 @@
 {
   "target_features": [
-    "Strategic Pause: Halt all feature implementation to clear specialist validation debt."
+    "Strategic Pause: Maintain implementation freeze to clear specialist validation debt."
   ],
   "allowed_files": [],
   "forbidden_files": [
     "**/*"
   ],
   "constraints": [
-    "A strict No-build day is enforced due to accumulating validation debt in specialist tasks.",
-    "Do not modify any system configurations, systemd services, or UI components.",
-    "Implementation is frozen until Sentinel, Palette, and Bolt resolve their pending audits on systemd hardening and Phase 6 UX changes."
+    "A strict No-build day remains enforced due to unresolved validation debt in specialist task manifests.",
+    "Do not modify any system configurations, systemd services, UI components, or bash scripts.",
+    "Implementation is absolutely frozen until Sentinel, Palette, and Bolt resolve their pending audits regarding systemd hardening in profile/airootfs/etc/systemd/system/*.service and Phase 6 UX changes in profile/airootfs/etc/xdg/*."
   ]
 }

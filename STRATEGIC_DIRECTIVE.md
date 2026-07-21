@@ -2,24 +2,24 @@
 
 ## Phase 1 — Product Alignment Check
 - **Product Vision:** NeOS aims to provide a predictable, snapshot-gated Arch Linux desktop with a refined KDE Plasma 6 experience, optimized for stability and Windows familiarity.
-- **Alignment:** We are experiencing a misalignment between our implementation pace and our validation processes. The specialist task manifests (`ai/tasks/*.json`) indicate significant unresolved validation debt regarding systemd service hardening and UX configuration security.
-- **Leverage:** The highest leverage action right now is to halt new feature implementation and enforce a strategic pause. Proceeding with further UX or system modifications without resolving pending security audits on `profile/airootfs/etc/systemd/system/*.service` exposes the system to potential regression vectors.
+- **Alignment Status:** We remain misaligned between feature velocity and validation. The introduction of Phase 6 configuration files (`profile/airootfs/etc/xdg/*`) and Phase 5 systemd strict sandboxing in `profile/airootfs/etc/systemd/system/*.service` has generated significant technical debt in validation.
+- **Leverage:** The highest leverage action is to maintain the implementation freeze. Allowing Architect to proceed with new features before specialists audit the specific systemd `ReadWritePaths` directives and KDE configuration execution paths introduces unacceptable regressions in the ISO build process and runtime environment.
 
 ## Phase 2 — Technical Posture Review
-- **Stability:** Current baseline stability is unverified for the recent hardening changes. The systemd strict sandboxing implementations in `neos-autoupdate.service` and `neos-liveuser-setup.service` remain unaudited by Sentinel.
-- **Tech Debt:** Specialist validation debt is actively accumulating. Bolt, Palette, and Sentinel all have pending tasks. Specifically, the audit of `ReadWritePaths` and sandboxing directives in `profile/airootfs/etc/systemd/system/*.service` is incomplete, and UX consistency of Phase 6 changes in `profile/airootfs/etc/xdg/*` is unverified.
-- **Overbuilding:** Continuing to build Phase 6 features while Phase 5 security and logging mechanisms lack validation directly violates our "protect long-term maintainability over speed" principle.
+- **Stability Posture:** The baseline stability is currently unverified. The application of `ProtectSystem=strict` and `ProtectHome=yes` without comprehensive Sentinel auditing of the `ReadWritePaths` directories (`/usr`, `/boot`, `/etc`, `/var`) for `neos-autoupdate.service` could break core system updates.
+- **Tech Debt:** Specialist validation debt is still actively blocking progress. Bolt, Palette, and Sentinel have incomplete pending tasks specifically targeting `profile/airootfs/etc/systemd/system/*.service` and `profile/airootfs/etc/xdg/*`.
+- **Overbuilding Risk:** Any new implementation by Architect would compound the risk of masking underlying configuration issues within the existing unvalidated service definitions and KDE shortcut configurations.
 
 ## Phase 3 — Priority Selection
 - No-build day (strategic pause)
 
 ## Phase 4 — Controlled Scope Definition
-- **Impacted Files:** None.
+- **Exact files likely impacted:** None.
 - **Maximum allowed surface area:** Zero modifications to the codebase are permitted for implementation personas.
-- **Constraints:** The Architect is completely frozen. No production code, configuration files, or build scripts may be altered. This freeze remains in effect until all pending specialist tasks are marked as completed.
+- **Constraints Architect must obey:** The Architect is completely frozen. No production code, configuration files, ISO build scripts, or tests may be altered. This absolute freeze remains in effect until Sentinel, Palette, and Bolt explicitly mark their assigned tasks in `ai/tasks/*.json` as completed.
 
 ## Phase 5 — Delegation Strategy
 - **Architect:** Stand down. No implementation tasks are authorized.
-- **Bolt:** Focus entirely on your pending UI performance evaluation tasks. Monitor Plasma startup overhead introduced by new `profile/airootfs/etc/xdg/*` configurations.
-- **Palette:** Clear your pending validation tasks. Ensure journal logging clarity for restricted systemd services in `profile/airootfs/etc/systemd/system/*.service` and validate Phase 6 UX accessibility in `profile/airootfs/etc/xdg/*`.
-- **Sentinel:** Prioritize the pending systemd sandboxing audit for `neos-autoupdate.service` and `neos-liveuser-setup.service` in `profile/airootfs/etc/systemd/system/*.service`, ensuring strict minimum `ReadWritePaths`, and audit desktop configuration files in `profile/airootfs/etc/xdg/*` for privilege escalation vectors.
+- **Bolt:** Focus strictly on UI performance profiling. Measure Plasma initialization latency introduced by `profile/airootfs/etc/xdg/*` configurations. Ensure these files do not degrade ISO boot performance.
+- **Palette:** Complete the pending log clarity validation for `neos-autoupdate.service` and `neos-liveuser-setup.service` to ensure permission denials are visible. Validate the accessibility, contrast, and UX consistency of the Windows-familiar shortcuts (`Meta+E`, `Meta+D`) in `profile/airootfs/etc/xdg/*`.
+- **Sentinel:** Execute the pending security audits immediately. Verify that `ReadWritePaths` in `profile/airootfs/etc/systemd/system/*.service` strictly limit write access to required directories only. Audit `profile/airootfs/etc/xdg/*` for any privilege escalation vectors or arbitrary command execution risks.
