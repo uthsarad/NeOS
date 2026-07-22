@@ -1,6 +1,6 @@
 {
   "target_features": [
-    "Strategic Pause: Maintain implementation freeze to clear specialist validation debt."
+    "Strategic Pause: Maintain implementation freeze to clear specialist validation debt regarding systemd strict sandboxing and Phase 6 UX."
   ],
   "allowed_files": [],
   "forbidden_files": [
