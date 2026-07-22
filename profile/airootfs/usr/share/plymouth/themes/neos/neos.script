@@ -42,13 +42,17 @@ cat.sprite.SetZ(10);
 
 # --- Animate: cycle cat frames to move only the tail ---
 tick = 0;
+last_frame = -1;
 fun refresh_callback() {
     tick++;
 
     frame = Math.Int(tick / 2);
     while (frame >= n_frames)
         frame -= n_frames;
-    cat.sprite.SetImage(cat[frame]);
+    if (frame != last_frame) {
+        cat.sprite.SetImage(cat[frame]);
+        last_frame = frame;
+    }
 }
 Plymouth.SetRefreshFunction(refresh_callback);
 
