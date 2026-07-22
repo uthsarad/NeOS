@@ -18,7 +18,7 @@
     {
       "description": "Audit desktop configuration security. Audit newly introduced configuration files for potential privilege escalation vectors or unintended execution paths.",
       "target_file": "profile/airootfs/etc/xdg/*",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
