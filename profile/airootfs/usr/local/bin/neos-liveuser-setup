@@ -48,6 +48,10 @@ if [ -d "$LIVE_USER_HOME" ]; then
     mkdir -p "$AUTOSTART_DIR"
     mkdir -p "$LIVE_USER_HOME/Desktop"
 
+    if [ -L "$LIVE_USER_HOME/Desktop" ] || [ -L "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ]; then
+        echo "Security error: $LIVE_USER_HOME/Desktop/welcome-neos.desktop or parent directory is a symlink. Aborting." >&2
+        exit 1
+    fi
     if [ -f "$LIVE_USER_HOME/Desktop/welcome-neos.desktop" ]; then
         chmod +x "$LIVE_USER_HOME/Desktop/welcome-neos.desktop"
         # Mark as trusted for KDE Plasma so it doesn't show "untrusted" warning
@@ -72,11 +76,19 @@ if [ -d "$LIVE_USER_HOME" ]; then
 
         # Fix SDDM autologin: Since we removed the default Wayland session,
         # we must point the autologin target to the X11 session instead.
+        if [ -L /etc/sddm.conf.d/autologin.conf ]; then
+            echo "Security error: /etc/sddm.conf.d/autologin.conf is a symlink. Aborting." >&2
+            exit 1
+        fi
         if [ -f /etc/sddm.conf.d/autologin.conf ]; then
             sed -i 's/^Session=.*/Session=plasmax11/' /etc/sddm.conf.d/autologin.conf
         fi
 
         mkdir -p "$LIVE_USER_HOME/.config"
+        if [ -L "$LIVE_USER_HOME/.config" ] || [ -L "$LIVE_USER_HOME/.config/kwinrc" ] || [ -L "$LIVE_USER_HOME/.config/kdeglobals" ]; then
+            echo "Security error: target config files or parent directory are symlinks. Aborting." >&2
+            exit 1
+        fi
         printf '[Compositing]\nEnabled=false\n' > "$LIVE_USER_HOME/.config/kwinrc"
         printf '[KDE]\nAnimationDurationFactor=0\n' > "$LIVE_USER_HOME/.config/kdeglobals"
     fi
