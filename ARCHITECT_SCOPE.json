@@ -1,14 +1,14 @@
 {
   "target_features": [
-    "Strategic Pause: Maintain implementation freeze to clear specialist validation debt regarding systemd strict sandboxing and Phase 6 UX."
+    "Strategic Pause: Maintain implementation freeze until Palette clears the final UX and logging validation debt."
   ],
   "allowed_files": [],
   "forbidden_files": [
     "**/*"
   ],
   "constraints": [
-    "A strict No-build day remains enforced due to unresolved validation debt in specialist task manifests.",
+    "A strict No-build day remains enforced due to unresolved validation debt in Palette's task manifest.",
     "Do not modify any system configurations, systemd services, UI components, or bash scripts.",
-    "Implementation is absolutely frozen until Sentinel, Palette, and Bolt resolve their pending audits regarding systemd hardening in profile/airootfs/etc/systemd/system/*.service and Phase 6 UX changes in profile/airootfs/etc/xdg/*."
+    "Implementation is absolutely frozen until Palette resolves pending audits regarding systemd logging in profile/airootfs/etc/systemd/system/*.service and Phase 6 UX changes in profile/airootfs/etc/xdg/*."
   ]
 }
