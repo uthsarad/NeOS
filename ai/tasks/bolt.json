@@ -23,7 +23,7 @@
     {
       "description": "Monitor the performance impact of new UX configurations. Ensure that setting default LookAndFeel and global shortcuts does not significantly degrade Plasma startup times.",
       "target_file": "profile/airootfs/etc/xdg/*",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
