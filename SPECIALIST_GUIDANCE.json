@@ -1,25 +1,21 @@
 {
   "bolt": {
-    "focus": "Clearing UI performance validation debt for Phase 6 configurations",
-    "directive": "Execute your pending task to monitor Plasma startup overhead. Quantify any boot time degradation caused by the new default LookAndFeel in profile/airootfs/etc/xdg/kdeglobals and global shortcut configurations in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
-    "tasks": [
-      "profile/airootfs/etc/xdg/*"
-    ]
+    "focus": "Performance monitoring post-optimization",
+    "directive": "Monitor the impact of your recent Plymouth rendering and native bash string matching optimizations. Ensure no regressions in boot times occurred.",
+    "tasks": []
   },
   "palette": {
     "focus": "Clearing UX, accessibility, and journal logging validation debt",
-    "directive": "Complete your pending tasks. Ensure journalctl output properly surfaces permission errors from the strictly sandboxed services in profile/airootfs/etc/systemd/system/*.service. Validate the accessibility and contrast of Phase 6 Windows-familiar shortcut integrations in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
+    "directive": "Complete your pending tasks immediately. You are the final blocker. Ensure journalctl output properly surfaces permission errors from the strictly sandboxed services in profile/airootfs/etc/systemd/system/*.service. Validate the accessibility and contrast of Phase 6 Windows-familiar shortcut integrations in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "Clearing systemd strict sandboxing security debt",
-    "directive": "Aggressively audit the pending systemd sandboxing directives. Verify that services in profile/airootfs/etc/systemd/system/*.service have strictly minimal ReadWritePaths (e.g., /usr, /boot, /etc, /var) and no unnecessary capabilities in CapabilityBoundingSet. Validate that these restrictions do not inadvertently break OS update mechanisms (e.g., pacman) or live user setup processes (e.g., useradd).",
-    "tasks": [
-      "profile/airootfs/etc/systemd/system/*.service"
-    ]
+    "focus": "Monitoring systemd strict sandboxing security posture",
+    "directive": "Monitor the implementation of your recent CWE-59 symlink traversal mitigations and systemd CapabilityBoundingSet updates. Verify no unintended capability drops occur during normal operation.",
+    "tasks": []
   },
-  "note": "All specialists must focus exclusively on resolving pending items in their respective ai/tasks/*.json manifests. Architect remains completely paused."
+  "note": "Palette must focus exclusively on resolving pending items in ai/tasks/palette.json. Architect remains completely paused."
 }
