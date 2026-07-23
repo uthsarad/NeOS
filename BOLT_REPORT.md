@@ -31,3 +31,7 @@
 - What was optimized: Added state tracking in `profile/airootfs/usr/share/plymouth/themes/neos/neos.script` to avoid redundant sprite updates.
 - Before/after reasoning: In Plymouth scripts, the `SetRefreshFunction` runs at a high frequency (e.g., 50Hz). The previous code calculated the animation frame based on the tick and unconditionally called `cat.sprite.SetImage(cat[frame]);`. Since the frame changes slower than the tick rate, this resulted in the same frame being needlessly redrawn, causing redundant texture invalidations and extra CPU overhead during boot software rendering. Introducing a `last_frame` tracker ensures `SetImage` is only called when the frame actually changes.
 - Any remaining performance risks: None. This is a pure optimization of rendering logic without altering the animation behavior.
+
+- What was optimized: Replaced repeated `grep -q` calls with native bash string matching in `tests/verify_ux_polish.sh`.
+- Before/after reasoning: Repeated `grep -q` calls spawn multiple fork/exec subprocesses, adding overhead. Loading the file content into a variable once and using native bash matching (`[[ "$CONTENT" == *"pattern"* ]]`) eliminates this overhead.
+- Any remaining performance risks: The file being read must be reasonably small, which holds true for UX configuration files.
