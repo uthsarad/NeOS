@@ -1,14 +1,14 @@
 {
   "target_features": [
-    "Strategic Pause: Maintain implementation freeze until Palette clears the final UX and logging validation debt."
+    "Strategic Pause: Maintain a strict and total implementation freeze until Palette definitively resolves the final UX and observability validation debt."
   ],
   "allowed_files": [],
   "forbidden_files": [
     "**/*"
   ],
   "constraints": [
-    "A strict No-build day remains enforced due to unresolved validation debt in Palette's task manifest.",
-    "Do not modify any system configurations, systemd services, UI components, or bash scripts.",
-    "Implementation is absolutely frozen until Palette resolves pending audits regarding systemd logging in profile/airootfs/etc/systemd/system/*.service and Phase 6 UX changes in profile/airootfs/etc/xdg/*."
+    "A rigorous No-build day (strategic pause) remains actively enforced due to critical, unresolved validation debt persisting within Palette's assigned task manifest (ai/tasks/palette.json).",
+    "It is strictly forbidden to modify any system configurations, systemd service units, user interface components, KDE configuration files, or bash shell scripts.",
+    "Implementation operations remain fundamentally frozen. This stasis will only be lifted once Palette comprehensively resolves pending audits concerning systemd journal diagnostic transparency in profile/airootfs/etc/systemd/system/*.service and the accessibility of Phase 6 UX enhancements located in profile/airootfs/etc/xdg/*."
   ]
 }
