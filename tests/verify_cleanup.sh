@@ -11,19 +11,22 @@ FAIL=0
 
 echo "Verifying post-install setup in $SHELLPROCESS_CONF..."
 
-if grep -q "locale-gen" "$SHELLPROCESS_CONF"; then
+# ⚡ Bolt: Load file content once to eliminate repeated fork/exec overhead
+CONTENT=$(<"$SHELLPROCESS_CONF")
+
+if [[ "$CONTENT" == *"locale-gen"* ]]; then
     echo "✅ locale-gen present"
 else
     echo "❌ locale-gen NOT found"; FAIL=1
 fi
 
-if grep -q "pacman-key --init" "$SHELLPROCESS_CONF"; then
+if [[ "$CONTENT" == *"pacman-key --init"* ]]; then
     echo "✅ pacman-key --init present"
 else
     echo "❌ pacman-key --init NOT found"; FAIL=1
 fi
 
-if grep -q "pacman-key --populate archlinux" "$SHELLPROCESS_CONF"; then
+if [[ "$CONTENT" == *"pacman-key --populate archlinux"* ]]; then
     echo "✅ pacman-key --populate archlinux present"
 else
     echo "❌ pacman-key --populate archlinux NOT found"; FAIL=1

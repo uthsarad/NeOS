@@ -35,3 +35,15 @@
 - What was optimized: Replaced repeated `grep -q` calls with native bash string matching in `tests/verify_ux_polish.sh`.
 - Before/after reasoning: Repeated `grep -q` calls spawn multiple fork/exec subprocesses, adding overhead. Loading the file content into a variable once and using native bash matching (`[[ "$CONTENT" == *"pattern"* ]]`) eliminates this overhead.
 - Any remaining performance risks: The file being read must be reasonably small, which holds true for UX configuration files.
+
+## 2026-02-18 - Verify Cleanup Optimization
+
+### What was optimized
+Optimized `tests/verify_cleanup.sh` by removing repeated `grep -q` calls that cause fork/exec subprocess overhead.
+
+### Before/after reasoning
+**Before:** The script used multiple `grep -q` commands to check for the presence of specific strings in `shellprocess.conf`. Each `grep` invocation spawned a new subprocess, incurring overhead.
+**After:** The script now loads the file content into a variable once (`CONTENT=$(<"$SHELLPROCESS_CONF")`) and uses native Bash string matching (`[[ "$CONTENT" == *"pattern"* ]]`), eliminating the fork/exec overhead and executing much faster.
+
+### Any remaining performance risks
+None. The optimization relies on native Bash builtins and significantly reduces execution time. It has no behavioral impact.
