@@ -1,21 +1,21 @@
 {
   "bolt": {
-    "focus": "Performance monitoring post-optimization",
-    "directive": "Monitor the impact of your recent Plymouth rendering and native bash string matching optimizations. Ensure no regressions in boot times occurred.",
+    "focus": "Boot performance monitoring and regression testing post-optimization",
+    "directive": "Passively monitor the systemic impact of your recent Plymouth software rendering optimizations and native bash string matching enhancements. Ensure absolutely no latency regressions have been inadvertently introduced during the early boot sequence or service initialization.",
     "tasks": []
   },
   "palette": {
-    "focus": "Clearing UX, accessibility, and journal logging validation debt",
-    "directive": "Complete your pending tasks immediately. You are the final blocker. Ensure journalctl output properly surfaces permission errors from the strictly sandboxed services in profile/airootfs/etc/systemd/system/*.service. Validate the accessibility and contrast of Phase 6 Windows-familiar shortcut integrations in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
+    "focus": "Eradicating critical UX, accessibility, and journal logging validation debt",
+    "directive": "You are the critical path blocker. Immediately finalize your pending tasks within ai/tasks/palette.json. First, rigorously ensure that journalctl output transparently surfaces permission errors (e.g., from ProtectSystem=strict or ProtectHome=yes) originating from the strictly sandboxed services defined in profile/airootfs/etc/systemd/system/*.service. Second, systematically validate the functional accessibility, contrast ratios, and operational consistency of Phase 6 Windows-familiar shortcut integrations, specifically Meta+E and Meta+D, as implemented in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "Monitoring systemd strict sandboxing security posture",
-    "directive": "Monitor the implementation of your recent CWE-59 symlink traversal mitigations and systemd CapabilityBoundingSet updates. Verify no unintended capability drops occur during normal operation.",
+    "focus": "Observing systemd strict sandboxing and least privilege operational stability",
+    "directive": "Monitor the practical implementation of your recent CWE-59 symlink traversal mitigations and systemd CapabilityBoundingSet updates. Verify that no unintended capability drops or access denials occur during standard operation, particularly concerning the explicitly unrestricted neos-liveuser-setup.service and the strictly isolated neos-autoupdate.service.",
     "tasks": []
   },
-  "note": "Palette must focus exclusively on resolving pending items in ai/tasks/palette.json. Architect remains completely paused."
+  "note": "Palette must focus their entire capacity on resolving the pending items in ai/tasks/palette.json. The Architect persona remains in a state of complete, mandatory operational pause."
 }
