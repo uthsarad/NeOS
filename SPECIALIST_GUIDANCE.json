@@ -6,7 +6,7 @@
   },
   "palette": {
     "focus": "Eradicating critical UX, accessibility, and journal logging validation debt",
-    "directive": "You are the critical path blocker. Immediately finalize your pending tasks within ai/tasks/palette.json. First, rigorously ensure that journalctl output transparently surfaces permission errors (e.g., from ProtectSystem=strict or ProtectHome=yes) originating from the strictly sandboxed services defined in profile/airootfs/etc/systemd/system/*.service. Second, systematically validate the functional accessibility, contrast ratios, and operational consistency of Phase 6 Windows-familiar shortcut integrations, specifically Meta+E and Meta+D, as implemented in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
+    "directive": "You are the critical path blocker. Immediately finalize your pending tasks within ai/tasks/palette.json. First, rigorously ensure that journalctl output transparently surfaces permission errors (e.g., from ProtectSystem=strict, ProtectHome=yes, PrivateTmp=yes) originating from the strictly sandboxed services defined in profile/airootfs/etc/systemd/system/*.service. Second, systematically validate the functional accessibility, contrast ratios, and operational consistency of Phase 6 Windows-familiar shortcut integrations, specifically Meta+E and Meta+D, as implemented in profile/airootfs/etc/xdg/kglobalshortcutsrc and profile/airootfs/etc/xdg/kdeglobals.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
