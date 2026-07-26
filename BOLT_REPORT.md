@@ -60,3 +60,15 @@ Optimized `tests/verify_security_config.sh` by removing repeated `grep -q` calls
 
 ### Any remaining performance risks
 None. The optimization relies on native Bash builtins and significantly reduces execution time. It has no behavioral impact.
+
+## 2026-02-18 - Verify Airootfs Structure Optimization
+
+### What was optimized
+Optimized `tests/verify_airootfs_structure.sh` by removing repeated `grep -q` calls that cause fork/exec subprocess overhead.
+
+### Before/after reasoning
+**Before:** The script used multiple `grep -q` commands to check for the presence of specific strings in `services-systemd.conf`, `profiledef.sh`, and several installer setup scripts. Each `grep` invocation spawned a new subprocess, incurring overhead.
+**After:** The script now loads the file content into variables once (e.g., `SERVICES_CONTENT=$(<"$SERVICES_FILE")`) and uses native Bash string matching (e.g., `[[ "$SERVICES_CONTENT" == *"$SVC"* ]]`), eliminating the fork/exec overhead and executing faster.
+
+### Any remaining performance risks
+None. The optimization relies on native Bash builtins and significantly reduces execution time. It has no behavioral impact.
