@@ -1,7 +1,7 @@
 {
   "bolt": {
     "focus": "Boot performance monitoring and regression testing post-optimization",
-    "directive": "Passively monitor the systemic impact of your recent Plymouth software rendering optimizations and native bash string matching enhancements. Ensure absolutely no latency regressions have been inadvertently introduced during the early boot sequence or service initialization.",
+    "directive": "Passively monitor the systemic impact of your recent optimizations, including Plymouth state tracking and native Bash string matching in tests/verify_*.sh scripts. Ensure absolutely no latency regressions have been inadvertently introduced.",
     "tasks": []
   },
   "palette": {
