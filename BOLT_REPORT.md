@@ -1,23 +1,11 @@
-# Bolt Performance Report
+# ⚡ Bolt Performance Report
 
 ## What was optimized
-Optimized `tests/verify_syslinux_config.sh` by replacing repeated `grep -q` shell commands with native Bash string matching (`[[ "$CONTENT" == *"pattern"* ]]`). The file content is now loaded into memory exactly once per loop iteration.
+Refactored `tests/verify_iso_grub.sh` to eliminate repeated `grep -q` shell invocations during test execution.
 
 ## Before/after reasoning
-**Before:** The script used multiple `grep -q` commands within a loop to check for the presence of specific strings in `.cfg` files. Each `grep` invocation requires a subshell fork and an `exec` syscall, introducing unnecessary overhead and slowing down the test execution.
-**After:** By reading the file into a variable once using `CONTENT=$(<"$cfg")`, we use Bash's built-in parameter expansion and string matching. This eliminates the subprocess fork/exec overhead entirely, noticeably improving the execution speed of the verification test.
+**Before:** The test script used `grep -q "$STR" "$GRUB_FILE"` and `grep -q "$STR" "$PROFILE_FILE"` in loops to verify strings. This caused a fork/exec of the `grep` binary for every single string check in the required, forbidden, and profile arrays.
+**After:** The scripts now load the file contents into memory once via native bash variables (`GRUB_CONTENT=$(<"$GRUB_FILE")` and `PROFILE_CONTENT=$(<"$PROFILE_FILE")`). We then use native bash string matching (`[[ "$CONTENT" == *"$STR"* ]]`) to perform the assertions. This eliminates the fork/exec overhead entirely, noticeably speeding up the test suite execution.
 
-## Any remaining performance risks
-There are similar grep loops in other verification scripts (e.g., `tests/verify_performance_config.sh`, `tests/verify_security_config.sh`) that could also be optimized. We should consider replacing all `grep -q` and `grep -E` invocations in testing scripts with native Bash string matching for further performance improvements across the CI pipeline.
-
-# Bolt Performance Report (Update)
-
-## What was optimized
-Optimized `tests/verify_syslinux_config.sh` by replacing repeated `grep -q` shell commands with native Bash string matching (`[[ "$CONTENT" == *"pattern"* ]]`). The file content is now loaded into memory exactly once per loop iteration.
-
-## Before/after reasoning
-**Before:** The script used multiple `grep -q` commands within a loop to check for the presence of specific strings in `.cfg` files. Each `grep` invocation requires a subshell fork and an `exec` syscall, introducing unnecessary overhead and slowing down the test execution.
-**After:** By reading the file into a variable once using `CONTENT=$(<"$cfg")`, we use Bash's built-in parameter expansion and string matching. This eliminates the subprocess fork/exec overhead entirely, noticeably improving the execution speed of the verification test.
-
-## Any remaining performance risks
-There are similar grep loops in other verification scripts (e.g., `tests/verify_performance_config.sh`, `tests/verify_security_config.sh`) that could also be optimized. We should consider replacing all `grep -q` and `grep -E` invocations in testing scripts with native Bash string matching for further performance improvements across the CI pipeline.
+## Remaining performance risks
+None introduced by this change. The memory usage to hold these configuration files is negligible.
