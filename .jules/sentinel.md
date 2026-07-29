@@ -11,3 +11,8 @@
 **Vulnerability:** Found symlink traversal vulnerabilities in `neos-liveuser-setup` where root modified files in a user-controlled directory without checking if they were symlinks.
 **Learning:** Checking only the parent directory (`.config` or `Desktop`) for symlinks is insufficient if the target files themselves (`kwinrc`, `welcome-neos.desktop`) are not also checked before modification or creation by a privileged process.
 **Prevention:** Always verify both the parent directory and the specific target file are not symlinks (`[ -L ]`) immediately before executing file writes or permission changes on paths that are user-accessible.
+
+## 2026-02-18 - Symlink Traversal via Parent Directory in Autostart Scripts (CWE-59)
+**Vulnerability:** Found symlink traversal vulnerabilities in `neos-desktop-setup` when making desktop launchers executable. The script ran `chmod +x` without checking if the user-controlled `Desktop` directory or the launcher file itself was a symlink.
+**Learning:** Checking only the target file or neglecting symlink checks entirely in user-space setup scripts allows attackers to manipulate file permissions (e.g., via CWE-59) if they can control the parent directory.
+**Prevention:** Always check both the parent directory and the target file for symlinks (`[[ -L "$DIR" ]] || [[ -L "$FILE" ]]`) before changing permissions in user-writable paths.
