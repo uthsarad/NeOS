@@ -9,3 +9,13 @@ Refactored `tests/verify_iso_grub.sh` to eliminate repeated `grep -q` shell invo
 
 ## Remaining performance risks
 None introduced by this change. The memory usage to hold these configuration files is negligible.
+
+## What was optimized
+Refactored `profile/airootfs/usr/local/bin/neos-vm-graphics` to eliminate unnecessary subshell and string allocation overhead during virtualization detection.
+
+## Before/after reasoning
+**Before:** The script used `virt="$(systemd-detect-virt 2>/dev/null || echo none)"` followed by a string comparison. This required spawning a subshell, allocating memory for the output string, and then executing a test command.
+**After:** The script now directly evaluates the exit code of `systemd-detect-virt -q 2>/dev/null`. This completely bypasses the subshell creation and string manipulation, reducing CPU overhead during login/graphics initialization.
+
+## Remaining performance risks
+None. This is a purely structural optimization of the check mechanism.
