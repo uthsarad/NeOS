@@ -6,16 +6,16 @@
   },
   "palette": {
     "focus": "Eradicating critical UX, accessibility, and journal logging validation debt",
-    "directive": "You are the critical path blocker. Immediately finalize your pending tasks within ai/tasks/palette.json. First, rigorously ensure that journalctl output transparently surfaces permission errors (e.g., from ProtectSystem=strict, ProtectHome=yes, PrivateTmp=yes) originating from the strictly sandboxed services defined in profile/airootfs/etc/systemd/system/*.service. Second, systematically validate the functional accessibility, contrast ratios, and operational consistency of Phase 6 UX integrations as implemented in profile/airootfs/etc/xdg/*. Ensure systemd sandboxing parameters do not silently discard critical diagnostic outputs.",
+    "directive": "You are the critical path blocker. Immediately finalize your pending tasks within ai/tasks/palette.json. First, rigorously ensure that journalctl output transparently surfaces permission errors originating from the strictly sandboxed services. Second, systematically validate the functional accessibility, contrast ratios, and operational consistency of Phase 6 UX integrations. Ensure systemd sandboxing parameters do not silently discard critical diagnostic outputs.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "Observing systemd strict sandboxing and least privilege operational stability",
-    "directive": "Monitor the practical implementation of your recent CWE-59 symlink traversal mitigations (using strict [ -L ] checks) and systemd CapabilityBoundingSet updates. Verify that no unintended capability drops or access denials occur during standard operation, particularly concerning the rigorously bounded neos-liveuser-setup.service and the strictly isolated neos-autoupdate.service.",
+    "focus": "Observing system integrity post-audit remediations and strict sandboxing",
+    "directive": "Verify that the recent removal of the dormant kiosk installer path and the integration of manifest scripts correctly maintain the principle of least privilege without inadvertently exposing build-time artifacts. Also, monitor the practical implementation of your recent CWE-59 symlink traversal mitigations and systemd CapabilityBoundingSet updates.",
     "tasks": []
   },
-  "note": "Palette must focus their entire capacity on resolving the pending items in ai/tasks/palette.json. The Architect persona remains in a state of complete, mandatory operational pause."
+  "note": "Palette must focus their entire capacity on resolving the pending tasks. The Architect persona remains in a state of complete, mandatory operational pause."
 }

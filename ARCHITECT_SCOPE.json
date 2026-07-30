@@ -7,8 +7,8 @@
     "**/*"
   ],
   "constraints": [
-    "A rigorous No-build day (strategic pause) remains actively enforced due to critical, unresolved validation debt persisting within Palette's assigned task manifest (ai/tasks/palette.json).",
+    "A rigorous No-build day (strategic pause) remains actively enforced due to critical, unresolved validation debt persisting within Palette's assigned task manifest.",
     "It is strictly forbidden to modify any system configurations, systemd service units, user interface components, KDE configuration files, or bash shell scripts.",
-    "Implementation operations remain fundamentally frozen. This stasis will only be lifted once Palette comprehensively resolves pending audits concerning systemd journal diagnostic transparency in profile/airootfs/etc/systemd/system/*.service and the accessibility of Phase 6 UX enhancements located in profile/airootfs/etc/xdg/*, ensuring ProtectSystem=strict does not silence errors."
+    "Implementation operations remain fundamentally frozen. This stasis will only be lifted once Palette comprehensively resolves pending audits concerning systemd journal diagnostic transparency and the accessibility of Phase 6 UX enhancements, ensuring ProtectSystem=strict does not silence errors."
   ]
 }
