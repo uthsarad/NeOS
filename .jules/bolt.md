@@ -8,3 +8,7 @@
 ## 2026-07-30 - Subshell Overhead in Virtualization Checks
 **Learning:** Using `virt="$(systemd-detect-virt 2>/dev/null || echo none)"` in shell scripts introduces unnecessary subshell and string allocation overhead.
 **Action:** When checking for virtualization, use the `-q` flag and directly evaluate the exit code (e.g., `if systemd-detect-virt -q 2>/dev/null; then`) rather than capturing the output.
+
+## 2026-08-01 - Subprocess Overhead in Loop Hardware Detection
+**Learning:** Using text processing pipelines like `echo "$VAR" | sed ... | grep ...` inside shell loops (e.g., when iterating over network devices from `lspci`) introduces significant fork/exec subprocess overhead.
+**Action:** When extracting blocks of text and matching specific patterns in shell loops, rely on native bash parameter expansion (e.g., string slicing and glob matching like `[[ "$BLOCK" == *"pattern"* ]]`) instead of external binaries.
