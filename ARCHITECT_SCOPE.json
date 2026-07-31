@@ -1,14 +1,14 @@
 {
   "target_features": [
-    "Strategic Pause: Maintain a strict and total implementation freeze until Palette definitively resolves the final UX and observability validation debt."
+    "Strategic Pause: Enforce a strict implementation freeze to allow Palette to resolve pending Phase 6 UX and observability validation debt."
   ],
   "allowed_files": [],
   "forbidden_files": [
     "**/*"
   ],
   "constraints": [
-    "A rigorous No-build day (strategic pause) remains actively enforced due to critical, unresolved validation debt persisting within Palette's assigned task manifest.",
-    "It is strictly forbidden to modify any system configurations, systemd service units, user interface components, KDE configuration files, or bash shell scripts.",
-    "Implementation operations remain fundamentally frozen. This stasis will only be lifted once Palette comprehensively resolves pending audits concerning systemd journal diagnostic transparency and the accessibility of Phase 6 UX enhancements, ensuring ProtectSystem=strict does not silence errors."
+    "A rigorous No-build day (strategic pause) is in effect. You must not modify any system configurations, systemd service units, UI components, KDE configs, or bash scripts.",
+    "Architect operations remain completely frozen until Palette verifies the transparency of systemd journal diagnostic logs and the accessibility of the newly integrated Phase 6 UX bindings (Meta+E, Meta+D) in profile/airootfs/etc/xdg/kglobalshortcutsrc.",
+    "Do not introduce new features or refactors. Await further clearance from Maestro once specialist validation debt is definitively cleared."
   ]
 }

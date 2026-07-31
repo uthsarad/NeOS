@@ -1,21 +1,21 @@
 {
   "bolt": {
-    "focus": "Test pipeline performance monitoring and regression testing post-optimization",
-    "directive": "Passively monitor the systemic impact of your recent optimizations, specifically the elimination of fork/exec overhead via native Bash string matching in verification scripts. Ensure no latency or memory regressions have been inadvertently introduced during test execution.",
+    "focus": "Passive observation of test pipeline and system startup overhead",
+    "directive": "Monitor the CI pipeline following your elimination of grep fork/exec overhead in tests/verify_iso_grub.sh and the systemd-detect-virt subshell optimization. Ensure these native bash string matching changes have not introduced silent assertion failures.",
     "tasks": []
   },
   "palette": {
-    "focus": "Eradicating critical UX, accessibility, and journal logging validation debt",
-    "directive": "You are the critical path blocker. Immediately finalize your pending tasks within ai/tasks/palette.json. First, rigorously ensure that journalctl output transparently surfaces permission errors originating from the strictly sandboxed services. Second, systematically validate the functional accessibility, contrast ratios, and operational consistency of Phase 6 UX integrations. Ensure systemd sandboxing parameters do not silently discard critical diagnostic outputs.",
+    "focus": "Resolution of Phase 6 UX and sandboxing observability validation debt",
+    "directive": "You are the critical path blocker. You must immediately resolve the pending tasks in ai/tasks/palette.json. Validate that journalctl accurately captures filesystem denial errors for strictly sandboxed services like neos-autoupdate.service. Additionally, systematically test the newly added Phase 6 configurations in profile/airootfs/etc/xdg/kglobalshortcutsrc and kdeglobals for accessibility, contrast, and operational consistency.",
     "tasks": [
       "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "Observing system integrity post-audit remediations and strict sandboxing",
-    "directive": "Verify that the recent removal of the dormant kiosk installer path and the integration of manifest scripts correctly maintain the principle of least privilege without inadvertently exposing build-time artifacts. Also, monitor the practical implementation of your recent CWE-59 symlink traversal mitigations and systemd CapabilityBoundingSet updates.",
+    "focus": "Monitor symlink traversal mitigations and least privilege enforcements",
+    "directive": "Observe the effectiveness of the recent [ -L ] symlink traversal checks applied to neos-desktop-setup and neos-liveuser-setup. Ensure that the newly applied CapabilityBoundingSet in neos-liveuser-setup.service securely provisions users without restricting required capabilities for Calamares.",
     "tasks": []
   },
-  "note": "Palette must focus their entire capacity on resolving the pending tasks. The Architect persona remains in a state of complete, mandatory operational pause."
+  "note": "Palette is mandated to clear all pending validation tasks. Architect remains in a mandatory operational pause (zero-modification scope)."
 }
