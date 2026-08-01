@@ -1,21 +1,24 @@
 {
   "bolt": {
-    "focus": "Passive observation of test pipeline and system startup overhead",
-    "directive": "Monitor the CI pipeline following your elimination of grep fork/exec overhead in tests/verify_iso_grub.sh and the systemd-detect-virt subshell optimization. Ensure these native bash string matching changes have not introduced silent assertion failures.",
-    "tasks": []
+    "focus": "Monitor PackageKit and Discover startup performance",
+    "directive": "Evaluate the initialization overhead of KDE Discover with the newly configured flatpak backends. Ensure no new blocking subprocesses are introduced during the desktop session startup.",
+    "tasks": [
+      "profile/airootfs/etc/xdg/*"
+    ]
   },
   "palette": {
-    "focus": "Resolution of Phase 6 UX and sandboxing observability validation debt",
-    "directive": "You are the critical path blocker. You must immediately resolve the pending tasks in ai/tasks/palette.json. Validate that journalctl accurately captures filesystem denial errors for strictly sandboxed services like neos-autoupdate.service. Additionally, systematically test the newly added Phase 6 configurations in profile/airootfs/etc/xdg/kglobalshortcutsrc and kdeglobals for accessibility, contrast, and operational consistency.",
+    "focus": "App Store Accessibility and UX Consistency",
+    "directive": "Review the Discover configuration to ensure update notifications and layout defaults align with the Phase 6 Breeze Dark visual identity. Verify that the app center is easily navigable via keyboard.",
     "tasks": [
-      "profile/airootfs/etc/systemd/system/*.service",
       "profile/airootfs/etc/xdg/*"
     ]
   },
   "sentinel": {
-    "focus": "Monitor symlink traversal mitigations and least privilege enforcements",
-    "directive": "Observe the effectiveness of the recent [ -L ] symlink traversal checks applied to neos-desktop-setup and neos-liveuser-setup. Ensure that the newly applied CapabilityBoundingSet in neos-liveuser-setup.service securely provisions users without restricting required capabilities for Calamares.",
-    "tasks": []
+    "focus": "Audit PackageKit Privilege Contexts",
+    "directive": "Audit the interaction between Discover, PackageKit, and the system package manager. Ensure that unprivileged users cannot bypass authentication for system-level package installations.",
+    "tasks": [
+      "profile/airootfs/etc/xdg/*"
+    ]
   },
-  "note": "Palette is mandated to clear all pending validation tasks. Architect remains in a mandatory operational pause (zero-modification scope)."
+  "note": "Architect is cleared to resume implementation strictly within the boundaries of Phase 7 Discover UX."
 }
