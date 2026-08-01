@@ -179,6 +179,7 @@ Rectangle {
                     clip: true
                     cursorVisible: passInput.activeFocus
                     onAccepted: root.doLogin()
+                    KeyNavigation.tab: loginBtn
                 }
                 Text {
                     anchors.fill: parent; anchors.leftMargin: 16
@@ -193,7 +194,12 @@ Rectangle {
                 id: loginBtn
                 width: parent.width; height: 48; radius: 10
                 color: loginArea.pressed ? "#006fa8"
-                       : (loginArea.containsMouse ? root.cCyan : root.cBlue)
+                       : (loginArea.containsMouse || activeFocus ? root.cCyan : root.cBlue)
+                border.color: activeFocus ? "white" : "transparent"
+                border.width: activeFocus ? 2 : 0
+                activeFocusOnTab: true
+                Keys.onReturnPressed: root.doLogin()
+                Keys.onEnterPressed: root.doLogin()
                 Behavior on color { ColorAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
