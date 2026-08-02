@@ -19,6 +19,11 @@
       "description": "Validate UX consistency and accessibility of Phase 6. Validate the implementation of Windows-familiar shortcuts (Meta+E, Meta+D) and default themes. Ensure contrast is adequate.",
       "target_file": "profile/airootfs/etc/xdg/*",
       "status": "completed"
+    },
+    {
+      "description": "Enhance Discover UI/UX accessibility, ensuring update notifications align with Phase 6 Breeze Dark visual identity.",
+      "target_file": "profile/airootfs/etc/xdg/discoverrc",
+      "status": "pending"
     }
   ]
 }

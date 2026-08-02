@@ -19,6 +19,11 @@
       "description": "Audit desktop configuration security. Audit newly introduced configuration files for potential privilege escalation vectors or unintended execution paths.",
       "target_file": "profile/airootfs/etc/xdg/*",
       "status": "completed"
+    },
+    {
+      "description": "Audit PackageKit privilege contexts and ensure unprivileged users cannot bypass authentication for system-level package installations.",
+      "target_file": "profile/airootfs/etc/xdg/discoverrc",
+      "status": "pending"
     }
   ]
 }

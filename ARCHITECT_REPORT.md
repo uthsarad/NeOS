@@ -44,3 +44,18 @@ Added and successfully executed `tests/verify_ux_polish.sh` covering the newly i
 
 **Delegation Prepared:**
 Appended new tasks for Bolt, Palette, and Sentinel to monitor performance impacts, validate UX consistency and accessibility, and audit the newly introduced desktop configuration security.
+
+## Baseline Implementation: Phase 7 App Store UX
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` to configure KDE Discover defaults to provide a streamlined, Windows-familiar software management experience.
+
+**Changes Made:**
+1. Added `discover`, `packagekit-qt6`, `flatpak`, and `fwupd` to `profile/packages.x86_64` to enable KDE Discover and its standard backends.
+2. Created `profile/airootfs/etc/xdg/discoverrc` configuring standard flatpak and fwupd integrations. Added Specialist comments `# [PALETTE]`, `# [BOLT]`, `# [SENTINEL]`.
+
+**Test Coverage:**
+Added and successfully executed `tests/verify_discover_config.sh` covering the newly implemented configurations to ensure they load as expected without causing regressions.
+
+**Delegation Prepared:**
+Appended new tasks for Bolt, Palette, and Sentinel to monitor performance impacts, validate UX consistency and accessibility, and audit the newly introduced desktop configuration security.

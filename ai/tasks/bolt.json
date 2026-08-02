@@ -29,6 +29,11 @@
       "description": "Optimize grep checks in verify_boot_gui.sh to eliminate fork/exec overhead.",
       "target_file": "tests/verify_boot_gui.sh",
       "status": "completed"
+    },
+    {
+      "description": "Monitor Discover startup performance and ensure no blocking subprocesses are introduced.",
+      "target_file": "profile/airootfs/etc/xdg/discoverrc",
+      "status": "pending"
     }
   ]
 }
