@@ -1,16 +1,10 @@
 # Palette Report
 
-## Baseline Initialization
-- Accessibility fixes: None (Zero-modification scenario enforced by Architect).
-- UX improvements: None.
-- Remaining usability risks: To be addressed in subsequent iterations when modifications are permitted.
+## Accessibility Fixes
+- **Keyboard Navigation in SDDM**: The session selector and power buttons at the bottom of the SDDM login screen were previously untabbable `Text` elements. I wrapped them in `Rectangle` elements and added explicit `activeFocusOnTab: true`, `KeyNavigation.tab`, and visual borders upon `activeFocus`. The tab navigation now flows seamlessly from the "Log In" button to the session selector, power buttons, and cycles back to the username field.
 
-## UX Enhancement: Clarify Error Diagnostics in Build Scripts
-- Accessibility fixes: None.
-- UX improvements: Improved the visual layout and clarity of error logs in `build.sh` and other core scripts (via `tools/gen-vm-appliance.sh` and `profile/airootfs/usr/local/bin/*`) to make it easier to read failures by adding bullet points and structured outputs.
-- Remaining usability risks: None.
+## UX Improvements
+- Added subtle visual borders to the session and power actions upon keyboard focus to clearly indicate which action is selected, solving the issue where keyboard-only users lacked visual focus feedback for non-primary actions.
 
-## UX Enhancement: SDDM Keyboard Accessibility
-- Accessibility fixes: Added explicit tab-navigation and focus states to the non-native QML `Rectangle` login button in `Main.qml`. Added `KeyNavigation.tab` from the password field to the login button.
-- UX improvements: Users can now fully navigate and submit the SDDM login screen via keyboard without relying on mouse interaction. Added visual focus indicator (`border.color`) when the login button is focused.
-- Remaining usability risks: None.
+## Remaining Usability Risks
+- The theme wallpaper background currently depends on a configured background file. If it fails, the background is just a gradient. An additional empty state message might be helpful but wasn't critical for this session.
