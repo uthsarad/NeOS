@@ -1,25 +1,25 @@
-# Strategic Directive: Phase 7 App Store UX and Discover Integration
+# Strategic Directive: Validation Halt for Phase 7 App Store UX
 
 ## Phase 1 — Product Alignment Check
 - **Product Vision:** NeOS aims to provide a predictable, snapshot-gated Arch Linux desktop with a refined KDE Plasma 6 experience, optimized for stability and Windows familiarity.
-- **Alignment Status:** The underlying architecture remains highly stable following the mitigation of critical CWE-59 symlink traversal vulnerabilities in `neos-desktop-setup` and `neos-liveuser-setup`. System alignment is now restored as Palette has cleared the Phase 6 UX and observability validation debt. The next logical progression in our roadmap is Phase 7: App Store and Package Management UX.
-- **Leverage:** Establishing a reliable, GUI-first software management experience via KDE Discover is the highest leverage action to satisfy the "Windows Switchers" target audience who expect a familiar app store paradigm without terminal usage.
+- **Alignment Status:** The architecture remains stable. Architect has recently completed the baseline configuration for Phase 7 by adding `discover`, `packagekit-qt6`, `flatpak`, and `fwupd` to `profile/packages.x86_64` and creating `profile/airootfs/etc/xdg/discoverrc`.
+- **Leverage:** The highest leverage action right now is to ensure the newly introduced `packagekit-qt6` and Discover integrations do not compromise system security or performance before we proceed to Phase 8.
 
 ## Phase 2 — Technical Posture Review
-- **Stability Posture:** The foundation is exceptionally robust. Sentinel has securely patched user-controlled directories by enforcing `[ -L ]` checks before applying `chmod`, `sed`, or file writes in `neos-liveuser-setup`, and restricted `neos-liveuser-setup.service` via `CapabilityBoundingSet`. Bolt successfully optimized virtualization detection (`neos-vm-graphics`) by evaluating `systemd-detect-virt -q` directly, bypassing subshell overhead.
-- **Tech Debt:** Feature implementation debt and validation debt are effectively zero. We are clear to proceed with new feature implementation.
-- **Overbuilding Risk:** Minimal, provided we restrict the initial Phase 7 rollout to foundational KDE Discover capabilities, avoiding the introduction of complex custom package management backends.
+- **Stability Posture:** Foundational layers are highly secure following the Phase 6 patching of `neos-liveuser-setup.service`. However, the new Phase 7 implementation introduces Polkit and PackageKit interactions that could bypass system-level sandbox controls.
+- **Tech Debt:** Validation debt is present. Task manifests (`ai/tasks/*.json`) show pending validation for Phase 7 Discover defaults.
+- **Overbuilding Risk:** High. Proceeding to Phase 8 (Long-Term Maintenance) before validating the package management UX risks building on a compromised or unoptimized software delivery foundation.
 
 ## Phase 3 — Priority Selection
-- New feature implementation (Phase 7: App Store and Package Management UX)
+- **No-build day (strategic pause)**
 
 ## Phase 4 — Controlled Scope Definition
-- **Exact files likely impacted:** `profile/packages.x86_64`, `profile/airootfs/etc/xdg/` (new configuration files).
-- **Maximum allowed surface area:** XDG configuration directories for KDE Discover and package manifests.
-- **Constraints Architect must obey:** Focus strictly on configuring Discover defaults (e.g., ensuring standard flatpak integration). Do not modify systemd unit configurations, Calamares provisioning logic, or core bash installer scripts.
+- **Exact files likely impacted:** None.
+- **Maximum allowed surface area:** 0 files.
+- **Constraints Architect must obey:** Complete strategic pause (`forbidden_files: ["**/*"]`). Architect must not modify any files and must bypass `request_code_review` and `initiate_memory_recording`, invoking the `done` tool directly.
 
 ## Phase 5 — Delegation Strategy
-- **Architect:** Implement Discover default configuration.
-- **Bolt:** Monitor Discover startup performance and ensure no blocking subprocesses are introduced.
-- **Palette:** Enhance the Discover UI/UX accessibility, ensuring update notifications align with Phase 6 Breeze Dark visual identity.
-- **Sentinel:** Audit PackageKit privilege contexts and ensure unprivileged users cannot bypass authentication for system-level package installations.
+- **Architect:** Paused (Strategic Pause).
+- **Bolt:** Execute pending Phase 7 tasks: Monitor `discover` startup performance in `profile/airootfs/etc/xdg/discoverrc` and ensure no blocking subprocesses are introduced by `flatpak` or `fwupd` backends.
+- **Palette:** Execute pending Phase 7 tasks: Enhance Discover UI/UX accessibility in `profile/airootfs/etc/xdg/discoverrc`, ensuring update notifications align with Phase 6 Breeze Dark visual identity.
+- **Sentinel:** Execute pending Phase 7 tasks: Rigorously audit `packagekit-qt6` privilege contexts via Polkit to ensure unprivileged users cannot bypass authentication for system-level package installations.

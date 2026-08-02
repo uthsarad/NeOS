@@ -1,7 +1,7 @@
-# Risk & Priority Report: Validation Halt Concluded and Phase 7 Posture
+# Risk & Priority Report: Phase 7 Validation Halt
 
 ## Current Risk Assessment
-The technical architecture of the NeOS project maintains a highly secure and stable posture. The validation halt has successfully concluded with the resolution of critical validation debt.
+The technical architecture of the NeOS project maintains a highly secure and stable posture. The validation halt for Phase 6 has successfully concluded with the resolution of critical validation debt. However, Architect has implemented the baseline configuration for Phase 7 (App Store UX), introducing `discover`, `packagekit-qt6`, `flatpak`, and `fwupd` to `profile/packages.x86_64` and creating `profile/airootfs/etc/xdg/discoverrc`. This introduces significant new attack surfaces and potential performance bottlenecks that must be validated.
 
 **Resolved Risks:**
 - **Diagnostic Logging Opacity:** Palette has confirmed that systemd `ProtectSystem=strict` and `ProtectHome=yes` directives do not compromise `journalctl` diagnostic logging visibility for restricted services like `neos-autoupdate.service`.
@@ -12,15 +12,16 @@ The technical architecture of the NeOS project maintains a highly secure and sta
 - **Autoupdate Lock File Contention:** Sentinel resolved silent locking failures by proactively appending `/run` to the `ReadWritePaths` directive in `neos-autoupdate.service`, maintaining operational reliability without violating the primary `ProtectSystem=strict` sandbox boundary.
 
 **Emerging Risks (Phase 7):**
-1. **PackageKit Privilege Escalation (High Risk):** Moving into App Store UX via KDE Discover introduces the risk of PackageKit or Polkit misconfigurations. If policies are too permissive, unprivileged users could escalate privileges to install arbitrary system-level packages.
-2. **Notification Fatigue (Moderate Risk):** Over-notifying users about available rolling-release updates could degrade the "Windows-familiar" UX, leading to update fatigue or user confusion.
-3. **Backend Hangs (Moderate Risk):** If the Discover flatpak or PackageKit backends hang during metadata sync, it could cause GUI freezes, severely impacting perceived system stability.
+1. **PackageKit Privilege Escalation (High Risk):** KDE Discover interfaces with PackageKit and Polkit. If the default policies are too permissive, unprivileged live session users could escalate privileges to install arbitrary system-level packages. This is a critical risk that must be definitively mitigated.
+2. **Backend Hangs & Blocking Subprocesses (Moderate Risk):** If the Discover `flatpak` or `fwupd` backends hang during metadata sync, it could cause GUI freezes, severely impacting perceived system stability and Plasma startup performance.
+3. **Notification Fatigue & UX Regression (Moderate Risk):** Over-notifying users about available rolling-release updates could degrade the "Windows-familiar" UX.
 
 ## Priority Selection
-**New feature implementation** (Phase 7: App Store and Package Management UX)
+**No-build day (strategic pause)**
 
 ## Actionable Mitigation
-- **Architect Governance:** Architect is unpaused but restricted strictly to declarative XDG configuration (`profile/packages.x86_64` and `profile/airootfs/etc/xdg/*`). No core system service modifications or installer script changes are authorized.
+- **Architect Governance:** Enforce a strict "Strategic Pause" (`forbidden_files: ["**/*"]`). Architect is not authorized to implement any production code or configuration changes during this cycle.
 - **Specialist Directives:**
-  - Sentinel must rigorously audit the Discover-PackageKit integration to ensure Polkit policies correctly prompt for system-level package operations.
-  - Palette should ensure update notifications are unobtrusive and the Discover UI remains accessible.
+  - **Sentinel:** Must clear the pending audit of `packagekit-qt6` privilege contexts and verify Polkit rules.
+  - **Bolt:** Must clear the pending performance evaluation of Discover backend initialization in `profile/airootfs/etc/xdg/discoverrc`.
+  - **Palette:** Must clear the pending UX consistency review of the Discover app center configuration.
