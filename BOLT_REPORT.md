@@ -24,3 +24,9 @@ None. This is a purely structural optimization of the check mechanism.
 **What was optimized:** Replaced `sed` and `grep` subprocess calls inside a `while` loop with native bash string manipulation for checking kernel drivers.
 **Before/after reasoning:** Previously, checking network drivers involved spawning `echo`, `sed`, and `grep` for every detected network interface, causing unnecessary fork/exec overhead. By extracting the relevant text block and searching for "Kernel driver in use" directly with bash parameter expansion (`${VAR#pattern}` and `${VAR%%pattern}`), the need for subprocesses is eliminated, reducing CPU overhead during hardware detection.
 **Any remaining performance risks:** None. The replacement strictly handles string processing without external dependencies, resulting in faster and safer execution.
+
+## ⚡ Bolt: Optimize verify_boot_gui grep checks
+**What:** Replaced repeated `grep` subprocess calls in `tests/verify_boot_gui.sh` with native bash string matching.
+**Why:** To eliminate fork/exec subprocess overhead during CI/validation checks on the boot gui script.
+**Impact:** Reduces CPU overhead by caching file content and bypassing external process spawning for simple string checks.
+**Measurement:** Running the tests via `bash tests/verify_boot_gui.sh` should confirm functionality remains intact and slightly faster.
