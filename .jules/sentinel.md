@@ -16,3 +16,8 @@
 **Vulnerability:** Found symlink traversal vulnerabilities in `neos-desktop-setup` when making desktop launchers executable. The script ran `chmod +x` without checking if the user-controlled `Desktop` directory or the launcher file itself was a symlink.
 **Learning:** Checking only the target file or neglecting symlink checks entirely in user-space setup scripts allows attackers to manipulate file permissions (e.g., via CWE-59) if they can control the parent directory.
 **Prevention:** Always check both the parent directory and the target file for symlinks (`[[ -L "$DIR" ]] || [[ -L "$FILE" ]]`) before changing permissions in user-writable paths.
+
+## 2026-02-18 - Enforce Admin Authentication for PackageKit
+**Vulnerability:** Default polkit policies or absent custom rules may allow unprivileged users to perform system-wide package modifications via PackageKit (e.g., through Discover).
+**Learning:** It's critical to strictly enforce `AUTH_ADMIN` for any system-level package manipulation to prevent unauthorized software installation and potential privilege escalation by standard users.
+**Prevention:** Always explicitly define polkit rules for `org.freedesktop.packagekit.*` actions in customized Linux distributions to enforce strict authentication boundaries.

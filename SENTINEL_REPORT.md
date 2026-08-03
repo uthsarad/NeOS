@@ -28,3 +28,9 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 - **Severity**: HIGH
 - **Vulnerability**: Privilege Escalation / Least Privilege Violation
 - **Status**: Fixed
+
+### PackageKit Privilege Context Audit
+- **Risks found**: PackageKit operations default to unprivileged execution for some actions on some setups. A misconfiguration could allow unprivileged users to bypass authentication for system-level package installations.
+- **Fixes applied**: Added polkit rule (`50-neos-packagekit.rules`) to strictly enforce `AUTH_ADMIN` (admin authentication) for sensitive operations (install, remove, update, sources configure, trust source) for `wheel` users, and deny access to others.
+- **Remaining attack surface**: Only trusted users in `wheel` can modify system packages, which is intended behavior, but still poses a risk if an admin account is compromised.
+- **Severity summary**: HIGH (Mitigated unprivileged software installation).

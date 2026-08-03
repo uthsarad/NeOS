@@ -23,7 +23,7 @@
     {
       "description": "Audit PackageKit privilege contexts and ensure unprivileged users cannot bypass authentication for system-level package installations.",
       "target_file": "profile/airootfs/etc/xdg/discoverrc",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
