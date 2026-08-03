@@ -30,3 +30,9 @@ None. This is a purely structural optimization of the check mechanism.
 **Why:** To eliminate fork/exec subprocess overhead during CI/validation checks on the boot gui script.
 **Impact:** Reduces CPU overhead by caching file content and bypassing external process spawning for simple string checks.
 **Measurement:** Running the tests via `bash tests/verify_boot_gui.sh` should confirm functionality remains intact and slightly faster.
+
+## ⚡ Bolt: Optimize verify_discover_config grep checks
+**What:** Replaced repeated `grep` subprocess calls in `tests/verify_discover_config.sh` with native bash string matching.
+**Why:** To eliminate fork/exec subprocess overhead during CI/validation checks on the Discover configuration script.
+**Impact:** Reduces CPU overhead by caching file content and bypassing external process spawning for simple string checks.
+**Measurement:** Running the tests via `bash tests/verify_discover_config.sh` should confirm functionality remains intact and executes faster.

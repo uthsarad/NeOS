@@ -1,10 +1,13 @@
 #!/bin/bash
 set -e
 echo "Testing Phase 7 Discover Configuration..."
-grep -q "discover" profile/packages.x86_64
-grep -q "packagekit-qt6" profile/packages.x86_64
-grep -q "flatpak" profile/packages.x86_64
-grep -q "fwupd" profile/packages.x86_64
+PACKAGES_CONTENT=$(<"profile/packages.x86_64")
+for pkg in discover packagekit-qt6 flatpak fwupd; do
+    if [[ "$PACKAGES_CONTENT" != *"$pkg"* ]]; then
+        echo "Error: $pkg missing"
+        exit 1
+    fi
+done
 
 if [[ ! -f "profile/airootfs/etc/xdg/discoverrc" ]]; then
     echo "Error: discoverrc missing"

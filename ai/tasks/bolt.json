@@ -33,7 +33,7 @@
     {
       "description": "Monitor Discover startup performance and ensure no blocking subprocesses are introduced.",
       "target_file": "profile/airootfs/etc/xdg/discoverrc",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

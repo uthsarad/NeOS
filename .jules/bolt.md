@@ -12,3 +12,7 @@
 ## 2026-08-01 - Subprocess Overhead in Loop Hardware Detection
 **Learning:** Using text processing pipelines like `echo "$VAR" | sed ... | grep ...` inside shell loops (e.g., when iterating over network devices from `lspci`) introduces significant fork/exec subprocess overhead.
 **Action:** When extracting blocks of text and matching specific patterns in shell loops, rely on native bash parameter expansion (e.g., string slicing and glob matching like `[[ "$BLOCK" == *"pattern"* ]]`) instead of external binaries.
+
+## 2025-05-24 - Subprocess overhead in CI checks
+**Learning:** Using repeated `grep -q` calls in bash test scripts introduces unnecessary subshell and fork/exec overhead when verifying multiple packages or strings in the same file.
+**Action:** Cache the file content into a bash variable and use native string matching (`[[ "$CONTENT" == *"$pkg"* ]]`) to eliminate subprocess spawns.
