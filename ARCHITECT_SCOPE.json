@@ -8,7 +8,7 @@
   ],
   "constraints": [
     "Strategic pause in effect. Do not modify any production code or configuration files.",
-    "Allow specialists (Sentinel, Bolt, Palette) to validate Phase 7 App Store UX implementation.",
+    "Allow Palette to clear the pending Phase 7 App Store UX implementation task.",
     "Bypass request_code_review and initiate_memory_recording, invoke done directly."
   ]
 }

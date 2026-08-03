@@ -1,25 +1,20 @@
 {
   "bolt": {
-    "focus": "Monitor PackageKit and Discover startup performance",
-    "directive": "Evaluate the initialization overhead of KDE Discover with the newly configured flatpak backends. Ensure no new blocking subprocesses are introduced during the desktop session startup.",
-    "tasks": [
-      "profile/airootfs/etc/xdg/discoverrc"
-    ]
+    "focus": "Standby",
+    "directive": "Phase 7 validation tasks complete. Standby for Phase 8.",
+    "tasks": []
   },
   "palette": {
     "focus": "App Store Accessibility and UX Consistency",
-    "directive": "Review the Discover configuration to ensure update notifications and layout defaults align with the Phase 6 Breeze Dark visual identity. Verify that the app center is easily navigable via keyboard.",
+    "directive": "Clear the pending Phase 7 Discover UX task. Review the Discover configuration to ensure update notifications and layout defaults align with the Phase 6 Breeze Dark visual identity. Verify that the app center is easily navigable via keyboard.",
     "tasks": [
       "profile/airootfs/etc/xdg/discoverrc"
     ]
   },
   "sentinel": {
-    "focus": "Audit PackageKit Privilege Contexts",
-    "directive": "Audit the interaction between Discover, PackageKit, and the system package manager. Ensure that unprivileged users cannot bypass authentication for system-level package installations.",
-    "tasks": [
-      "profile/airootfs/etc/xdg/discoverrc",
-      "profile/packages.x86_64"
-    ]
+    "focus": "Standby",
+    "directive": "Phase 7 validation tasks complete. Standby for Phase 8.",
+    "tasks": []
   },
-  "note": "Architect is paused (Strategic Pause). Specialists must clear the pending Phase 7 validation tasks."
+  "note": "Architect is paused (Strategic Pause). Palette must clear the pending Phase 7 validation task."
 }
