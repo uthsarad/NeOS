@@ -1,6 +1,9 @@
 [Software]
 # [BOLT] Perf: Monitor Discover startup performance and ensure no blocking subprocesses are introduced
-# [PALETTE] UX: Enhance Discover UI/UX accessibility, ensuring update notifications align with Breeze Dark
 # [SENTINEL] Security: Audit PackageKit privilege contexts to ensure unprivileged users cannot bypass authentication
 UseFlatpak=true
 UseFwupd=true
+UseOfflineUpdates=true
+
+[DiscoverUI]
+installedPageCategorize=true
