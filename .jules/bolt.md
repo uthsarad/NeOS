@@ -16,3 +16,11 @@
 ## 2025-05-24 - Subprocess overhead in CI checks
 **Learning:** Using repeated `grep -q` calls in bash test scripts introduces unnecessary subshell and fork/exec overhead when verifying multiple packages or strings in the same file.
 **Action:** Cache the file content into a bash variable and use native string matching (`[[ "$CONTENT" == *"$pkg"* ]]`) to eliminate subprocess spawns.
+
+## 2024-08-04 - Native Bash Multiline Regex Matching
+**Learning:** When evaluating native bash regex matches `[[ "$VAR" =~ regex ]]` against multiline strings cached from a file, standard start-of-line anchors `^` do not match line beginnings across the string. The variable is treated as one large string.
+**Action:** Use the `(^|$'\n')` regex construct in Bash to properly match the beginning of lines within multiline string variables.
+
+## 2024-08-04 - Native Bash Regex Bug with Multiline Variables
+**Learning:** When using native bash regex `[[ "$CONTENT" =~ pattern ]]` against multiline strings, the `.*` pattern matches across newlines, making it greedy across the entire file. This can lead to false positives if the regex spans across different unrelated lines (e.g., `vm.swappiness.*=.*100` could match `vm.swappiness = 10\nother = 100`).
+**Action:** When matching specific lines in a multiline bash string variable, replace `.*` with `[^\n]*` to constrain the match to a single line.

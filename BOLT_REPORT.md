@@ -36,3 +36,8 @@ None. This is a purely structural optimization of the check mechanism.
 **Why:** To eliminate fork/exec subprocess overhead during CI/validation checks on the Discover configuration script.
 **Impact:** Reduces CPU overhead by caching file content and bypassing external process spawning for simple string checks.
 **Measurement:** Running the tests via `bash tests/verify_discover_config.sh` should confirm functionality remains intact and executes faster.
+
+## Bolt Optimization: Eliminate subprocess grep overhead in verify_performance_config.sh
+**What was optimized:** Replaced 13 redundant `grep` subprocess calls with a single read into a memory variable (e.g. `CONTENT=$(<"$FILE")`) and native bash regular expression matching `[[ "$CONTENT" =~ (^|$'\n')pattern ]]`.
+**Before/after reasoning:** Repeated fork/exec operations in shell scripts are slow and inefficient. By caching the file contents and using built-in string/regex logic, the execution time decreases significantly.
+**Remaining performance risks:** Other test scripts still rely on subprocess invocations for similar checks, which could be refactored similarly in the future.
