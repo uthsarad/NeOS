@@ -39,6 +39,11 @@
       "description": "Optimize grep checks in verify_performance_config.sh to eliminate fork/exec overhead.",
       "target_file": "tests/verify_performance_config.sh",
       "status": "completed"
+    },
+    {
+      "description": "Standby for Phase 8 validation tasks.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }

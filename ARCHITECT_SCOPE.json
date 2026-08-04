@@ -1,14 +1,16 @@
 {
   "target_features": [
-    "Strategic Pause: No new feature implementation."
+    "Phase 8: Baseline initialization for Long-Term Maintenance and Distribution infrastructure."
   ],
-  "allowed_files": [],
-  "forbidden_files": [
-    "**/*"
+  "allowed_files": [
+    "profile/packages.x86_64",
+    "docs/architecture/ROADMAP.md",
+    "*"
   ],
+  "forbidden_files": [],
   "constraints": [
-    "Strategic pause in effect. Do not modify any production code or configuration files.",
-    "Allow Palette to clear the pending Phase 7 App Store UX implementation task.",
-    "Bypass request_code_review and initiate_memory_recording, invoke done directly."
+    "Strategic pause lifted.",
+    "Implement baseline components for Phase 8 (release operations, support/feedback channels).",
+    "Ensure any new tools adhere to the 'Windows-familiar' GUI-first requirement."
   ]
 }

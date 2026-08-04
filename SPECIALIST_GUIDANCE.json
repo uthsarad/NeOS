@@ -1,20 +1,18 @@
 {
   "bolt": {
     "focus": "Standby",
-    "directive": "Phase 7 validation tasks complete. Standby for Phase 8.",
+    "directive": "Standby for Phase 8 performance validations.",
     "tasks": []
   },
   "palette": {
-    "focus": "App Store Accessibility and UX Consistency",
-    "directive": "Clear the pending Phase 7 Discover UX task. Review the Discover configuration to ensure update notifications and layout defaults align with the Phase 6 Breeze Dark visual identity. Verify that the app center is easily navigable via keyboard.",
-    "tasks": [
-      "profile/airootfs/etc/xdg/discoverrc"
-    ]
+    "focus": "Standby",
+    "directive": "Standby for Phase 8 UX validations.",
+    "tasks": []
   },
   "sentinel": {
     "focus": "Standby",
-    "directive": "Phase 7 validation tasks complete. Standby for Phase 8.",
+    "directive": "Standby for Phase 8 security audits.",
     "tasks": []
   },
-  "note": "Architect is paused (Strategic Pause). Palette must clear the pending Phase 7 validation task."
+  "note": "Architect will implement baseline Phase 8 infrastructure."
 }
