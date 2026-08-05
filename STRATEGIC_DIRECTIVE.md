@@ -1,25 +1,25 @@
-# Strategic Directive: Phase 8 Long-Term Maintenance - Infrastructure Implementation
+# Strategic Directive: Phase 8 Operations Hub Validation (Strategic Pause)
 
 ## Phase 1 — Product Alignment Check
 - **Product Vision:** NeOS aims to provide a predictable, snapshot-gated Arch Linux desktop with a refined KDE Plasma 6 experience, optimized for stability and Windows familiarity.
-- **Alignment Status:** Phase 7 (App Store UX) validation is fully complete. Palette successfully cleared the pending UX consistency review of the Discover app center configuration. The system is no longer in a validation halt.
-- **Leverage:** The highest leverage action is to advance to Phase 8 (Long-Term Maintenance and Distribution) and establish the infrastructure necessary to ensure long-term stability and system lifecycle management as defined in the roadmap.
+- **Alignment Status:** The baseline for Phase 8 (Operations Hub) has been implemented by Architect. We are aligned with the long-term maintenance and distribution goals.
+- **Leverage:** The highest leverage action right now is to ensure the newly introduced `neos-operations-hub` is secure, performant, and accessible before continuing to build new features.
 
 ## Phase 2 — Technical Posture Review
-- **Stability Posture:** The system maintains a highly secure and stable posture. Phase 7 validations by Bolt, Sentinel, and Palette have successfully resolved critical privilege escalation risks, blocking subprocess overhead, and UX inconsistencies.
-- **Tech Debt:** None. All Phase 7 validation tasks have been completed and cleared.
-- **Overbuilding Risk:** Low. We must strictly adhere to the roadmap goals for Phase 8 without introducing unnecessary components.
+- **Stability Posture:** The system is currently stable, but unvalidated GUI scripts have been merged.
+- **Tech Debt:** Unvalidated specialist tasks remain in the backlog for Bolt, Palette, and Sentinel regarding `neos-operations-hub`.
+- **Overbuilding Risk:** High. Continuing to build new Phase 8 features without validating the foundational operations hub risks compounding security or UX debt.
 
 ## Phase 3 — Priority Selection
-- Infrastructure improvement (Phase 8: Long-Term Maintenance and Distribution)
+- No-build day (strategic pause)
 
 ## Phase 4 — Controlled Scope Definition
-- **Exact files likely impacted:** `ai/tasks/bolt.json`, `ai/tasks/palette.json`, `ai/tasks/sentinel.json` (for new validation tasks), and any configuration files Architect creates for Phase 8 baseline initialization.
-- **Maximum allowed surface area:** 5 files.
-- **Constraints Architect must obey:** Lift the Strategic Pause. Implement the baseline foundation for Phase 8. Do not add arbitrary packages or tools; focus on long-term operations (stable/testing channel definitions, snapshot promotion workflows) as defined in Phase 8 of `ROADMAP.md`.
+- **Exact files likely impacted:** None for implementation.
+- **Maximum allowed surface area:** 0 files (Architect is paused).
+- **Constraints Architect must obey:** Halt all feature development. No production code is to be written. Wait for specialist validations to clear.
 
 ## Phase 5 — Delegation Strategy
-- **Architect:** Implement baseline Phase 8 infrastructure (e.g., initial channel configuration or update promotion workflow documentation/scripts).
-- **Bolt:** Standby for Phase 8 performance validation tasks.
-- **Palette:** Standby for Phase 8 UX consistency checks (e.g., ensuring any new rollback/update tooling is GUI-friendly).
-- **Sentinel:** Standby for Phase 8 security audits of the release operations pipeline.
+- **Architect:** Strategic pause. Do not implement new features.
+- **Bolt:** Execute pending task: Monitor subprocess overhead from kdialog in `neos-operations-hub`.
+- **Palette:** Execute pending task: Verify UX accessibility of kdialog menus in `neos-operations-hub`.
+- **Sentinel:** Execute pending task: Audit privilege boundaries for release channel switching in `neos-operations-hub`.

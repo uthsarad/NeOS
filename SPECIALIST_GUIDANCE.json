@@ -1,18 +1,24 @@
 {
   "bolt": {
-    "focus": "Standby",
-    "directive": "Standby for Phase 8 performance validations.",
-    "tasks": []
+    "focus": "Performance Validation",
+    "directive": "Evaluate neos-operations-hub for subprocess overhead caused by kdialog invocations. Optimize if necessary.",
+    "tasks": [
+      "Monitor subprocess overhead from kdialog in neos-operations-hub."
+    ]
   },
   "palette": {
-    "focus": "Standby",
-    "directive": "Standby for Phase 8 UX validations.",
-    "tasks": []
+    "focus": "UX & Accessibility",
+    "directive": "Review neos-operations-hub menus for accessibility and Phase 6 UX guidelines compliance.",
+    "tasks": [
+      "Verify UX accessibility of kdialog menus in neos-operations-hub."
+    ]
   },
   "sentinel": {
-    "focus": "Standby",
-    "directive": "Standby for Phase 8 security audits.",
-    "tasks": []
+    "focus": "Security Audit",
+    "directive": "Audit the release channel switching mechanism in neos-operations-hub for privilege boundaries and downgrade attack vectors.",
+    "tasks": [
+      "Audit privilege boundaries for release channel switching in neos-operations-hub."
+    ]
   },
-  "note": "Architect will implement baseline Phase 8 infrastructure."
+  "note": "Architect is under a Strategic Pause. Specialists are cleared to execute their pending validations."
 }

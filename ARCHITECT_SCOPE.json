@@ -1,16 +1,14 @@
 {
   "target_features": [
-    "Phase 8: Baseline initialization for Long-Term Maintenance and Distribution infrastructure."
+    "None (Strategic Pause)"
   ],
-  "allowed_files": [
-    "profile/packages.x86_64",
-    "docs/architecture/ROADMAP.md",
+  "allowed_files": [],
+  "forbidden_files": [
     "*"
   ],
-  "forbidden_files": [],
   "constraints": [
-    "Strategic pause lifted.",
-    "Implement baseline components for Phase 8 (release operations, support/feedback channels).",
-    "Ensure any new tools adhere to the 'Windows-familiar' GUI-first requirement."
+    "Strategic pause is active.",
+    "Do not write production code.",
+    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks for neos-operations-hub."
   ]
 }

@@ -19,3 +19,22 @@ The technical architecture of the NeOS project maintains a highly secure and sta
 - **Architect Governance:** The Strategic Pause is lifted. Architect is authorized to implement the baseline infrastructure for Phase 8. Architect must prioritize GUI-friendly solutions and maintain minimal complexity.
 - **Specialist Directives:**
   - All specialists (Bolt, Palette, Sentinel) are on standby to validate Phase 8 implementations once Architect completes the baseline.
+## Phase 8 Operations Hub Validation
+
+### Current Risk Assessment
+The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) introduces new risks that require specialist validation before proceeding.
+
+**Emerging Risks:**
+1. **Security Vulnerability (Medium Risk):** The addition of a GUI-based channel switching mechanism might introduce privilege escalation or downgrade attack vectors if boundaries are not strictly defined.
+2. **UX Degradation (Medium Risk):** `kdialog` menus must remain accessible to screen readers and keyboard navigation, adhering to our strict "Windows-familiar" KDE design principles.
+3. **Performance Overhead (Low Risk):** Sequential or blocking `kdialog` subprocess calls can introduce UI latency.
+
+### Priority Selection
+**No-build day (strategic pause)**
+
+### Actionable Mitigation
+- **Architect Governance:** A strategic pause is enforced. Architect is prohibited from writing new production code until the current infrastructure is audited.
+- **Specialist Directives:**
+  - **Sentinel:** Audit `neos-operations-hub` for privilege boundaries and ensure channel switching cannot be exploited.
+  - **Palette:** Validate the `kdialog` implementation for screen reader and keyboard accessibility.
+  - **Bolt:** Review the script to ensure no blocking subprocess overhead degrades UI responsiveness.
