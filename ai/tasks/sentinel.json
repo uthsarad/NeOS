@@ -34,6 +34,11 @@
       "description": "Fix CWE-59 predictable temp file vulnerability in neos-welcome using mktemp.",
       "target_file": "profile/airootfs/usr/local/bin/neos-welcome",
       "status": "completed"
+    },
+    {
+      "description": "Audit privilege boundaries for release channel switching in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "pending"
     }
   ]
 }

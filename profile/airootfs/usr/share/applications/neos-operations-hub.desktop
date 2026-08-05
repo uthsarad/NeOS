@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=NeOS Operations Hub
+Comment=Manage release operations, support, and feedback channels
+Exec=/usr/local/bin/neos-operations-hub
+Icon=system-software-update
+Terminal=false
+Type=Application
+Categories=System;Settings;

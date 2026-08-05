@@ -59,3 +59,19 @@ Added and successfully executed `tests/verify_discover_config.sh` covering the n
 
 **Delegation Prepared:**
 Appended new tasks for Bolt, Palette, and Sentinel to monitor performance impacts, validate UX consistency and accessibility, and audit the newly introduced desktop configuration security.
+
+## Baseline Implementation: Phase 8 Long-Term Maintenance Infrastructure
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json`, which directed the creation of Phase 8 baseline release operations and support/feedback channels while adhering to the 'Windows-familiar' GUI-first requirement.
+
+**Changes Made:**
+1. Created `profile/airootfs/usr/local/bin/neos-operations-hub` as a GUI-first script leveraging `kdialog` to provide access to community support, bug reporting, and placeholders for channel switching and crash reporting.
+2. Created `profile/airootfs/usr/share/applications/neos-operations-hub.desktop` to ensure the tool is discoverable in the desktop environment.
+3. Added `# Bolt:`, `# Palette:`, and `# Sentinel:` comments in the script for specialist refinement.
+
+**Test Coverage:**
+Executed `tests/verify_airootfs_structure.sh` to validate that new custom additions haven't compromised the base rootfs structure.
+
+**Delegation Prepared:**
+Appended new tasks for Bolt, Palette, and Sentinel to monitor kdialog subprocess overhead, validate UX accessibility, and audit privilege boundaries respectively.

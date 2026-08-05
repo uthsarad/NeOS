@@ -44,6 +44,11 @@
       "description": "Standby for Phase 8 validation tasks.",
       "target_file": "none",
       "status": "pending"
+    },
+    {
+      "description": "Monitor subprocess overhead from kdialog in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "pending"
     }
   ]
 }

@@ -34,6 +34,11 @@
       "description": "Add screen reader accessible roles and names to interactive elements in SDDM theme Main.qml",
       "target_file": "profile/airootfs/usr/share/sddm/themes/neos/Main.qml",
       "status": "completed"
+    },
+    {
+      "description": "Verify UX accessibility of kdialog menus in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "pending"
     }
   ]
 }
