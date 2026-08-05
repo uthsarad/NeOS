@@ -28,7 +28,12 @@
     {
       "description": "Standby for Phase 8 validation tasks.",
       "target_file": "none",
-      "status": "pending"
+      "status": "completed"
+    },
+    {
+      "description": "Add screen reader accessible roles and names to interactive elements in SDDM theme Main.qml",
+      "target_file": "profile/airootfs/usr/share/sddm/themes/neos/Main.qml",
+      "status": "completed"
     }
   ]
 }

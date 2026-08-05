@@ -153,6 +153,8 @@ Rectangle {
                     cursorVisible: userInput.activeFocus
                     onAccepted: passInput.forceActiveFocus()
                     KeyNavigation.tab: passInput
+                    Accessible.role: Accessible.EditableText
+                    Accessible.name: "Username"
                 }
                 Text {
                     anchors.fill: parent; anchors.leftMargin: 16
@@ -180,6 +182,8 @@ Rectangle {
                     cursorVisible: passInput.activeFocus
                     onAccepted: root.doLogin()
                     KeyNavigation.tab: loginBtn
+                    Accessible.role: Accessible.EditableText
+                    Accessible.name: "Password"
                 }
                 Text {
                     anchors.fill: parent; anchors.leftMargin: 16
@@ -201,6 +205,8 @@ Rectangle {
                 KeyNavigation.tab: sessionSelector
                 Keys.onReturnPressed: root.doLogin()
                 Keys.onEnterPressed: root.doLogin()
+                Accessible.role: Accessible.Button
+                Accessible.name: "Log In"
                 Behavior on color { ColorAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
@@ -247,6 +253,8 @@ Rectangle {
                         if (sessionModel.count > 0)
                             root.sessionIndex = (root.sessionIndex + 1) % sessionModel.count;
                     }
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Session Selector"
                     Text {
                         id: sessionText
                         anchors.centerIn: parent
@@ -273,6 +281,8 @@ Rectangle {
                     KeyNavigation.tab: btnRestart
                     Keys.onReturnPressed: sddm.suspend()
                     Keys.onEnterPressed: sddm.suspend()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Sleep"
                     Text {
                         id: sleepText
                         anchors.centerIn: parent
@@ -292,6 +302,8 @@ Rectangle {
                     KeyNavigation.tab: btnShutdown
                     Keys.onReturnPressed: sddm.reboot()
                     Keys.onEnterPressed: sddm.reboot()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Restart"
                     Text {
                         id: restartText
                         anchors.centerIn: parent
@@ -311,6 +323,8 @@ Rectangle {
                     KeyNavigation.tab: userInput
                     Keys.onReturnPressed: sddm.powerOff()
                     Keys.onEnterPressed: sddm.powerOff()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Shut Down"
                     Text {
                         id: shutdownText
                         anchors.centerIn: parent

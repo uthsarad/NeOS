@@ -2,6 +2,7 @@
 
 ## Accessibility Fixes
 - Ensured Discover layout categorize defaults (`installedPageCategorize=true`) are set for better cognitive accessibility.
+- **Screen Reader Support in SDDM**: Added explicit `Accessible.role` (e.g. `Accessible.EditableText`, `Accessible.Button`) and `Accessible.name` bindings to all interactive fields (username, password, login button, and power controls) in the SDDM theme `Main.qml`. Because these are custom QML components, without explicit labels they remain silent or incorrectly announced by Orca or standard screen readers.
 - **Keyboard Navigation in SDDM**: The session selector and power buttons at the bottom of the SDDM login screen were previously untabbable `Text` elements. I wrapped them in `Rectangle` elements and added explicit `activeFocusOnTab: true`, `KeyNavigation.tab`, and visual borders upon `activeFocus`. The tab navigation now flows seamlessly from the "Log In" button to the session selector, power buttons, and cycles back to the username field.
 
 ## UX Improvements

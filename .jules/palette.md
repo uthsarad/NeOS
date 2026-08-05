@@ -7,3 +7,6 @@
 ## 2026-02-18 - Discover Offline Updates Experience
 **Learning:** By default, KDE Discover updates packages live while the desktop environment is running, which can lead to instability and unexpected crashes if a core library is replaced out from under a running app.
 **Action:** Configured `UseOfflineUpdates=true` in `discoverrc` to align the update flow with a more stable, non-intrusive Windows-familiar offline update paradigm.
+## 2026-02-18 - SDDM QML Accessibility Roles
+**Learning:** Even if custom QML components are styled to look like inputs and buttons and support keyboard navigation, screen readers won't know their semantic purpose without explicit accessibility roles and names.
+**Action:** Added `Accessible.role: Accessible.EditableText`, `Accessible.role: Accessible.Button`, and `Accessible.name` attributes to the custom username/password inputs and login/power action buttons in `Main.qml`.
