@@ -34,3 +34,16 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 - **Fixes applied**: Added polkit rule (`50-neos-packagekit.rules`) to strictly enforce `AUTH_ADMIN` (admin authentication) for sensitive operations (install, remove, update, sources configure, trust source) for `wheel` users, and deny access to others.
 - **Remaining attack surface**: Only trusted users in `wheel` can modify system packages, which is intended behavior, but still poses a risk if an admin account is compromised.
 - **Severity summary**: HIGH (Mitigated unprivileged software installation).
+
+## 2026-02-18 - Vulnerability Remediation
+### Risks found
+- Found a CWE-59 Symlink Traversal vulnerability in `profile/airootfs/usr/local/bin/neos-welcome` where a predictable log file path (`/tmp/neos-installer.log`) was used in a world-writable directory.
+
+### Fixes applied
+- Replaced the predictable log path with a securely generated temporary file using `mktemp`.
+
+### Remaining attack surface
+- None identified regarding temporary file creation in the reviewed scripts.
+
+### Severity summary
+- **High**: The vulnerability could allow a local attacker to overwrite arbitrary files when `neos-welcome` is executed.

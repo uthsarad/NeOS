@@ -29,6 +29,11 @@
       "description": "Standby for Phase 8 validation tasks.",
       "target_file": "none",
       "status": "pending"
+    },
+    {
+      "description": "Fix CWE-59 predictable temp file vulnerability in neos-welcome using mktemp.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome",
+      "status": "completed"
     }
   ]
 }

@@ -21,3 +21,8 @@
 **Vulnerability:** Default polkit policies or absent custom rules may allow unprivileged users to perform system-wide package modifications via PackageKit (e.g., through Discover).
 **Learning:** It's critical to strictly enforce `AUTH_ADMIN` for any system-level package manipulation to prevent unauthorized software installation and potential privilege escalation by standard users.
 **Prevention:** Always explicitly define polkit rules for `org.freedesktop.packagekit.*` actions in customized Linux distributions to enforce strict authentication boundaries.
+
+## 2026-02-18 - Predictable Temp File in Installer Launcher (CWE-59)
+**Vulnerability:** Found a symlink traversal vulnerability (CWE-59) in `neos-welcome` caused by logging to a predictable file path (`/tmp/neos-installer.log`) in a world-writable directory.
+**Learning:** Using predictable paths in world-writable directories like `/tmp` allows local attackers to pre-create symlinks pointing to sensitive files, which are then inadvertently overwritten by the script.
+**Prevention:** Always use `mktemp` to securely generate temporary file names when writing to shared or world-writable directories.
