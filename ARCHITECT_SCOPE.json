@@ -9,6 +9,6 @@
   "constraints": [
     "Strategic pause is active.",
     "Do not write production code.",
-    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks for neos-operations-hub."
+    "Wait for Palette and Sentinel to clear pending validation tasks for neos-operations-hub."
   ]
 }

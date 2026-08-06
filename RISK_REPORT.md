@@ -19,15 +19,16 @@ The technical architecture of the NeOS project maintains a highly secure and sta
 - **Architect Governance:** The Strategic Pause is lifted. Architect is authorized to implement the baseline infrastructure for Phase 8. Architect must prioritize GUI-friendly solutions and maintain minimal complexity.
 - **Specialist Directives:**
   - All specialists (Bolt, Palette, Sentinel) are on standby to validate Phase 8 implementations once Architect completes the baseline.
+
 ## Phase 8 Operations Hub Validation
 
 ### Current Risk Assessment
-The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) introduces new risks that require specialist validation before proceeding.
+The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) introduced new risks that require specialist validation before proceeding. Bolt has successfully mitigated the performance risk by replacing standard subprocess invocations with `exec`, eliminating unnecessary fork/exec overhead. However, security and UX validations remain pending.
 
 **Emerging Risks:**
 1. **Security Vulnerability (Medium Risk):** The addition of a GUI-based channel switching mechanism might introduce privilege escalation or downgrade attack vectors if boundaries are not strictly defined.
 2. **UX Degradation (Medium Risk):** `kdialog` menus must remain accessible to screen readers and keyboard navigation, adhering to our strict "Windows-familiar" KDE design principles.
-3. **Performance Overhead (Low Risk):** Sequential or blocking `kdialog` subprocess calls can introduce UI latency.
+3. **Performance Overhead (Resolved):** Bolt optimized `neos-operations-hub` to eliminate blocking subprocess latency using `exec`.
 
 ### Priority Selection
 **No-build day (strategic pause)**
@@ -37,4 +38,4 @@ The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`
 - **Specialist Directives:**
   - **Sentinel:** Audit `neos-operations-hub` for privilege boundaries and ensure channel switching cannot be exploited.
   - **Palette:** Validate the `kdialog` implementation for screen reader and keyboard accessibility.
-  - **Bolt:** Review the script to ensure no blocking subprocess overhead degrades UI responsiveness.
+  - **Bolt:** Standby for further Phase 8 performance profiling, or proactively identify an independent performance optimization.

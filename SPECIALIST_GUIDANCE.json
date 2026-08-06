@@ -1,9 +1,9 @@
 {
   "bolt": {
     "focus": "Performance Validation",
-    "directive": "Evaluate neos-operations-hub for subprocess overhead caused by kdialog invocations. Optimize if necessary.",
+    "directive": "Standby on neos-operations-hub as the subprocess overhead has been mitigated. Proactively identify an independent performance optimization if all assigned tasks are completed.",
     "tasks": [
-      "Monitor subprocess overhead from kdialog in neos-operations-hub."
+      "Standby or execute independent performance optimizations."
     ]
   },
   "palette": {
@@ -20,5 +20,5 @@
       "Audit privilege boundaries for release channel switching in neos-operations-hub."
     ]
   },
-  "note": "Architect is under a Strategic Pause. Specialists are cleared to execute their pending validations."
+  "note": "Architect is under a Strategic Pause. Palette and Sentinel must execute their pending validations."
 }
