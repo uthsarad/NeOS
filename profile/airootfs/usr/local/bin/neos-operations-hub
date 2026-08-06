@@ -26,6 +26,10 @@ case "$ACTION" in
     "3")
         # Sentinel: Ensure channel switching does not introduce downgrade attack vectors.
         # Architecture strictly requires gated snapshots.
+        if ! pkexec true; then
+            kdialog --title "Authentication Failed" --error "Administrator privileges are required to switch release channels."
+            exit 1
+        fi
         kdialog --title "Release Channel" --msgbox "Channel switching is currently managed via automated staging deployments to maintain system stability. The current channel is Stable."
         ;;
     "4")

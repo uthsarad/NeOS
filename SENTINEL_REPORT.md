@@ -47,3 +47,17 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 
 ### Severity summary
 - **High**: The vulnerability could allow a local attacker to overwrite arbitrary files when `neos-welcome` is executed.
+
+### Risks found
+Release channel switching in `neos-operations-hub` was unprotected, allowing unprivileged users to interact with what should be an administrative system configuration operation.
+
+### Fixes applied
+Added a `pkexec` authentication check to the release channel switching option in `neos-operations-hub` to ensure only administrators can proceed.
+
+### Remaining attack surface
+`pkexec` relies on standard Polkit rules; a local misconfiguration could bypass intended restrictions.
+
+### Severity summary
+- **Severity**: HIGH
+- **Vulnerability**: Privilege Escalation / Missing Authentication
+- **Status**: Fixed

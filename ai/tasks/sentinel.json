@@ -38,7 +38,7 @@
     {
       "description": "Audit privilege boundaries for release channel switching in neos-operations-hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

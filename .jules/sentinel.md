@@ -26,3 +26,8 @@
 **Vulnerability:** Found a symlink traversal vulnerability (CWE-59) in `neos-welcome` caused by logging to a predictable file path (`/tmp/neos-installer.log`) in a world-writable directory.
 **Learning:** Using predictable paths in world-writable directories like `/tmp` allows local attackers to pre-create symlinks pointing to sensitive files, which are then inadvertently overwritten by the script.
 **Prevention:** Always use `mktemp` to securely generate temporary file names when writing to shared or world-writable directories.
+
+## 2026-02-18 - Missing Privilege Boundary for System Operations in User Hub
+**Vulnerability:** System-wide operations (like release channel switching) accessible via a user-facing GUI hub lacked explicit administrative authentication.
+**Learning:** Even if a GUI action is a stub or informational message, failing to authenticate the user before execution creates an architectural vulnerability that can be exploited once the operation is fully implemented.
+**Prevention:** Always enforce privilege checks (e.g., using `pkexec true`) immediately upon selecting an administrative action in user-facing hubs, before proceeding with the operation logic.
