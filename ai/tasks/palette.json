@@ -38,7 +38,7 @@
     {
       "description": "Verify UX accessibility of kdialog menus in neos-operations-hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

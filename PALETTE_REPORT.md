@@ -11,3 +11,12 @@
 
 ## Remaining Usability Risks
 - The theme wallpaper background currently depends on a configured background file. If it fails, the background is just a gradient. An additional empty state message might be helpful but wasn't critical for this session.
+
+## Accessibility Fixes
+- Updated `neos-operations-hub` crash reporting fallback dialog to use `--error` instead of `--msgbox`. This ensures proper semantic states are communicated to assistive technologies (like Orca) and standard system error cues (visual/audio) are presented.
+
+## UX Improvements
+- Improved clarity of crash reporter unavailability by using a native error dialog type, making it visually distinct from standard informational messages.
+
+## Remaining Usability Risks
+- The channel switching dialog still uses a basic `--msgbox`. Further UX improvements could incorporate more interactive or descriptive kdialog types if channel switching becomes dynamic in the future.
