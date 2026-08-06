@@ -24,3 +24,7 @@
 ## 2024-08-04 - Native Bash Regex Bug with Multiline Variables
 **Learning:** When using native bash regex `[[ "$CONTENT" =~ pattern ]]` against multiline strings, the `.*` pattern matches across newlines, making it greedy across the entire file. This can lead to false positives if the regex spans across different unrelated lines (e.g., `vm.swappiness.*=.*100` could match `vm.swappiness = 10\nother = 100`).
 **Action:** When matching specific lines in a multiline bash string variable, replace `.*` with `[^\n]*` to constrain the match to a single line.
+
+## 2026-02-17 - Subprocess Overhead in Bash Scripts
+**Learning:** In bash scripts that act as simple launchers or wrappers, using standard invocation (e.g. `kdialog ...`) spawns a child process and leaves the parent bash shell lingering in memory, causing unnecessary fork/exec overhead.
+**Action:** Use `exec` (e.g. `exec kdialog ...`) to replace the current bash process with the target application, eliminating the parent process overhead and saving memory.

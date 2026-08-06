@@ -41,3 +41,8 @@ None. This is a purely structural optimization of the check mechanism.
 **What was optimized:** Replaced 13 redundant `grep` subprocess calls with a single read into a memory variable (e.g. `CONTENT=$(<"$FILE")`) and native bash regular expression matching `[[ "$CONTENT" =~ (^|$'\n')pattern ]]`.
 **Before/after reasoning:** Repeated fork/exec operations in shell scripts are slow and inefficient. By caching the file contents and using built-in string/regex logic, the execution time decreases significantly.
 **Remaining performance risks:** Other test scripts still rely on subprocess invocations for similar checks, which could be refactored similarly in the future.
+
+## 2026-02-17 - NeOS Operations Hub Optimization
+**Optimization:** Replaced standard subprocess invocations with `exec` in `neos-operations-hub` wrapper script.
+**Reasoning:** The original script spawned applications (like `kdialog`, `xdg-open`, and `drkonqi`) as child processes. Since the script has no further logic after these applications are launched, leaving the parent bash shell alive consumes unnecessary memory and introduces fork/exec overhead. Using `exec` replaces the bash process directly, making the system more efficient.
+**Risks:** Low. The `exec` command inherently terminates the script upon execution, which matches the previous logic where the script naturally ended.
