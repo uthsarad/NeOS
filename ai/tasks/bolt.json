@@ -49,6 +49,11 @@
       "description": "Monitor subprocess overhead from kdialog in neos-operations-hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
       "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
