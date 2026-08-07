@@ -1,25 +1,25 @@
-# Strategic Directive: Phase 8 Operations Hub Validation (Strategic Pause)
+# Strategic Directive: Phase 8 - Snapshot Rollback UX (Baseline)
 
 ## Phase 1 — Product Alignment Check
 - **Product Vision:** NeOS aims to provide a predictable, snapshot-gated Arch Linux desktop with a refined KDE Plasma 6 experience, optimized for stability and Windows familiarity.
-- **Alignment Status:** The baseline for Phase 8 (Operations Hub) has been implemented by Architect. Bolt has optimized its subprocess execution, but UX and Security validations are pending. We remain aligned with long-term maintenance goals.
-- **Leverage:** The highest leverage action right now is to ensure the newly introduced `neos-operations-hub` is secure, performant, and accessible before continuing to build new features.
+- **Alignment Status:** We are operating within Phase 8 (Long-Term Maintenance). A critical best-practice requirement from the architecture docs is a GUI-friendly rollback path for Btrfs snapshots.
+- **Leverage:** The highest leverage problem is introducing visibility into system snapshots. The Strategic Pause is lifted, as all Phase 8 baseline validations are complete.
 
 ## Phase 2 — Technical Posture Review
-- **Stability Posture:** The system is currently stable, but unvalidated GUI scripts have been merged.
-- **Tech Debt:** Unvalidated specialist tasks remain in the backlog for Palette and Sentinel regarding `neos-operations-hub`. Bolt's pending tasks for this script have been completed.
-- **Overbuilding Risk:** High. Continuing to build new Phase 8 features without validating the foundational operations hub risks compounding security or UX debt.
+- **Stability Posture:** The system is stable. Sentinel and Palette have successfully audited and remediated the `neos-operations-hub` baseline.
+- **Tech Debt:** Low. We must ensure we do not introduce complex or risky Btrfs operations immediately.
+- **Overbuilding Risk:** High if we attempt a full automated rollback system. We must favor incremental delivery.
 
 ## Phase 3 — Priority Selection
-- No-build day (strategic pause)
+- New feature implementation (Incremental: Snapshot Rollback UX read-only baseline)
 
 ## Phase 4 — Controlled Scope Definition
-- **Exact files likely impacted:** None for implementation.
-- **Maximum allowed surface area:** 0 files (Architect is paused).
-- **Constraints Architect must obey:** Halt all feature development. No production code is to be written. Wait for Palette and Sentinel validations to clear.
+- **Exact files likely impacted:** `profile/airootfs/usr/local/bin/neos-operations-hub`
+- **Maximum allowed surface area:** 1 file.
+- **Constraints Architect must obey:** Add a 5th option to `neos-operations-hub` for "System Snapshot & Rollback". The implementation must be the smallest viable interpretation: a GUI-first (`kdialog`) informational stub or read-only list that advises the user on snapshot status, without executing actual system modification or rollback commands yet.
 
 ## Phase 5 — Delegation Strategy
-- **Architect:** Strategic pause. Do not implement new features.
-- **Bolt:** Standby, or proactively identify and implement an independent performance optimization to maintain momentum.
-- **Palette:** Execute pending task: Verify UX accessibility of kdialog menus in `neos-operations-hub`.
-- **Sentinel:** Execute pending task: Audit privilege boundaries for release channel switching in `neos-operations-hub`.
+- **Architect:** Implement the read-only or informational stub for snapshot management in `neos-operations-hub`.
+- **Bolt:** Profile the newly added snapshot queries for subprocess overhead.
+- **Palette:** Ensure the new snapshot dialogs are accessible to screen readers.
+- **Sentinel:** Audit the snapshot query mechanisms for command injection or unintended information disclosure.

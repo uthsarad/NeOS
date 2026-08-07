@@ -23,19 +23,18 @@ The technical architecture of the NeOS project maintains a highly secure and sta
 ## Phase 8 Operations Hub Validation
 
 ### Current Risk Assessment
-The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) introduced new risks that require specialist validation before proceeding. Bolt has successfully mitigated the performance risk by replacing standard subprocess invocations with `exec`, eliminating unnecessary fork/exec overhead. However, security and UX validations remain pending.
+The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) introduced new risks that require specialist validation before proceeding. Bolt has successfully mitigated the performance risk by replacing standard subprocess invocations with `exec`, eliminating unnecessary fork/exec overhead.
 
-**Emerging Risks:**
-1. **Security Vulnerability (Medium Risk):** The addition of a GUI-based channel switching mechanism might introduce privilege escalation or downgrade attack vectors if boundaries are not strictly defined.
-2. **UX Degradation (Medium Risk):** `kdialog` menus must remain accessible to screen readers and keyboard navigation, adhering to our strict "Windows-familiar" KDE design principles.
-3. **Performance Overhead (Resolved):** Bolt optimized `neos-operations-hub` to eliminate blocking subprocess latency using `exec`.
+**Resolved Risks (Phase 8 Baseline):**
+- **Unintended Privileged GUI Execution (Medium Risk):** Sentinel secured `neos-operations-hub` by blocking root execution.
+- **UX Inconsistency (Medium Risk):** Palette updated `neos-operations-hub` error states to use semantic `--error` flags for screen reader compatibility.
 
 ### Priority Selection
-**No-build day (strategic pause)**
+**New feature implementation (Incremental: Snapshot Rollback UX)**
 
 ### Actionable Mitigation
-- **Architect Governance:** A strategic pause is enforced. Architect is prohibited from writing new production code until the current infrastructure is audited.
+- **Architect Governance:** The Strategic Pause is officially lifted. Architect is authorized to implement the first incremental step of Snapshot Rollback UX in `neos-operations-hub`. To mitigate the risk of system bricking, this iteration MUST be strictly read-only or informational. Actual rollback logic is forbidden in this run.
 - **Specialist Directives:**
-  - **Sentinel:** Audit `neos-operations-hub` for privilege boundaries and ensure channel switching cannot be exploited.
-  - **Palette:** Validate the `kdialog` implementation for screen reader and keyboard accessibility.
-  - **Bolt:** Standby for further Phase 8 performance profiling, or proactively identify an independent performance optimization.
+  - **Sentinel:** Audit the new read-only snapshot queries for command injection vulnerabilities.
+  - **Palette:** Ensure the snapshot information is presented in a cognitively accessible format using `kdialog`.
+  - **Bolt:** Monitor the performance of snapshot queries to prevent GUI hangs.
