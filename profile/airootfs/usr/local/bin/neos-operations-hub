@@ -33,7 +33,7 @@ case "$ACTION" in
             # Palette: Verify crash reporting UX is intuitive.
             exec drkonqi >/dev/null 2>&1
         else
-            exec kdialog --title "Crash Reporting" --msgbox "Crash reporting tool (drkonqi) is not currently installed or available in this session."
+            exec kdialog --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
         fi
         ;;
 esac

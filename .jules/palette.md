@@ -10,3 +10,6 @@
 ## 2026-02-18 - SDDM QML Accessibility Roles
 **Learning:** Even if custom QML components are styled to look like inputs and buttons and support keyboard navigation, screen readers won't know their semantic purpose without explicit accessibility roles and names.
 **Action:** Added `Accessible.role: Accessible.EditableText`, `Accessible.role: Accessible.Button`, and `Accessible.name` attributes to the custom username/password inputs and login/power action buttons in `Main.qml`.
+## 2026-02-18 - kdialog semantic error states
+**Learning:** When using KDE kdialog in shell scripts for error states, generic `--msgbox` flags are not properly announced as errors by assistive technologies like Orca.
+**Action:** Use semantic flags like `--error` instead of generic `--msgbox` to ensure proper announcement and provide standard visual/audio cues.
