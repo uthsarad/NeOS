@@ -46,3 +46,9 @@ None. This is a purely structural optimization of the check mechanism.
 **Optimization:** Replaced standard subprocess invocations with `exec` in `neos-operations-hub` wrapper script.
 **Reasoning:** The original script spawned applications (like `kdialog`, `xdg-open`, and `drkonqi`) as child processes. Since the script has no further logic after these applications are launched, leaving the parent bash shell alive consumes unnecessary memory and introduces fork/exec overhead. Using `exec` replaces the bash process directly, making the system more efficient.
 **Risks:** Low. The `exec` command inherently terminates the script upon execution, which matches the previous logic where the script naturally ended.
+
+## ⚡ Bolt: Optimize verify_pacstrap grep checks
+**What:** Replaced repeated `grep -q` subprocess spawns inside loops in `tests/verify_pacstrap.sh` with native Bash string matching and regex logic.
+**Why:** To eliminate `fork/exec` subprocess overhead during CI/validation checks on the netinstall configuration.
+**Impact:** Eliminates dozens of unnecessary subprocesses by caching `neos-packages.txt` and `neos-overlay.txt` in memory and evaluating strings natively.
+**Measurement:** Running `bash tests/verify_pacstrap.sh` will confirm functionality remains intact and executes faster.
