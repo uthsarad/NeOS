@@ -26,3 +26,8 @@
 **Vulnerability:** Found a symlink traversal vulnerability (CWE-59) in `neos-welcome` caused by logging to a predictable file path (`/tmp/neos-installer.log`) in a world-writable directory.
 **Learning:** Using predictable paths in world-writable directories like `/tmp` allows local attackers to pre-create symlinks pointing to sensitive files, which are then inadvertently overwritten by the script.
 **Prevention:** Always use `mktemp` to securely generate temporary file names when writing to shared or world-writable directories.
+
+## 2026-02-18 - Block root execution for GUI scripts invoking xdg-open
+**Vulnerability:** The neos-operations-hub script allowed root execution, which could lead to accidental privileged browser or GUI sessions when invoking xdg-open.
+**Learning:** Shell scripts that act as user-level GUIs or wrappers to desktop applications (like xdg-open or kdialog) often inherit high privileges if run via sudo, creating an unintentional privilege escalation path for the invoked applications.
+**Prevention:** Always explicitly block root execution (e.g., if (( EUID == 0 )); then ...) in user-level GUI scripts to enforce strict privilege boundaries.

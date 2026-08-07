@@ -47,3 +47,18 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 
 ### Severity summary
 - **High**: The vulnerability could allow a local attacker to overwrite arbitrary files when `neos-welcome` is executed.
+
+## 2026-02-18 - Privilege Boundaries Audit
+### Risks found
+- The `neos-operations-hub` script lacked privilege boundary checks. Running it as root could unintentionally launch web browsers or other applications with root privileges via `xdg-open`.
+
+### Fixes applied
+- Modified `profile/airootfs/usr/local/bin/neos-operations-hub` to explicitly check `EUID` and block execution if run as root, ensuring child GUI processes cannot inadvertently inherit elevated privileges.
+
+### Remaining attack surface
+- Channel switching relies on informational prompts and assumes underlying staging deployments handle system stability correctly, which remains outside the script's local control.
+
+### Severity summary
+- **Severity**: MEDIUM
+- **Vulnerability**: Privilege Escalation / Unintended Privileged GUI Execution
+- **Status**: Fixed
