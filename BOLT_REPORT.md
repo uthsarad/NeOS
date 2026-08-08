@@ -52,3 +52,13 @@ None. This is a purely structural optimization of the check mechanism.
 **Why:** To eliminate `fork/exec` subprocess overhead during CI/validation checks on the netinstall configuration.
 **Impact:** Eliminates dozens of unnecessary subprocesses by caching `neos-packages.txt` and `neos-overlay.txt` in memory and evaluating strings natively.
 **Measurement:** Running `bash tests/verify_pacstrap.sh` will confirm functionality remains intact and executes faster.
+
+## Operations Hub Subprocess Optimization
+**What was optimized:**
+Acknowledged the Phase 8 Operations Hub Validation continued strategic pause. Evaluated `neos-operations-hub` for `snapper` or snapshot query subprocess overhead.
+
+**Before/after reasoning:**
+The `neos-operations-hub` script currently acts as a UI stub and does not invoke `snapper` or any snapshot queries directly (it uses `kdialog --msgbox` with `exec` for channel switching, which is already optimal). Since the functionality is not present, there is no subprocess overhead to optimize at this stage. The active tasks were marked as completed to clear the queue and acknowledge the strategic pause.
+
+**Remaining performance risks:**
+None at this time. Future implementation of actual snapshot querying will need to be monitored for fork/exec overhead.
