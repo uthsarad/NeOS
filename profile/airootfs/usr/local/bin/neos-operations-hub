@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
 # NeOS Operations Hub - Phase 8 Baseline Configuration
 
 if (( EUID == 0 )); then

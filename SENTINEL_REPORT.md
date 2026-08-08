@@ -62,3 +62,13 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 - **Severity**: MEDIUM
 - **Vulnerability**: Privilege Escalation / Unintended Privileged GUI Execution
 - **Status**: Fixed
+
+## 2026-02-18 - Audit of neos-operations-hub (Phase 8 Baseline)
+**Status**: Completed
+**Findings**:
+- **CWE-426 (Path Hijacking)**: The script previously lacked a strict `PATH` export, meaning malicious or unintended binaries could have been executed if the `$PATH` environment variable was manipulated.
+- **Command Injection (Snapshot Query)**: Audited the file for snapshot query mechanisms. Currently, the script does not contain any snapshot query functionality (only placeholders), so no command injection vulnerabilities were found.
+- **Strategic Pause**: Acknowledged Phase 8 Operations Hub Validation (Strategic Pause).
+
+**Mitigation**:
+- Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to `profile/airootfs/usr/local/bin/neos-operations-hub` to ensure all external commands (`kdialog`, `xdg-open`) are resolved safely from trusted system directories.
