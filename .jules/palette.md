@@ -13,3 +13,6 @@
 ## 2026-02-18 - kdialog semantic error states
 **Learning:** When using KDE kdialog in shell scripts for error states, generic `--msgbox` flags are not properly announced as errors by assistive technologies like Orca.
 **Action:** Use semantic flags like `--error` instead of generic `--msgbox` to ensure proper announcement and provide standard visual/audio cues.
+## 2026-02-17 - Visual Anchoring in Dialogs
+**Learning:** Text-heavy configuration and status dialogs without visual anchors require higher cognitive effort to parse, especially for neurodivergent users or those relying on screen magnifiers. Generic icons are insufficient; contextually relevant semantic icons (like `preferences-system` or `dialog-information`) significantly improve scanability.
+**Action:** Always verify the availability of standard semantic system icons (e.g., using `find /usr/share/icons`) and inject them via `--icon` in text-based dialogs (`kdialog`) to provide immediate visual context.

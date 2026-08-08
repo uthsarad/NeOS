@@ -11,7 +11,7 @@ fi
 # Palette: Ensure kdialog menus are accessible and follow Phase 6 UX guidelines.
 # Sentinel: Audit the privilege requirements for channel switching.
 
-ACTION=$(kdialog --title "NeOS Operations Hub" \
+ACTION=$(kdialog --icon preferences-system --title "NeOS Operations Hub" \
     --menu "Select a long-term maintenance operation:" \
     "1" "Community Support & Feedback" \
     "2" "Report a System Bug" \
@@ -32,7 +32,7 @@ case "$ACTION" in
     "3")
         # Sentinel: Ensure channel switching does not introduce downgrade attack vectors.
         # Architecture strictly requires gated snapshots.
-        exec kdialog --title "Release Channel" --msgbox "Channel switching is currently managed via automated staging deployments to maintain system stability. The current channel is Stable."
+        exec kdialog --icon dialog-information --title "Release Channel" --msgbox "Channel switching is currently managed via automated staging deployments to maintain system stability. The current channel is Stable."
         ;;
     "4")
         if command -v drkonqi >/dev/null 2>&1; then
