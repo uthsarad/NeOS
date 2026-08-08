@@ -20,7 +20,8 @@ ACTION=$(kdialog --icon preferences-system --title "NeOS Operations Hub" \
     "1" "Community Support & Feedback" \
     "2" "Report a System Bug" \
     "3" "Switch Release Channel" \
-    "4" "Configure Crash Reporting")
+    "4" "Configure Crash Reporting" \
+    "5" "System Snapshot & Rollback")
 
 if [ $? -ne 0 ] || [ -z "$ACTION" ]; then
     exit 0
@@ -44,6 +45,19 @@ case "$ACTION" in
             exec drkonqi >/dev/null 2>&1
         else
             exec kdialog --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
+        fi
+        ;;
+    "5")
+        # Bolt: Monitor subprocess overhead from snapper or snapshot queries in neos-operations-hub.
+        # Palette: Verify UX accessibility of the new snapshot dialog in neos-operations-hub.
+        # Sentinel: Audit snapshot query mechanisms in neos-operations-hub for command injection.
+        if command -v snapper >/dev/null 2>&1; then
+            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
+            snapper list > "$TEMP_FILE" 2>&1
+            kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
+            rm -f "$TEMP_FILE"
+        else
+            kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
         fi
         ;;
 esac

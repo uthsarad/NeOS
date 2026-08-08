@@ -53,7 +53,7 @@
     {
       "description": "Audit snapshot query mechanisms in neos-operations-hub for command injection.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "completed"
+      "status": "pending"
     }
   ]
 }

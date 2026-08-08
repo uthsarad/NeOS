@@ -105,3 +105,19 @@ No code was written, therefore no tests were run for new code.
 
 **Delegation Prepared:**
 Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause.
+
+## Baseline Implementation: Phase 8 Snapshot Rollback UX
+
+**Scope Validation:**
+The implementation strictly aligns with `ARCHITECT_SCOPE.json` to introduce a read-only informational stub for system snapshots in `neos-operations-hub`, without executing actual rollback commands.
+
+**Changes Made:**
+1. Added option "5" to the `kdialog` menu in `neos-operations-hub` for "System Snapshot & Rollback".
+2. Implemented a read-only viewer for `snapper list` output using `kdialog --textbox`. Added error handling if `snapper` is missing.
+3. Added Specialist delegation comments for Bolt, Palette, and Sentinel.
+
+**Test Coverage:**
+Executed all tests in `tests/` successfully to verify script syntax and integrity.
+
+**Delegation Prepared:**
+Set the status of the previously created Phase 8 validation tasks to "pending" for Bolt, Palette, and Sentinel in their respective task manifests.
