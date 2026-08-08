@@ -1,17 +1,16 @@
 {
   "target_features": [
-    "Phase 8 Snapshot Rollback UX (Read-only/Informational Baseline)"
+    "Strategic Pause: Phase 8 Snapshot Rollback UX Validation"
   ],
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub"
-  ],
+  "allowed_files": [],
   "forbidden_files": [
+    "profile/airootfs/usr/local/bin/neos-operations-hub",
     "build.sh",
-    "profile/airootfs/usr/local/bin/neos-desktop-setup"
+    "tests/verify_airootfs_structure.sh"
   ],
   "constraints": [
-    "Do not implement actual filesystem rollback logic.",
-    "Limit implementation to a kdialog-based read-only viewer or informational stub for system snapshots.",
-    "Adhere to Windows-familiar UX principles."
+    "Do not write production code.",
+    "Halt all feature development.",
+    "Observe the Strategic Pause until Bolt, Palette, and Sentinel complete their pending validation tasks."
   ]
 }

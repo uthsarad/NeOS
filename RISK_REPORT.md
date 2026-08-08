@@ -38,3 +38,23 @@ The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`
   - **Sentinel:** Audit the new read-only snapshot queries for command injection vulnerabilities.
   - **Palette:** Ensure the snapshot information is presented in a cognitively accessible format using `kdialog`.
   - **Bolt:** Monitor the performance of snapshot queries to prevent GUI hangs.
+
+## Phase 8 Snapshot Rollback UX Validation
+
+### Current Risk Assessment
+The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) for snapshot management introduced new risks that require specialist validation before proceeding. Architect has implemented the read-only baseline, but the specialist validations remain in a `pending` state according to the task manifests (`ai/tasks/*.json`).
+
+**Emerging Risks (Phase 8 Baseline Validation):**
+- **Command Injection / Privilege Escalation (Medium Risk):** The newly added `snapper list` query involves subprocess invocation and temporary file creation (`/tmp/snaps.XXXXXX`). Sentinel must audit this for injection or CWE-59 vulnerabilities.
+- **UX Accessibility (Low Risk):** The snapshot read-only viewer uses `kdialog --textbox`. Palette must ensure this presentation is cognitively accessible and keyboard navigable.
+- **Performance / GUI Hangs (Low Risk):** The `snapper list` command is executed synchronously. Bolt must verify that this does not introduce blocking subprocess overhead that could freeze the GUI.
+
+### Priority Selection
+**No-build day (strategic pause)**
+
+### Actionable Mitigation
+- **Architect Governance:** A Strategic Pause is enforced. Architect is forbidden from writing production code or implementing actual rollback logic until the read-only baseline is validated.
+- **Specialist Directives:**
+  - **Sentinel:** Complete pending audit of snapshot query mechanisms for command injection and secure temporary file usage.
+  - **Palette:** Complete pending verification of the snapshot dialog's accessibility.
+  - **Bolt:** Complete pending monitoring of `snapper` subprocess overhead.
