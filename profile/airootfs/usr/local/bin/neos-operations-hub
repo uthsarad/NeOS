@@ -57,7 +57,7 @@ case "$ACTION" in
             kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
             rm -f "$TEMP_FILE"
         else
-            kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
+            exec kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
         fi
         ;;
 esac

@@ -62,3 +62,8 @@ The `neos-operations-hub` script currently acts as a UI stub and does not invoke
 
 **Remaining performance risks:**
 None at this time. Future implementation of actual snapshot querying will need to be monitored for fork/exec overhead.
+
+## ⚡ Bolt: Optimize Operations Hub Subprocess Overhead
+**What was optimized:** Added `exec` to the `kdialog` fallback branch in `neos-operations-hub`.
+**Before/after reasoning:** The `snapper` branch in `neos-operations-hub` acts as a stub when `snapper` is missing, invoking `kdialog` directly. By using `exec`, we eliminate the parent bash process overhead, making the error dialog invocation more efficient.
+**Remaining performance risks:** None.
