@@ -1,17 +1,13 @@
 {
   "bolt": {
     "focus": "Performance Validation",
-    "directive": "Execute pending validation: monitor subprocess overhead from snapper or snapshot queries in neos-operations-hub.",
-    "tasks": [
-      "Monitor subprocess overhead from snapper or snapshot queries in neos-operations-hub."
-    ]
+    "directive": "Standby.",
+    "tasks": []
   },
   "palette": {
     "focus": "UX & Accessibility",
-    "directive": "Execute pending validation: verify UX accessibility of the new snapshot dialog in neos-operations-hub.",
-    "tasks": [
-      "Verify UX accessibility of the new snapshot dialog in neos-operations-hub."
-    ]
+    "directive": "Standby.",
+    "tasks": []
   },
   "sentinel": {
     "focus": "Security Audit",
@@ -20,5 +16,5 @@
       "Audit snapshot query mechanisms in neos-operations-hub for command injection."
     ]
   },
-  "note": "Architect is under a Strategic Pause. Specialists must clear their pending tasks."
+  "note": "Architect is under a continued Strategic Pause. Sentinel must clear its pending task."
 }

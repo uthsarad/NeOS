@@ -58,3 +58,6 @@ The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`
   - **Sentinel:** Complete pending audit of snapshot query mechanisms for command injection and secure temporary file usage.
   - **Palette:** Complete pending verification of the snapshot dialog's accessibility.
   - **Bolt:** Complete pending monitoring of `snapper` subprocess overhead.
+
+## 2026-02-18 - Continued Strategic Pause: Sentinel Validation Pending
+Sentinel has NOT completed the audit of the snapshot query mechanisms. The task remains pending. The Strategic Pause must continue until Sentinel finishes.

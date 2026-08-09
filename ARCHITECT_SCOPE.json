@@ -1,6 +1,6 @@
 {
   "target_features": [
-    "Strategic Pause: Phase 8 Snapshot Rollback UX Validation"
+    "Continued Strategic Pause: Phase 8 Snapshot Rollback UX Validation"
   ],
   "allowed_files": [],
   "forbidden_files": [
@@ -11,6 +11,6 @@
   "constraints": [
     "Do not write production code.",
     "Halt all feature development.",
-    "Observe the Strategic Pause until Bolt, Palette, and Sentinel complete their pending validation tasks."
+    "Observe the continued Strategic Pause until Sentinel completes its pending validation task."
   ]
 }
