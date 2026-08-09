@@ -54,7 +54,14 @@ case "$ACTION" in
         if command -v snapper >/dev/null 2>&1; then
             TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
             snapper list > "$TEMP_FILE" 2>&1
-            kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
+            # Palette: Provide helpful empty state if no snapshots exist (only header line or empty)
+            if [ $(wc -l < "$TEMP_FILE") -le 2 ]; then
+                kdialog --icon dialog-information --title "System Snapshots" --msgbox "No system snapshots found.
+
+Snapshots are typically created automatically during system updates."
+            else
+                kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
+            fi
             rm -f "$TEMP_FILE"
         else
             kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."

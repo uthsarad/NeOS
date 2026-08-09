@@ -53,7 +53,7 @@
     {
       "description": "Verify UX accessibility of the new snapshot dialog in neos-operations-hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

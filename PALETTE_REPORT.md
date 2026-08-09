@@ -8,6 +8,7 @@
 - **Keyboard Navigation in SDDM**: The session selector and power buttons at the bottom of the SDDM login screen were previously untabbable `Text` elements. I wrapped them in `Rectangle` elements and added explicit `activeFocusOnTab: true`, `KeyNavigation.tab`, and visual borders upon `activeFocus`. The tab navigation now flows seamlessly from the "Log In" button to the session selector, power buttons, and cycles back to the username field.
 
 ## UX Improvements
+- **Helpful Empty State**: Added an empty state check to the snapshot viewer in `neos-operations-hub`. Instead of displaying a confusing blank textbox when no snapshots exist, users now receive a helpful message explaining that snapshots are created automatically during system updates.
 - Enhanced `neos-operations-hub` visual polish by injecting standard system icons, avoiding flat, text-only popups.
 - Aligned update flow with Windows-familiar offline updates by setting `UseOfflineUpdates=true` in `discoverrc`.
 - Added subtle visual borders to the session and power actions upon keyboard focus to clearly indicate which action is selected, solving the issue where keyboard-only users lacked visual focus feedback for non-primary actions.
