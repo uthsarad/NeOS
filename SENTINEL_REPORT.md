@@ -72,3 +72,15 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 
 **Mitigation**:
 - Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to `profile/airootfs/usr/local/bin/neos-operations-hub` to ensure all external commands (`kdialog`, `xdg-open`) are resolved safely from trusted system directories.
+
+## 2026-02-18 - Temp file handling in neos-operations-hub
+### Risks found
+- Missing fallback for `mktemp` failure and potential information leakage if `neos-operations-hub` crashes before cleaning up the `snapper list` output.
+### Fixes applied
+- Added strict fallback (`|| exit 1`) to `mktemp` and implemented `trap 'rm -f "$TEMP_FILE"' EXIT` for guaranteed cleanup.
+### Remaining attack surface
+- None identified regarding this temporary file.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Information Exposure / Insecure Temp File Handling
+- **Status**: Fixed

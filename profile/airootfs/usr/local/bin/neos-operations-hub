@@ -52,10 +52,10 @@ case "$ACTION" in
         # Palette: Verify UX accessibility of the new snapshot dialog in neos-operations-hub.
         # Sentinel: Audit snapshot query mechanisms in neos-operations-hub for command injection.
         if command -v snapper >/dev/null 2>&1; then
-            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
+            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX") || exit 1
+            trap 'rm -f "$TEMP_FILE"' EXIT
             snapper list > "$TEMP_FILE" 2>&1
             kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
-            rm -f "$TEMP_FILE"
         else
             kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
         fi
