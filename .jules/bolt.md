@@ -32,3 +32,6 @@
 ## 2026-02-18 - Missing Bottlenecks in Stubs
 **Learning:** Attempting to optimize subprocess overhead for tools (like snapper) in stubbed UI scripts (like neos-operations-hub) is a premature optimization trap if the underlying functionality hasn't been implemented yet.
 **Action:** Verify the actual presence of the executing command before attempting to optimize its subprocess overhead. Always use `exec` for terminal `kdialog` invocations.
+## 2026-08-05 - Shell Script Line Counting Subprocess Overhead
+**Learning:** Using `$(wc -l < file)` in bash scripts introduces unnecessary fork/exec overhead for simple line counting.
+**Action:** When needing to count lines of a temporary file, use native bash array counting via `mapfile -t lines < file` and `${#lines[@]}` instead.

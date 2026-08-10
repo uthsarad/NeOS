@@ -67,3 +67,8 @@ None at this time. Future implementation of actual snapshot querying will need t
 **What was optimized:** Added `exec` to the `kdialog` fallback branch in `neos-operations-hub`.
 **Before/after reasoning:** The `snapper` branch in `neos-operations-hub` acts as a stub when `snapper` is missing, invoking `kdialog` directly. By using `exec`, we eliminate the parent bash process overhead, making the error dialog invocation more efficient.
 **Remaining performance risks:** None.
+
+## ⚡ Bolt: Eliminate wc subprocess and lingering bash processes
+**What was optimized:** Replaced `wc -l` subshell with native bash `mapfile` in `neos-operations-hub` and ensured terminal `kdialog` invocations use `exec`.
+**Before/after reasoning:** Spawning a subshell to run `wc -l` introduces unnecessary fork/exec overhead. Not using `exec` for terminal branches leaves the parent bash process lingering in memory.
+**Remaining performance risks:** None. Functional behavior remains identical.
