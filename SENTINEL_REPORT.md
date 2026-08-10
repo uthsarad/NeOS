@@ -72,3 +72,15 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 
 **Mitigation**:
 - Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to `profile/airootfs/usr/local/bin/neos-operations-hub` to ensure all external commands (`kdialog`, `xdg-open`) are resolved safely from trusted system directories.
+
+## 2026-02-18 - CWE-459 Incomplete Cleanup Mitigation
+### Risks found
+- Identified a CWE-459 (Incomplete Cleanup) vulnerability in `profile/airootfs/usr/local/bin/neos-operations-hub`. The temporary file containing system snapshots could be left behind in `/tmp` if the script exits abnormally (e.g., interrupted by the user). No command injection was found.
+### Fixes applied
+- Added a `trap` mechanism (`trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM`) to securely clean up `TEMP_FILE` on abnormal termination.
+### Remaining attack surface
+- None identified regarding temporary file cleanup for this mechanism.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Incomplete Cleanup
+- **Status**: Fixed

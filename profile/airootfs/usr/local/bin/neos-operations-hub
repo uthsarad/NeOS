@@ -53,6 +53,7 @@ case "$ACTION" in
         # Sentinel: Audit snapshot query mechanisms in neos-operations-hub for command injection.
         if command -v snapper >/dev/null 2>&1; then
             TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
+            trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
             snapper list > "$TEMP_FILE" 2>&1
             # Palette: Provide helpful empty state if no snapshots exist (only header line or empty)
             mapfile -t SNAP_LINES < "$TEMP_FILE"
