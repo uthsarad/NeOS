@@ -1,16 +1,17 @@
 {
   "target_features": [
-    "Continued Strategic Pause: Phase 8 Snapshot Rollback UX Validation"
+    "Phase 8: Implement 'View System Licensing' option in Operations Hub."
   ],
-  "allowed_files": [],
+  "allowed_files": [
+    "profile/airootfs/usr/local/bin/neos-operations-hub"
+  ],
   "forbidden_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub",
     "build.sh",
     "tests/verify_airootfs_structure.sh"
   ],
   "constraints": [
-    "Do not write production code.",
-    "Halt all feature development.",
-    "Observe the continued Strategic Pause until Sentinel completes its pending validation task."
+    "Only modify the kdialog menu and case statement in neos-operations-hub.",
+    "Do not introduce new dependencies.",
+    "Ensure the license text is read safely from the local filesystem or displayed as static text."
   ]
 }
