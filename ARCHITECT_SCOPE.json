@@ -1,17 +1,16 @@
 {
   "target_features": [
-    "Phase 8: Implement 'View System Licensing' option in Operations Hub."
+    "None (Strategic Pause)"
   ],
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub"
-  ],
+  "allowed_files": [],
   "forbidden_files": [
     "build.sh",
-    "tests/verify_airootfs_structure.sh"
+    "tests/verify_airootfs_structure.sh",
+    "profile/airootfs/usr/local/bin/neos-operations-hub"
   ],
   "constraints": [
-    "Only modify the kdialog menu and case statement in neos-operations-hub.",
-    "Do not introduce new dependencies.",
-    "Ensure the license text is read safely from the local filesystem or displayed as static text."
+    "Halt all feature development.",
+    "Observe the Strategic Pause.",
+    "Acknowledge the pause in ARCHITECT_REPORT.md and generate specialist tasks to formally acknowledge the pause."
   ]
 }

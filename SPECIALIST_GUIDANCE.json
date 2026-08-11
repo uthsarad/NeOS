@@ -1,25 +1,24 @@
 {
   "bolt": {
     "focus": "Performance Validation",
-    "directive": "Monitor execution overhead of the new licensing dialog branch.",
+    "directive": "Clear pending validation tasks.",
     "tasks": [
-      "Ensure the licensing dialog does not introduce unnecessary subprocess overhead."
+      "Monitor any file I/O overhead related to reading the license file in neos-operations-hub."
     ]
   },
   "palette": {
     "focus": "UX & Accessibility",
-    "directive": "Ensure the new licensing option is accessible and polished.",
+    "directive": "Clear pending validation tasks.",
     "tasks": [
-      "Ensure the new dialog option uses appropriate semantic icons (e.g., dialog-information).",
-      "Verify the license text is displayed in an accessible format (e.g., a scrollable textbox)."
+      "Verify UX accessibility of the licensing dialog in neos-operations-hub."
     ]
   },
   "sentinel": {
     "focus": "Security Audit",
-    "directive": "Audit the file read mechanism for the license display.",
+    "directive": "Clear pending validation tasks.",
     "tasks": [
-      "Ensure the viewing mechanism does not introduce arbitrary file read vulnerabilities or path traversal."
+      "Audit license file read mechanisms in neos-operations-hub for path traversal risks."
     ]
   },
-  "note": "Strategic Pause is lifted. Proceed with Phase 8 implementation."
+  "note": "Complete pending validations for the Phase 8 System Licensing feature."
 }

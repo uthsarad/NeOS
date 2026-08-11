@@ -1,13 +1,13 @@
-# Strategic Directive: Phase 8 - Legal & Licensing
+# Strategic Directive: Phase 8 - Operations Hub Validation (Strategic Pause)
 
 ## Alignment Check
-The product roadmap specifies Phase 8 as targeting "Long-Term Maintenance and Distribution." We have completed the foundational operations hub features, crash reporting, and snapshot queries. The final missing piece of Phase 8 is "Legal and licensing - Compliance with upstream licenses and redistribution rules."
+The product is actively stabilizing the Phase 8 "Long-Term Maintenance and Distribution" features, specifically the new System Licensing view in `neos-operations-hub`.
 
 ## Technical Posture
-The system is stable. Sentinel has completed the audit of the snapshot query mechanisms, finding no command injection vulnerabilities and confirming the strategic pause. The core system is ready for the next iteration.
+The Architect has implemented the baseline System Licensing view. The system is currently stable but requires formal validation from the specialist agents (Bolt, Palette, Sentinel) to ensure no performance regressions, UX/accessibility issues, or security vulnerabilities (specifically path traversal) have been introduced.
 
 ## Priority Selection
-We will focus on **New feature implementation** to complete the Phase 8 requirements. Specifically, we need a way for users to view system licensing information natively within the OS.
+We are prioritizing a **No-build day (strategic pause)**.
 
 ## Action Plan
-We will lift the Strategic Pause. The Architect is directed to implement a "View System Licensing" option within the `neos-operations-hub` script. This option should provide a clear, accessible way to view the primary OS license (MIT) and acknowledge upstream Arch Linux licenses.
+The Architect is directed to halt all feature development and observe a Strategic Pause while the specialists clear their pending validation tasks for the `neos-operations-hub` script.
