@@ -7,6 +7,7 @@
 - **Screen Reader Support in SDDM**: Added explicit `Accessible.role` (e.g. `Accessible.EditableText`, `Accessible.Button`) and `Accessible.name` bindings to all interactive fields (username, password, login button, and power controls) in the SDDM theme `Main.qml`. Because these are custom QML components, without explicit labels they remain silent or incorrectly announced by Orca or standard screen readers.
 - **Keyboard Navigation in SDDM**: The session selector and power buttons at the bottom of the SDDM login screen were previously untabbable `Text` elements. I wrapped them in `Rectangle` elements and added explicit `activeFocusOnTab: true`, `KeyNavigation.tab`, and visual borders upon `activeFocus`. The tab navigation now flows seamlessly from the "Log In" button to the session selector, power buttons, and cycles back to the username field.
 
+- **Visual Anchoring (Error States)**: Fixed contradictory generic icons on error dialogs in `neos-operations-hub` (Crash Reporting and Snapshot tools), explicitly setting `--icon dialog-error` to provide accurate visual context for failure states.
 ## UX Improvements
 - **Helpful Empty State**: Added an empty state check to the snapshot viewer in `neos-operations-hub`. Instead of displaying a confusing blank textbox when no snapshots exist, users now receive a helpful message explaining that snapshots are created automatically during system updates.
 - Enhanced `neos-operations-hub` visual polish by injecting standard system icons, avoiding flat, text-only popups.

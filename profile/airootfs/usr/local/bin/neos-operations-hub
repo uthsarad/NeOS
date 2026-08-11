@@ -44,7 +44,7 @@ case "$ACTION" in
             # Palette: Verify crash reporting UX is intuitive.
             exec drkonqi >/dev/null 2>&1
         else
-            exec kdialog --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
+            exec kdialog --icon dialog-error --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
         fi
         ;;
     "5")
@@ -67,7 +67,7 @@ Snapshots are typically created automatically during system updates."
             fi
             rm -f "$TEMP_FILE"
         else
-            exec kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
+            exec kdialog --icon dialog-error --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
         fi
         ;;
 esac
