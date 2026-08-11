@@ -151,3 +151,19 @@ No code was written, therefore no tests were run for new code.
 
 **Delegation Prepared:**
 Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause.
+
+## Baseline Implementation: Phase 8 System Licensing
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs the completion of Phase 8 features to view system licensing natively within the OS.
+
+**Changes Made:**
+1. Modified `profile/airootfs/usr/local/bin/neos-operations-hub` to include option "6" for viewing system licensing.
+2. Implemented a static text display using `kdialog --textbox` to show the MIT license and acknowledge Arch Linux upstream components.
+3. Added `# Bolt:`, `# Palette:`, and `# Sentinel:` delegation comments to the script.
+
+**Test Coverage:**
+Executed all tests in `tests/` successfully to verify script syntax and integrity.
+
+**Delegation Prepared:**
+Task manifests generated for `bolt.json`, `palette.json`, and `sentinel.json` to monitor I/O overhead, verify accessibility, and audit path traversal risks respectively.
