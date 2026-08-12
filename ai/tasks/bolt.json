@@ -78,7 +78,7 @@
     {
       "description": "Monitor any file I/O overhead related to reading the license file in neos-operations-hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

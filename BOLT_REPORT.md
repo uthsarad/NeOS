@@ -82,3 +82,13 @@ The current mandate is a Strategic Pause. As per the governance documents, no pr
 
 **Remaining performance risks:**
 None at this time. Awaiting the end of the strategic pause.
+
+## Operations Hub File I/O Optimization
+**What was optimized:**
+Evaluated `neos-operations-hub` for file I/O overhead related to reading the license file via `mktemp`.
+
+**Before/after reasoning:**
+The `neos-operations-hub` script uses `mktemp` in `/tmp` to store the license text for `kdialog --textbox`. Since `/tmp` on Arch Linux defaults to a `tmpfs` (RAM-backed filesystem), the file I/O overhead is negligible. The task has been marked as completed without modifying the temporary file creation since it is the optimal and necessary approach for `kdialog --textbox`.
+
+**Remaining performance risks:**
+None.

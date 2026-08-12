@@ -35,3 +35,7 @@
 ## 2026-08-05 - Shell Script Line Counting Subprocess Overhead
 **Learning:** Using `$(wc -l < file)` in bash scripts introduces unnecessary fork/exec overhead for simple line counting.
 **Action:** When needing to count lines of a temporary file, use native bash array counting via `mapfile -t lines < file` and `${#lines[@]}` instead.
+
+## UI File I/O Optimization Trap
+**Learning:** Attempting to optimize temporary file I/O overhead for GUI components like `kdialog --textbox` is often a premature optimization trap if the temporary directory (`/tmp`) is mounted as a `tmpfs` (RAM).
+**Action:** Verify if the target file system is RAM-backed before attempting to eliminate temporary file creation for UI data passing.
