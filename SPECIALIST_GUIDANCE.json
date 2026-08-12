@@ -1,24 +1,24 @@
 {
   "bolt": {
     "focus": "Performance Validation",
-    "directive": "Clear pending validation tasks.",
+    "directive": "Monitor application startup time.",
     "tasks": [
-      "Monitor any file I/O overhead related to reading the license file in neos-operations-hub."
+      "Ensure the addition of UI elements in neos-welcome-app does not degrade startup time."
     ]
   },
   "palette": {
     "focus": "UX & Accessibility",
-    "directive": "Clear pending validation tasks.",
+    "directive": "Validate new UI controls.",
     "tasks": [
-      "Verify UX accessibility of the licensing dialog in neos-operations-hub."
+      "Verify the telemetry opt-in toggle/button in neos-welcome-app is accessible and matches the existing theme."
     ]
   },
   "sentinel": {
     "focus": "Security Audit",
-    "directive": "Clear pending validation tasks.",
+    "directive": "Audit configuration storage.",
     "tasks": [
-      "Audit license file read mechanisms in neos-operations-hub for path traversal risks."
+      "Ensure any saved state from the telemetry opt-in does not introduce predictable temporary file vulnerabilities."
     ]
   },
-  "note": "Complete pending validations for the Phase 8 System Licensing feature."
+  "note": "Lifted Strategic Pause. Validations for Operations Hub are complete."
 }
