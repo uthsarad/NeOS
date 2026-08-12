@@ -104,7 +104,7 @@ SOFTWARE.
 NeOS utilizes components from Arch Linux.
 Arch Linux and its packages are governed by their respective upstream licenses.
 LICENSE_EOF
-        kdialog --icon dialog-information --title "System Licensing" --textbox "$TEMP_FILE" 600 400
+        kdialog --icon dialog-information --title "About NeOS - System Licensing" --textbox "$TEMP_FILE" 600 400
         rm -f "$TEMP_FILE"
         ;;
 esac

@@ -16,3 +16,4 @@
 
 ## Remaining Usability Risks
 - The theme wallpaper background currently depends on a configured background file. If it fails, the background is just a gradient. An additional empty state message might be helpful but wasn't critical for this session.
+- **Contextual Title**: Updated the System Licensing dialog title in `neos-operations-hub` from a generic "System Licensing" to "About NeOS - System Licensing" to provide better semantic context for the user when viewing the system's legal and upstream information.

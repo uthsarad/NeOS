@@ -19,3 +19,6 @@
 ## 2024-05-15 - Helpful Empty States in Terminal/CLI wrappers
 **Learning:** Displaying empty output from CLI tools (like `snapper list`) in a GUI dialog (like `kdialog --textbox`) is extremely confusing for users, as it looks like a rendering bug or lack of data rather than an explicit "zero items" state.
 **Action:** Always intercept CLI outputs that result in empty lists and replace them with semantic empty states (e.g. `kdialog --msgbox`) that explain *why* it's empty and *what* the user can do about it.
+## 2026-08-12 - Semantic Context in Legal/About Dialogs
+**Learning:** Generic titles like "System Licensing" can lack immediate context when opened as standalone text boxes in `kdialog`.
+**Action:** Always prepend contextual application or system names (e.g., "About NeOS - System Licensing") to provide immediate clarity to the user.
