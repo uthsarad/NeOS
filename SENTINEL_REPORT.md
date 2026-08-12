@@ -88,3 +88,11 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 ## Acknowledge Continued Phase 8 Validation
 **Status**: Completed
 **Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new feature development required from Architect.
+
+## 2026-08-12 - Audit of License Read Mechanisms in neos-operations-hub
+**Status**: Completed
+**Findings**:
+- **Path Traversal (CWE-22)**: Audited `profile/airootfs/usr/local/bin/neos-operations-hub` for path traversal vulnerabilities in the mechanism that displays the system license. The script uses a here-document (heredoc) to write statically defined license text into a securely generated temporary file (via `mktemp`) and presents it to the user. Because the license content is embedded directly into the script and no external files are read or paths constructed from user input, there is zero risk of path traversal.
+
+**Mitigation**:
+- No mitigation required. The current implementation is secure against path traversal.

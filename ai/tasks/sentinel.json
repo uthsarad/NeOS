@@ -68,7 +68,7 @@
     {
       "description": "Audit license file read mechanisms in neos-operations-hub for path traversal risks.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
