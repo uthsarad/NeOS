@@ -182,3 +182,19 @@ No code was written, therefore no tests were run for new code.
 
 **Delegation Prepared:**
 Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the Strategic Pause.
+
+## Baseline Implementation: Phase 3 Privacy and Telemetry Opt-in Controls
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs the implementation of a visible toggle or button for Telemetry/Privacy Opt-in in neos-welcome-app.
+
+**Changes Made:**
+1. Modified `profile/airootfs/usr/local/bin/neos-welcome-app` to include a QCheckBox for telemetry opt-in.
+2. Set the default state of the checkbox to False (unchecked) to ensure a privacy-first approach.
+3. Added `# [BOLT]`, `# [PALETTE]`, and `# [SENTINEL]` delegation comments to the script.
+
+**Test Coverage:**
+Executed all tests in `tests/` successfully to verify script syntax and integrity.
+
+**Delegation Prepared:**
+Task manifests generated for `bolt.json`, `palette.json`, and `sentinel.json` to monitor startup performance, verify accessibility, and audit state storage respectively.

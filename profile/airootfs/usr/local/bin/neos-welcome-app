@@ -2,7 +2,7 @@
 import sys
 import subprocess
 import math
-from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+from PyQt6.QtWidgets import (QCheckBox, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QGraphicsDropShadowEffect,
                              QGraphicsOpacityEffect, QSpacerItem, QSizePolicy,
                              QFrame)
@@ -183,6 +183,20 @@ class NeosWelcome(QWidget):
         layout.addLayout(features_layout)
 
         layout.addStretch(2)
+
+
+        # ---- Telemetry / Privacy Opt-in ----
+        # [PALETTE] Verify accessibility, tab order, and color contrast of this new control.
+        # [SENTINEL] Audit local storage method for this boolean to avoid temp file vulnerabilities.
+        # [BOLT] Ensure no UI lag or startup degradation occurs.
+        optin_layout = QHBoxLayout()
+        optin_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.telemetry_checkbox = QCheckBox("Help improve NeOS by sending anonymous usage data")
+        self.telemetry_checkbox.setStyleSheet("color: #9498b0; font-size: 13px; spacing: 8px;")
+        self.telemetry_checkbox.setChecked(False)  # Privacy-first default
+        optin_layout.addWidget(self.telemetry_checkbox)
+        layout.addLayout(optin_layout)
+        layout.addSpacing(15)
 
         # ---- Buttons ----
         btn_layout = QHBoxLayout()

@@ -74,6 +74,11 @@
       "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Verify the accessibility, tab order, and color contrast of the new telemetry opt-in UI controls in neos-welcome-app.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
+      "status": "pending"
     }
   ]
 }
