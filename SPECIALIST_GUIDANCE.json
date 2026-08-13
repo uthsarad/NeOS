@@ -1,24 +1,24 @@
 {
   "bolt": {
     "focus": "Performance Validation",
-    "directive": "Monitor application startup time.",
+    "directive": "Complete pending startup performance monitoring for neos-welcome-app.",
     "tasks": [
-      "Ensure the addition of UI elements in neos-welcome-app does not degrade startup time."
+      "Monitor neos-welcome-app startup performance for any degradation due to the new telemetry UI."
     ]
   },
   "palette": {
     "focus": "UX & Accessibility",
-    "directive": "Validate new UI controls.",
+    "directive": "Complete pending accessibility verification for neos-welcome-app.",
     "tasks": [
-      "Verify the telemetry opt-in toggle/button in neos-welcome-app is accessible and matches the existing theme."
+      "Verify the accessibility, tab order, and color contrast of the new telemetry opt-in UI controls in neos-welcome-app."
     ]
   },
   "sentinel": {
     "focus": "Security Audit",
-    "directive": "Audit configuration storage.",
+    "directive": "Complete pending security audit for telemetry state storage in neos-welcome-app.",
     "tasks": [
-      "Ensure any saved state from the telemetry opt-in does not introduce predictable temporary file vulnerabilities."
+      "Audit how the telemetry opt-in state might be stored (e.g., ensuring no CWE-59 vulnerabilities in temp file usage) in neos-welcome-app."
     ]
   },
-  "note": "Lifted Strategic Pause. Validations for Operations Hub are complete."
+  "note": "Strategic Pause enforced. Validations for neos-welcome-app are pending."
 }

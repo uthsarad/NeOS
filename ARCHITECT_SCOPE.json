@@ -1,17 +1,13 @@
 {
   "target_features": [
-    "Phase 3: Privacy and Telemetry Opt-in Controls"
+    "Strategic Pause: Phase 3 Validation"
   ],
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-welcome-app"
-  ],
+  "allowed_files": [],
   "forbidden_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub",
-    "build.sh"
+    "*"
   ],
   "constraints": [
-    "Implement a visible toggle or button for Telemetry/Privacy Opt-in in neos-welcome-app.",
-    "Do not implement actual backend telemetry sending; only build the UX stub.",
-    "Ensure the UI remains clean and Windows-familiar."
+    "Halt all feature development.",
+    "Observe the Strategic Pause until specialists clear pending validations for neos-welcome-app."
   ]
 }

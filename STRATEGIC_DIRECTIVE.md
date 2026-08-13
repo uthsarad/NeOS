@@ -1,29 +1,29 @@
-# Strategic Directive: Phase 3 Refinement - Privacy & Telemetry UX
+# Strategic Directive: Phase 3 Validation
 
 ## PHASE 1 — Product Alignment Check
 - **What is the product trying to become?** A predictable, Windows-familiar Arch Linux environment.
-- **Are we building toward that?** Yes, but we missed the "Privacy and telemetry opt-in controls" in the first-boot UX (Phase 3 Roadmap).
-- **Are we solving the highest leverage problem?** Adding this control builds user trust and satisfies a critical roadmap requirement before moving to broader feature sets.
+- **Are we building toward that?** Yes, the recent Phase 3 Privacy/Telemetry opt-in aligns with this.
+- **Are we solving the highest leverage problem?** Yes, but we must ensure the new UX does not introduce regressions in performance, accessibility, or security.
 
 ## PHASE 2 — Technical Posture Review
-- **Is the system stable?** Yes, Phase 8 validations by Bolt, Palette, and Sentinel are fully completed and no critical regressions were found.
-- **Is tech debt increasing?** No, the architecture is sound.
-- **Are we overbuilding?** We are avoiding backend implementation; only the UX stub is required to prevent scope creep.
+- **Is the system stable?** Yes, but recent additions to neos-welcome-app are pending specialist validation.
+- **Is tech debt increasing?** No.
+- **Are we overbuilding?** We are strictly pausing to prevent overbuilding before current changes are verified.
 
 ## PHASE 3 — Priority Selection
-- **Selection:** Refinement of recent feature (First-boot UX / `neos-welcome-app`).
-- **Reasoning:** The Strategic Pause is formally lifted as all Phase 8 validations are complete. We will now address the missing telemetry opt-in UX in the welcome application.
+- **Selection:** No-build day (strategic pause).
+- **Reasoning:** Specialist validations (Bolt, Palette, Sentinel) are pending for the neos-welcome-app privacy opt-in. We must pause feature development until these are cleared.
 
 ## PHASE 4 — Controlled Scope Definition
-- **Impacted Files:** `profile/airootfs/usr/local/bin/neos-welcome-app`
-- **Maximum Allowed Surface Area:** Only the PyQt6 welcome application UI.
+- **Impacted Files:** None
+- **Maximum Allowed Surface Area:** 0
 - **Constraints:**
-  1. Add a visual toggle, checkbox, or button for "Telemetry / Privacy Opt-in".
-  2. Do NOT implement backend data collection. This is strictly a UX refinement.
-  3. Keep the styling consistent with the existing dark theme and layout.
+  1. Architect must halt all feature development.
+  2. Acknowledge the Strategic Pause.
+  3. Await specialist clearance for neos-welcome-app.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Implement the PyQt6 UI updates for the telemetry opt-in stub.
-- **Bolt:** Monitor `neos-welcome-app` startup performance for any degradation.
-- **Palette:** Verify the accessibility, tab order, and color contrast of the new UI controls.
-- **Sentinel:** Audit how the opt-in state might be stored (e.g., ensuring no CWE-59 vulnerabilities in temp file usage).
+- **Architect:** Standby (No-build day).
+- **Bolt:** Validate startup performance of neos-welcome-app.
+- **Palette:** Validate accessibility of neos-welcome-app.
+- **Sentinel:** Audit telemetry state storage in neos-welcome-app.
