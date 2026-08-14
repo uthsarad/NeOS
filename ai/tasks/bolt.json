@@ -88,7 +88,7 @@
     {
       "description": "Monitor neos-welcome-app startup performance for any degradation due to the new telemetry UI.",
       "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
