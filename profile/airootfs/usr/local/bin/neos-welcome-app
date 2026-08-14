@@ -246,6 +246,22 @@ class NeosWelcome(QWidget):
             x = (geo.width() - self.width()) // 2
             y = (geo.height() - self.height()) // 2
             self.move(x, y)
+    def closeEvent(self, event):
+        # Securely save telemetry state using tempfile to prevent CWE-59
+        try:
+            state = "1" if self.telemetry_checkbox.isChecked() else "0"
+            import tempfile, os
+            fd, tmp_file = tempfile.mkstemp(prefix='neos-telemetry.', dir='/tmp')
+            with os.fdopen(fd, 'w') as f:
+                f.write(state + "\n")
+            os.chmod(tmp_file, 0o644)
+            os.rename(tmp_file, "/tmp/neos-telemetry-optin")
+        except Exception as e:
+            import sys
+            print(f"Error saving telemetry state: {e}", file=sys.stderr)
+        super().closeEvent(event)
+
+
 
     def run_installer(self):
         subprocess.Popen(['/usr/local/bin/neos-welcome'])

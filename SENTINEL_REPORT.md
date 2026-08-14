@@ -100,3 +100,15 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 ## Acknowledge Continued Phase 8 Validation
 **Status**: Completed
 **Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new feature development required from Architect.
+
+## Audit of Telemetry State Storage
+### Risks found
+- Missing secure state storage for telemetry opt-in. A direct write to a predictable file like `/tmp/neos-telemetry-optin` would be vulnerable to a CWE-59 Symlink Traversal attack.
+### Fixes applied
+- Implemented `closeEvent` in `neos-welcome-app` to securely write the state. A temporary file is safely generated using `mktemp`, written to, and then atomically renamed to `/tmp/neos-telemetry-optin`. This prevents an attacker from exploiting symlinks.
+### Remaining attack surface
+- None identified regarding temporary file creation for this mechanism.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Predictable Temporary File (CWE-59 risk mitigated)
+- **Status**: Fixed
