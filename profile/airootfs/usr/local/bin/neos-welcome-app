@@ -192,7 +192,22 @@ class NeosWelcome(QWidget):
         optin_layout = QHBoxLayout()
         optin_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.telemetry_checkbox = QCheckBox("Help improve NeOS by sending anonymous usage data")
-        self.telemetry_checkbox.setStyleSheet("color: #9498b0; font-size: 13px; spacing: 8px;")
+        self.telemetry_checkbox.setStyleSheet("""
+            QCheckBox {
+                color: #e6e9f2;
+                font-size: 13px;
+                spacing: 8px;
+                padding: 4px;
+            }
+            QCheckBox:focus {
+                border: 1px solid #0088CF;
+                border-radius: 4px;
+                background-color: rgba(0, 136, 207, 0.1);
+            }
+        """)
+        self.telemetry_checkbox.setAccessibleName("Telemetry Data Opt-in")
+        self.telemetry_checkbox.setAccessibleDescription("Check to help improve NeOS by sending anonymous usage data")
+        self.telemetry_checkbox.setCursor(Qt.CursorShape.PointingHandCursor)
         self.telemetry_checkbox.setChecked(False)  # Privacy-first default
         optin_layout.addWidget(self.telemetry_checkbox)
         layout.addLayout(optin_layout)
@@ -235,6 +250,10 @@ class NeosWelcome(QWidget):
         layout.addWidget(version_lbl)
 
         layout.addStretch(1)
+
+        # Set explicit tab order
+        self.setTabOrder(self.telemetry_checkbox, try_btn)
+        self.setTabOrder(try_btn, install_btn)
 
         self.setLayout(layout)
         self.center_on_screen()

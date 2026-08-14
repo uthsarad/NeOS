@@ -1,23 +1,13 @@
 # Palette Report
 
-## Accessibility Fixes
-- **Visual Anchoring**: Added explicit semantic icons (`--icon preferences-system`, `--icon dialog-information`) to textual `kdialog` configurations to reduce cognitive load and provide clear visual context for screen magnifier users.
-- **Semantic Dialog Flags**: Updated `neos-operations-hub` to use `--error` instead of generic `--msgbox` for error states (e.g. missing crash reporting tool), ensuring assistive technologies like Orca properly announce errors and provide standard audio/visual cues.
-- Ensured Discover layout categorize defaults (`installedPageCategorize=true`) are set for better cognitive accessibility.
-- **Screen Reader Support in SDDM**: Added explicit `Accessible.role` (e.g. `Accessible.EditableText`, `Accessible.Button`) and `Accessible.name` bindings to all interactive fields (username, password, login button, and power controls) in the SDDM theme `Main.qml`. Because these are custom QML components, without explicit labels they remain silent or incorrectly announced by Orca or standard screen readers.
-- **Keyboard Navigation in SDDM**: The session selector and power buttons at the bottom of the SDDM login screen were previously untabbable `Text` elements. I wrapped them in `Rectangle` elements and added explicit `activeFocusOnTab: true`, `KeyNavigation.tab`, and visual borders upon `activeFocus`. The tab navigation now flows seamlessly from the "Log In" button to the session selector, power buttons, and cycles back to the username field.
+## UX Enhancements & Accessibility Fixes
+- Improved the newly added telemetry opt-in checkbox in `neos-welcome-app`.
+- **Contrast**: Increased the text color contrast of the checkbox label against the dark background (`#e6e9f2`).
+- **Focus Indicators**: Added a visible focus state for keyboard navigation (border and translucent background).
+- **Accessibility**: Added explicit `AccessibleName` and `AccessibleDescription` properties for screen readers.
+- **Interactivity**: Set the cursor to `PointingHandCursor` for visual feedback on hover.
+- **Keyboard Navigation**: Explicitly defined the tab order (`telemetry_checkbox` -> `try_btn` -> `install_btn`) to ensure logical keyboard flow.
 
-- **Visual Anchoring (Error States)**: Fixed contradictory generic icons on error dialogs in `neos-operations-hub` (Crash Reporting and Snapshot tools), explicitly setting `--icon dialog-error` to provide accurate visual context for failure states.
-## UX Improvements
-- **Helpful Empty State**: Added an empty state check to the snapshot viewer in `neos-operations-hub`. Instead of displaying a confusing blank textbox when no snapshots exist, users now receive a helpful message explaining that snapshots are created automatically during system updates.
-- Enhanced `neos-operations-hub` visual polish by injecting standard system icons, avoiding flat, text-only popups.
-- Aligned update flow with Windows-familiar offline updates by setting `UseOfflineUpdates=true` in `discoverrc`.
-- Added subtle visual borders to the session and power actions upon keyboard focus to clearly indicate which action is selected, solving the issue where keyboard-only users lacked visual focus feedback for non-primary actions.
-
-## Remaining Usability Risks
-- The theme wallpaper background currently depends on a configured background file. If it fails, the background is just a gradient. An additional empty state message might be helpful but wasn't critical for this session.
-- **Contextual Title**: Updated the System Licensing dialog title in `neos-operations-hub` from a generic "System Licensing" to "About NeOS - System Licensing" to provide better semantic context for the user when viewing the system's legal and upstream information.
-
-## Acknowledge Continued Phase 8 Strategic Pause
-**Learning:** Recognized the necessity of the Architect's Strategic Pause during Phase 8 Operations Hub Validation to ensure system stability and avoid conflicting changes.
-**Action:** Formally acknowledged the pause in `ai/tasks/palette.json` and halted feature development as requested. No new UX code changes were applied.
+## Usability Risks
+- Still need to test how the dark mode UI performs in brightly lit environments.
+- Monitor whether users understand the implications of the telemetry opt-in.

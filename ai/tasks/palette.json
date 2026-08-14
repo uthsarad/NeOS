@@ -78,7 +78,7 @@
     {
       "description": "Verify the accessibility, tab order, and color contrast of the new telemetry opt-in UI controls in neos-welcome-app.",
       "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
