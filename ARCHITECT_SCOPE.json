@@ -1,13 +1,16 @@
 {
   "target_features": [
-    "Strategic Pause: Phase 3 Validation"
+    "Phase 4: Nvidia GPU Detection Baseline"
   ],
-  "allowed_files": [],
+  "allowed_files": [
+    "New hardware detection script"
+  ],
   "forbidden_files": [
     "*"
   ],
   "constraints": [
-    "Halt all feature development.",
-    "Observe the Strategic Pause until specialists clear pending validations for neos-welcome-app."
+    "Implement bash script to detect Nvidia GPUs.",
+    "Do NOT implement actual package installation or modifications.",
+    "Output clear status messages indicating detection results."
   ]
 }

@@ -1,24 +1,24 @@
 {
   "bolt": {
-    "focus": "Performance Validation",
-    "directive": "Complete pending startup performance monitoring for neos-welcome-app.",
+    "focus": "Performance Optimization",
+    "directive": "Optimize hardware detection logic.",
     "tasks": [
-      "Monitor neos-welcome-app startup performance for any degradation due to the new telemetry UI."
+      "Optimize hardware detection to minimize subprocess overhead during boot."
     ]
   },
   "palette": {
-    "focus": "UX & Accessibility",
-    "directive": "Complete pending accessibility verification for neos-welcome-app.",
+    "focus": "Standby",
+    "directive": "No UI changes required for baseline hardware detection.",
     "tasks": [
-      "Verify the accessibility, tab order, and color contrast of the new telemetry opt-in UI controls in neos-welcome-app."
+      "Standby for Phase 4 UI implementations."
     ]
   },
   "sentinel": {
     "focus": "Security Audit",
-    "directive": "Complete pending security audit for telemetry state storage in neos-welcome-app.",
+    "directive": "Audit hardware detection script.",
     "tasks": [
-      "Audit how the telemetry opt-in state might be stored (e.g., ensuring no CWE-59 vulnerabilities in temp file usage) in neos-welcome-app."
+      "Audit hardware detection script to ensure parsing of PCI output does not introduce command injection risks."
     ]
   },
-  "note": "Strategic Pause enforced. Validations for neos-welcome-app are pending."
+  "note": "Phase 4 hardware detection initiated. Focus on stability and safe parsing."
 }
