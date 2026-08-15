@@ -1,16 +1,14 @@
 {
   "target_features": [
-    "Phase 4: Nvidia GPU Detection Baseline"
+    "None"
   ],
-  "allowed_files": [
-    "New hardware detection script"
-  ],
+  "allowed_files": [],
   "forbidden_files": [
     "*"
   ],
   "constraints": [
-    "Implement bash script to detect Nvidia GPUs.",
-    "Do NOT implement actual package installation or modifications.",
-    "Output clear status messages indicating detection results."
+    "Observe Strategic Pause for Phase 4 Validation.",
+    "Write zero production code.",
+    "Fulfill obligations strictly by documenting the pause in ARCHITECT_REPORT.md and appending tasks that formally acknowledge the pause in the specialist task manifests (ai/tasks/*.json)."
   ]
 }
