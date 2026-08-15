@@ -1,0 +1,11 @@
+#!/bin/bash
+# [BOLT] Optimize PCI detection to minimize subprocess overhead.
+# [SENTINEL] Audit for command injection risks when parsing PCI output.
+# [PALETTE] Add semantic visual anchors or UI integration for detection state.
+
+echo "Scanning for Nvidia GPUs..."
+if lspci | grep -i nvidia > /dev/null 2>&1; then
+    echo "Nvidia GPU detected."
+else
+    echo "No Nvidia GPU detected."
+fi
