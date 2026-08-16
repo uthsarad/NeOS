@@ -88,7 +88,7 @@
     {
       "description": "Audit hardware detection script to ensure parsing of PCI output does not introduce command injection risks.",
       "target_file": "profile/airootfs/usr/local/bin/neos-hardware-setup",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

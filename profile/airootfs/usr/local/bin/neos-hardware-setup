@@ -3,6 +3,8 @@
 # [SENTINEL] Audit for command injection risks when parsing PCI output.
 # [PALETTE] Add semantic visual anchors or UI integration for detection state.
 
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
 echo "Scanning for Nvidia GPUs..."
 if lspci | grep -i nvidia > /dev/null 2>&1; then
     echo "Nvidia GPU detected."
