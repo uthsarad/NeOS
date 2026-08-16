@@ -117,3 +117,13 @@ The current mandate is a Strategic Pause as directed by the task in `ai/tasks/bo
 
 **Remaining performance risks:**
 None at this time. Awaiting the end of the strategic pause.
+
+## Hardware Detection Optimization
+**What was optimized:**
+Replaced `lspci | grep` subprocess calls in `neos-hardware-setup` with native bash sysfs reads to check for Nvidia GPUs.
+
+**Before/after reasoning:**
+The previous implementation spawned two external processes (`lspci` and `grep`) which introduced unnecessary fork/exec overhead. By reading directly from `/sys/bus/pci/devices/*/vendor` within bash, we eliminate this overhead entirely, improving startup performance.
+
+**Remaining performance risks:**
+None.

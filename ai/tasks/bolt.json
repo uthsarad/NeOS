@@ -98,7 +98,7 @@
     {
       "description": "Optimize hardware detection logic.",
       "target_file": "profile/airootfs/usr/local/bin/neos-hardware-setup",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

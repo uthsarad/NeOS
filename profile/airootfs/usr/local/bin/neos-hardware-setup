@@ -6,7 +6,20 @@
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 echo "Scanning for Nvidia GPUs..."
-if lspci | grep -i nvidia > /dev/null 2>&1; then
+nvidia_found=0
+shopt -s nullglob
+for vendor in /sys/bus/pci/devices/*/vendor; do
+    if [[ -f "$vendor" ]]; then
+        read -r vid < "$vendor"
+        if [[ "$vid" == "0x10de" ]]; then
+            nvidia_found=1
+            break
+        fi
+    fi
+done
+shopt -u nullglob
+
+if (( nvidia_found )); then
     echo "Nvidia GPU detected."
 else
     echo "No Nvidia GPU detected."
