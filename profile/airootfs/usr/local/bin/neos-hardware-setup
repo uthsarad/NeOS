@@ -3,9 +3,15 @@
 # [SENTINEL] Audit for command injection risks when parsing PCI output.
 # [PALETTE] Add semantic visual anchors or UI integration for detection state.
 
-echo "Scanning for Nvidia GPUs..."
+echo "🔍 Scanning for Nvidia GPUs..."
 if lspci | grep -i nvidia > /dev/null 2>&1; then
-    echo "Nvidia GPU detected."
+    echo "✅ Nvidia GPU detected."
+    if command -v kdialog >/dev/null 2>&1; then
+        kdialog --icon dialog-information --title "NeOS Hardware Setup" --passivepopup "Nvidia GPU detected. Initializing proprietary driver support." 5 &
+    fi
 else
-    echo "No Nvidia GPU detected."
+    echo "ℹ️ No Nvidia GPU detected."
+    if command -v kdialog >/dev/null 2>&1; then
+        kdialog --icon dialog-information --title "NeOS Hardware Setup" --passivepopup "No Nvidia GPU detected. Using open-source drivers." 5 &
+    fi
 fi

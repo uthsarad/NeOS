@@ -86,9 +86,9 @@
       "status": "completed"
     },
     {
-      "description": "Standby for Phase 4 UI implementations.",
-      "target_file": "none",
-      "status": "pending"
+      "description": "Phase 4 UI implementation: Add semantic visual anchors and kdialog integration for hardware detection state.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-hardware-setup",
+      "status": "completed"
     }
   ]
 }
