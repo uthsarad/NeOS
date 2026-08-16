@@ -1,24 +1,11 @@
 {
   "bolt": {
-    "focus": "Performance Optimization",
-    "directive": "Execute pending task for Phase 4.",
-    "tasks": [
-      "Optimize hardware detection logic."
-    ]
+    "guidance": "Acknowledge the Phase 4 Validation pending tasks. No new performance optimizations."
   },
   "palette": {
-    "focus": "Standby",
-    "directive": "Execute pending task for Phase 4.",
-    "tasks": [
-      "Standby for Phase 4 UI implementations."
-    ]
+    "guidance": "Acknowledge the Phase 4 Validation pending tasks. No new UI/UX enhancements."
   },
   "sentinel": {
-    "focus": "Security Audit",
-    "directive": "Execute pending task for Phase 4.",
-    "tasks": [
-      "Audit hardware detection script to ensure parsing of PCI output does not introduce command injection risks."
-    ]
-  },
-  "note": "Strategic Pause enforced. Specialists must complete their pending validations for neos-hardware-setup."
+    "guidance": "Acknowledge the Phase 4 Validation pending tasks. No new security audits."
+  }
 }

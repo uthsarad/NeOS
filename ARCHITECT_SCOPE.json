@@ -1,14 +1,10 @@
 {
-  "target_features": [
-    "None"
-  ],
   "allowed_files": [],
-  "forbidden_files": [
-    "*"
-  ],
+  "strategic_pause": true,
   "constraints": [
-    "Observe Strategic Pause for Phase 4 Validation.",
     "Write zero production code.",
-    "Fulfill obligations strictly by documenting the pause in ARCHITECT_REPORT.md and appending tasks that formally acknowledge the pause in the specialist task manifests (ai/tasks/*.json)."
+    "Do not implement any new features.",
+    "Document the pause in ARCHITECT_REPORT.md.",
+    "Append new tasks with a 'pending' status to specialist manifests."
   ]
 }
