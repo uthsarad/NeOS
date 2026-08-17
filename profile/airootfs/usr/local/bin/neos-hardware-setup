@@ -5,7 +5,7 @@
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-echo "Scanning for Nvidia GPUs..."
+echo -e "\e[1;34mℹ️  Scanning for Nvidia GPUs...\e[0m"
 nvidia_found=0
 shopt -s nullglob
 for vendor in /sys/bus/pci/devices/*/vendor; do
@@ -20,7 +20,10 @@ done
 shopt -u nullglob
 
 if (( nvidia_found )); then
-    echo "Nvidia GPU detected."
+    echo -e "\e[1;32m✅ Nvidia GPU detected.\e[0m"
+    if command -v kdialog >/dev/null 2>&1 && [[ -n "$DISPLAY" ]]; then
+        kdialog --icon dialog-information --title "NeOS Hardware Setup - GPU Detection" --passivepopup "Nvidia GPU detected." 5 &
+    fi
 else
-    echo "No Nvidia GPU detected."
+    echo -e "\e[1;33m⚠️  No Nvidia GPU detected.\e[0m"
 fi
