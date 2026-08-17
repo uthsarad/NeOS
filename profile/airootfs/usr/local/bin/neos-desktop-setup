@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 if [[ ! -f "$HOME/.neos_polished" ]]; then
     # Set Breeze Dark as the base look-and-feel
     plasma-apply-lookandfeel -a org.kde.breezedark.desktop 2>/dev/null || true

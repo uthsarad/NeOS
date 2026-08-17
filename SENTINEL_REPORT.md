@@ -125,3 +125,19 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 
 **Mitigation**:
 - Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to `profile/airootfs/usr/local/bin/neos-hardware-setup` to ensure all external commands (`lspci`, `grep`) are resolved safely from trusted system directories.
+
+## Acknowledge Phase 4 Validation
+**Status**: Completed
+**Findings**: Acknowledged the Strategic Pause for Phase 4 Validation. No new feature development required from Architect.
+
+## 2026-08-17 - CWE-426 Path Hijacking Mitigation in neos-desktop-setup
+### Risks found
+- Identified a CWE-426 (Path Hijacking) vulnerability in `profile/airootfs/usr/local/bin/neos-desktop-setup`. The script lacked a strict `PATH` export, meaning malicious or unintended binaries could be executed if the `$PATH` environment variable was manipulated.
+### Fixes applied
+- Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to the script to ensure all external commands are resolved safely from trusted system directories.
+### Remaining attack surface
+- None identified regarding path hijacking in this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Path Hijacking (CWE-426)
+- **Status**: Fixed
