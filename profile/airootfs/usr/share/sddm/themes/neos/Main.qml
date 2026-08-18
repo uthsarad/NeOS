@@ -153,6 +153,8 @@ Rectangle {
                     cursorVisible: userInput.activeFocus
                     onAccepted: passInput.forceActiveFocus()
                     KeyNavigation.tab: passInput
+                    Accessible.role: Accessible.EditableText
+                    Accessible.name: "Username"
                 }
                 Text {
                     anchors.fill: parent; anchors.leftMargin: 16
@@ -179,6 +181,9 @@ Rectangle {
                     clip: true
                     cursorVisible: passInput.activeFocus
                     onAccepted: root.doLogin()
+                    KeyNavigation.tab: loginBtn
+                    Accessible.role: Accessible.EditableText
+                    Accessible.name: "Password"
                 }
                 Text {
                     anchors.fill: parent; anchors.leftMargin: 16
@@ -193,7 +198,15 @@ Rectangle {
                 id: loginBtn
                 width: parent.width; height: 48; radius: 10
                 color: loginArea.pressed ? "#006fa8"
-                       : (loginArea.containsMouse ? root.cCyan : root.cBlue)
+                       : (loginArea.containsMouse || activeFocus ? root.cCyan : root.cBlue)
+                border.color: activeFocus ? "white" : "transparent"
+                border.width: activeFocus ? 2 : 0
+                activeFocusOnTab: true
+                KeyNavigation.tab: sessionSelector
+                Keys.onReturnPressed: root.doLogin()
+                Keys.onEnterPressed: root.doLogin()
+                Accessible.role: Accessible.Button
+                Accessible.name: "Log In"
                 Behavior on color { ColorAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
@@ -223,9 +236,31 @@ Rectangle {
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 20
-                Text {
-                    color: root.cMuted; font.pixelSize: 12
-                    text: "Session: " + (root.sessionNames[root.sessionIndex] || "Default")
+
+                Rectangle {
+                    id: sessionSelector
+                    width: sessionText.implicitWidth + 10; height: sessionText.implicitHeight + 10; radius: 4
+                    color: "transparent"
+                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.width: activeFocus ? 2 : 0
+                    activeFocusOnTab: true
+                    KeyNavigation.tab: btnSleep
+                    Keys.onReturnPressed: {
+                        if (sessionModel.count > 0)
+                            root.sessionIndex = (root.sessionIndex + 1) % sessionModel.count;
+                    }
+                    Keys.onEnterPressed: {
+                        if (sessionModel.count > 0)
+                            root.sessionIndex = (root.sessionIndex + 1) % sessionModel.count;
+                    }
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Session Selector"
+                    Text {
+                        id: sessionText
+                        anchors.centerIn: parent
+                        color: parent.activeFocus ? root.cText : root.cMuted; font.pixelSize: 12
+                        text: "Session: " + (root.sessionNames[root.sessionIndex] || "Default")
+                    }
                     MouseArea {
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor
                         onClicked: {
@@ -234,19 +269,67 @@ Rectangle {
                         }
                     }
                 }
-                Text {
+
+                Rectangle {
+                    id: btnSleep
                     visible: sddm.canSuspend
-                    color: root.cMuted; font.pixelSize: 12; text: "Sleep"
+                    width: sleepText.implicitWidth + 10; height: sleepText.implicitHeight + 10; radius: 4
+                    color: "transparent"
+                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.width: activeFocus ? 2 : 0
+                    activeFocusOnTab: true
+                    KeyNavigation.tab: btnRestart
+                    Keys.onReturnPressed: sddm.suspend()
+                    Keys.onEnterPressed: sddm.suspend()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Sleep"
+                    Text {
+                        id: sleepText
+                        anchors.centerIn: parent
+                        color: parent.activeFocus ? root.cText : root.cMuted; font.pixelSize: 12; text: "Sleep"
+                    }
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: sddm.suspend() }
                 }
-                Text {
+
+                Rectangle {
+                    id: btnRestart
                     visible: sddm.canReboot
-                    color: root.cMuted; font.pixelSize: 12; text: "Restart"
+                    width: restartText.implicitWidth + 10; height: restartText.implicitHeight + 10; radius: 4
+                    color: "transparent"
+                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.width: activeFocus ? 2 : 0
+                    activeFocusOnTab: true
+                    KeyNavigation.tab: btnShutdown
+                    Keys.onReturnPressed: sddm.reboot()
+                    Keys.onEnterPressed: sddm.reboot()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Restart"
+                    Text {
+                        id: restartText
+                        anchors.centerIn: parent
+                        color: parent.activeFocus ? root.cText : root.cMuted; font.pixelSize: 12; text: "Restart"
+                    }
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: sddm.reboot() }
                 }
-                Text {
+
+                Rectangle {
+                    id: btnShutdown
                     visible: sddm.canPowerOff
-                    color: root.cMuted; font.pixelSize: 12; text: "Shut Down"
+                    width: shutdownText.implicitWidth + 10; height: shutdownText.implicitHeight + 10; radius: 4
+                    color: "transparent"
+                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.width: activeFocus ? 2 : 0
+                    activeFocusOnTab: true
+                    KeyNavigation.tab: userInput
+                    Keys.onReturnPressed: sddm.powerOff()
+                    Keys.onEnterPressed: sddm.powerOff()
+                    Accessible.role: Accessible.Button
+                    Accessible.name: "Shut Down"
+                    Text {
+                        id: shutdownText
+                        anchors.centerIn: parent
+                        color: parent.activeFocus ? root.cText : root.cMuted; font.pixelSize: 12; text: "Shut Down"
+                    }
                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: sddm.powerOff() }
                 }
             }

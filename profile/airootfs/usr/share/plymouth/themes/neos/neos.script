@@ -49,7 +49,6 @@ fun refresh_callback() {
     frame = Math.Int(tick / 2);
     while (frame >= n_frames)
         frame -= n_frames;
-
     if (frame != last_frame) {
         cat.sprite.SetImage(cat[frame]);
         last_frame = frame;

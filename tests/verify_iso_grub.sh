@@ -34,8 +34,11 @@ FORBIDDEN_STRINGS=(
     "amd_pstate=active"
 )
 
+# ⚡ Bolt: Load file content once to eliminate repeated fork/exec overhead
+GRUB_CONTENT=$(<"$GRUB_FILE")
+
 for STR in "${REQUIRED_STRINGS[@]}"; do
-    if grep -q "$STR" "$GRUB_FILE"; then
+    if [[ "$GRUB_CONTENT" == *"$STR"* ]]; then
         echo "✅ '$STR' found"
     else
         echo "❌ '$STR' NOT found"
@@ -44,7 +47,7 @@ for STR in "${REQUIRED_STRINGS[@]}"; do
 done
 
 for STR in "${FORBIDDEN_STRINGS[@]}"; do
-    if grep -q "$STR" "$GRUB_FILE"; then
+    if [[ "$GRUB_CONTENT" == *"$STR"* ]]; then
         echo "❌ '$STR' should not be present"
         exit 1
     else
@@ -60,8 +63,10 @@ PROFILE_STRINGS=(
     "iso_application=\"NeOS Installation Media\""
 )
 
+PROFILE_CONTENT=$(<"$PROFILE_FILE")
+
 for STR in "${PROFILE_STRINGS[@]}"; do
-    if grep -q "$STR" "$PROFILE_FILE"; then
+    if [[ "$PROFILE_CONTENT" == *"$STR"* ]]; then
         echo "✅ '$STR' found"
     else
         echo "❌ '$STR' NOT found"

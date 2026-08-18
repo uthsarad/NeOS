@@ -49,8 +49,9 @@ REQUIRED_SERVICES=(
 echo ""
 echo "Verifying enabled services in $SERVICES_FILE..."
 
+SERVICES_CONTENT=$(<"$SERVICES_FILE")
 for SVC in "${REQUIRED_SERVICES[@]}"; do
-    if grep -q "$SVC" "$SERVICES_FILE"; then
+    if [[ "$SERVICES_CONTENT" == *"$SVC"* ]]; then
         echo "✅ Service '$SVC' enabled"
     else
         echo "❌ Service '$SVC' NOT enabled"
@@ -69,8 +70,9 @@ REQUIRED_PERMS=(
 echo ""
 echo "Verifying file permissions in $PROFILE_FILE..."
 
+PROFILE_CONTENT=$(<"$PROFILE_FILE")
 for PERM in "${REQUIRED_PERMS[@]}"; do
-    if grep -q "$PERM" "$PROFILE_FILE"; then
+    if [[ "$PROFILE_CONTENT" == *"$PERM"* ]]; then
         echo "✅ Permission entry for '$PERM' found"
     else
         echo "❌ Permission entry for '$PERM' NOT found"
@@ -87,21 +89,24 @@ INSTALLER_LAUNCHER="profile/airootfs/usr/local/bin/neos-welcome"
 echo ""
 echo "Verifying installer-media startup behavior..."
 
-if grep -q 'welcome-neos.desktop' "$LIVEUSER_SETUP"; then
+LIVEUSER_CONTENT=$(<"$LIVEUSER_SETUP")
+if [[ "$LIVEUSER_CONTENT" == *'welcome-neos.desktop'* ]]; then
     echo "✅ Installer autostart is configured for the live user"
 else
     echo "❌ Installer autostart is not configured for the live user"
     ALL_PASSED=false
 fi
 
-if grep -q 'Exec=/usr/local/bin/neos-welcome-app' "$INSTALLER_SHORTCUT"; then
+INSTALLER_SHORTCUT_CONTENT=$(<"$INSTALLER_SHORTCUT")
+if [[ "$INSTALLER_SHORTCUT_CONTENT" == *'Exec=/usr/local/bin/neos-welcome-app'* ]]; then
     echo "✅ Desktop shortcut launches the welcome app"
 else
     echo "❌ Desktop shortcut does not launch the welcome app"
     ALL_PASSED=false
 fi
 
-if grep -q 'calamares' "$INSTALLER_LAUNCHER"; then
+INSTALLER_LAUNCHER_CONTENT=$(<"$INSTALLER_LAUNCHER")
+if [[ "$INSTALLER_LAUNCHER_CONTENT" == *'calamares'* ]]; then
     echo "✅ Installer launcher starts Calamares"
 else
     echo "❌ Installer launcher does not start Calamares"

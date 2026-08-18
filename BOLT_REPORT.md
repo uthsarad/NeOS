@@ -1,11 +1,19 @@
-# Bolt Report
+# ⚡ Bolt Performance Report
 
-- What was optimized:
-  Optimized Plymouth boot animation in `neos.script` by deduplicating frame updates. Added a `last_frame` check to ensure `SetImage()` is only called when the actual frame index changes.
+## What was optimized
+Refactored `tests/verify_iso_grub.sh` to eliminate repeated `grep -q` shell invocations during test execution.
 
-- Before/after reasoning:
-  Before: `SetImage()` was called unconditionally on every Plymouth tick (50Hz), even though the frame calculation `Math.Int(tick / 2)` only changes every 2 ticks (25Hz). This caused redundant texture invalidations and wasted CPU cycles during critical early boot.
-  After: `SetImage()` is conditionally called only when the frame changes, eliminating 50% of the image update overhead and keeping software rendering lightweight.
+## Before/after reasoning
+**Before:** The test script used `grep -q "$STR" "$GRUB_FILE"` and `grep -q "$STR" "$PROFILE_FILE"` in loops to verify strings. This caused a fork/exec of the `grep` binary for every single string check in the required, forbidden, and profile arrays.
+**After:** The scripts now load the file contents into memory once via native bash variables (`GRUB_CONTENT=$(<"$GRUB_FILE")` and `PROFILE_CONTENT=$(<"$PROFILE_FILE")`). We then use native bash string matching (`[[ "$CONTENT" == *"$STR"* ]]`) to perform the assertions. This eliminates the fork/exec overhead entirely, noticeably speeding up the test suite execution.
 
-- Any remaining performance risks:
-  None. The logic safely prevents duplicate calls without altering the animation timing or visual appearance.
+## Remaining performance risks
+None introduced by this change. The memory usage to hold these configuration files is negligible.
+
+- What was optimized: Verified and enforced the removal of the `[Install]` section from `neos-autoupdate.service`. The `Environment=LC_ALL=C` directive is already present in both `neos-autoupdate.service` and `neos-liveuser-setup.service`.
+- Before/after reasoning: `neos-autoupdate.service` is controlled by `neos-autoupdate.timer`. Including an `[Install]` section with `WantedBy=multi-user.target` is an anti-pattern for timer-activated oneshot services. It causes the service to execute synchronously at boot, bypassing the timer's intended delay and blocking `multi-user.target`, leading to severe boot overhead. Removing it enforces that the service strictly runs asynchronously in the background as intended.
+- Any remaining performance risks: The underlying bash scripts still invoke external binaries. Future iterations should profile the exact execution trace of `neos-autoupdate.sh` to ensure no blocking I/O operations occur on the critical path during background execution.
+
+- What was optimized: Added `Environment=LC_ALL=C` to `neos-driver-manager.service`, `neos-accessibility.service`, and `neos-vm-graphics.service`.
+- Before/after reasoning: These systemd `.service` files execute bash scripts as oneshot services. Locale-aware string parsing and sorting overhead can slow down script execution at boot time. By enforcing the C locale (`LC_ALL=C`), we bypass these expensive operations, minimizing overhead and accelerating system initialization.
+- Any remaining performance risks: Negligible. The C locale is appropriate for these low-level setup scripts, which don't produce localized user-facing text directly.

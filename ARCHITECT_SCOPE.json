@@ -1,20 +1,10 @@
 {
-  "target_features": [
-    "Phase 6 UX Polish: Implement Windows-familiar defaults, shortcuts, and theme refinements."
-  ],
-  "allowed_files": [
-    "profile/airootfs/etc/xdg/**/*",
-    "profile/airootfs/usr/share/**/*"
-  ],
-  "forbidden_files": [
-    "profile/airootfs/etc/systemd/system/*.service",
-    "build.sh",
-    "tools/**/*"
-  ],
+  "allowed_files": [],
+  "strategic_pause": true,
   "constraints": [
-    "The strategic pause has been lifted as systemd validation debt is cleared. Focus entirely on Phase 6 UX Polish.",
-    "Implement Windows-familiar keyboard shortcuts, adjust default UI layouts, and refine theming elements within the allowed directories.",
-    "Do not modify core system services, boot logic, or package management infrastructure.",
-    "Ensure all UI modifications maintain the overall performance and stability of the KDE Plasma desktop."
+    "Write zero production code.",
+    "Do not implement any new features.",
+    "Document the Phase 4 Validation pause in ARCHITECT_REPORT.md.",
+    "Append new tasks with a 'pending' status to specialist manifests."
   ]
 }
