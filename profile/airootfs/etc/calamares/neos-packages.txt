@@ -151,6 +151,11 @@ gleam
 elixir
 odin
 crystal
+kotlin
+sbcl
+clisp
+ghc
+fpc
 # --- heavy desktop applications and drivers (installed-system only) ---
 firefox
 discover

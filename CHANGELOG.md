@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 ## [2026.08.18] - 2026-08-18
 
 ### Added
+- **Polyglot Language Toolchains & Implementations**:
+  - **Developer Toolchains**: Added `kotlin`, `sbcl`, `clisp`, `ghc` (Haskell), and `fpc` (Free Pascal) to installed-system developer package manifests in `tools/gen-manifests.sh`.
+  - **Polyglot Audit Suite (`tools/polyglot/`)**: Implemented native NeOS profile auditors across Kotlin (`NeosAudit.kt`), Swift (`NeosAudit.swift`), Common Lisp (`neos_audit.lisp`), Haskell (`NeosAudit.hs`), and Free Pascal (`neos_audit.pas`).
+  - **Verification Gate**: Added `tests/verify_polyglot_languages.sh` testing execution across all polyglot runtimes with graceful static validation fallbacks.
 - **Modern Language Tooling Stack**:
   - **Go CLI Utility (`tools/neosctl/`)**: High-performance Go tool for profile auditing, multi-threaded mirror latency benchmarking via goroutines, and distribution metadata reporting.
   - **C# .NET Compliance & Diagnostics Inspector (`tools/NeosDiagnostics/`)**: Modern .NET 8 cross-platform engine validating security sysctl posture, ZRAM performance flags, package signature policies, and JSON report generation.
