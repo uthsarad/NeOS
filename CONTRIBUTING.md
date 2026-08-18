@@ -8,7 +8,7 @@ Thanks for your interest in improving NeOS! This guide covers how to propose cha
 2. Make sure your changes are focused and documented.
 3. Run any relevant checks for the area you touched.
 4. Open a pull request with a clear summary and testing notes.
-   - *Note: The auto-merge bot automatically handles PR approvals for the core maintainer team and trusted bots.*
+   - *Note: The auto-merge bot automatically handles PR approvals for the core maintainer team, trusted contributors (@RaidenShogun-AI, @MikoYae-AI), and trusted bots.*
 
 ## Development tips
 
@@ -31,7 +31,7 @@ Please include:
 
 Our automated systems help streamline the development process:
 - **Auto-merge bot**: Handles PR approvals and merging automatically.
-  - Triggers for the core maintainer team.
+  - Triggers for the core maintainer team and trusted contributors (@RaidenShogun-AI, @MikoYae-AI).
   - Triggers for trusted bots (e.g., `google-labs-jules[bot]`).
 - **Community contributions**: Require review from a maintainer before the bot will merge.
 

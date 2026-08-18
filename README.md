@@ -61,8 +61,10 @@ NeOS leverages and extends several key projects within the Arch Linux ecosystem:
       <sub>Core Contributor</sub>
     </td>
     <td align="center" width="160">
-      <img src="https://i0.hdslb.com/bfs/album/191970aeae04b6f76348b0573796ebe0c0a57.png" width="80" style="border-radius: 50%;" /><br>
-      <b>Yae Miko</b><br>
+      <a href="https://github.com/MikoYae-AI">
+        <img src="https://github.com/MikoYae-AI.png" width="80" style="border-radius: 50%;" /><br>
+        <b>Yae Miko</b>
+      </a><br>
       <sub>Contributor</sub>
     </td>
     <td align="center" width="160">
