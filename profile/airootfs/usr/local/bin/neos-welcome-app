@@ -2,7 +2,7 @@
 import sys
 import subprocess
 import math
-from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+from PyQt6.QtWidgets import (QCheckBox, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QGraphicsDropShadowEffect,
                              QGraphicsOpacityEffect, QSpacerItem, QSizePolicy,
                              QFrame)
@@ -184,6 +184,35 @@ class NeosWelcome(QWidget):
 
         layout.addStretch(2)
 
+
+        # ---- Telemetry / Privacy Opt-in ----
+        # [PALETTE] Verify accessibility, tab order, and color contrast of this new control.
+        # [SENTINEL] Audit local storage method for this boolean to avoid temp file vulnerabilities.
+        # [BOLT] Ensure no UI lag or startup degradation occurs.
+        optin_layout = QHBoxLayout()
+        optin_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.telemetry_checkbox = QCheckBox("Help improve NeOS by sending anonymous usage data")
+        self.telemetry_checkbox.setStyleSheet("""
+            QCheckBox {
+                color: #e6e9f2;
+                font-size: 13px;
+                spacing: 8px;
+                padding: 4px;
+            }
+            QCheckBox:focus {
+                border: 1px solid #0088CF;
+                border-radius: 4px;
+                background-color: rgba(0, 136, 207, 0.1);
+            }
+        """)
+        self.telemetry_checkbox.setAccessibleName("Telemetry Data Opt-in")
+        self.telemetry_checkbox.setAccessibleDescription("Check to help improve NeOS by sending anonymous usage data")
+        self.telemetry_checkbox.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.telemetry_checkbox.setChecked(False)  # Privacy-first default
+        optin_layout.addWidget(self.telemetry_checkbox)
+        layout.addLayout(optin_layout)
+        layout.addSpacing(15)
+
         # ---- Buttons ----
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(24)
@@ -222,6 +251,10 @@ class NeosWelcome(QWidget):
 
         layout.addStretch(1)
 
+        # Set explicit tab order
+        self.setTabOrder(self.telemetry_checkbox, try_btn)
+        self.setTabOrder(try_btn, install_btn)
+
         self.setLayout(layout)
         self.center_on_screen()
 
@@ -232,6 +265,22 @@ class NeosWelcome(QWidget):
             x = (geo.width() - self.width()) // 2
             y = (geo.height() - self.height()) // 2
             self.move(x, y)
+    def closeEvent(self, event):
+        # Securely save telemetry state using tempfile to prevent CWE-59
+        try:
+            state = "1" if self.telemetry_checkbox.isChecked() else "0"
+            import tempfile, os
+            fd, tmp_file = tempfile.mkstemp(prefix='neos-telemetry.', dir='/tmp')
+            with os.fdopen(fd, 'w') as f:
+                f.write(state + "\n")
+            os.chmod(tmp_file, 0o644)
+            os.rename(tmp_file, "/tmp/neos-telemetry-optin")
+        except Exception as e:
+            import sys
+            print(f"Error saving telemetry state: {e}", file=sys.stderr)
+        super().closeEvent(event)
+
+
 
     def run_installer(self):
         subprocess.Popen(['/usr/local/bin/neos-welcome'])

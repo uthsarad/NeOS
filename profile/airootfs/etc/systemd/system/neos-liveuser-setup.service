@@ -21,6 +21,8 @@ ProtectControlGroups=yes
 ProtectHostname=yes
 RestrictRealtime=yes
 LockPersonality=yes
+CapabilityBoundingSet=CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER CAP_FSETID CAP_SETUID CAP_SETGID CAP_SYS_RESOURCE CAP_AUDIT_WRITE
+RestrictAddressFamilies=AF_UNIX
 
 [Install]
 WantedBy=multi-user.target

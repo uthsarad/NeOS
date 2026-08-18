@@ -60,11 +60,20 @@ if [[ -f "$PKGLIST" ]]; then
     else
         echo "❌ neos-packages.txt looks too small ($count packages)"; FAIL=1
     fi
+    PKGLIST_CONTENT=$(<"$PKGLIST")
     for must in base linux-lts grub sddm plasma-desktop; do
-        grep -qxE "$must" "$PKGLIST" || { echo "❌ neos-packages.txt missing '$must'"; FAIL=1; }
+        if [[ "$PKGLIST_CONTENT" =~ (^|$'
+')"$must"($|$'
+') ]]; then
+            : # MATCHED
+        else
+            echo "❌ neos-packages.txt missing '$must'"; FAIL=1;
+        fi
     done
     for forbidden in mkinitcpio-archiso calamares-garuda; do
-        if grep -qxE "$forbidden" "$PKGLIST"; then
+        if [[ "$PKGLIST_CONTENT" =~ (^|$'
+')"$forbidden"($|$'
+') ]]; then
             echo "❌ neos-packages.txt should not install live-only '$forbidden'"; FAIL=1
         fi
     done
@@ -83,12 +92,21 @@ fi
 #    installer-only and per-install-state files.
 if [[ -f "$OVERLAY" ]]; then
     echo "✅ overlay manifest present ($(grep -cE '.' "$OVERLAY") files)"
+    OVERLAY_CONTENT=$'
+'"$(<"$OVERLAY")"$'
+'
     for must in \
         "etc/os-release" \
         "usr/share/backgrounds/neos-wallpaper.png" \
         "etc/systemd/system/neos-autoupdate.timer" \
         "etc/sysctl.d/90-neos-security.conf"; do
-        grep -qxF "$must" "$OVERLAY" || { echo "❌ overlay missing NeOS file '$must'"; FAIL=1; }
+        if [[ "$OVERLAY_CONTENT" == *$'
+'"$must"$'
+'* ]]; then
+            : # MATCHED
+        else
+            echo "❌ overlay missing NeOS file '$must'"; FAIL=1;
+        fi
     done
     # These must NEVER be copied to an installed system.
     for forbidden in \
@@ -97,7 +115,9 @@ if [[ -f "$OVERLAY" ]]; then
         "etc/mkinitcpio.conf" \
         "etc/sudoers.d/zz-live-wheel" \
         "usr/local/bin/neos-pacstrap"; do
-        if grep -qxF "$forbidden" "$OVERLAY"; then
+        if [[ "$OVERLAY_CONTENT" == *$'
+'"$forbidden"$'
+'* ]]; then
             echo "❌ overlay must NOT carry '$forbidden' to the installed system"; FAIL=1
         fi
     done
