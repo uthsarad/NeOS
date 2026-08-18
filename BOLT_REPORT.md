@@ -10,55 +10,10 @@ Refactored `tests/verify_iso_grub.sh` to eliminate repeated `grep -q` shell invo
 ## Remaining performance risks
 None introduced by this change. The memory usage to hold these configuration files is negligible.
 
-## What was optimized
-Refactored `profile/airootfs/usr/local/bin/neos-vm-graphics` to eliminate unnecessary subshell and string allocation overhead during virtualization detection.
+- What was optimized: Verified and enforced the removal of the `[Install]` section from `neos-autoupdate.service`. The `Environment=LC_ALL=C` directive is already present in both `neos-autoupdate.service` and `neos-liveuser-setup.service`.
+- Before/after reasoning: `neos-autoupdate.service` is controlled by `neos-autoupdate.timer`. Including an `[Install]` section with `WantedBy=multi-user.target` is an anti-pattern for timer-activated oneshot services. It causes the service to execute synchronously at boot, bypassing the timer's intended delay and blocking `multi-user.target`, leading to severe boot overhead. Removing it enforces that the service strictly runs asynchronously in the background as intended.
+- Any remaining performance risks: The underlying bash scripts still invoke external binaries. Future iterations should profile the exact execution trace of `neos-autoupdate.sh` to ensure no blocking I/O operations occur on the critical path during background execution.
 
-## Before/after reasoning
-**Before:** The script used `virt="$(systemd-detect-virt 2>/dev/null || echo none)"` followed by a string comparison. This required spawning a subshell, allocating memory for the output string, and then executing a test command.
-**After:** The script now directly evaluates the exit code of `systemd-detect-virt -q 2>/dev/null`. This completely bypasses the subshell creation and string manipulation, reducing CPU overhead during login/graphics initialization.
-
-## Remaining performance risks
-None. This is a purely structural optimization of the check mechanism.
-
-## Optimization: Eliminate subprocess overhead in neos-driver-manager
-**What was optimized:** Replaced `sed` and `grep` subprocess calls inside a `while` loop with native bash string manipulation for checking kernel drivers.
-**Before/after reasoning:** Previously, checking network drivers involved spawning `echo`, `sed`, and `grep` for every detected network interface, causing unnecessary fork/exec overhead. By extracting the relevant text block and searching for "Kernel driver in use" directly with bash parameter expansion (`${VAR#pattern}` and `${VAR%%pattern}`), the need for subprocesses is eliminated, reducing CPU overhead during hardware detection.
-**Any remaining performance risks:** None. The replacement strictly handles string processing without external dependencies, resulting in faster and safer execution.
-
-## ⚡ Bolt: Optimize verify_boot_gui grep checks
-**What:** Replaced repeated `grep` subprocess calls in `tests/verify_boot_gui.sh` with native bash string matching.
-**Why:** To eliminate fork/exec subprocess overhead during CI/validation checks on the boot gui script.
-**Impact:** Reduces CPU overhead by caching file content and bypassing external process spawning for simple string checks.
-**Measurement:** Running the tests via `bash tests/verify_boot_gui.sh` should confirm functionality remains intact and slightly faster.
-
-## ⚡ Bolt: Optimize verify_discover_config grep checks
-**What:** Replaced repeated `grep` subprocess calls in `tests/verify_discover_config.sh` with native bash string matching.
-**Why:** To eliminate fork/exec subprocess overhead during CI/validation checks on the Discover configuration script.
-**Impact:** Reduces CPU overhead by caching file content and bypassing external process spawning for simple string checks.
-**Measurement:** Running the tests via `bash tests/verify_discover_config.sh` should confirm functionality remains intact and executes faster.
-
-## Bolt Optimization: Eliminate subprocess grep overhead in verify_performance_config.sh
-**What was optimized:** Replaced 13 redundant `grep` subprocess calls with a single read into a memory variable (e.g. `CONTENT=$(<"$FILE")`) and native bash regular expression matching `[[ "$CONTENT" =~ (^|$'\n')pattern ]]`.
-**Before/after reasoning:** Repeated fork/exec operations in shell scripts are slow and inefficient. By caching the file contents and using built-in string/regex logic, the execution time decreases significantly.
-**Remaining performance risks:** Other test scripts still rely on subprocess invocations for similar checks, which could be refactored similarly in the future.
-
-## 2026-02-17 - NeOS Operations Hub Optimization
-**Optimization:** Replaced standard subprocess invocations with `exec` in `neos-operations-hub` wrapper script.
-**Reasoning:** The original script spawned applications (like `kdialog`, `xdg-open`, and `drkonqi`) as child processes. Since the script has no further logic after these applications are launched, leaving the parent bash shell alive consumes unnecessary memory and introduces fork/exec overhead. Using `exec` replaces the bash process directly, making the system more efficient.
-**Risks:** Low. The `exec` command inherently terminates the script upon execution, which matches the previous logic where the script naturally ended.
-
-## ⚡ Bolt: Optimize verify_pacstrap grep checks
-**What:** Replaced repeated `grep -q` subprocess spawns inside loops in `tests/verify_pacstrap.sh` with native Bash string matching and regex logic.
-**Why:** To eliminate `fork/exec` subprocess overhead during CI/validation checks on the netinstall configuration.
-**Impact:** Eliminates dozens of unnecessary subprocesses by caching `neos-packages.txt` and `neos-overlay.txt` in memory and evaluating strings natively.
-**Measurement:** Running `bash tests/verify_pacstrap.sh` will confirm functionality remains intact and executes faster.
-
-## Operations Hub Subprocess Optimization
-**What was optimized:**
-Acknowledged the Phase 8 Operations Hub Validation continued strategic pause. Evaluated `neos-operations-hub` for `snapper` or snapshot query subprocess overhead.
-
-**Before/after reasoning:**
-The `neos-operations-hub` script currently acts as a UI stub and does not invoke `snapper` or any snapshot queries directly (it uses `kdialog --msgbox` with `exec` for channel switching, which is already optimal). Since the functionality is not present, there is no subprocess overhead to optimize at this stage. The active tasks were marked as completed to clear the queue and acknowledge the strategic pause.
-
-**Remaining performance risks:**
-None at this time. Future implementation of actual snapshot querying will need to be monitored for fork/exec overhead.
+- What was optimized: Added `Environment=LC_ALL=C` to `neos-driver-manager.service`, `neos-accessibility.service`, and `neos-vm-graphics.service`.
+- Before/after reasoning: These systemd `.service` files execute bash scripts as oneshot services. Locale-aware string parsing and sorting overhead can slow down script execution at boot time. By enforcing the C locale (`LC_ALL=C`), we bypass these expensive operations, minimizing overhead and accelerating system initialization.
+- Any remaining performance risks: Negligible. The C locale is appropriate for these low-level setup scripts, which don't produce localized user-facing text directly.

@@ -31,3 +31,8 @@
 **Vulnerability:** The neos-operations-hub script allowed root execution, which could lead to accidental privileged browser or GUI sessions when invoking xdg-open.
 **Learning:** Shell scripts that act as user-level GUIs or wrappers to desktop applications (like xdg-open or kdialog) often inherit high privileges if run via sudo, creating an unintentional privilege escalation path for the invoked applications.
 **Prevention:** Always explicitly block root execution (e.g., if (( EUID == 0 )); then ...) in user-level GUI scripts to enforce strict privilege boundaries.
+
+## 2026-02-18 - CWE-459 Mitigation
+**Vulnerability:** A temporary file could be left behind in `/tmp` when generating system snapshots if the script exits abnormally.
+**Learning:** When auditing for one class of vulnerability (like command injection), it is crucial to also review the surrounding resource management lifecycle (creation and cleanup) for related vulnerabilities like CWE-459.
+**Prevention:** Ensure temporary files generated via `mktemp` are explicitly cleaned up using `trap` on common termination signals (EXIT, INT, TERM) to prevent resource leaks and potential data exposure.

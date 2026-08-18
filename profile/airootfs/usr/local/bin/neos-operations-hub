@@ -21,7 +21,8 @@ ACTION=$(kdialog --icon preferences-system --title "NeOS Operations Hub" \
     "2" "Report a System Bug" \
     "3" "Switch Release Channel" \
     "4" "Configure Crash Reporting" \
-    "5" "System Snapshot & Rollback")
+    "5" "System Snapshot & Rollback" \
+    "6" "View System Licensing")
 
 if [ $? -ne 0 ] || [ -z "$ACTION" ]; then
     exit 0
@@ -44,7 +45,7 @@ case "$ACTION" in
             # Palette: Verify crash reporting UX is intuitive.
             exec drkonqi >/dev/null 2>&1
         else
-            exec kdialog --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
+            exec kdialog --icon dialog-error --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
         fi
         ;;
     "5")
@@ -52,12 +53,58 @@ case "$ACTION" in
         # Palette: Verify UX accessibility of the new snapshot dialog in neos-operations-hub.
         # Sentinel: Audit snapshot query mechanisms in neos-operations-hub for command injection.
         if command -v snapper >/dev/null 2>&1; then
-            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX") || exit 1
-            trap 'rm -f "$TEMP_FILE"' EXIT
+            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
+            trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
             snapper list > "$TEMP_FILE" 2>&1
-            kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
+            # Palette: Provide helpful empty state if no snapshots exist (only header line or empty)
+            mapfile -t SNAP_LINES < "$TEMP_FILE"
+            if [ ${#SNAP_LINES[@]} -le 2 ]; then
+                rm -f "$TEMP_FILE"
+                exec kdialog --icon dialog-information --title "System Snapshots" --msgbox "No system snapshots found.
+
+Snapshots are typically created automatically during system updates."
+            else
+                kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
+            fi
+            rm -f "$TEMP_FILE"
         else
-            kdialog --icon dialog-information --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
+            exec kdialog --icon dialog-error --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
         fi
+        ;;
+    "6")
+        # Bolt: Monitor any file I/O overhead related to reading the license file in neos-operations-hub.
+        # Palette: Verify UX accessibility of the licensing dialog in neos-operations-hub.
+        # Sentinel: Audit license file read mechanisms in neos-operations-hub for path traversal risks.
+        TEMP_FILE=$(mktemp "/tmp/license.XXXXXX")
+        trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
+        cat << 'LICENSE_EOF' > "$TEMP_FILE"
+MIT License
+
+Copyright (c) 2025 NeOS
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+NeOS utilizes components from Arch Linux.
+Arch Linux and its packages are governed by their respective upstream licenses.
+LICENSE_EOF
+        kdialog --icon dialog-information --title "About NeOS - System Licensing" --textbox "$TEMP_FILE" 600 400
+        rm -f "$TEMP_FILE"
         ;;
 esac

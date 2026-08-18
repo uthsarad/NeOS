@@ -1,25 +1,21 @@
-# Strategic Directive: Phase 8 - Snapshot Rollback UX Validation (Strategic Pause)
+# Strategic Directive
 
-## Phase 1 — Product Alignment Check
-- **Product Vision:** NeOS aims to provide a predictable, snapshot-gated Arch Linux desktop with a refined KDE Plasma 6 experience, optimized for stability and Windows familiarity.
-- **Alignment Status:** We are operating within Phase 8 (Long-Term Maintenance). A critical best-practice requirement from the architecture docs is a GUI-friendly rollback path for Btrfs snapshots. Architect has successfully implemented the read-only/informational baseline for this feature in `neos-operations-hub`.
-- **Leverage:** The highest leverage problem currently is ensuring the new snapshot querying functionality is secure, accessible, and performant. A Strategic Pause is required until specialist validations are complete.
+## PHASE 1 — Product Alignment Check
+The product aims to provide a stable, zero-learning-curve transition for Windows migrants, maintaining rock-solid reliability before introducing new capabilities. Recent audits and phase validation efforts require us to pause new feature development to ensure system stability and allow specialist agents to complete their current pending tasks regarding Phase 4 Validation. Pushing new features now would compromise our core goal of rock-solid reliability.
 
-## Phase 2 — Technical Posture Review
-- **Stability Posture:** Architect introduced new `snapper` system query operations via a temporary file mechanism (`/tmp/snaps.XXXXXX`).
-- **Tech Debt:** Low, but pending specialist review.
-- **Overbuilding Risk:** High if we attempt a full automated rollback system before the baseline is fully vetted.
+## PHASE 2 — Technical Posture Review
+The system is generally stable, but we have pending tasks assigned to Bolt, Palette, and Sentinel regarding Phase 4 Validation. These must be acknowledged and processed before any new architectural changes are made to prevent tech debt accumulation.
 
-## Phase 3 — Priority Selection
-- No-build day (strategic pause)
+## PHASE 3 — Priority Selection
+**No-build day (strategic pause).** Priority is stabilization and hardening. We must allow specialist agents to catch up on their validation duties.
 
-## Phase 4 — Controlled Scope Definition
-- **Exact files likely impacted:** None.
+## PHASE 4 — Controlled Scope Definition
+- **Exact files likely impacted:** None (Strategic Pause).
 - **Maximum allowed surface area:** 0 files.
-- **Constraints Architect must obey:** Halt all feature development. Do not write production code. Acknowledge the Strategic Pause in your report and task manifests.
+- **Constraints Architect must obey:** Architect is strictly mandated to implement zero production code. The sole focus is acknowledging the pause.
 
-## Phase 5 — Delegation Strategy
-- **Architect:** Observe the Strategic Pause.
-- **Bolt:** Execute pending task to monitor `snapper` subprocess overhead in `neos-operations-hub`.
-- **Palette:** Execute pending task to verify UX accessibility of the new snapshot dialog in `neos-operations-hub`.
-- **Sentinel:** Execute pending task to audit snapshot query mechanisms in `neos-operations-hub` for command injection and secure temporary file usage.
+## PHASE 5 — Delegation Strategy
+- **Architect:** Write zero code. Document the pause in ARCHITECT_REPORT.md and append new tasks with a 'pending' status to specialist manifests.
+- **Bolt:** Acknowledge the Phase 4 Validation pending tasks. No new performance optimizations.
+- **Palette:** Acknowledge the Phase 4 Validation pending tasks. No new UI/UX enhancements.
+- **Sentinel:** Acknowledge the Phase 4 Validation pending tasks. No new security audits.

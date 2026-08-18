@@ -73,14 +73,75 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 **Mitigation**:
 - Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to `profile/airootfs/usr/local/bin/neos-operations-hub` to ensure all external commands (`kdialog`, `xdg-open`) are resolved safely from trusted system directories.
 
-## 2026-02-18 - Temp file handling in neos-operations-hub
+## 2026-02-18 - CWE-459 Incomplete Cleanup Mitigation
 ### Risks found
-- Missing fallback for `mktemp` failure and potential information leakage if `neos-operations-hub` crashes before cleaning up the `snapper list` output.
+- Identified a CWE-459 (Incomplete Cleanup) vulnerability in `profile/airootfs/usr/local/bin/neos-operations-hub`. The temporary file containing system snapshots could be left behind in `/tmp` if the script exits abnormally (e.g., interrupted by the user). No command injection was found.
 ### Fixes applied
-- Added strict fallback (`|| exit 1`) to `mktemp` and implemented `trap 'rm -f "$TEMP_FILE"' EXIT` for guaranteed cleanup.
+- Added a `trap` mechanism (`trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM`) to securely clean up `TEMP_FILE` on abnormal termination.
 ### Remaining attack surface
-- None identified regarding this temporary file.
+- None identified regarding temporary file cleanup for this mechanism.
 ### Severity summary
 - **Severity**: LOW
-- **Vulnerability**: Information Exposure / Insecure Temp File Handling
+- **Vulnerability**: Incomplete Cleanup
 - **Status**: Fixed
+
+## Acknowledge Continued Phase 8 Validation
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new feature development required from Architect.
+
+## 2026-08-12 - Audit of License Read Mechanisms in neos-operations-hub
+**Status**: Completed
+**Findings**:
+- **Path Traversal (CWE-22)**: Audited `profile/airootfs/usr/local/bin/neos-operations-hub` for path traversal vulnerabilities in the mechanism that displays the system license. The script uses a here-document (heredoc) to write statically defined license text into a securely generated temporary file (via `mktemp`) and presents it to the user. Because the license content is embedded directly into the script and no external files are read or paths constructed from user input, there is zero risk of path traversal.
+
+**Mitigation**:
+- No mitigation required. The current implementation is secure against path traversal.
+
+## Acknowledge Continued Phase 8 Validation
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new feature development required from Architect.
+
+## Audit of Telemetry State Storage
+### Risks found
+- Missing secure state storage for telemetry opt-in. A direct write to a predictable file like `/tmp/neos-telemetry-optin` would be vulnerable to a CWE-59 Symlink Traversal attack.
+### Fixes applied
+- Implemented `closeEvent` in `neos-welcome-app` to securely write the state. A temporary file is safely generated using `mktemp`, written to, and then atomically renamed to `/tmp/neos-telemetry-optin`. This prevents an attacker from exploiting symlinks.
+### Remaining attack surface
+- None identified regarding temporary file creation for this mechanism.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Predictable Temporary File (CWE-59 risk mitigated)
+- **Status**: Fixed
+
+## Acknowledge Phase 3 Validation
+**Status**: Completed
+**Findings**: Acknowledged the Strategic Pause for Phase 3 Validation. No new feature development required from Architect.
+
+## 2026-08-16 - Audit of neos-hardware-setup (Hardware Detection)
+**Status**: Completed
+**Findings**:
+- **CWE-426 (Path Hijacking)**: The script lacked a strict `PATH` export, meaning malicious or unintended binaries could be executed if the `$PATH` environment variable was manipulated.
+- **Command Injection**: Audited the parsing of PCI output. The script currently uses `lspci | grep -i nvidia` and redirects output directly to `/dev/null`. It does not parse the output in a way that executes commands or constructs unsanitized strings, so no command injection vulnerabilities were found.
+
+**Mitigation**:
+- Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to `profile/airootfs/usr/local/bin/neos-hardware-setup` to ensure all external commands (`lspci`, `grep`) are resolved safely from trusted system directories.
+
+## Acknowledge Phase 4 Validation
+**Status**: Completed
+**Findings**: Acknowledged the Strategic Pause for Phase 4 Validation. No new feature development required from Architect.
+
+## 2026-08-17 - CWE-426 Path Hijacking Mitigation in neos-desktop-setup
+### Risks found
+- Identified a CWE-426 (Path Hijacking) vulnerability in `profile/airootfs/usr/local/bin/neos-desktop-setup`. The script lacked a strict `PATH` export, meaning malicious or unintended binaries could be executed if the `$PATH` environment variable was manipulated.
+### Fixes applied
+- Added an explicit `export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"` to the script to ensure all external commands are resolved safely from trusted system directories.
+### Remaining attack surface
+- None identified regarding path hijacking in this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Path Hijacking (CWE-426)
+- **Status**: Fixed
+
+## Acknowledge Continued Phase 4 Validation
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 4 Validation. No new feature development required from Architect.

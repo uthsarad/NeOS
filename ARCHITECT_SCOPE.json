@@ -1,16 +1,10 @@
 {
-  "target_features": [
-    "Strategic Pause: Phase 8 Snapshot Rollback UX Validation"
-  ],
   "allowed_files": [],
-  "forbidden_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub",
-    "build.sh",
-    "tests/verify_airootfs_structure.sh"
-  ],
+  "strategic_pause": true,
   "constraints": [
-    "Do not write production code.",
-    "Halt all feature development.",
-    "Observe the Strategic Pause until Bolt, Palette, and Sentinel complete their pending validation tasks."
+    "Write zero production code.",
+    "Do not implement any new features.",
+    "Document the Phase 4 Validation pause in ARCHITECT_REPORT.md.",
+    "Append new tasks with a 'pending' status to specialist manifests."
   ]
 }

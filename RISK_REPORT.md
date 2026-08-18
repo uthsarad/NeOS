@@ -1,60 +1,80 @@
-# Risk & Priority Report: Phase 8 Initialization
+# Risk & Priority Report
 
-## Current Risk Assessment
-The technical architecture of the NeOS project maintains a highly secure and stable posture. The validation halt for Phase 7 has successfully concluded with the resolution of all critical and moderate risks.
+## Current Risk Posture
+The system risk is currently **LOW**. Sentinel has successfully audited the recent snapshot query mechanisms in `neos-operations-hub` and confirmed no command injection vulnerabilities exist. Previous vulnerabilities (symlink traversal, incomplete cleanup, missing strict PATH) have all been mitigated.
 
-**Resolved Risks (Phase 7):**
-- **Unresolved UX Inconsistency (Moderate Risk):** Palette has successfully finalized the pending task to enhance Discover UI/UX accessibility and update notifications in `discoverrc`, aligning with the Phase 6 visual identity and mitigating notification fatigue.
-- **PackageKit Privilege Escalation (High Risk):** Sentinel successfully enforced `AUTH_ADMIN` for sensitive PackageKit operations.
-- **Backend Hangs & Blocking Subprocesses (Moderate Risk):** Bolt optimized Discover configuration verification scripts and monitored startup performance.
+## Feature Creep Risk
+Introducing a new licensing view poses a minimal risk of feature creep. To mitigate this, Architect is strictly constrained to modifying the existing `neos-operations-hub` menu and displaying static text or reading a well-known local file. No external network requests or new binaries are allowed.
 
-**Emerging Risks (Phase 8):**
-1. **Infrastructure Complexity (Low Risk):** Implementing snapshot promotion workflows and release channels introduces architectural complexity. We must ensure these systems remain simple and maintainable.
-2. **UX Degradation (Low Risk):** If rollback or channel-switching tools are added, they must be GUI-first. CLI-only tools violate the project's core philosophy.
+## Priority Shift
+The priority shifts from stabilization (Strategic Pause) to completing the final Phase 8 roadmap item (Legal & Licensing). This is a low-risk, high-value addition for compliance.
+## 2026-08-11 - Validation Phase Risk Assessment
 
-## Priority Selection
-**Infrastructure improvement (Phase 8: Long-Term Maintenance and Distribution)**
+### Current Risk Posture
+The system risk is currently **LOW**. The baseline implementation of the System Licensing view has been added to `neos-operations-hub`.
 
-## Actionable Mitigation
-- **Architect Governance:** The Strategic Pause is lifted. Architect is authorized to implement the baseline infrastructure for Phase 8. Architect must prioritize GUI-friendly solutions and maintain minimal complexity.
-- **Specialist Directives:**
-  - All specialists (Bolt, Palette, Sentinel) are on standby to validate Phase 8 implementations once Architect completes the baseline.
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
 
-## Phase 8 Operations Hub Validation
+### Priority Shift
+The priority shifts back to stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully validated the recent modifications to `neos-operations-hub`.
 
-### Current Risk Assessment
-The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) introduced new risks that require specialist validation before proceeding. Bolt has successfully mitigated the performance risk by replacing standard subprocess invocations with `exec`, eliminating unnecessary fork/exec overhead.
+## 2026-08-12 - Post-Validation & Phase 3 Refinement
 
-**Resolved Risks (Phase 8 Baseline):**
-- **Unintended Privileged GUI Execution (Medium Risk):** Sentinel secured `neos-operations-hub` by blocking root execution.
-- **UX Inconsistency (Medium Risk):** Palette updated `neos-operations-hub` error states to use semantic `--error` flags for screen reader compatibility.
+### Current Risk Posture
+The system risk remains **LOW**. Specialist agents have successfully validated the `neos-operations-hub` Phase 8 additions. No path traversal, performance overhead, or accessibility regressions were found.
 
-### Priority Selection
-**New feature implementation (Incremental: Snapshot Rollback UX)**
+### Feature Creep Risk
+To prevent feature creep during the addition of Telemetry Opt-in controls, the Architect is strictly constrained to implementing only the GUI stub in `neos-welcome-app`. Backend implementation is explicitly forbidden at this stage.
 
-### Actionable Mitigation
-- **Architect Governance:** The Strategic Pause is officially lifted. Architect is authorized to implement the first incremental step of Snapshot Rollback UX in `neos-operations-hub`. To mitigate the risk of system bricking, this iteration MUST be strictly read-only or informational. Actual rollback logic is forbidden in this run.
-- **Specialist Directives:**
-  - **Sentinel:** Audit the new read-only snapshot queries for command injection vulnerabilities.
-  - **Palette:** Ensure the snapshot information is presented in a cognitively accessible format using `kdialog`.
-  - **Bolt:** Monitor the performance of snapshot queries to prevent GUI hangs.
+### Priority Shift
+The Strategic Pause is lifted. Priority shifts to **Refinement of recent feature**, specifically addressing the Phase 3 roadmap requirement for privacy and telemetry opt-in controls in the first-boot experience.
 
-## Phase 8 Snapshot Rollback UX Validation
+## 2026-08-13 - Validation Phase Risk Assessment
 
-### Current Risk Assessment
-The implementation of the baseline Phase 8 infrastructure (`neos-operations-hub`) for snapshot management introduced new risks that require specialist validation before proceeding. Architect has implemented the read-only baseline, but the specialist validations remain in a `pending` state according to the task manifests (`ai/tasks/*.json`).
+### Current Risk Posture
+The system risk is currently **LOW**. The baseline implementation of the Telemetry Opt-in UX has been added to `neos-welcome-app`.
 
-**Emerging Risks (Phase 8 Baseline Validation):**
-- **Command Injection / Privilege Escalation (Medium Risk):** The newly added `snapper list` query involves subprocess invocation and temporary file creation (`/tmp/snaps.XXXXXX`). Sentinel must audit this for injection or CWE-59 vulnerabilities.
-- **UX Accessibility (Low Risk):** The snapshot read-only viewer uses `kdialog --textbox`. Palette must ensure this presentation is cognitively accessible and keyboard navigable.
-- **Performance / GUI Hangs (Low Risk):** The `snapper list` command is executed synchronously. Bolt must verify that this does not introduce blocking subprocess overhead that could freeze the GUI.
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
 
-### Priority Selection
-**No-build day (strategic pause)**
+### Priority Shift
+The priority shifts back to stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully validated the recent modifications to `neos-welcome-app`.
 
-### Actionable Mitigation
-- **Architect Governance:** A Strategic Pause is enforced. Architect is forbidden from writing production code or implementing actual rollback logic until the read-only baseline is validated.
-- **Specialist Directives:**
-  - **Sentinel:** Complete pending audit of snapshot query mechanisms for command injection and secure temporary file usage.
-  - **Palette:** Complete pending verification of the snapshot dialog's accessibility.
-  - **Bolt:** Complete pending monitoring of `snapper` subprocess overhead.
+## 2026-08-14 - Post-Validation & Phase 4 Initiation
+
+### Current Risk Posture
+The system risk remains **LOW**. Specialist agents have successfully validated the Phase 3 `neos-welcome-app` Telemetry Opt-in additions. No symlink traversal, performance degradation, or accessibility regressions were found.
+
+### Feature Creep Risk
+Moving to Phase 4 (Hardware & Driver Reliability), the initial scope is strictly constrained to *detecting* Nvidia hardware. Driver installation is explicitly forbidden to prevent premature complexity and feature creep.
+
+### Priority Shift
+The Strategic Pause is lifted. Priority shifts to **New feature implementation**, specifically the foundational hardware detection required for Phase 4 driver automation.
+
+## 2026-08-15 - Validation Phase Risk Assessment
+
+### Current Risk Posture
+The system risk is currently **LOW**. The baseline implementation of the Nvidia GPU Detection has been added to `neos-hardware-setup`.
+
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
+
+### Priority Shift
+The priority shifts back to stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully validated the recent modifications to `neos-hardware-setup`.
+# Risk Report
+
+1. Unresolved High vulnerabilities from the deep audit (e.g., dormant kiosk installer path).
+2. Unaddressed workflow failures blocking CI.
+3. Pending validation tasks for specialists in Phase 4.
+
+## 2026-08-17 - Validation Phase Risk Assessment
+
+### Current Risk Posture
+The system risk is currently **LOW**.
+
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
+
+### Priority Shift
+The priority is stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully completed their pending tasks for Phase 4 Validation.

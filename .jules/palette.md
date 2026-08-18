@@ -10,9 +10,7 @@
 ## 2026-02-18 - SDDM QML Accessibility Roles
 **Learning:** Even if custom QML components are styled to look like inputs and buttons and support keyboard navigation, screen readers won't know their semantic purpose without explicit accessibility roles and names.
 **Action:** Added `Accessible.role: Accessible.EditableText`, `Accessible.role: Accessible.Button`, and `Accessible.name` attributes to the custom username/password inputs and login/power action buttons in `Main.qml`.
-## 2026-02-18 - kdialog semantic error states
-**Learning:** When using KDE kdialog in shell scripts for error states, generic `--msgbox` flags are not properly announced as errors by assistive technologies like Orca.
-**Action:** Use semantic flags like `--error` instead of generic `--msgbox` to ensure proper announcement and provide standard visual/audio cues.
-## 2026-02-17 - Visual Anchoring in Dialogs
-**Learning:** Text-heavy configuration and status dialogs without visual anchors require higher cognitive effort to parse, especially for neurodivergent users or those relying on screen magnifiers. Generic icons are insufficient; contextually relevant semantic icons (like `preferences-system` or `dialog-information`) significantly improve scanability.
-**Action:** Always verify the availability of standard semantic system icons (e.g., using `find /usr/share/icons`) and inject them via `--icon` in text-based dialogs (`kdialog`) to provide immediate visual context.
+
+## 2024-05-24 - Semantic dialogs for Assistive Technologies
+**Learning:** Using generic `--msgbox` flags in `kdialog` for error states prevents screen readers (like Orca) from announcing the dialog's severity or nature. Native semantic flags like `--error` are required to trigger appropriate accessibility cues.
+**Action:** Always map UI dialog states (error, warning, info) to their precise semantic `kdialog` flag equivalents instead of relying solely on visual text content in generic message boxes.

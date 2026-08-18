@@ -121,3 +121,128 @@ Executed all tests in `tests/` successfully to verify script syntax and integrit
 
 **Delegation Prepared:**
 Set the status of the previously created Phase 8 validation tasks to "pending" for Bolt, Palette, and Sentinel in their respective task manifests.
+
+## Continued Strategic Pause: Operations Hub Validation
+
+**Scope Validation:**
+The implementation strictly aligns with `ARCHITECT_SCOPE.json` which mandated a continued Strategic Pause. No production code was written.
+
+**Changes Made:**
+1. Observed the continued Strategic Pause and halted all feature development.
+2. Wait for Bolt, Palette, and Sentinel to clear pending validation tasks for `neos-operations-hub`.
+
+**Test Coverage:**
+No code was written, therefore no tests were run for new code.
+
+**Delegation Prepared:**
+Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause.
+
+## Continued Strategic Pause: Phase 8 Snapshot Rollback UX Validation
+
+**Scope Validation:**
+The implementation strictly aligns with `ARCHITECT_SCOPE.json` which mandated a continued Strategic Pause. No production code was written.
+
+**Changes Made:**
+1. Observed the continued Strategic Pause and halted all feature development.
+2. Wait for Sentinel to clear pending validation task for `neos-operations-hub`.
+
+**Test Coverage:**
+No code was written, therefore no tests were run for new code.
+
+**Delegation Prepared:**
+Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause.
+
+## Baseline Implementation: Phase 8 System Licensing
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs the completion of Phase 8 features to view system licensing natively within the OS.
+
+**Changes Made:**
+1. Modified `profile/airootfs/usr/local/bin/neos-operations-hub` to include option "6" for viewing system licensing.
+2. Implemented a static text display using `kdialog --textbox` to show the MIT license and acknowledge Arch Linux upstream components.
+3. Added `# Bolt:`, `# Palette:`, and `# Sentinel:` delegation comments to the script.
+
+**Test Coverage:**
+Executed all tests in `tests/` successfully to verify script syntax and integrity.
+
+**Delegation Prepared:**
+Task manifests generated for `bolt.json`, `palette.json`, and `sentinel.json` to monitor I/O overhead, verify accessibility, and audit path traversal risks respectively.
+
+## Continued Strategic Pause: Phase 8 System Licensing Validation
+
+**Scope Validation:**
+The implementation strictly aligns with `ARCHITECT_SCOPE.json` which mandated a Strategic Pause. No production code was written.
+
+**Changes Made:**
+1. Observed the Strategic Pause and halted all feature development.
+2. Wait for Bolt, Palette, and Sentinel to clear pending validation tasks for `neos-operations-hub`.
+
+**Test Coverage:**
+No code was written, therefore no tests were run for new code.
+
+**Delegation Prepared:**
+Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the Strategic Pause.
+
+## Baseline Implementation: Phase 3 Privacy and Telemetry Opt-in Controls
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs the implementation of a visible toggle or button for Telemetry/Privacy Opt-in in neos-welcome-app.
+
+**Changes Made:**
+1. Modified `profile/airootfs/usr/local/bin/neos-welcome-app` to include a QCheckBox for telemetry opt-in.
+2. Set the default state of the checkbox to False (unchecked) to ensure a privacy-first approach.
+3. Added `# [BOLT]`, `# [PALETTE]`, and `# [SENTINEL]` delegation comments to the script.
+
+**Test Coverage:**
+Executed all tests in `tests/` successfully to verify script syntax and integrity.
+
+**Delegation Prepared:**
+Task manifests generated for `bolt.json`, `palette.json`, and `sentinel.json` to monitor startup performance, verify accessibility, and audit state storage respectively.
+
+## Strategic Pause: Phase 3 Validation
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs a Strategic Pause for Phase 3 Validation.
+
+**Changes Made:**
+1. Acknowledged the Strategic Pause. No new feature development was performed.
+2. Appended acknowledgment tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json`.
+
+**Test Coverage:**
+No production code was written. Executed verification test suite to ensure stability.
+
+**Delegation Prepared:**
+Delegated tasks to specialists to observe the Strategic Pause.
+
+## Phase 4 Update
+Implemented initial Nvidia GPU detection baseline in `neos-hardware-setup`. No installation mechanisms have been added yet per constraints. Delegated tasks to Bolt, Palette, and Sentinel.
+
+## Strategic Pause: Phase 4 Validation
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs a Strategic Pause for Phase 4 Validation.
+
+**Changes Made:**
+1. Acknowledged the Strategic Pause. No new feature development was performed.
+2. Appended acknowledgment tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json`.
+
+**Test Coverage:**
+No production code was written. Executed verification test suite to ensure stability.
+
+**Delegation Prepared:**
+Delegated tasks to specialists to observe the Strategic Pause.
+
+## Continued Strategic Pause: Phase 4 Validation
+
+**Scope Validation:**
+The implementation strictly aligns with `ARCHITECT_SCOPE.json` which mandated a continued Strategic Pause. No production code was written.
+
+**Changes Made:**
+1. Observed the continued Strategic Pause and halted all feature development.
+2. Wait for Bolt, Palette, and Sentinel to clear pending validation tasks.
+
+**Test Coverage:**
+No code was written, therefore no tests were run for new code.
+
+**Delegation Prepared:**
+Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause.
