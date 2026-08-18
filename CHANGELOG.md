@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [2026.08.18] - 2026-08-18
 
+### Added
+- **Modern Language Tooling Stack**:
+  - **Go CLI Utility (`tools/neosctl/`)**: High-performance Go tool for profile auditing, multi-threaded mirror latency benchmarking via goroutines, and distribution metadata reporting.
+  - **C# .NET Compliance & Diagnostics Inspector (`tools/NeosDiagnostics/`)**: Modern .NET 8 cross-platform engine validating security sysctl posture, ZRAM performance flags, package signature policies, and JSON report generation.
+  - **Ruby Task Runner & Automation Suite (`tools/neos_tasks.rb` & `Rakefile`)**: Idiomatic Ruby task runner for profile auditing, manifest generation, and verification test orchestration.
+  - **Verification Test Gates**: Added `tests/verify_go_neosctl.sh`, `tests/verify_csharp_diagnostics.sh`, and `tests/verify_ruby_tasks.sh` to the test suite.
+
 ### Changed
 - **Official Arch Linux Mirrorlist Refresh**: Updated `profile/airootfs/etc/pacman.d/neos-mirrorlist` to the latest official HTTPS mirrorlist from archlinux.org with prioritized global CDN and Tier-1 mirrors (`geo.mirror.pkgbuild.com`, `fastly.mirror.pkgbuild.com`, `mirror.fcix.net`, `mirrors.kernel.org`, `mirror.osbeck.com`).
 - **Modernized Upstream Package Dependencies**:

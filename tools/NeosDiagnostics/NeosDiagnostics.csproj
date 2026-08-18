@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>neos-diag</AssemblyName>
+    <RootNamespace>Neos.Diagnostics</RootNamespace>
+    <Version>2026.08.18</Version>
+    <Authors>NeOS Core Team</Authors>
+    <Description>NeOS High-Performance Cross-Platform Diagnostic &amp; Security Compliance Inspector</Description>
+  </PropertyGroup>
+
+</Project>
