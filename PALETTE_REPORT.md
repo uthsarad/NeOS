@@ -1,13 +1,27 @@
 # Palette Report
 
-## Accessibility Fixes
-- Ensured Discover layout categorize defaults (`installedPageCategorize=true`) are set for better cognitive accessibility.
-- **Screen Reader Support in SDDM**: Added explicit `Accessible.role` (e.g. `Accessible.EditableText`, `Accessible.Button`) and `Accessible.name` bindings to all interactive fields (username, password, login button, and power controls) in the SDDM theme `Main.qml`. Because these are custom QML components, without explicit labels they remain silent or incorrectly announced by Orca or standard screen readers.
-- **Keyboard Navigation in SDDM**: The session selector and power buttons at the bottom of the SDDM login screen were previously untabbable `Text` elements. I wrapped them in `Rectangle` elements and added explicit `activeFocusOnTab: true`, `KeyNavigation.tab`, and visual borders upon `activeFocus`. The tab navigation now flows seamlessly from the "Log In" button to the session selector, power buttons, and cycles back to the username field.
+## UX Enhancements & Accessibility Fixes
+- Improved the newly added telemetry opt-in checkbox in `neos-welcome-app`.
+- **Contrast**: Increased the text color contrast of the checkbox label against the dark background (`#e6e9f2`).
+- **Focus Indicators**: Added a visible focus state for keyboard navigation (border and translucent background).
+- **Accessibility**: Added explicit `AccessibleName` and `AccessibleDescription` properties for screen readers.
+- **Interactivity**: Set the cursor to `PointingHandCursor` for visual feedback on hover.
+- **Keyboard Navigation**: Explicitly defined the tab order (`telemetry_checkbox` -> `try_btn` -> `install_btn`) to ensure logical keyboard flow.
 
-## UX Improvements
-- Aligned update flow with Windows-familiar offline updates by setting `UseOfflineUpdates=true` in `discoverrc`.
-- Added subtle visual borders to the session and power actions upon keyboard focus to clearly indicate which action is selected, solving the issue where keyboard-only users lacked visual focus feedback for non-primary actions.
+## Usability Risks
+- Still need to test how the dark mode UI performs in brightly lit environments.
+- Monitor whether users understand the implications of the telemetry opt-in.
 
-## Remaining Usability Risks
-- The theme wallpaper background currently depends on a configured background file. If it fails, the background is just a gradient. An additional empty state message might be helpful but wasn't critical for this session.
+## Strategic Pause: Phase 3 Validation
+- Acknowledged the strategic pause directed by the Architect.
+- Halted all feature enhancements and UX development.
+- Completed task manifest acknowledgement.
+
+## Strategic Pause: Phase 4 Validation
+- Acknowledged the strategic pause directed by the Architect.
+- Implemented a concrete UX enhancement in `neos-hardware-setup` by adding visual anchors (terminal colors and emojis) and a `kdialog --passivepopup` integration for GPU detection state.
+
+## Strategic Pause: Continued Phase 4 Validation
+- Acknowledged the continued strategic pause directed by the Architect.
+- Halted all feature enhancements and UX development.
+- Completed task manifest acknowledgement.

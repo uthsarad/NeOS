@@ -27,7 +27,12 @@
 **Learning:** Using predictable paths in world-writable directories like `/tmp` allows local attackers to pre-create symlinks pointing to sensitive files, which are then inadvertently overwritten by the script.
 **Prevention:** Always use `mktemp` to securely generate temporary file names when writing to shared or world-writable directories.
 
-## 2026-02-18 - Missing Privilege Boundary for System Operations in User Hub
-**Vulnerability:** System-wide operations (like release channel switching) accessible via a user-facing GUI hub lacked explicit administrative authentication.
-**Learning:** Even if a GUI action is a stub or informational message, failing to authenticate the user before execution creates an architectural vulnerability that can be exploited once the operation is fully implemented.
-**Prevention:** Always enforce privilege checks (e.g., using `pkexec true`) immediately upon selecting an administrative action in user-facing hubs, before proceeding with the operation logic.
+## 2026-02-18 - Block root execution for GUI scripts invoking xdg-open
+**Vulnerability:** The neos-operations-hub script allowed root execution, which could lead to accidental privileged browser or GUI sessions when invoking xdg-open.
+**Learning:** Shell scripts that act as user-level GUIs or wrappers to desktop applications (like xdg-open or kdialog) often inherit high privileges if run via sudo, creating an unintentional privilege escalation path for the invoked applications.
+**Prevention:** Always explicitly block root execution (e.g., if (( EUID == 0 )); then ...) in user-level GUI scripts to enforce strict privilege boundaries.
+
+## 2026-02-18 - CWE-459 Mitigation
+**Vulnerability:** A temporary file could be left behind in `/tmp` when generating system snapshots if the script exits abnormally.
+**Learning:** When auditing for one class of vulnerability (like command injection), it is crucial to also review the surrounding resource management lifecycle (creation and cleanup) for related vulnerabilities like CWE-459.
+**Prevention:** Ensure temporary files generated via `mktemp` are explicitly cleaned up using `trap` on common termination signals (EXIT, INT, TERM) to prevent resource leaks and potential data exposure.
