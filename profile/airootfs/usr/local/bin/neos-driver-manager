@@ -92,11 +92,13 @@ while IFS= read -r line; do
         DEVICE_DESC="${line#*:[0-9a-f][0-9a-f] }"
         printf "  - \e[1m%s\e[0m\n" "$DEVICE_DESC"
         
-        # Check if driver is in use
-        BLOCK_CONTENT=$(echo "$NET_BLOCKS" | sed -n "/$line/,/^[0-9a-f]/p" | grep "Kernel driver in use" || true)
+        # Check if driver is in use using native bash string manipulation to avoid fork/exec overhead
+        REST="${NET_BLOCKS#*"$line"}"
+        BLOCK="${REST%%$'\n'[0-9a-f]*}"
         
-        if [[ -n "$BLOCK_CONTENT" ]]; then
-            DRIVER_NAME="${BLOCK_CONTENT#*: }"
+        if [[ "$BLOCK" == *"Kernel driver in use: "* ]]; then
+            DRIVER_NAME="${BLOCK#*Kernel driver in use: }"
+            DRIVER_NAME="${DRIVER_NAME%%$'\n'*}"
             echo -e "    \e[32m✅ Driver in use:\e[0m $DRIVER_NAME"
         else
             echo -e "    \e[31m⚠️  No driver detected!\e[0m"

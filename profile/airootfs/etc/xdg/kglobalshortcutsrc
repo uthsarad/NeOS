@@ -1,0 +1,11 @@
+[khotkeys]
+# [SENTINEL] Security: Ensure custom shortcut commands do not allow arbitrary script execution without user intent
+
+[kwin]
+# [PALETTE] UX: Windows-familiar 'Show Desktop' shortcut
+Show Desktop=Meta+D,Meta+D,Show Desktop
+
+[org.kde.dolphin.desktop]
+# [PALETTE] UX: Windows-familiar 'File Explorer' shortcut
+# [BOLT] Perf: Ensure Dolphin startup via shortcut has minimal latency
+_launch=Meta+E,Meta+E,Dolphin

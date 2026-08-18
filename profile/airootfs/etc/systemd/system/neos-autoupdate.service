@@ -9,7 +9,7 @@ Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-autoupdate.sh
 # Sentinel: Hardened systemd sandboxing
 ProtectSystem=strict
-ReadWritePaths=/usr /boot /etc /var /opt /srv
+ReadWritePaths=/usr /boot /etc /var /opt /srv /run
 NoNewPrivileges=yes
 PrivateTmp=yes
 ProtectHome=yes

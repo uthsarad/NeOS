@@ -15,14 +15,13 @@ set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-virt="$(systemd-detect-virt 2>/dev/null || echo none)"
-if [ "$virt" = "none" ]; then
+if ! systemd-detect-virt -q 2>/dev/null; then
     exit 0   # bare metal: keep hardware OpenGL
 fi
 
 if ! grep -q '^LIBGL_ALWAYS_SOFTWARE=' /etc/environment 2>/dev/null; then
     {
-        echo "# NeOS: VM detected ($virt) — force software OpenGL so Plasma renders."
+        echo "# NeOS: VM detected — force software OpenGL so Plasma renders."
         echo "# Remove these two lines if you enable real 3D acceleration in the VM."
         echo "LIBGL_ALWAYS_SOFTWARE=1"
     } >> /etc/environment

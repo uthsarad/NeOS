@@ -23,16 +23,26 @@ FAIL=0
 echo "Verifying graphical boot target + boot-logo cat..."
 
 # 1. Installed system defaults to graphical.target (fixes boot-to-tty1).
-if grep -qE '^\s*targets:' "$SERVICES" \
-   && grep -qE 'name:\s*"?graphical"?' "$SERVICES"; then
+SERVICES_CONTENT=""
+if [[ -f "$SERVICES" ]]; then
+    SERVICES_CONTENT=$(<"$SERVICES")
+fi
+
+if [[ "$SERVICES_CONTENT" =~ (^|$'\n')[[:space:]]*targets: ]] && [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?graphical\"? ]]; then
     echo "✅ services-systemd sets default target to graphical"
 else
     echo "❌ services-systemd must set 'targets: [graphical]' or it boots to tty1"; FAIL=1
 fi
-if grep -qE 'name:\s*"?sddm"?' "$SERVICES"; then
+if [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?sddm\"? ]]; then
     echo "✅ sddm display manager is enabled"
 else
     echo "❌ sddm is not enabled"; FAIL=1
+fi
+
+# ⚡ Bolt: Read script content once to avoid repeated fork/exec overhead for substring checks
+SCRIPT_CONTENT=""
+if [[ -f "$SCRIPT" ]]; then
+    SCRIPT_CONTENT=$(<"$SCRIPT")
 fi
 
 # 2. Boot-splash cat frames are present (29 frames) and wired into the script.
@@ -42,7 +52,7 @@ if [[ "$frames" -eq 29 ]]; then
 else
     echo "❌ expected 29 cat-NN.png frames, found $frames"; FAIL=1
 fi
-if grep -q 'cat-\"' "$SCRIPT" || grep -q '\"cat-' "$SCRIPT"; then
+if [[ "$SCRIPT_CONTENT" == *'cat-"'* ]] || [[ "$SCRIPT_CONTENT" == *'"cat-'* ]]; then
     echo "✅ neos.script animates the cat frames"
 else
     echo "❌ neos.script does not reference the cat- frames"; FAIL=1
@@ -56,25 +66,25 @@ else
     echo "✅ no logo.png in the theme (cat-only splash)"
 fi
 # No wordmark or brand text
-if grep -qE '"NeOS"' "$SCRIPT"; then
+if [[ "$SCRIPT_CONTENT" == *'"NeOS"'* ]]; then
     echo "❌ neos.script still shows the NeOS wordmark"; FAIL=1
 else
     echo "✅ neos.script has no wordmark"
 fi
 # No tagline
-if grep -qE '"Arch Linux' "$SCRIPT"; then
+if [[ "$SCRIPT_CONTENT" == *'"Arch Linux'* ]]; then
     echo "❌ neos.script still shows the tagline"; FAIL=1
 else
     echo "✅ neos.script has no tagline"
 fi
 # No dot indicator
-if grep -qE 'dot_' "$SCRIPT"; then
+if [[ "$SCRIPT_CONTENT" == *'dot_'* ]]; then
     echo "❌ neos.script still has dot indicator elements"; FAIL=1
 else
     echo "✅ neos.script has no dot indicator"
 fi
 # No status text
-if grep -qE 'Starting\.\.\.' "$SCRIPT"; then
+if [[ "$SCRIPT_CONTENT" == *'Starting...'* ]]; then
     echo "❌ neos.script still has status text"; FAIL=1
 else
     echo "✅ neos.script has no status text"
@@ -83,7 +93,12 @@ fi
 # 3b. The KDE/Plasma login splash (ksplash) is disabled — the Plymouth cat is
 #     the only boot screen users see.
 KSPLASHRC="profile/airootfs/etc/skel/.config/ksplashrc"
-if [[ -f "$KSPLASHRC" ]] && grep -q '^Engine=none' "$KSPLASHRC" && grep -q '^Theme=None' "$KSPLASHRC"; then
+KSPLASHRC_CONTENT=""
+if [[ -f "$KSPLASHRC" ]]; then
+    KSPLASHRC_CONTENT=$(<"$KSPLASHRC")
+fi
+
+if [[ -f "$KSPLASHRC" ]] && [[ "$KSPLASHRC_CONTENT" == *$'\nEngine=none'* || "$KSPLASHRC_CONTENT" == 'Engine=none'* ]] && [[ "$KSPLASHRC_CONTENT" == *$'\nTheme=None'* || "$KSPLASHRC_CONTENT" == 'Theme=None'* ]]; then
     echo "✅ ksplash disabled via skel ksplashrc (no KDE boot screen)"
 else
     echo "❌ $KSPLASHRC missing or does not disable ksplash"; FAIL=1
@@ -95,7 +110,7 @@ if find "$THEME_DIR" -maxdepth 1 -name 'spinner-*.png' | grep -q .; then
 else
     echo "✅ stale spinner assets removed"
 fi
-if grep -q 'spinner' "$SCRIPT"; then
+if [[ "$SCRIPT_CONTENT" == *'spinner'* ]]; then
     echo "❌ neos.script still references removed spinner frames"; FAIL=1
 else
     echo "✅ neos.script has no stale spinner references"

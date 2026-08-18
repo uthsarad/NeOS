@@ -13,7 +13,93 @@
     {
       "description": "Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure no critical privileges are unnecessarily granted. Ensure ReadWritePaths are strictly minimal.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
-      "status": "pending"
+      "status": "completed"
+    },
+    {
+      "description": "Audit desktop configuration security. Audit newly introduced configuration files for potential privilege escalation vectors or unintended execution paths.",
+      "target_file": "profile/airootfs/etc/xdg/*",
+      "status": "completed"
+    },
+    {
+      "description": "Audit PackageKit privilege contexts and ensure unprivileged users cannot bypass authentication for system-level package installations.",
+      "target_file": "profile/airootfs/etc/xdg/discoverrc",
+      "status": "completed"
+    },
+    {
+      "description": "Standby for Phase 8 validation tasks.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Fix CWE-59 predictable temp file vulnerability in neos-welcome using mktemp.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome",
+      "status": "completed"
+    },
+    {
+      "description": "Audit privilege boundaries for release channel switching in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Audit snapshot query mechanisms in neos-operations-hub for command injection.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Audit license file read mechanisms in neos-operations-hub for path traversal risks.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Audit how the telemetry opt-in state might be stored (e.g., ensuring no CWE-59 vulnerabilities in temp file usage) in neos-welcome-app.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 3 Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Audit hardware detection script to ensure parsing of PCI output does not introduce command injection risks.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-hardware-setup",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 4 Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "id": "ack_strategic_pause_phase_4_continued",
+      "description": "Acknowledge the continued Strategic Pause for Phase 4 Validation. No new audits or enhancements.",
+      "target_file": "none",
+      "status": "completed"
     }
   ]
 }

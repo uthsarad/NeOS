@@ -1,0 +1,18 @@
+/* Require admin authentication for PackageKit system modifications to prevent unprivileged users from installing/removing packages */
+polkit.addRule(function(action, subject) {
+    if (action.id.indexOf("org.freedesktop.packagekit.") == 0) {
+        if (action.id == "org.freedesktop.packagekit.package-install" ||
+            action.id == "org.freedesktop.packagekit.package-remove" ||
+            action.id == "org.freedesktop.packagekit.system-update" ||
+            action.id == "org.freedesktop.packagekit.system-trust-source" ||
+            action.id == "org.freedesktop.packagekit.system-sources-configure" ||
+            action.id == "org.freedesktop.packagekit.offline-update") {
+
+            if (subject.isInGroup("wheel")) {
+                return polkit.Result.AUTH_ADMIN;
+            } else {
+                return polkit.Result.NO;
+            }
+        }
+    }
+});
