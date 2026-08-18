@@ -4,7 +4,7 @@
   "constraints": [
     "Write zero production code.",
     "Do not implement any new features.",
-    "Document the Phase 4 Validation pause in ARCHITECT_REPORT.md.",
+    "Document the continued Phase 4 Validation pause in ARCHITECT_REPORT.md.",
     "Append new tasks with a 'pending' status to specialist manifests."
   ]
 }
