@@ -139,9 +139,10 @@ fi
 if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
     echo -e "  - \e[35mVirtualization:\e[0m $VIRT_TYPE detected. Optimizing guest modules..."
     case "$VIRT_TYPE" in
-        kvm|qemu) for mod in virtio-pci virtio-blk virtio-net; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
-        oracle)   for mod in vboxguest vboxsf vboxvideo; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
-        vmware)   for mod in vmw-balloon vmw-vmci vmwgfx; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+        kvm|qemu)         for mod in virtio-pci virtio-blk virtio-net; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+        oracle)           for mod in vboxguest vboxsf vboxvideo; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+        vmware)           for mod in vmw-balloon vmw-vmci vmwgfx; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+        microsoft|hyperv) for mod in hv_vmbus hv_storvsc hv_netvsc hv_utils; do is_loaded "$mod" || modprobe -- "$mod" || true; done ;;
     esac
 fi
 

@@ -21,7 +21,7 @@ shopt -u nullglob
 
 if (( nvidia_found )); then
     echo -e "\e[1;32m✅ Nvidia GPU detected.\e[0m"
-    if command -v kdialog >/dev/null 2>&1 && [[ -n "$DISPLAY" ]]; then
+    if command -v kdialog >/dev/null 2>&1 && [[ -n "${DISPLAY:-}" || -n "${WAYLAND_DISPLAY:-}" ]]; then
         kdialog --icon dialog-information --title "NeOS Hardware Setup - GPU Detection" --passivepopup "Nvidia GPU detected." 5 &
     fi
 else
