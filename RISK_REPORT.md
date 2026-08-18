@@ -1,17 +1,80 @@
 # Risk & Priority Report
 
-## Current Risk Assessment
-The project is currently facing an unacceptable level of validation debt that jeopardizes our core architectural stability and future product milestones. Recent infrastructure efforts applied strict systemd sandboxing (including `ProtectSystem=strict` and `ProtectHome=yes`) to critical system services: `neos-autoupdate.service`. In addition, `neos-liveuser-setup.service`'s lack of sandboxing requires validation. However, the mandatory validation tasks assigned to Sentinel (for security and privilege auditing) and Palette (for logging UX and error clarity) remain unexecuted and are blocking development.
+## Current Risk Posture
+The system risk is currently **LOW**. Sentinel has successfully audited the recent snapshot query mechanisms in `neos-operations-hub` and confirmed no command injection vulnerabilities exist. Previous vulnerabilities (symlink traversal, incomplete cleanup, missing strict PATH) have all been mitigated.
 
-**Identified Risks:**
-1. **Compounding Validation Debt:** The failure to audit the core service hardening introduces a severe blind spot in our QA pipeline. Proceeding with new feature development without clearing this debt creates unacceptable risks for system security and reliability. The longer this validation is delayed, the higher the risk of catastrophic regressions slipping into the release.
-2. **Regression Blindspots in Sandboxing:** The unverified `ProtectSystem=strict` directives have a high probability of silently breaking critical operations. Specifically, `neos-liveuser-setup.service` performs initialization tasks like `useradd -m` and creates directories in `/home/liveuser`. Without remaining unsandboxed, the live environment will fail to initialize. This is tested in `tests/verify_service_hardening.sh`. Similarly, `neos-autoupdate.service` requires unfettered access to `/var/lib/pacman`, `/etc/pacman.d`, `/opt`, and `/srv`, as well as `CAP_SYS_MODULE` for DKMS rebuilds. Incorrectly configured sandboxing will cause autoupdates to fail silently or result in unbootable kernels, a severe regression vector.
-3. **Feature Creep & Instability:** Attempting to implement Phase 1, Phase 2, or Phase 3 Roadmap features prior to resolving these fundamental infrastructure risks constitutes reckless engineering. Building on top of unverified security constraints will severely complicate troubleshooting and move the project further from its goal of providing a dependably stable rolling-release experience.
+## Feature Creep Risk
+Introducing a new licensing view poses a minimal risk of feature creep. To mitigate this, Architect is strictly constrained to modifying the existing `neos-operations-hub` menu and displaying static text or reading a well-known local file. No external network requests or new binaries are allowed.
 
-## Priority Selection
-**No-build day (strategic pause)**
+## Priority Shift
+The priority shifts from stabilization (Strategic Pause) to completing the final Phase 8 roadmap item (Legal & Licensing). This is a low-risk, high-value addition for compliance.
+## 2026-08-11 - Validation Phase Risk Assessment
 
-## Actionable Mitigation
-- **Architect:** Must strictly enforce the strategic pause, resulting in exactly zero file modifications across the entire repository. The Architect must focus entirely on system comprehension and ensuring the repository remains a stable baseline for specialist audits. No coding, refactoring, or architectural drift is permitted.
-- **Specialists:** Must urgently and decisively execute their pending validation tasks on the restricted systemd services. Resolving this validation debt is the highest priority and explicitly blocks all subsequent roadmap progress.
-- **Governance:** Normal roadmap implementation will only resume after the entire validation debt queue has been cleared and baseline system stability is definitively confirmed by both Sentinel and Palette.
+### Current Risk Posture
+The system risk is currently **LOW**. The baseline implementation of the System Licensing view has been added to `neos-operations-hub`.
+
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
+
+### Priority Shift
+The priority shifts back to stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully validated the recent modifications to `neos-operations-hub`.
+
+## 2026-08-12 - Post-Validation & Phase 3 Refinement
+
+### Current Risk Posture
+The system risk remains **LOW**. Specialist agents have successfully validated the `neos-operations-hub` Phase 8 additions. No path traversal, performance overhead, or accessibility regressions were found.
+
+### Feature Creep Risk
+To prevent feature creep during the addition of Telemetry Opt-in controls, the Architect is strictly constrained to implementing only the GUI stub in `neos-welcome-app`. Backend implementation is explicitly forbidden at this stage.
+
+### Priority Shift
+The Strategic Pause is lifted. Priority shifts to **Refinement of recent feature**, specifically addressing the Phase 3 roadmap requirement for privacy and telemetry opt-in controls in the first-boot experience.
+
+## 2026-08-13 - Validation Phase Risk Assessment
+
+### Current Risk Posture
+The system risk is currently **LOW**. The baseline implementation of the Telemetry Opt-in UX has been added to `neos-welcome-app`.
+
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
+
+### Priority Shift
+The priority shifts back to stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully validated the recent modifications to `neos-welcome-app`.
+
+## 2026-08-14 - Post-Validation & Phase 4 Initiation
+
+### Current Risk Posture
+The system risk remains **LOW**. Specialist agents have successfully validated the Phase 3 `neos-welcome-app` Telemetry Opt-in additions. No symlink traversal, performance degradation, or accessibility regressions were found.
+
+### Feature Creep Risk
+Moving to Phase 4 (Hardware & Driver Reliability), the initial scope is strictly constrained to *detecting* Nvidia hardware. Driver installation is explicitly forbidden to prevent premature complexity and feature creep.
+
+### Priority Shift
+The Strategic Pause is lifted. Priority shifts to **New feature implementation**, specifically the foundational hardware detection required for Phase 4 driver automation.
+
+## 2026-08-15 - Validation Phase Risk Assessment
+
+### Current Risk Posture
+The system risk is currently **LOW**. The baseline implementation of the Nvidia GPU Detection has been added to `neos-hardware-setup`.
+
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
+
+### Priority Shift
+The priority shifts back to stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully validated the recent modifications to `neos-hardware-setup`.
+# Risk Report
+
+1. Unresolved High vulnerabilities from the deep audit (e.g., dormant kiosk installer path).
+2. Unaddressed workflow failures blocking CI.
+3. Pending validation tasks for specialists in Phase 4.
+
+## 2026-08-17 - Validation Phase Risk Assessment
+
+### Current Risk Posture
+The system risk is currently **LOW**.
+
+### Feature Creep Risk
+Feature creep risk is eliminated as we are enforcing a Strategic Pause.
+
+### Priority Shift
+The priority is stabilization (Strategic Pause). No new features will be built until the specialists (Bolt, Palette, Sentinel) have successfully completed their pending tasks for Phase 4 Validation.

@@ -142,3 +142,9 @@ rsync
 # Architect Requirements
 sbctl
 mokutil
+
+# Software Management (Phase 7)
+discover
+packagekit-qt6
+flatpak
+fwupd

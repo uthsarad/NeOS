@@ -19,6 +19,97 @@
       "description": "Monitor startup time overhead after implementing systemd strict sandboxing in neos-autoupdate.service and neos-liveuser-setup.service.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
       "status": "completed"
+    },
+    {
+      "description": "Monitor the performance impact of new UX configurations. Ensure that setting default LookAndFeel and global shortcuts does not significantly degrade Plasma startup times.",
+      "target_file": "profile/airootfs/etc/xdg/*",
+      "status": "completed"
+    },
+    {
+      "description": "Optimize grep checks in verify_boot_gui.sh to eliminate fork/exec overhead.",
+      "target_file": "tests/verify_boot_gui.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Monitor Discover startup performance and ensure no blocking subprocesses are introduced.",
+      "target_file": "profile/airootfs/etc/xdg/discoverrc",
+      "status": "completed"
+    },
+    {
+      "description": "Optimize grep checks in verify_performance_config.sh to eliminate fork/exec overhead.",
+      "target_file": "tests/verify_performance_config.sh",
+      "status": "completed"
+    },
+    {
+      "description": "Standby for Phase 8 validation tasks.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Monitor subprocess overhead from kdialog in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Monitor subprocess overhead from snapper or snapshot queries in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Monitor any file I/O overhead related to reading the license file in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Monitor neos-welcome-app startup performance for any degradation due to the new telemetry UI.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 3 Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Optimize hardware detection logic.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-hardware-setup",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge Phase 4 Validation (Strategic Pause). No new feature development from Architect.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "id": "ack_strategic_pause_phase_4_continued",
+      "description": "Acknowledge the continued Strategic Pause for Phase 4 Validation. No new audits or enhancements.",
+      "target_file": "none",
+      "status": "completed"
     }
   ]
 }

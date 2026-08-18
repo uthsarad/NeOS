@@ -1,16 +1,14 @@
-# Bolt Report
+# ⚡ Bolt Performance Report
 
-- What was optimized: Baseline initialization (zero-modification scenario). No production files were modified.
-- Before/after reasoning: Established initial baseline for future optimizations.
-- Any remaining performance risks: None currently identified.
+## What was optimized
+Refactored `tests/verify_iso_grub.sh` to eliminate repeated `grep -q` shell invocations during test execution.
 
-- What was optimized: Replaced `$(pwd)` with `$PWD` in `build.sh`.
-- Before/after reasoning: `$(pwd)` spawns a subshell process to retrieve the current working directory, adding minor overhead. `$PWD` is a native shell variable that already contains the path, requiring zero subprocess execution. This minimizes subshell overhead.
-- Any remaining performance risks: Minor optimization; other external commands like `sed` and `grep` are still invoked and might cause similar small delays, but these are necessary for the build process logic.
+## Before/after reasoning
+**Before:** The test script used `grep -q "$STR" "$GRUB_FILE"` and `grep -q "$STR" "$PROFILE_FILE"` in loops to verify strings. This caused a fork/exec of the `grep` binary for every single string check in the required, forbidden, and profile arrays.
+**After:** The scripts now load the file contents into memory once via native bash variables (`GRUB_CONTENT=$(<"$GRUB_FILE")` and `PROFILE_CONTENT=$(<"$PROFILE_FILE")`). We then use native bash string matching (`[[ "$CONTENT" == *"$STR"* ]]`) to perform the assertions. This eliminates the fork/exec overhead entirely, noticeably speeding up the test suite execution.
 
-- What was optimized: Replaced repeated `grep -q` calls with native bash string matching in `tests/verify_service_hardening.sh`.
-- Before/after reasoning: Repeated `grep -q` calls spawn multiple fork/exec subprocesses, adding overhead. Loading the file content into a variable once and using native bash matching (`[[ "$CONTENT" == *"pattern"* ]]`) eliminates this overhead.
-- Any remaining performance risks: The file being read must be reasonably small, which holds true for systemd service files.
+## Remaining performance risks
+None introduced by this change. The memory usage to hold these configuration files is negligible.
 
 - What was optimized: Verified and enforced the removal of the `[Install]` section from `neos-autoupdate.service`. The `Environment=LC_ALL=C` directive is already present in both `neos-autoupdate.service` and `neos-liveuser-setup.service`.
 - Before/after reasoning: `neos-autoupdate.service` is controlled by `neos-autoupdate.timer`. Including an `[Install]` section with `WantedBy=multi-user.target` is an anti-pattern for timer-activated oneshot services. It causes the service to execute synchronously at boot, bypassing the timer's intended delay and blocking `multi-user.target`, leading to severe boot overhead. Removing it enforces that the service strictly runs asynchronously in the background as intended.

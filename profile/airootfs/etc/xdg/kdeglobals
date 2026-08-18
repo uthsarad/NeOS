@@ -1,0 +1,5 @@
+[KDE]
+# [PALETTE] UX: Verify if Breeze Dark has sufficient contrast for new users transitioning from Windows
+# [BOLT] Perf: Monitor if setting global LookAndFeel impacts first-boot initialization time
+# [SENTINEL] Security: No direct security impact, but ensure theme parsing cannot be exploited
+LookAndFeelPackage=org.kde.breezedark.desktop

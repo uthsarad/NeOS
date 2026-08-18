@@ -6,7 +6,9 @@ CONFIG_FILE="profile/airootfs/etc/sysctl.d/90-neos-security.conf"
 echo "Verifying security configuration in $CONFIG_FILE..."
 
 # Check for fs.protected_hardlinks
-if grep -q "fs.protected_hardlinks = 1" "$CONFIG_FILE"; then
+CONFIG_CONTENT=$(<"$CONFIG_FILE")
+
+if [[ "$CONFIG_CONTENT" == *"fs.protected_hardlinks = 1"* ]]; then
     echo "✅ fs.protected_hardlinks found"
 else
     echo "❌ fs.protected_hardlinks NOT found"
@@ -14,7 +16,7 @@ else
 fi
 
 # Check for fs.protected_symlinks
-if grep -q "fs.protected_symlinks = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"fs.protected_symlinks = 1"* ]]; then
     echo "✅ fs.protected_symlinks found"
 else
     echo "❌ fs.protected_symlinks NOT found"
@@ -22,7 +24,7 @@ else
 fi
 
 # Check for kernel.unprivileged_bpf_disabled
-if grep -q "kernel.unprivileged_bpf_disabled = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"kernel.unprivileged_bpf_disabled = 1"* ]]; then
     echo "✅ kernel.unprivileged_bpf_disabled found"
 else
     echo "❌ kernel.unprivileged_bpf_disabled NOT found"
@@ -30,7 +32,7 @@ else
 fi
 
 # Check for net.ipv4.tcp_syncookies
-if grep -q "net.ipv4.tcp_syncookies = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"net.ipv4.tcp_syncookies = 1"* ]]; then
     echo "✅ net.ipv4.tcp_syncookies found"
 else
     echo "❌ net.ipv4.tcp_syncookies NOT found"
@@ -38,7 +40,7 @@ else
 fi
 
 # Check for net.ipv4.conf.all.rp_filter
-if grep -q "net.ipv4.conf.all.rp_filter = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"net.ipv4.conf.all.rp_filter = 1"* ]]; then
     echo "✅ net.ipv4.conf.all.rp_filter found"
 else
     echo "❌ net.ipv4.conf.all.rp_filter NOT found"
@@ -46,7 +48,7 @@ else
 fi
 
 # Check for net.ipv4.icmp_echo_ignore_broadcasts
-if grep -q "net.ipv4.icmp_echo_ignore_broadcasts = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"net.ipv4.icmp_echo_ignore_broadcasts = 1"* ]]; then
     echo "✅ net.ipv4.icmp_echo_ignore_broadcasts found"
 else
     echo "❌ net.ipv4.icmp_echo_ignore_broadcasts NOT found"
@@ -54,7 +56,7 @@ else
 fi
 
 # Check for net.ipv4.conf.all.accept_source_route
-if grep -q "net.ipv4.conf.all.accept_source_route = 0" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"net.ipv4.conf.all.accept_source_route = 0"* ]]; then
     echo "✅ net.ipv4.conf.all.accept_source_route found"
 else
     echo "❌ net.ipv4.conf.all.accept_source_route NOT found"
@@ -62,7 +64,7 @@ else
 fi
 
 # Check for net.ipv4.tcp_rfc1337
-if grep -q "net.ipv4.tcp_rfc1337 = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"net.ipv4.tcp_rfc1337 = 1"* ]]; then
     echo "✅ net.ipv4.tcp_rfc1337 found"
 else
     echo "❌ net.ipv4.tcp_rfc1337 NOT found"
@@ -70,7 +72,7 @@ else
 fi
 
 # Check for kernel.sysrq (176 = safe subset: sync+remount-ro+reboot for emergency recovery)
-if grep -qE "kernel.sysrq = (0|176)" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" =~ kernel\.sysrq\ =\ (0|176) ]]; then
     echo "✅ kernel.sysrq found"
 else
     echo "❌ kernel.sysrq NOT found"
@@ -78,7 +80,7 @@ else
 fi
 
 # Check for kernel.core_uses_pid
-if grep -q "kernel.core_uses_pid = 1" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"kernel.core_uses_pid = 1"* ]]; then
     echo "✅ kernel.core_uses_pid found"
 else
     echo "❌ kernel.core_uses_pid NOT found"
@@ -86,7 +88,7 @@ else
 fi
 
 # Sentinel: Check for fs.suid_dumpable (0 = disabled, most secure)
-if grep -qE "fs.suid_dumpable = [0-2]" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" =~ fs\.suid_dumpable\ =\ [0-2] ]]; then
     echo "✅ fs.suid_dumpable found"
 else
     echo "❌ fs.suid_dumpable NOT found"
@@ -94,7 +96,7 @@ else
 fi
 
 # Sentinel: Check for dev.tty.ldisc_autoload
-if grep -q "dev.tty.ldisc_autoload = 0" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"dev.tty.ldisc_autoload = 0"* ]]; then
     echo "✅ dev.tty.ldisc_autoload found"
 else
     echo "❌ dev.tty.ldisc_autoload NOT found"
@@ -102,7 +104,7 @@ else
 fi
 
 # Sentinel: Check for vm.unprivileged_userfaultfd
-if grep -q "vm.unprivileged_userfaultfd = 0" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"vm.unprivileged_userfaultfd = 0"* ]]; then
     echo "✅ vm.unprivileged_userfaultfd found"
 else
     echo "❌ vm.unprivileged_userfaultfd NOT found"
@@ -110,7 +112,7 @@ else
 fi
 
 # Sentinel: Check for kernel.perf_event_paranoid
-if grep -q "kernel.perf_event_paranoid = 3" "$CONFIG_FILE"; then
+if [[ "$CONFIG_CONTENT" == *"kernel.perf_event_paranoid = 3"* ]]; then
     echo "✅ kernel.perf_event_paranoid found"
 else
     echo "❌ kernel.perf_event_paranoid NOT found"

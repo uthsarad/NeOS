@@ -9,7 +9,8 @@ echo "Verifying performance configuration in $CONFIG_FILE..."
 if [[ -f "$CONFIG_FILE" ]]; then
     # Check for space_cache=v2 in btrfs mount options
     # We expect it alongside compress=zstd to ensure it's in the main mountOptions block, not just ssdExtraMountOptions
-    if grep -E "btrfs:.*compress=zstd:1.*discard=async.*space_cache=v2" "$CONFIG_FILE"; then
+    CONFIG_CONTENT=$(<"$CONFIG_FILE")
+    if [[ "$CONFIG_CONTENT" =~ btrfs:[^\n]*compress=zstd:1[^\n]*discard=async[^\n]*space_cache=v2 ]]; then
         echo "✅ space_cache=v2 found in main Btrfs mount options"
     else
         echo "❌ space_cache=v2 NOT found in main Btrfs mount options (or not correctly placed)"
@@ -31,8 +32,10 @@ if [[ ! -f "$SYSCTL_FILE" ]]; then
     exit 1
 fi
 
+SYSCTL_CONTENT=$(<"$SYSCTL_FILE")
+
 # Verify vm.swappiness is SET TO 100 (ZRAM optimization)
-if grep -E "^vm.swappiness.*=.*100" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')vm\.swappiness[^\n]*=[^\n]*100 ]]; then
     echo "✅ vm.swappiness set to 100 (optimized for ZRAM)"
 else
     echo "❌ vm.swappiness is NOT set to 100"
@@ -41,7 +44,7 @@ else
 fi
 
 # Verify vm.page-cluster is SET TO 0
-if grep -E "^vm.page-cluster.*=.*0" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')vm\.page-cluster[^\n]*=[^\n]*0 ]]; then
     echo "✅ vm.page-cluster set to 0 (optimized for ZRAM)"
 else
     echo "❌ vm.page-cluster is NOT set to 0"
@@ -50,7 +53,7 @@ else
 fi
 
 # Verify vm.vfs_cache_pressure is SET TO 50
-if grep -E "^vm.vfs_cache_pressure.*=.*50" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')vm\.vfs_cache_pressure[^\n]*=[^\n]*50 ]]; then
     echo "✅ vm.vfs_cache_pressure set to 50 (optimized for responsiveness)"
 else
     echo "❌ vm.vfs_cache_pressure is NOT set to 50"
@@ -59,7 +62,7 @@ else
 fi
 
 # Verify vm.max_map_count is SET TO 2147483642
-if grep -E "^vm.max_map_count.*=.*2147483642" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')vm\.max_map_count[^\n]*=[^\n]*2147483642 ]]; then
     echo "✅ vm.max_map_count set to 2147483642 (optimized for gaming)"
 else
     echo "❌ vm.max_map_count is NOT set to 2147483642"
@@ -68,7 +71,7 @@ else
 fi
 
 # Verify net.core.default_qdisc is SET TO cake
-if grep -E "^net.core.default_qdisc.*=.*cake" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')net\.core\.default_qdisc[^\n]*=[^\n]*cake ]]; then
     echo "✅ net.core.default_qdisc set to cake (bufferbloat mitigation)"
 else
     echo "❌ net.core.default_qdisc is NOT set to cake"
@@ -77,7 +80,7 @@ else
 fi
 
 # Verify net.ipv4.tcp_congestion_control is SET TO bbr
-if grep -E "^net.ipv4.tcp_congestion_control.*=.*bbr" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')net\.ipv4\.tcp_congestion_control[^\n]*=[^\n]*bbr ]]; then
     echo "✅ net.ipv4.tcp_congestion_control set to bbr (congestion control)"
 else
     echo "❌ net.ipv4.tcp_congestion_control is NOT set to bbr"
@@ -86,7 +89,7 @@ else
 fi
 
 # Verify vm.dirty_ratio is SET TO 10
-if grep -E "^vm.dirty_ratio.*=.*10" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')vm\.dirty_ratio[^\n]*=[^\n]*10 ]]; then
     echo "✅ vm.dirty_ratio set to 10 (optimized for I/O latency)"
 else
     echo "❌ vm.dirty_ratio is NOT set to 10"
@@ -95,7 +98,7 @@ else
 fi
 
 # Verify vm.dirty_background_ratio is SET TO 5
-if grep -E "^vm.dirty_background_ratio.*=.*5" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')vm\.dirty_background_ratio[^\n]*=[^\n]*5 ]]; then
     echo "✅ vm.dirty_background_ratio set to 5 (optimized for I/O latency)"
 else
     echo "❌ vm.dirty_background_ratio is NOT set to 5"
@@ -104,7 +107,7 @@ else
 fi
 
 # Verify net.ipv4.tcp_fastopen is SET TO 3
-if grep -E "^net.ipv4.tcp_fastopen.*=.*3" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')net\.ipv4\.tcp_fastopen[^\n]*=[^\n]*3 ]]; then
     echo "✅ net.ipv4.tcp_fastopen set to 3"
 else
     echo "❌ net.ipv4.tcp_fastopen is NOT set to 3"
@@ -113,7 +116,7 @@ else
 fi
 
 # Verify net.ipv4.tcp_slow_start_after_idle is SET TO 0
-if grep -E "^net.ipv4.tcp_slow_start_after_idle.*=.*0" "$SYSCTL_FILE"; then
+if [[ "$SYSCTL_CONTENT" =~ (^|$'\n')net\.ipv4\.tcp_slow_start_after_idle[^\n]*=[^\n]*0 ]]; then
     echo "✅ net.ipv4.tcp_slow_start_after_idle set to 0"
 else
     echo "❌ net.ipv4.tcp_slow_start_after_idle is NOT set to 0"
@@ -130,7 +133,8 @@ if [[ ! -f "$MODULES_FILE" ]]; then
     exit 1
 fi
 
-if grep -E "^tcp_bbr" "$MODULES_FILE"; then
+MODULES_CONTENT=$(<"$MODULES_FILE")
+if [[ "$MODULES_CONTENT" =~ (^|$'\n')tcp_bbr ]]; then
     echo "✅ tcp_bbr module enabled"
 else
     echo "❌ tcp_bbr module NOT enabled"
@@ -138,7 +142,7 @@ else
     exit 1
 fi
 
-if grep -E "^sch_cake" "$MODULES_FILE"; then
+if [[ "$MODULES_CONTENT" =~ (^|$'\n')sch_cake ]]; then
     echo "✅ sch_cake module enabled"
 else
     echo "❌ sch_cake module NOT enabled"
