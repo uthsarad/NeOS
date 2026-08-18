@@ -24,3 +24,18 @@
 ## 2024-08-04 - Native Bash Regex Bug with Multiline Variables
 **Learning:** When using native bash regex `[[ "$CONTENT" =~ pattern ]]` against multiline strings, the `.*` pattern matches across newlines, making it greedy across the entire file. This can lead to false positives if the regex spans across different unrelated lines (e.g., `vm.swappiness.*=.*100` could match `vm.swappiness = 10\nother = 100`).
 **Action:** When matching specific lines in a multiline bash string variable, replace `.*` with `[^\n]*` to constrain the match to a single line.
+
+## 2026-02-17 - Subprocess Overhead in Bash Scripts
+**Learning:** In bash scripts that act as simple launchers or wrappers, using standard invocation (e.g. `kdialog ...`) spawns a child process and leaves the parent bash shell lingering in memory, causing unnecessary fork/exec overhead.
+**Action:** Use `exec` (e.g. `exec kdialog ...`) to replace the current bash process with the target application, eliminating the parent process overhead and saving memory.
+
+## 2026-02-18 - Missing Bottlenecks in Stubs
+**Learning:** Attempting to optimize subprocess overhead for tools (like snapper) in stubbed UI scripts (like neos-operations-hub) is a premature optimization trap if the underlying functionality hasn't been implemented yet.
+**Action:** Verify the actual presence of the executing command before attempting to optimize its subprocess overhead. Always use `exec` for terminal `kdialog` invocations.
+## 2026-08-05 - Shell Script Line Counting Subprocess Overhead
+**Learning:** Using `$(wc -l < file)` in bash scripts introduces unnecessary fork/exec overhead for simple line counting.
+**Action:** When needing to count lines of a temporary file, use native bash array counting via `mapfile -t lines < file` and `${#lines[@]}` instead.
+
+## UI File I/O Optimization Trap
+**Learning:** Attempting to optimize temporary file I/O overhead for GUI components like `kdialog --textbox` is often a premature optimization trap if the temporary directory (`/tmp`) is mounted as a `tmpfs` (RAM).
+**Action:** Verify if the target file system is RAM-backed before attempting to eliminate temporary file creation for UI data passing.

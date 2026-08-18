@@ -1,25 +1,21 @@
-# Strategic Directive: Phase 8 Operations Hub Validation (Strategic Pause)
+# Strategic Directive
 
-## Phase 1 — Product Alignment Check
-- **Product Vision:** NeOS aims to provide a predictable, snapshot-gated Arch Linux desktop with a refined KDE Plasma 6 experience, optimized for stability and Windows familiarity.
-- **Alignment Status:** The baseline for Phase 8 (Operations Hub) has been implemented by Architect. We are aligned with the long-term maintenance and distribution goals.
-- **Leverage:** The highest leverage action right now is to ensure the newly introduced `neos-operations-hub` is secure, performant, and accessible before continuing to build new features.
+## PHASE 1 — Product Alignment Check
+The product aims to provide a stable, zero-learning-curve transition for Windows migrants, maintaining rock-solid reliability before introducing new capabilities. Recent audits and phase validation efforts require us to pause new feature development to ensure system stability and allow specialist agents to complete their current pending tasks regarding Phase 4 Validation. Pushing new features now would compromise our core goal of rock-solid reliability.
 
-## Phase 2 — Technical Posture Review
-- **Stability Posture:** The system is currently stable, but unvalidated GUI scripts have been merged.
-- **Tech Debt:** Unvalidated specialist tasks remain in the backlog for Bolt, Palette, and Sentinel regarding `neos-operations-hub`.
-- **Overbuilding Risk:** High. Continuing to build new Phase 8 features without validating the foundational operations hub risks compounding security or UX debt.
+## PHASE 2 — Technical Posture Review
+The system is generally stable, but we have pending tasks assigned to Bolt, Palette, and Sentinel regarding Phase 4 Validation. These must be acknowledged and processed before any new architectural changes are made to prevent tech debt accumulation.
 
-## Phase 3 — Priority Selection
-- No-build day (strategic pause)
+## PHASE 3 — Priority Selection
+**No-build day (strategic pause).** Priority is stabilization and hardening. We must allow specialist agents to catch up on their validation duties.
 
-## Phase 4 — Controlled Scope Definition
-- **Exact files likely impacted:** None for implementation.
-- **Maximum allowed surface area:** 0 files (Architect is paused).
-- **Constraints Architect must obey:** Halt all feature development. No production code is to be written. Wait for specialist validations to clear.
+## PHASE 4 — Controlled Scope Definition
+- **Exact files likely impacted:** None (Strategic Pause).
+- **Maximum allowed surface area:** 0 files.
+- **Constraints Architect must obey:** Architect is strictly mandated to implement zero production code. The sole focus is acknowledging the pause.
 
-## Phase 5 — Delegation Strategy
-- **Architect:** Strategic pause. Do not implement new features.
-- **Bolt:** Execute pending task: Monitor subprocess overhead from kdialog in `neos-operations-hub`.
-- **Palette:** Execute pending task: Verify UX accessibility of kdialog menus in `neos-operations-hub`.
-- **Sentinel:** Execute pending task: Audit privilege boundaries for release channel switching in `neos-operations-hub`.
+## PHASE 5 — Delegation Strategy
+- **Architect:** Write zero code. Document the pause in ARCHITECT_REPORT.md and append new tasks with a 'pending' status to specialist manifests.
+- **Bolt:** Acknowledge the Phase 4 Validation pending tasks. No new performance optimizations.
+- **Palette:** Acknowledge the Phase 4 Validation pending tasks. No new UI/UX enhancements.
+- **Sentinel:** Acknowledge the Phase 4 Validation pending tasks. No new security audits.

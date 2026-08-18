@@ -1,14 +1,10 @@
 {
-  "target_features": [
-    "None (Strategic Pause)"
-  ],
   "allowed_files": [],
-  "forbidden_files": [
-    "*"
-  ],
+  "strategic_pause": true,
   "constraints": [
-    "Strategic pause is active.",
-    "Do not write production code.",
-    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks for neos-operations-hub."
+    "Write zero production code.",
+    "Do not implement any new features.",
+    "Document the Phase 4 Validation pause in ARCHITECT_REPORT.md.",
+    "Append new tasks with a 'pending' status to specialist manifests."
   ]
 }
