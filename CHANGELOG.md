@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.08.18] - 2026-08-18
+
+### Changed
+- **Official Arch Linux Mirrorlist Refresh**: Updated `profile/airootfs/etc/pacman.d/neos-mirrorlist` to the latest official HTTPS mirrorlist from archlinux.org with prioritized global CDN and Tier-1 mirrors (`geo.mirror.pkgbuild.com`, `fastly.mirror.pkgbuild.com`, `mirror.fcix.net`, `mirrors.kernel.org`, `mirror.osbeck.com`).
+- **Modernized Upstream Package Dependencies**:
+  - Replaced legacy `p7zip` with upstream official Arch package `7zip` in `profile/packages.x86_64`.
+  - Replaced `iptables-nft` with modern unified `iptables` package in `profile/packages.x86_64`.
+  - Updated NVIDIA driver target in `tools/gen-manifests.sh` to `nvidia-open-dkms` for LTS kernel compatibility.
+- **Manifest Synchronization**: Regenerated `profile/airootfs/etc/calamares/neos-packages.txt` and `profile/airootfs/etc/calamares/neos-overlay.txt`.
+
 ## [2026.07.03] - 2026-07-03
 
 ### Added

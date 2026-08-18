@@ -113,14 +113,14 @@ zram-generator
 calamares-garuda
 htop
 fastfetch
-p7zip
+7zip
 unrar
 unzip
 xdg-user-dirs
 xdg-utils
 plymouth
 plymouth-kcm
-iptables-nft
+iptables
 polkit
 libglvnd
 qt6-multimedia-ffmpeg

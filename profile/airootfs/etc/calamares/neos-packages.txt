@@ -94,14 +94,14 @@ parted
 zram-generator
 htop
 fastfetch
-p7zip
+7zip
 unrar
 unzip
 xdg-user-dirs
 xdg-utils
 plymouth
 plymouth-kcm
-iptables-nft
+iptables
 polkit
 libglvnd
 qt6-multimedia-ffmpeg
@@ -160,7 +160,7 @@ print-manager
 fwupd
 flatpak
 noto-fonts-cjk
-nvidia-dkms
+nvidia-open-dkms
 dkms
 linux-lts-headers
 broadcom-wl-dkms
