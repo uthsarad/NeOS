@@ -1,0 +1,19 @@
+# GitHub Linguist Configuration
+# Ensure all modern tooling languages are detected in repository statistics
+
+*.go linguist-detectable=true
+*.cs linguist-detectable=true
+*.rb linguist-detectable=true
+*.kt linguist-detectable=true
+*.swift linguist-detectable=true
+*.lisp linguist-detectable=true
+*.hs linguist-detectable=true
+*.pas linguist-detectable=true
+*.rs linguist-detectable=true
+*.py linguist-detectable=true
+
+# Ignore generated manifests, package lists, and theme assets from language breakdown
+profile/airootfs/etc/calamares/neos-packages.txt linguist-generated=true
+profile/airootfs/etc/calamares/neos-overlay.txt linguist-generated=true
+profile/airootfs/etc/pacman.d/neos-mirrorlist linguist-generated=true
+profile/airootfs/etc/pacman.d/chaotic-mirrorlist linguist-generated=true

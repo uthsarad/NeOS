@@ -35,6 +35,26 @@ NeOS leverages and extends several key projects within the Arch Linux ecosystem:
 
 ---
 
+## 🛠️ Polyglot Architecture & Tooling Stack
+
+NeOS embraces a multi-paradigm, polyglot tooling ecosystem engineered for maximum performance, strict compliance verification, and developer empowerment:
+
+| Language | Component | Role |
+| :--- | :--- | :--- |
+| **Go** | [`tools/neosctl/`](tools/neosctl/) | High-speed CLI for concurrent mirror benchmarking & profile auditing. |
+| **C# (.NET 8)** | [`tools/NeosDiagnostics/`](tools/NeosDiagnostics/) | Enterprise compliance inspector for kernel sysctl and Btrfs security rules. |
+| **Ruby** | [`tools/neos_tasks.rb`](tools/neos_tasks.rb) / [`Rakefile`](Rakefile) | Object-oriented task runner for manifest generation and CI pipeline orchestration. |
+| **Rust** | [`tools/neos-profile-audit/`](tools/neos-profile-audit/) | Type-safe profile hygiene and package invariant validator. |
+| **Kotlin** | [`tools/polyglot/NeosAudit.kt`](tools/polyglot/NeosAudit.kt) | JVM multiplatform profile verification implementation. |
+| **Swift** | [`tools/polyglot/NeosAudit.swift`](tools/polyglot/NeosAudit.swift) | Modern safety-first Swift Foundation profile inspector. |
+| **Common Lisp** | [`tools/polyglot/neos_audit.lisp`](tools/polyglot/neos_audit.lisp) | Symbolic S-expression parser and profile verification engine. |
+| **Haskell** | [`tools/polyglot/NeosAudit.hs`](tools/polyglot/NeosAudit.hs) | Pure functional monadic profile and package integrity checker. |
+| **Free Pascal** | [`tools/polyglot/neos_audit.pas`](tools/polyglot/neos_audit.pas) | Native compiled Object Pascal verification utility. |
+| **Python** | [`tools/gen-bootlogo-frames.py`](tools/gen-bootlogo-frames.py) | Asset pipeline and visual branding frame synthesis. |
+| **Shell / Bash** | [`build.sh`](build.sh) & `profile/airootfs/` | Low-level POSIX runtime hooks, installer execution, and system initialization. |
+
+---
+
 ## 🧪 Testing & Quality Assurance
 
 Because NeOS is a curated distribution, every release is exercised before it reaches users. QA is led by **Hajime**, covering:
