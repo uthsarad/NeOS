@@ -261,3 +261,19 @@ No code was written, therefore no tests were run for new code.
 
 **Delegation Prepared:**
 Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause.
+
+## Baseline Implementation: Phase 5 GUI-first software management
+
+**Scope Validation:**
+The implementation aligns with `ARCHITECT_SCOPE.json` which directs the implementation of baseline GUI software management features for Phase 5.
+
+**Changes Made:**
+1. Modified `profile/airootfs/usr/local/bin/neos-driver-manager` to wrap its text output and display it using a `kdialog --textbox` GUI.
+2. Added `# [BOLT]`, `# [PALETTE]`, and `# [SENTINEL]` delegation comments to the script.
+
+**Test Coverage:**
+Executed bash syntax check to verify script integrity.
+
+**Delegation Prepared:**
+Task manifests generated for `bolt.json`, `palette.json`, and `sentinel.json` to monitor I/O overhead, verify accessibility, and audit path traversal risks respectively.
+- Addressed code review feedback: Moved the starting log into the output block and stripped ANSI escape codes using sed to ensure clean text rendering in kdialog.

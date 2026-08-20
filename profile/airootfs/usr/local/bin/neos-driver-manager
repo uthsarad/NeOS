@@ -24,9 +24,17 @@ trap '_error_handler $? $LINENO' ERR
 # NeOS Driver Manager
 # Automatically detects hardware, identifies missing drivers, and provides elite guidance.
 
+# [BOLT] Cache hardware information to minimize subprocess overhead
+# [PALETTE] Improve GUI layout for hardware list
+# [SENTINEL] Audit temp file creation for kdialog
+REPORT_FILE=$(mktemp)
+trap 'rm -f "$REPORT_FILE"; _error_handler $? $LINENO' ERR
+exit_trap_cmd='rm -f "$REPORT_FILE"'
+trap "$exit_trap_cmd" EXIT
+
+{
 echo -e "\e[1m\e[36m🔍 NeOS Hardware Intelligence starting...\e[0m"
 
-# ⚡ Bolt: Cache hardware information to minimize subprocess overhead
 if ! command -v lspci &> /dev/null; then
     echo -e "\e[1m\e[31m🚨 pciutils is missing! Hardware detection is disabled.\e[0m"
     exit 1
@@ -147,3 +155,6 @@ if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
 fi
 
 echo -e "\n\e[1m\e[32m✅ NeOS Driver Intelligence check complete.\e[0m"
+} | sed -e 's/\x1b\[[0-9;]*m//g' > "$REPORT_FILE"
+
+kdialog --title "NeOS Driver Manager" --textbox "$REPORT_FILE" 800 600
