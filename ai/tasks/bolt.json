@@ -116,6 +116,11 @@
       "description": "Acknowledge the Phase 4 Validation pending tasks. No new performance optimizations.",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Monitor kdialog performance and I/O overhead for Phase 5 GUI in neos-driver-manager.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "pending"
     }
   ]
 }
