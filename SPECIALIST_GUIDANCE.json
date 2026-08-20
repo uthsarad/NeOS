@@ -1,12 +1,12 @@
 {
   "bolt": {
-    "guidance": "Standby for Phase 5 feature performance optimizations."
+    "guidance": "Execute pending task: Monitor kdialog performance and I/O overhead for Phase 5 GUI in neos-driver-manager."
   },
   "palette": {
-    "guidance": "Standby for Phase 5 feature UI/UX enhancements."
+    "guidance": "Execute pending task: Verify UX accessibility and text wrapping for the new Phase 5 GUI in neos-driver-manager."
   },
   "sentinel": {
-    "guidance": "Standby for Phase 5 feature security audits."
+    "guidance": "Execute pending task: Audit temporary file creation and path traversal risks for Phase 5 GUI in neos-driver-manager."
   },
-  "maestro_timestamp": "2026-08-19"
+  "maestro_timestamp": "2026-08-20"
 }

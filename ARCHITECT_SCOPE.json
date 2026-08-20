@@ -1,10 +1,11 @@
 {
   "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-driver-manager"
+    "none"
   ],
-  "strategic_pause": false,
+  "strategic_pause": true,
   "constraints": [
-    "Implement baseline GUI software management features for Phase 5.",
-    "Delegate refinement to specialists by adding explicit comments in the code and creating structured JSON task manifests."
+    "Mandatory Strategic Pause. Write ZERO production code.",
+    "Wait for specialist validation of Phase 5 neos-driver-manager additions.",
+    "Document pause in ARCHITECT_REPORT.md and append acknowledgment tasks for specialists."
   ]
 }
