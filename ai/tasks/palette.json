@@ -111,6 +111,11 @@
       "description": "Verify UX accessibility and text wrapping for the new Phase 5 GUI in neos-driver-manager.",
       "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
       "status": "completed"
+    },
+    {
+      "description": "Acknowledge the Phase 5 Validation Strategic Pause. No new UI/UX enhancements.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
