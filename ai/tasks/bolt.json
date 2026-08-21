@@ -120,7 +120,7 @@
     {
       "description": "Monitor kdialog performance and I/O overhead for Phase 5 GUI in neos-driver-manager.",
       "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
