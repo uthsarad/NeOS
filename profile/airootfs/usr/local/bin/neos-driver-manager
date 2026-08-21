@@ -27,7 +27,7 @@ trap '_error_handler $? $LINENO' ERR
 # [BOLT] Cache hardware information to minimize subprocess overhead
 # [PALETTE] Improve GUI layout for hardware list
 # [SENTINEL] Audit temp file creation for kdialog
-REPORT_FILE=$(mktemp)
+REPORT_FILE="$(mktemp "${TMPDIR:-/tmp}/neos-driver-manager.XXXXXX")"
 trap 'rm -f "$REPORT_FILE"; _error_handler $? $LINENO' ERR
 exit_trap_cmd='rm -f "$REPORT_FILE"'
 trap "$exit_trap_cmd" EXIT

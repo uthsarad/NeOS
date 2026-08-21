@@ -172,3 +172,15 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 ## Acknowledge Phase 4 Validation Pending Tasks
 **Status**: Completed
 **Findings**: Acknowledged the Phase 4 Validation pending tasks. No new security audits.
+
+## 2026-08-21 - Audit of neos-driver-manager
+### Risks found
+- Missing secure state storage. The `neos-driver-manager` script uses `REPORT_FILE=$(mktemp)` which does not provide an unpredictable suffix template, opening a small potential for CWE-59 vulnerabilities if the system's `mktemp` default is predictable.
+### Fixes applied
+- Updated `neos-driver-manager` to explicitly use `mktemp "${TMPDIR:-/tmp}/neos-driver-manager.XXXXXX"` to guarantee a highly unpredictable, application-specific file name.
+### Remaining attack surface
+- None identified regarding temporary file creation for this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Predictable Temporary File (CWE-59 risk mitigated)
+- **Status**: Fixed
