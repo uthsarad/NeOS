@@ -21,3 +21,7 @@ None introduced by this change. The memory usage to hold these configuration fil
 - What was optimized: Acknowledged the Strategic Pause for Phase 4 Validation.
 - Before/after reasoning: A pending task in `ai/tasks/bolt.json` mandated acknowledging the Phase 4 Validation pending tasks without implementing new performance optimizations. The task status was updated to `completed`.
 - Any remaining performance risks: None. This was an acknowledgment of a strategic pause.
+
+- What was optimized: Removed unused `lsusb` subprocess call from `neos-driver-manager`. Also evaluated `kdialog` I/O overhead.
+- Before/after reasoning: `neos-driver-manager` previously ran `lsusb`, but the output was never utilized. Removing this eliminates an unnecessary fork/exec overhead. Regarding `kdialog`, we intentionally retained the standard execution because optimizing it with `exec` would bypass the `EXIT` trap required to clean up the temporary report file. Furthermore, writing the report file to `/tmp` (which is RAM-backed tmpfs on Arch Linux) introduces negligible disk I/O, meaning the current implementation is already optimal.
+- Any remaining performance risks: None.

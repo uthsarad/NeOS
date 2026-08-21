@@ -41,8 +41,6 @@ if ! command -v lspci &> /dev/null; then
 fi
 
 LSPCI_K_OUT=$(lspci -k || true)
-# shellcheck disable=SC2034
-LSUSB_OUT=$(lsusb || true)
 PROC_MODULES="$(</proc/modules)"
 
 is_loaded() { [[ "$PROC_MODULES" =~ (^|$'\n')$1[[:space:]] ]]; }
