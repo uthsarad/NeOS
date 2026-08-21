@@ -153,6 +153,6 @@ if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
 fi
 
 echo -e "\n\e[1m\e[32m✅ NeOS Driver Intelligence check complete.\e[0m"
-} | sed -e 's/\x1b\[[0-9;]*m//g' > "$REPORT_FILE"
+} | sed -e 's/\x1b\[[0-9;]*m//g' | fold -s -w 90 > "$REPORT_FILE"
 
-kdialog --title "NeOS Driver Manager" --textbox "$REPORT_FILE" 800 600
+kdialog --icon preferences-system --title "NeOS Driver Manager - Hardware Report" --textbox "$REPORT_FILE" 800 600

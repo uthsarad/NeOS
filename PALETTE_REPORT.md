@@ -30,3 +30,17 @@
 - Acknowledged the Phase 4 Validation pending tasks.
 - No new UI/UX enhancements due to target_file being none.
 - Completed task manifest acknowledgement.
+## Phase 5 GUI Enhancement in neos-driver-manager
+
+- Improved the visual presentation of the hardware intelligence report by introducing explicit word-wrapping (`fold -s -w 90`) before displaying in `kdialog`. This resolves text truncation and horizontal scrolling issues for users with longer device names or descriptions.
+- Enhanced the `kdialog` invocation by adopting a more descriptive, specific title (`NeOS Driver Manager - Hardware Report`) and applying a semantic icon (`preferences-system`) for a cohesive visual identity in alignment with existing tools.
+
+**Accessibility Fixes:**
+- N/A
+
+**UX Improvements:**
+- Better text readability (line wrapping).
+- Clearer semantic anchoring via title/icon.
+
+**Remaining Usability Risks:**
+- Output relies on terminal ANSI sequence stripping (`sed`), which could still result in unformatted plain text. Consider formatting using HTML rich text within `kdialog` for future improvements.
