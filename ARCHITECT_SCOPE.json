@@ -4,8 +4,8 @@
   ],
   "strategic_pause": true,
   "constraints": [
-    "Mandatory Strategic Pause. Write ZERO production code.",
-    "Wait for specialist validation of Phase 5 neos-driver-manager additions.",
+    "Mandatory continued Strategic Pause. Write ZERO production code.",
+    "Wait for specialists to clear their pending Phase 5 acknowledgment tasks.",
     "Document pause in ARCHITECT_REPORT.md and append acknowledgment tasks for specialists."
   ]
 }
