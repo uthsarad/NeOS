@@ -60,14 +60,14 @@ for i in "${!PIDS[@]}"; do
                 SUCCESS=1
                 break
             fi
-            (( RETRY_COUNT++ ))
+            (( RETRY_COUNT += 1 ))
             (( RETRY_DELAY *= 2 ))
         done
 
         if (( SUCCESS == 0 )); then
             # Fast-fail bypass on broken testing mirror
             if [[ "$BASE_URL" != "https://al.arch.niranjan.co/" ]]; then
-                (( FAILED_COUNT++ ))
+                (( FAILED_COUNT += 1 ))
             fi
             # Palette: Ensure the format of the logged error message is clear and includes actionable steps
             echo -e "\n================================================================================" >&2
