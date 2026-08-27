@@ -97,19 +97,24 @@ CACHED_COUNT=0
 MISSING_PKGS=()
 
 if [[ "$SKIP_DOWNLOAD" == false ]]; then
+    # Exact-name lookup table keyed by base package name (strip -VERSION-REL-ARCH).
+    # A prefix glob like "${pkg}-*.pkg.tar.zst" would wrongly match sibling
+    # packages (e.g. "base" matching "base-devel-...", "docker" matching
+    # "docker-compose-..."), silently treating the real package as cached
+    # when it was never downloaded.
+    declare -A REPO_HAVE=()
+    for f in "$REPO_DIR"/*.pkg.tar.zst; do
+        [[ -f "$f" ]] || continue
+        base="${f##*/}"
+        base="${base%%-[0-9]*}"
+        REPO_HAVE["$base"]="$f"
+    done
+
     for pkg in "${PKGS[@]}"; do
-        # Check if any version of this package exists in the repo
-        found=0
-        for f in "$REPO_DIR"/"${pkg}"-*.pkg.tar.zst; do
-            if [[ -f "$f" ]]; then
-                found=1
-                break
-            fi
-        done
-        if [[ "$found" -eq 0 ]]; then
-            MISSING_PKGS+=("$pkg")
-        else
+        if [[ -n "${REPO_HAVE[$pkg]:-}" ]]; then
             ((CACHED_COUNT++))
+        else
+            MISSING_PKGS+=("$pkg")
         fi
     done
 
@@ -123,17 +128,18 @@ if [[ "$SKIP_DOWNLOAD" == false ]]; then
 
         if [[ -d "$PACMAN_CACHE" ]]; then
             echo "Checking mkarchiso cache at $PACMAN_CACHE..."
+            declare -A CACHE_HAVE=()
+            for f in "$PACMAN_CACHE"/*.pkg.tar.zst; do
+                [[ -f "$f" ]] || continue
+                base="${f##*/}"
+                base="${base%%-[0-9]*}"
+                CACHE_HAVE["$base"]="$f"
+            done
             for pkg in "${MISSING_PKGS[@]}"; do
-                found=0
-                for f in "$PACMAN_CACHE"/"${pkg}"-*.pkg.tar.zst; do
-                    if [[ -f "$f" ]]; then
-                        cp -n "$f" "$REPO_DIR/" 2>/dev/null || true
-                        found=1
-                        ((REUSED_COUNT++))
-                        break
-                    fi
-                done
-                if [[ "$found" -eq 0 ]]; then
+                if [[ -n "${CACHE_HAVE[$pkg]:-}" ]]; then
+                    cp -n "${CACHE_HAVE[$pkg]}" "$REPO_DIR/" 2>/dev/null || true
+                    ((REUSED_COUNT++))
+                else
                     DOWNLOAD_PKGS+=("$pkg")
                 fi
             done
