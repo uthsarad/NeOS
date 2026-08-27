@@ -307,3 +307,20 @@ QToolTip {
     padding: 6px 10px;
     font-size: 9.5pt;
 }
+
+/* ---- Menus --------------------------------------------------------------- */
+QMenu {
+    background-color: #0f1428;
+    color: #e6e9f2;
+    border: 1px solid #2a3354;
+    border-radius: 6px;
+    padding: 4px 0px;
+}
+QMenu::item {
+    padding: 6px 24px;
+    background-color: transparent;
+}
+QMenu::item:selected {
+    background-color: #0088CF;
+    color: #ffffff;
+}
