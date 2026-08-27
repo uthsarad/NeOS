@@ -126,12 +126,17 @@ jobs:
           # Download to a local file first (with retries + a fallback mirror)
           # instead of `pacman -U <url>` direct-fetching: a bare direct fetch
           # has no retry and a transient 503 from the primary CDN fails the
-          # whole release build. Same two hosts as chaotic-mirrorlist.
+          # whole release build. Same two hosts as chaotic-mirrorlist. NOTE:
+          # geo-mirror is a virtual/auto-routing endpoint on different backing
+          # infra than cdn-mirror, so a cdn-mirror-specific outage shouldn't
+          # take both down at once (unlike the old mirror.exozy.me fallback,
+          # which turned out to be a dead host not even in Chaotic-AUR's
+          # current official mirrorlist — see aur.chaotic.cx/mirrorlist.txt).
           CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
           rm -f "$CHAOTIC_KEYRING_PKG"
           for url in \
               'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
-              'https://mirror.exozy.me/chaotic-aur/chaotic-keyring.pkg.tar.zst'; do
+              'https://geo-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'; do
             echo "Fetching chaotic-keyring from $url ..."
             if curl -fL --retry 5 --retry-delay 3 --retry-all-errors \
                  -o "$CHAOTIC_KEYRING_PKG" "$url"; then

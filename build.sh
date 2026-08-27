@@ -113,18 +113,37 @@ fi
 CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
 CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
 
-# --retry: the primary CDN (cdn-mirror.chaotic.cx) intermittently returns 503,
-# which previously failed the whole build on a single bad request.
+# --retry: cdn-mirror.chaotic.cx intermittently returns 503, which previously
+# failed the whole build on a single bad request. Fall back to geo-mirror
+# (virtual/auto-routing, different backing infra) if cdn-mirror stays down
+# across all retries — a real outage, not just a blip, has been observed.
 CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors)
+CHAOTIC_HOSTS=(
+    'https://cdn-mirror.chaotic.cx/chaotic-aur'
+    'https://geo-mirror.chaotic.cx/chaotic-aur'
+)
+
+neos_fetch_chaotic() {
+    local name="$1" out="$2" ztime="$3" host
+    for host in "${CHAOTIC_HOSTS[@]}"; do
+        echo "Fetching $name from $host ..."
+        if [[ -n "$ztime" ]]; then
+            curl -fL "${CURL_RETRY[@]}" -z "$ztime" -o "$out" "$host/$name" && return 0
+        else
+            curl -fL "${CURL_RETRY[@]}" -o "$out" "$host/$name" && return 0
+        fi
+    done
+    return 1
+}
 
 if [ ! -f "$CHAOTIC_KEYRING_PKG" ]; then
     echo "Downloading Chaotic-AUR keyring..."
-    curl -L "${CURL_RETRY[@]}" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-    curl -L "${CURL_RETRY[@]}" -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
+    neos_fetch_chaotic chaotic-keyring.pkg.tar.zst "$CHAOTIC_KEYRING_PKG" ""
+    neos_fetch_chaotic chaotic-keyring.pkg.tar.zst.sig "$CHAOTIC_KEYRING_SIG" ""
 else
     echo "Updating cached Chaotic-AUR keyring..."
-    curl -L "${CURL_RETRY[@]}" -z "$CHAOTIC_KEYRING_PKG" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-    curl -L "${CURL_RETRY[@]}" -z "$CHAOTIC_KEYRING_SIG" -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
+    neos_fetch_chaotic chaotic-keyring.pkg.tar.zst "$CHAOTIC_KEYRING_PKG" "$CHAOTIC_KEYRING_PKG"
+    neos_fetch_chaotic chaotic-keyring.pkg.tar.zst.sig "$CHAOTIC_KEYRING_SIG" "$CHAOTIC_KEYRING_SIG"
 fi
 
 # Sentinel: [Security] Mitigate supply chain attacks by verifying package signature before installation
