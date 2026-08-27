@@ -374,6 +374,24 @@ jobs:
           VERSION="$(tr -d '[:space:]' < VERSION)"
           echo "value=v${VERSION}-b${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
+          # Cat-breed codename per build (on-brand with the boot-splash cat),
+          # deterministically picked from the run number so it's stable and
+          # needs no external state. Cycles once the list is exhausted.
+          CODENAMES=(
+            Tabby Siamese Persian "Maine Coon" Bengal Sphynx Ragdoll
+            Abyssinian Birman Burmese Chartreux "Cornish Rex" "Devon Rex"
+            "Egyptian Mau" "Exotic Shorthair" Himalayan "Japanese Bobtail"
+            Korat Manx "Norwegian Forest" Ocicat Oriental "Russian Blue"
+            Savannah "Scottish Fold" "Selkirk Rex" Siberian Singapura
+            Snowshoe Somali Tonkinese "Turkish Angora" "Turkish Van"
+            "American Shorthair" "American Curl" Balinese Bombay
+            "British Shorthair" Chausie Cymric "Havana Brown" "Khao Manee"
+            LaPerm Munchkin Nebelung "Ojos Azules" Peterbald Pixie-bob
+            Ragamuffin Toyger
+          )
+          CODENAME="${CODENAMES[$(( ${{ github.run_number }} % ${#CODENAMES[@]} ))]}"
+          echo "codename=$CODENAME" >> "$GITHUB_OUTPUT"
+
           # Release body = the CHANGELOG section for this VERSION (empty file
           # if the section is missing; generate_release_notes still fills in
           # the commit list).
@@ -391,7 +409,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: ${{ steps.tag.outputs.value }}
-          name: NeOS ${{ steps.tag.outputs.value }}
+          name: NeOS "${{ steps.tag.outputs.codename }}" (${{ steps.tag.outputs.value }})
           generate_release_notes: true
           body_path: release-body.md
           files: |
