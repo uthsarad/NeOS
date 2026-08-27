@@ -18,7 +18,7 @@ if grep -qE '^\s*-\s*unpackfs\s*$' "$SETTINGS"; then
 else
     echo "✅ no unpackfs (fresh pacstrap)"
 fi
-if grep -q "shellprocess@pacstrap" "$SETTINGS"; then
+if grep -qE '^\s*-\s*neospacstrap\s*$' "$SETTINGS"; then
     echo "✅ installer pacstraps a fresh base"
 else
     echo "❌ installer does not pacstrap a fresh base"; FAIL=1

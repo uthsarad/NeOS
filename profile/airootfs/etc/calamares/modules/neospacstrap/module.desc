@@ -1,0 +1,5 @@
+---
+type:       "job"
+name:       "neospacstrap"
+interface:  "python"
+script:     "main.py"
