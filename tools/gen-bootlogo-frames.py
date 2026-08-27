@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Generate the NeOS Plymouth boot-splash animation frames from a source GIF.
+"""Generate the NeOS Plymouth boot-splash frames from a source GIF.
 
 The boot splash is a Plymouth `script` theme (themes/neos/neos.script) that
-cycles through cat-NN.png frames centered on a dark background — the cat body
-is perfectly still and ONLY the tail animates.
+shows a single still cat-00.png frame centered on a dark background — no
+animation. The other cat-NN.png frames stay committed as source material (in
+case animation is re-enabled later) but are unused by the script.
 
 CI never runs this (it builds the ISO with mkarchiso from checked-in files), so
 the generated cat-*.png frames are COMMITTED. Re-run this only when the source
