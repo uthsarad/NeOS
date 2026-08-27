@@ -57,10 +57,11 @@ for y in range(SH):
         for bx, by, br, col, strength in BLOBS:
             dx = (x / SW - bx)
             dy = (y / SH - by) * (SW / SH)  # keep blobs circular
-            d = math.sqrt(dx * dx + dy * dy)
-            f = max(0.0, 1.0 - d / br)
-            f = f * f * (3 - 2 * f)  # smoothstep falloff
-            if f > 0:
+            d2 = dx * dx + dy * dy
+            if d2 < br * br:
+                d = math.sqrt(d2)
+                f = 1.0 - d / br
+                f = f * f * (3 - 2 * f)  # smoothstep falloff
                 c = screen(c, col, f * strength)
         px[x, y] = c
 
