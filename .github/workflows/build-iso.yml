@@ -123,8 +123,28 @@ jobs:
           pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
           pacman-key --lsign-key 349BC7808577C592
 
-          pacman -U --noconfirm \
-            'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+          # Download to a local file first (with retries + a fallback mirror)
+          # instead of `pacman -U <url>` direct-fetching: a bare direct fetch
+          # has no retry and a transient 503 from the primary CDN fails the
+          # whole release build. Same two hosts as chaotic-mirrorlist.
+          CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
+          rm -f "$CHAOTIC_KEYRING_PKG"
+          for url in \
+              'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
+              'https://mirror.exozy.me/chaotic-aur/chaotic-keyring.pkg.tar.zst'; do
+            echo "Fetching chaotic-keyring from $url ..."
+            if curl -fL --retry 5 --retry-delay 3 --retry-all-errors \
+                 -o "$CHAOTIC_KEYRING_PKG" "$url"; then
+              break
+            fi
+            rm -f "$CHAOTIC_KEYRING_PKG"
+          done
+          if [[ ! -f "$CHAOTIC_KEYRING_PKG" ]]; then
+            echo "::error::Failed to download chaotic-keyring from all mirrors"
+            exit 1
+          fi
+
+          pacman -U --noconfirm "$CHAOTIC_KEYRING_PKG"
 
           pacman -Sy --noconfirm \
             --overwrite='/usr/lib/libgcc*' \

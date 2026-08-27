@@ -113,14 +113,18 @@ fi
 CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
 CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
 
+# --retry: the primary CDN (cdn-mirror.chaotic.cx) intermittently returns 503,
+# which previously failed the whole build on a single bad request.
+CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors)
+
 if [ ! -f "$CHAOTIC_KEYRING_PKG" ]; then
     echo "Downloading Chaotic-AUR keyring..."
-    curl -L -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-    curl -L -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
+    curl -L "${CURL_RETRY[@]}" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+    curl -L "${CURL_RETRY[@]}" -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
 else
     echo "Updating cached Chaotic-AUR keyring..."
-    curl -L -z "$CHAOTIC_KEYRING_PKG" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-    curl -L -z "$CHAOTIC_KEYRING_SIG" -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
+    curl -L "${CURL_RETRY[@]}" -z "$CHAOTIC_KEYRING_PKG" -o "$CHAOTIC_KEYRING_PKG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+    curl -L "${CURL_RETRY[@]}" -z "$CHAOTIC_KEYRING_SIG" -o "$CHAOTIC_KEYRING_SIG" 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst.sig'
 fi
 
 # Sentinel: [Security] Mitigate supply chain attacks by verifying package signature before installation
