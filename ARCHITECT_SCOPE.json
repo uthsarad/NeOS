@@ -1,12 +1,14 @@
 {
   "allowed_files": [
-    "none"
+    "profile/airootfs/usr/local/bin/neos-desktop-setup",
+    "profile/airootfs/usr/local/bin/neos-welcome",
+    "profile/airootfs/usr/local/bin/neos-welcome-app"
   ],
-  "strategic_pause": true,
+  "strategic_pause": false,
   "constraints": [
-    "Mandatory continued Strategic Pause. Write ZERO production code.",
-    "Wait for specialists to clear their pending Phase 5 acknowledgment tasks.",
-    "Document pause in ARCHITECT_REPORT.md and append acknowledgment tasks for specialists.",
-    "Maestro update: 2026-09-04"
+    "Implement Phase 6 UX Polish and Windows Familiarity features.",
+    "Adjust UI layout and defaults.",
+    "Ensure all new features prioritize a GUI-first approach.",
+    "Maestro update: 2026-09-05"
   ]
 }
