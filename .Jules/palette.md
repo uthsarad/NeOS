@@ -8,3 +8,6 @@
 ## 2024-07-20 - Custom Login Screen Keyboard Accessibility
 **Learning:** Custom QML login screens don't get automatic tab-navigation and focus states for non-native components like `Rectangle` buttons. Users who rely on keyboard navigation can get stuck if manual `KeyNavigation` and `activeFocusOnTab` properties aren't explicitly mapped, leading to an inaccessible login flow.
 **Action:** Always test tab flow explicitly on custom QML components and explicitly bind `activeFocusOnTab`, `Keys.onReturnPressed`, and focus-visible border styles to interactive elements that aren't native UI controls.
+## 2026-09-06 - Keyboard Focus Styles in PyQt6 Custom Themes
+**Learning:** When styling QPushButton elements in PyQt6 applications using custom QSS (Qt Style Sheets), the default focus styles (like the dotted outline) can often be overridden or hidden by explicit background and border declarations. This makes the UI inaccessible for keyboard users navigating via Tab unless explicit `:focus` pseudo-classes are defined in the stylesheet.
+**Action:** Always include explicitly defined `:focus` states in PyQt6 stylesheets alongside `:hover` and `:pressed` states, taking care to ensure that applying borders on focus doesn't cause layout shifting (e.g. by setting `border: 2px solid transparent` as the default).
