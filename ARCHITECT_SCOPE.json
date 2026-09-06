@@ -1,14 +1,13 @@
 {
   "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-desktop-setup",
-    "profile/airootfs/usr/local/bin/neos-welcome",
-    "profile/airootfs/usr/local/bin/neos-welcome-app"
+    "profile/airootfs/etc/xdg/discoverrc",
+    "profile/airootfs/usr/local/bin/neos-operations-hub"
   ],
   "strategic_pause": false,
   "constraints": [
-    "Implement Phase 6 UX Polish and Windows Familiarity features.",
-    "Adjust UI layout and defaults.",
-    "Ensure all new features prioritize a GUI-first approach.",
-    "Maestro update: 2026-09-05"
+    "Implement Phase 7 App Store and Package Management UX.",
+    "Brand KDE Discover for NeOS.",
+    "Ensure all updates can be managed without terminal.",
+    "Maestro update: 2026-09-06"
   ]
 }
