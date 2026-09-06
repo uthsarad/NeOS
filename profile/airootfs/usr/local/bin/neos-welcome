@@ -8,6 +8,11 @@
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+if (( EUID == 0 )); then
+    echo "Error: This script is a user-level GUI wrapper and must not be run as root." >&2
+    exit 1
+fi
+
 LOG="$(mktemp "${TMPDIR:-/tmp}/neos-installer.XXXXXX")"
 trap 'rm -f "$LOG"' EXIT INT TERM
 
