@@ -36,3 +36,8 @@
 **Vulnerability:** A temporary file could be left behind in `/tmp` when generating system snapshots if the script exits abnormally.
 **Learning:** When auditing for one class of vulnerability (like command injection), it is crucial to also review the surrounding resource management lifecycle (creation and cleanup) for related vulnerabilities like CWE-459.
 **Prevention:** Ensure temporary files generated via `mktemp` are explicitly cleaned up using `trap` on common termination signals (EXIT, INT, TERM) to prevent resource leaks and potential data exposure.
+
+## 2026-09-06 - Block root execution for GUI scripts invoking calamares
+**Vulnerability:** The neos-welcome script could be run as root directly, which could lead to accidental privileged desktop environment variables being misused.
+**Learning:** Shell scripts that act as user-level GUIs or wrappers to desktop applications often inherit high privileges if run via sudo, creating an unintentional privilege escalation path for the invoked applications or unintended execution environment (like capturing root's $HOME or $DISPLAY inadvertently).
+**Prevention:** Always explicitly block root execution (e.g., if (( EUID == 0 )); then ...) in user-level GUI scripts to enforce strict privilege boundaries and ensure they are only launched within a proper user session before they selectively elevate specific commands via sudo.
