@@ -171,6 +171,11 @@
       "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-09-04).",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Add focus visible styles for keyboard navigation in neos-welcome-app",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
+      "status": "completed"
     }
   ]
 }

@@ -117,3 +117,11 @@
 - Acknowledged the continued Strategic Pause directed by the Architect.
 - No new UI/UX enhancements due to target_file being none.
 - Completed task manifest acknowledgement.
+
+## 2026-09-06 - Phase 6 UX Polish: Keyboard Focus Styles
+
+**Accessibility/UX Improvement:**
+Added explicit `:focus` styles for `QPushButton#try_btn` and `QPushButton#install_btn` in `neos-welcome-app`. While a tab order was present, keyboard users lacked clear visual feedback when interacting with the main action buttons. Additionally, changed the default `border: none` of `install_btn` to `border: 2px solid transparent` so that applying a border on focus does not cause layout shifting.
+
+**Remaining Usability Risks:**
+- Keyboard flow transitions between major GUI windows during the full setup process require broader testing.
