@@ -176,6 +176,11 @@
       "description": "Add focus visible styles for keyboard navigation in neos-welcome-app",
       "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
       "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge Phase 7 Discover Configuration (UX Improvements).",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
     }
   ]
 }
