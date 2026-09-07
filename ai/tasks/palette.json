@@ -181,6 +181,11 @@
       "description": "Execute pending task: Acknowledge Phase 7 Discover Configuration (UX Improvements).",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
       "status": "completed"
+    },
+    {
+      "description": "Stand by for Phase 8 validation tasks.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }

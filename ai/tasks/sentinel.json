@@ -176,6 +176,11 @@
       "description": "Block root execution for neos-welcome GUI script",
       "target_file": "profile/airootfs/usr/local/bin/neos-welcome",
       "status": "completed"
+    },
+    {
+      "description": "Stand by for Phase 8 validation tasks.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
