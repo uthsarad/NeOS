@@ -125,3 +125,11 @@ Added explicit `:focus` styles for `QPushButton#try_btn` and `QPushButton#instal
 
 **Remaining Usability Risks:**
 - Keyboard flow transitions between major GUI windows during the full setup process require broader testing.
+
+## 2026-09-07 - Phase 7 UX Polish: KDialog Line Wrapping
+
+**Accessibility/UX Improvement:**
+Added `fold -s -w 90` to long-text output in `neos-operations-hub` for the "System Licensing" dialogs. Previously, `kdialog --textbox` did not natively wrap long lines, which caused horizontal scrolling and text truncation that degraded usability and readability. Note that we did not apply this to tabular data like the snapshot list to maintain formatting.
+
+**Remaining Usability Risks:**
+- No remaining Phase 7 specific risks identified for text rendering.
