@@ -517,3 +517,19 @@ No code was written, therefore no tests were run for new code.
 
 **Delegation Prepared:**
 Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` to formally acknowledge the continued Strategic Pause for 2026-09-04.
+
+## Phase 8 Operations Hub Update Integration (2026-09-07)
+
+**Scope Validation:**
+The implementation strictly aligns with `ARCHITECT_SCOPE.json` which mandated the integration of Phase 8 Operations Hub updates and seamless integration with snapper for update rollback UX.
+
+**Changes Made:**
+1. Added "Perform System Update" option to the `neos-operations-hub` kdialog menu.
+2. Integrated snapper rollback functionality in `neos-operations-hub` allowing users to restore specific snapshots via `pkexec`.
+3. Implemented a system update invocation via `neos-autoupdate.sh` through `pkexec`.
+
+**Test Coverage:**
+Existing `verify_operations_hub.sh` checks were run to confirm syntax and presence.
+
+**Delegation Prepared:**
+Added tasks to `ai/tasks/bolt.json`, `ai/tasks/palette.json`, and `ai/tasks/sentinel.json` for Phase 8 refinement.
