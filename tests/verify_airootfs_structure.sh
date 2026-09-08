@@ -6,6 +6,7 @@ REQUIRED_FILES=(
     "profile/airootfs/usr/local/bin/neos-driver-manager"
     "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
     "profile/airootfs/usr/local/bin/neos-liveuser-setup"
+    "profile/airootfs/usr/local/bin/chcon"
     "profile/airootfs/etc/systemd/system/neos-driver-manager.service"
     "profile/airootfs/etc/systemd/system/neos-autoupdate.service"
     "profile/airootfs/etc/systemd/system/neos-autoupdate.timer"
@@ -65,6 +66,7 @@ REQUIRED_PERMS=(
     "neos-driver-manager"
     "neos-autoupdate.sh"
     "neos-liveuser-setup"
+    "chcon"
 )
 
 echo ""
