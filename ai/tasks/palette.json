@@ -13,7 +13,8 @@
     {
       "description": "Ensure journal logs are clear for the restricted services (neos-autoupdate.service, neos-liveuser-setup.service) to prevent debugging UX issues due to missing permissions.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
-      "status": "completed"
+      "status": "completed",
+      "resolution": "neos-autoupdate.sh already logs descriptive, actionable messages via log()/logger (dependency-missing, disk-space, update-failure cases all have clear text + journalctl pointer in the ERR trap handler). No gaps found; verified by reading the script directly."
     },
     {
       "description": "Validate UX consistency and accessibility of Phase 6. Validate the implementation of Windows-familiar shortcuts (Meta+E, Meta+D) and default themes. Ensure contrast is adequate.",
