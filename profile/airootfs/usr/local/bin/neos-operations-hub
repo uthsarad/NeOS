@@ -75,7 +75,7 @@ Snapshots are typically created automatically during system updates."
 
 Are you sure you want to proceed?"
                         if [ $? -eq 0 ]; then
-                            pkexec snapper rollback "$ROLLBACK_ID"
+                            /usr/bin/pkexec /usr/bin/snapper rollback "$ROLLBACK_ID"
                             if [ $? -eq 0 ]; then
                                 kdialog --icon dialog-information --title "Rollback Successful" --msgbox "System rollback initiated successfully. Please reboot your system."
                             else
@@ -98,7 +98,7 @@ Are you sure you want to proceed?"
         # Sentinel: Audit license file read mechanisms in neos-operations-hub for path traversal risks.
         TEMP_FILE=$(mktemp "/tmp/license.XXXXXX")
         trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
-        cat << 'LICENSE_EOF' > "$TEMP_FILE"
+        cat << 'LICENSE_EOF' | fold -s -w 90 > "$TEMP_FILE"
 MIT License
 
 Copyright (c) 2026 NeOS
@@ -125,7 +125,6 @@ SOFTWARE.
 NeOS utilizes components from Arch Linux.
 Arch Linux and its packages are governed by their respective upstream licenses.
 LICENSE_EOF
-        fold -s -w 90 "$TEMP_FILE" > "${TEMP_FILE}.tmp" && mv "${TEMP_FILE}.tmp" "$TEMP_FILE"
         kdialog --icon dialog-information --title "About NeOS - System Licensing" --textbox "$TEMP_FILE" 600 400
         rm -f "$TEMP_FILE"
         ;;
@@ -137,15 +136,8 @@ LICENSE_EOF
 
 Proceed?"
         if [ $? -eq 0 ]; then
-            DBUS_REF=$(kdialog --icon dialog-information --title "System Update" --progressbar "Executing system update... Please wait." 0)
-            pkexec /usr/local/bin/neos-autoupdate.sh
-            UPDATE_STATUS=$?
-            if [ -n "$DBUS_REF" ]; then
-                DBUS_DEST="${DBUS_REF%% *}"
-                DBUS_PATH="${DBUS_REF#* }"
-                dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1 || true
-            fi
-            if [ $UPDATE_STATUS -eq 0 ]; then
+            /usr/bin/pkexec /usr/local/bin/neos-autoupdate.sh
+            if [ $? -eq 0 ]; then
                 kdialog --icon dialog-information --title "Update Complete" --msgbox "System update completed successfully."
             else
                 kdialog --icon dialog-error --title "Update Failed" --error "System update failed. Please check the update logs in /var/log/neos-autoupdate.log."

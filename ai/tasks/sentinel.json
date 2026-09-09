@@ -185,6 +185,11 @@
     {
       "description": "Audit the use of pkexec and input validation in the new Operations Hub update and rollback flows to ensure they cannot be bypassed or injected.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 8 Validation Strategic Pause (2026-09-08).",
+      "target_file": "none",
       "status": "pending"
     }
   ]
