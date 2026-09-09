@@ -244,3 +244,15 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 ## 2026-09-07 - Acknowledge Continued Phase 8 Validation Strategic Pause
 **Status**: Completed
 **Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new security audits or feature development performed.
+
+## 2026-09-08 - Audit of pkexec execution paths in neos-operations-hub
+### Risks found
+- Identified potential path hijacking risks (CWE-426) during privilege escalation in `profile/airootfs/usr/local/bin/neos-operations-hub`. Although a strict `PATH` export was added previously, `pkexec` and its target executables (`snapper`) were still called via relative/inferred paths.
+### Fixes applied
+- Updated `neos-operations-hub` to use absolute paths for both `/usr/bin/pkexec` and its targets (e.g., `/usr/bin/snapper`) to entirely eliminate the risk of executing unintended binaries via `$PATH` manipulation when running elevated commands.
+### Remaining attack surface
+- None identified regarding path hijacking in this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Path Hijacking (CWE-426 risk mitigated)
+- **Status**: Fixed

@@ -75,7 +75,7 @@ Snapshots are typically created automatically during system updates."
 
 Are you sure you want to proceed?"
                         if [ $? -eq 0 ]; then
-                            pkexec snapper rollback "$ROLLBACK_ID"
+                            /usr/bin/pkexec /usr/bin/snapper rollback "$ROLLBACK_ID"
                             if [ $? -eq 0 ]; then
                                 kdialog --icon dialog-information --title "Rollback Successful" --msgbox "System rollback initiated successfully. Please reboot your system."
                             else
@@ -137,7 +137,7 @@ LICENSE_EOF
 
 Proceed?"
         if [ $? -eq 0 ]; then
-            pkexec /usr/local/bin/neos-autoupdate.sh
+            /usr/bin/pkexec /usr/local/bin/neos-autoupdate.sh
             if [ $? -eq 0 ]; then
                 kdialog --icon dialog-information --title "Update Complete" --msgbox "System update completed successfully."
             else
