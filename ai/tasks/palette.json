@@ -190,7 +190,7 @@
     {
       "description": "Refine the UX of the snapshot selection (e.g., provide a progress dialog during update execution instead of blocking the UI).",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

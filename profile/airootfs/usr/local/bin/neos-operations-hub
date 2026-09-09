@@ -137,8 +137,15 @@ LICENSE_EOF
 
 Proceed?"
         if [ $? -eq 0 ]; then
+            DBUS_REF=$(kdialog --icon dialog-information --title "System Update" --progressbar "Executing system update... Please wait." 0)
             pkexec /usr/local/bin/neos-autoupdate.sh
-            if [ $? -eq 0 ]; then
+            UPDATE_STATUS=$?
+            if [ -n "$DBUS_REF" ]; then
+                DBUS_DEST="${DBUS_REF%% *}"
+                DBUS_PATH="${DBUS_REF#* }"
+                dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1 || true
+            fi
+            if [ $UPDATE_STATUS -eq 0 ]; then
                 kdialog --icon dialog-information --title "Update Complete" --msgbox "System update completed successfully."
             else
                 kdialog --icon dialog-error --title "Update Failed" --error "System update failed. Please check the update logs in /var/log/neos-autoupdate.log."

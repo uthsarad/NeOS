@@ -138,3 +138,11 @@ Added `fold -s -w 90` to long-text output in `neos-operations-hub` for the "Syst
 - Acknowledged the strategic pause directed by the Architect to stand by for Phase 8 validation tasks.
 - Halted all feature enhancements and UX development.
 - Completed task manifest acknowledgement.
+
+## 2026-09-09 - Phase 8 UX Polish: KDialog Progress Bar
+
+**Accessibility/UX Improvement:**
+Refined the UX of the system update execution in `neos-operations-hub`. Previously, triggering an update blocked the UI indefinitely without feedback while `pkexec /usr/local/bin/neos-autoupdate.sh` ran. Implemented a `kdialog --progressbar` to provide explicit visual feedback that the update is actively processing, and used `dbus-send` to cleanly close the dialog once execution completes.
+
+**Remaining Usability Risks:**
+- No remaining Phase 8 specific risks identified for system update UX.
