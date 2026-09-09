@@ -185,7 +185,7 @@
     {
       "description": "Audit the use of pkexec and input validation in the new Operations Hub update and rollback flows to ensure they cannot be bypassed or injected.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
