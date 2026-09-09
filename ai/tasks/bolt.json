@@ -190,7 +190,7 @@
     {
       "description": "Monitor system resources and subprocess overhead during update and rollback processes triggered via operations hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }

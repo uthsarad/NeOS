@@ -98,7 +98,7 @@ Are you sure you want to proceed?"
         # Sentinel: Audit license file read mechanisms in neos-operations-hub for path traversal risks.
         TEMP_FILE=$(mktemp "/tmp/license.XXXXXX")
         trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
-        cat << 'LICENSE_EOF' > "$TEMP_FILE"
+        cat << 'LICENSE_EOF' | fold -s -w 90 > "$TEMP_FILE"
 MIT License
 
 Copyright (c) 2026 NeOS
@@ -125,7 +125,6 @@ SOFTWARE.
 NeOS utilizes components from Arch Linux.
 Arch Linux and its packages are governed by their respective upstream licenses.
 LICENSE_EOF
-        fold -s -w 90 "$TEMP_FILE" > "${TEMP_FILE}.tmp" && mv "${TEMP_FILE}.tmp" "$TEMP_FILE"
         kdialog --icon dialog-information --title "About NeOS - System Licensing" --textbox "$TEMP_FILE" 600 400
         rm -f "$TEMP_FILE"
         ;;

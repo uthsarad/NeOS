@@ -89,3 +89,7 @@ None introduced by this change. The memory usage to hold these configuration fil
 - What was optimized: Acknowledge the continued Phase 8 Validation Strategic Pause.
 - Before/after reasoning: The pending task strictly directed no new performance optimizations for the Phase 8 validation tasks. Task status updated to completed.
 - Any remaining performance risks: None.
+
+- What was optimized: Reduce file I/O overhead related to reading the license file in neos-operations-hub.
+- Before/after reasoning: The script previously wrote the license text to a temporary file via a heredoc, then used `fold` to read it, text-wrap it, and overwrite it using `mv`. We piped the heredoc directly to `fold` and redirected the output to the temporary file, eliminating redundant disk I/O and subprocess overhead.
+- Any remaining performance risks: None.
