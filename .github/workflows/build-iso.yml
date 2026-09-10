@@ -96,6 +96,7 @@ jobs:
     needs: test
 
     runs-on: ubuntu-latest
+    timeout-minutes: 90
 
     container:
       image: archlinux:latest
@@ -165,7 +166,8 @@ jobs:
             rust \
             qemu-system-x86 \
             qemu-img \
-            util-linux
+            util-linux \
+            github-cli
 
       - name: Prepare Build Config
         run: |
@@ -421,7 +423,7 @@ jobs:
           echo "Release body:"
           cat release-body.md
 
-      - name: Upload ISO and VM Templates to Release
+      - name: Create GitHub Release (small assets)
         uses: softprops/action-gh-release@v3
         if: github.ref == 'refs/heads/main'
         with:
@@ -430,6 +432,43 @@ jobs:
           generate_release_notes: true
           body_path: release-body.md
           files: |
-            out/*.iso
             out/SHA256SUMS
             out/vm/*
+
+      - name: Upload ISO to Release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          cd "$GITHUB_WORKSPACE"
+          TAG="${{ steps.tag.outputs.value }}"
+
+          # Robust ISO detection with nullglob
+          shopt -s nullglob
+          files=(out/*.iso)
+          ISO_FILE="${files[0]:-}"
+
+          if [[ -z "$ISO_FILE" ]]; then
+            echo "❌ No ISO file found to upload"
+            exit 1
+          fi
+
+          echo "Uploading $ISO_FILE to release $TAG..."
+
+          # Retry up to 3 times with exponential backoff
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt/3..."
+            if gh release upload "$TAG" "$ISO_FILE" --clobber -R "$GITHUB_REPOSITORY" 2>&1; then
+              echo "✅ ISO uploaded successfully."
+              break
+            fi
+            if [[ $attempt -eq 3 ]]; then
+              echo "❌ Failed to upload ISO after 3 attempts"
+              exit 1
+            fi
+            DELAY=$((30 * attempt))
+            echo "Upload failed, retrying in ${DELAY}s..."
+            sleep "$DELAY"
+          done
