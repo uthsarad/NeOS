@@ -1,0 +1,3 @@
+#!/bin/sh
+# Dummy chcon to suppress Calamares mount module warnings on systems without SELinux
+exit 0

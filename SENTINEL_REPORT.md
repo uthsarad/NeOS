@@ -168,3 +168,96 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 - **Severity**: MEDIUM (Mitigated Configuration Drift & Permission Boundaries)
 - **Status**: Fixed
 
+
+## Acknowledge Phase 4 Validation Pending Tasks
+**Status**: Completed
+**Findings**: Acknowledged the Phase 4 Validation pending tasks. No new security audits.
+
+## 2026-08-21 - Audit of neos-driver-manager
+### Risks found
+- Missing secure state storage. The `neos-driver-manager` script uses `REPORT_FILE=$(mktemp)` which does not provide an unpredictable suffix template, opening a small potential for CWE-59 vulnerabilities if the system's `mktemp` default is predictable.
+### Fixes applied
+- Updated `neos-driver-manager` to explicitly use `mktemp "${TMPDIR:-/tmp}/neos-driver-manager.XXXXXX"` to guarantee a highly unpredictable, application-specific file name.
+### Remaining attack surface
+- None identified regarding temporary file creation for this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Predictable Temporary File (CWE-59 risk mitigated)
+- **Status**: Fixed
+
+## 2026-08-22 - Acknowledge Phase 5 Validation Strategic Pause
+**Status**: Completed
+**Findings**: Acknowledged the Phase 5 Validation Strategic Pause. No new security audits performed.
+
+## Acknowledge continued Phase 5 Validation Strategic Pause
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 5 Validation. No new feature development or audits required from Architect.
+
+## 2026-08-25 - Acknowledge Continued Phase 5 Validation Strategic Pause
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 5 Validation. No new feature development or audits required from Architect.
+
+## 2026-08-26 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-24)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-24). No new security audits performed.
+
+## 2026-08-27 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-25)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-25). No new security audits performed.
+
+## 2026-08-28 - Acknowledge Continued Phase 5 Validation Strategic Pause
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause. No new security audits performed.
+
+## 2026-08-29 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-27)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-27). No new security audits performed.
+
+## 2026-08-30 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-28)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-28). No new security audits performed.
+
+## 2026-08-30 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-29)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-29). No new security audits performed.
+
+## 2026-08-31 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-30)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-30). No new security audits performed.
+
+## 2026-08-31 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-08-31)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-08-31). No new security audits performed.
+
+## 2026-09-01 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-09-01)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-09-01). No new security audits performed.
+
+## 2026-09-02 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-09-02)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-09-02). No new security audits performed.
+
+## 2026-09-03 - Acknowledge Continued Phase 5 Validation Strategic Pause (2026-09-03)
+**Status**: Completed
+**Findings**: Acknowledged the continued Phase 5 Validation Strategic Pause (2026-09-03). No new security audits performed.
+
+## 2026-09-07 - Acknowledge Continued Phase 8 Validation Strategic Pause
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new security audits or feature development performed.
+
+## 2026-09-08 - Audit of pkexec execution paths in neos-operations-hub
+### Risks found
+- Identified potential path hijacking risks (CWE-426) during privilege escalation in `profile/airootfs/usr/local/bin/neos-operations-hub`. Although a strict `PATH` export was added previously, `pkexec` and its target executables (`snapper`) were still called via relative/inferred paths.
+### Fixes applied
+- Updated `neos-operations-hub` to use absolute paths for both `/usr/bin/pkexec` and its targets (e.g., `/usr/bin/snapper`) to entirely eliminate the risk of executing unintended binaries via `$PATH` manipulation when running elevated commands.
+### Remaining attack surface
+- None identified regarding path hijacking in this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Path Hijacking (CWE-426 risk mitigated)
+- **Status**: Fixed
+
+
+## 2026-09-08 - Acknowledge Continued Phase 8 Validation Strategic Pause (2026-09-08)
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new security audits or feature development performed.

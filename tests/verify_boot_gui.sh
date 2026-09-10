@@ -5,12 +5,11 @@
 # - tty1 regression: the netinstalled system landed on a text console because
 #   nothing set its default systemd target. The services-systemd module must set
 #   graphical.target so it boots into SDDM/Plasma.
-# - Boot splash: the Plymouth 'neos' theme shows ONLY the animated cat-NN.png
-#   loader, dead centre — no wordmark, no tagline, no dots, no status text.
-#   The cat body is perfectly still; only the tail moves. Cat frames are
-#   generated from tools/loader-cat.gif (committed; CI does not run generators).
-#   Repeated still frames at the end of the source GIF are trimmed so the loop
-#   does not pause.
+# - Boot splash: the Plymouth 'neos' theme shows ONLY a single still cat-00.png
+#   loader image, dead centre — no wordmark, no tagline, no dots, no status
+#   text, no animation. The cat-NN.png frame set is generated from
+#   tools/loader-cat.gif (committed; CI does not run generators) and kept as
+#   source material even though only frame 00 is wired into the script.
 # - No KDE splash: ksplash after SDDM login is disabled via skel ksplashrc so
 #   the Plymouth cat is the only boot screen.
 set -euo pipefail
@@ -45,17 +44,23 @@ if [[ -f "$SCRIPT" ]]; then
     SCRIPT_CONTENT=$(<"$SCRIPT")
 fi
 
-# 2. Boot-splash cat frames are present (29 frames) and wired into the script.
+# 2. Boot-splash cat source frames are present (29 frames) and cat-00 is
+#    wired into the script as the single still image.
 frames=$(find "$THEME_DIR" -maxdepth 1 -name 'cat-*.png' | wc -l)
 if [[ "$frames" -eq 29 ]]; then
-    echo "✅ 29 cat boot-splash frames present"
+    echo "✅ 29 cat source frames present"
 else
     echo "❌ expected 29 cat-NN.png frames, found $frames"; FAIL=1
 fi
-if [[ "$SCRIPT_CONTENT" == *'cat-"'* ]] || [[ "$SCRIPT_CONTENT" == *'"cat-'* ]]; then
-    echo "✅ neos.script animates the cat frames"
+if [[ "$SCRIPT_CONTENT" == *'"cat-00.png"'* ]]; then
+    echo "✅ neos.script shows the still cat-00 frame"
 else
-    echo "❌ neos.script does not reference the cat- frames"; FAIL=1
+    echo "❌ neos.script does not reference cat-00.png"; FAIL=1
+fi
+if [[ "$SCRIPT_CONTENT" == *'SetRefreshFunction'* ]]; then
+    echo "❌ neos.script still animates the cat (SetRefreshFunction present)"; FAIL=1
+else
+    echo "✅ neos.script has no cat animation"
 fi
 
 # 3. The cat is the ONLY element on the boot splash — no logo, wordmark,

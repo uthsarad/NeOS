@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.09.08] - 2026-09-08
+
+### Fixed
+- **`neos-welcome` root-execution block** (Sentinel, HIGH): the welcome GUI script now refuses to run as root, closing a privilege-boundary gap in the live-session welcome flow.
+- **Calamares dummy `chcon` warnings**: added a no-op `chcon` shim to `profile/airootfs/usr/local/bin/` (with matching `profiledef.sh` permission entry and `verify_airootfs_structure.sh` coverage) so Calamares stops logging spurious SELinux-context warnings on a system that has no SELinux.
+- **Licensing dialog horizontal scroll**: welcome app's licensing dialog no longer scrolls sideways.
+
+### Changed
+- **Welcome app accessibility**: added visible keyboard focus styles to the welcome app's buttons (Palette).
+- **Operations Hub**: minor update to `neos-operations-hub`.
+
+### Notes
+- This entry consolidates 55 upstream commits (PRs #900–#954) pulled from `origin/main`; the remainder were governance/strategic-directive bookkeeping (Phase 5–8 validation-pause acknowledgements) with no functional impact.
+
 ## [2026.08.18] - 2026-08-18
 
 ### Added

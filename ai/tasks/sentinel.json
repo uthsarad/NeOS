@@ -13,7 +13,8 @@
     {
       "description": "Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure no critical privileges are unnecessarily granted. Ensure ReadWritePaths are strictly minimal.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
-      "status": "completed"
+      "status": "completed",
+      "resolution": "Dropped CAP_SYS_MODULE and ReadWritePaths=/srv from neos-autoupdate.service (unused by pacman/snapper). CAP_SYS_ADMIN kept \u2014 flagged as unverified without a full VM boot+update test. neos-liveuser-setup.service intentionally left unsandboxed per its own inline comment + regression-guard test."
     },
     {
       "description": "Audit desktop configuration security. Audit newly introduced configuration files for potential privilege escalation vectors or unintended execution paths.",
@@ -56,23 +57,8 @@
       "status": "completed"
     },
     {
-      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
-      "target_file": "none",
-      "status": "completed"
-    },
-    {
-      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
-      "target_file": "none",
-      "status": "completed"
-    },
-    {
       "description": "Audit license file read mechanisms in neos-operations-hub for path traversal risks.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "completed"
-    },
-    {
-      "description": "Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.",
-      "target_file": "none",
       "status": "completed"
     },
     {
@@ -100,6 +86,117 @@
       "description": "Acknowledge the continued Strategic Pause for Phase 4 Validation. No new audits or enhancements.",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "id": "ack_strategic_pause_phase_4_next",
+      "description": "Acknowledge the Phase 4 Validation pending tasks. No new security audits.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Audit temporary file creation and path traversal risks for Phase 5 GUI in neos-driver-manager.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-driver-manager",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge the Phase 5 Validation Strategic Pause. No new security audits.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge the continued Phase 5 Validation Strategic Pause. No new security audits.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge the continued Phase 5 Validation Strategic Pause. No new security audits.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-24). No new security audits.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-25). No new security audits.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-27).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-28).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-29).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-30).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-08-31).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-09-01).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-09-02).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-09-03).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 5 Validation Strategic Pause (2026-09-04).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Block root execution for neos-welcome GUI script",
+      "target_file": "profile/airootfs/usr/local/bin/neos-welcome",
+      "status": "completed"
+    },
+    {
+      "description": "Stand by for Phase 8 validation tasks.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Audit the use of pkexec and input validation in the new Operations Hub update and rollback flows to ensure they cannot be bypassed or injected.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 8 Validation Strategic Pause (2026-09-08).",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Execute pending task: Acknowledge the continued Phase 8 Validation Strategic Pause (2026-09-09).",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }

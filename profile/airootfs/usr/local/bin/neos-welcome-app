@@ -87,9 +87,14 @@ class NeosWelcome(QWidget):
                 border-color: #4a5a8a;
                 color: #ffffff;
             }
+            QPushButton#try_btn:focus {
+                border-color: #0088CF;
+                color: #ffffff;
+                background-color: rgba(42, 51, 84, 0.2);
+            }
             QPushButton#install_btn {
                 background-color: #0088CF;
-                border: none;
+                border: 2px solid transparent;
                 color: #ffffff;
                 border-radius: 12px;
             }
@@ -98,6 +103,10 @@ class NeosWelcome(QWidget):
             }
             QPushButton#install_btn:pressed {
                 background-color: #006fa8;
+            }
+            QPushButton#install_btn:focus {
+                border-color: #ffffff;
+                background-color: #0096D5;
             }
         """)
 

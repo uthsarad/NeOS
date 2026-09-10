@@ -68,6 +68,31 @@ else
     log "no network detected"
 fi
 
+# ---- Helper: run pacstrap with retries --------------------------------
+# A single transient mirror hiccup (slow/stalled download on one of ~480+
+# configured mirrors) can abort the WHOLE pacstrap transaction: pacman marks
+# the misbehaving mirror bad for the rest of that pass without necessarily
+# re-routing already-queued failures to a different mirror, so the whole
+# "pacstrap -K" call fails even though most packages downloaded fine.
+# Retrying is cheap — packages already fetched are cached under
+# $ROOT/var/cache/pacman/pkg, so a retry only re-fetches what actually failed.
+PACSTRAP_RETRIES=3
+run_pacstrap_with_retry() {
+    local conf="$1"
+    local attempt
+    for attempt in $(seq 1 "$PACSTRAP_RETRIES"); do
+        if [[ "$attempt" -gt 1 ]]; then
+            log "pacstrap attempt $attempt/$PACSTRAP_RETRIES — retrying after a mirror/network hiccup..."
+            pacman -Sy --noconfirm --config "$conf" 2>/dev/null || true
+            sleep 5
+        fi
+        if pacstrap -K "$ROOT" "${PKGS[@]}" --config "$conf"; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # ---- Helper: install from local ISO repo (no network needed) --------------
 do_offline_install() {
     log "installing ${#PKGS[@]} packages from local ISO repo at $LOCAL_REPO ..."
@@ -82,7 +107,7 @@ do_offline_install() {
         echo "Server = file://${LOCAL_REPO}"
     } > "$TMP_LOCAL"
     pacman -Sy --noconfirm --config "$TMP_LOCAL" 2>/dev/null || true
-    pacstrap -K "$ROOT" "${PKGS[@]}" --config "$TMP_LOCAL" || {
+    run_pacstrap_with_retry "$TMP_LOCAL" || {
         status=$?
         rm -f "$TMP_LOCAL"
         log "offline install failed (exit $status)"
@@ -134,8 +159,8 @@ if [[ "$net_ok" -eq 1 ]]; then
         cp /etc/pacman.conf "$TMP_PACMAN_CONF"
     fi
     pacman -Sy --noconfirm --config "$TMP_PACMAN_CONF" 2>/dev/null || true
-    if ! pacstrap -K "$ROOT" "${PKGS[@]}" --config "$TMP_PACMAN_CONF"; then
-        echo "neos-pacstrap: online install failed — check internet connection and retry" >&2
+    if ! run_pacstrap_with_retry "$TMP_PACMAN_CONF"; then
+        echo "neos-pacstrap: online install failed after $PACSTRAP_RETRIES attempts — check internet connection and retry" >&2
         exit 1
     fi
 else

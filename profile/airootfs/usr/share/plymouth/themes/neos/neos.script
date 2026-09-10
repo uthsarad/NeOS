@@ -1,31 +1,18 @@
-# NeOS Plymouth boot splash (script module) — minimal cat with animated tail.
-# Shows only the cat centered on a dark background. The cat body is perfectly
-# still and only the tail animates. No wordmark, no tagline, no dots, no status
-# text — just the cat.
+# NeOS Plymouth boot splash (script module) — a single still cat centered on
+# a dark background. No wordmark, no tagline, no dots, no status text, no
+# animation — just the cat.
 #
-# Frames (cat-NN.png) are generated from tools/loader-cat.gif by
-# tools/gen-bootlogo-frames.py and committed.
+# Frame source images (cat-NN.png) are generated from tools/loader-cat.gif by
+# tools/gen-bootlogo-frames.py and committed; only cat-00.png is used here.
 
 # --- Background: deep navy gradient (#0A0E1A -> #16203A) ---
 Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
 Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
 
-# --- Load the cat animation frames (cat-00.png .. cat-28.png) ---
-# The frames have a static body with only the tail varying.
-n_frames = 29;  # Keep in sync with gen-bootlogo-frames.py output count
-i = 0;
-while (i < n_frames) {
-    if (i < 10)
-        num = "0" + i;
-    else
-        num = "" + i;
-    cat[i] = Image("cat-" + num + ".png");
-    i++;
-}
-
-# --- Layout: centre the cat on screen ---
-cat.width  = cat[0].GetWidth();
-cat.height = cat[0].GetHeight();
+# --- Load the still cat image ---
+cat_image = Image("cat-00.png");
+cat.width  = cat_image.GetWidth();
+cat.height = cat_image.GetHeight();
 
 center_x = Window.GetX() + Window.GetWidth() / 2;
 center_y = Window.GetY() + Window.GetHeight() / 2;
@@ -33,28 +20,12 @@ center_y = Window.GetY() + Window.GetHeight() / 2;
 cat_x = center_x - cat.width / 2;
 cat_y = center_y - cat.height / 2;
 
-# --- Cat sprite ---
+# --- Cat sprite (static, no refresh callback) ---
 cat.sprite = Sprite();
-cat.sprite.SetImage(cat[0]);
+cat.sprite.SetImage(cat_image);
 cat.sprite.SetX(cat_x);
 cat.sprite.SetY(cat_y);
 cat.sprite.SetZ(10);
-
-# --- Animate: cycle cat frames to move only the tail ---
-tick = 0;
-last_frame = -1;
-fun refresh_callback() {
-    tick++;
-
-    frame = Math.Int(tick / 2);
-    while (frame >= n_frames)
-        frame -= n_frames;
-    if (frame != last_frame) {
-        cat.sprite.SetImage(cat[frame]);
-        last_frame = frame;
-    }
-}
-Plymouth.SetRefreshFunction(refresh_callback);
 
 # --- Password prompt for encrypted disks ---
 prompt_sprite = Sprite();

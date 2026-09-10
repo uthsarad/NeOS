@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Generate the NeOS Plymouth boot-splash animation frames from a source GIF.
+"""Generate the NeOS Plymouth boot-splash frames from a source GIF.
 
 The boot splash is a Plymouth `script` theme (themes/neos/neos.script) that
-cycles through cat-NN.png frames centered on a dark background — the cat body
-is perfectly still and ONLY the tail animates.
+shows a single still cat-00.png frame centered on a dark background — no
+animation. The other cat-NN.png frames stay committed as source material (in
+case animation is re-enabled later) but are unused by the script.
 
 CI never runs this (it builds the ISO with mkarchiso from checked-in files), so
 the generated cat-*.png frames are COMMITTED. Re-run this only when the source
@@ -14,8 +15,8 @@ GIF changes:
 Source : tools/loader-cat.gif
 Output : profile/airootfs/usr/share/plymouth/themes/neos/cat-NN.png
 """
+
 from pathlib import Path
-from collections import Counter
 from PIL import Image
 
 REPO = Path(__file__).resolve().parent.parent
@@ -32,8 +33,7 @@ def _rgba_key(pixel):
 
 def _mode_pixel(pixel_list):
     """Return the most common RGBA value from a list of pixel tuples."""
-    c = Counter(pixel_list)
-    return c.most_common(1)[0][0]
+    return max(set(pixel_list), key=pixel_list.count)
 
 
 def main() -> None:
@@ -72,7 +72,9 @@ def main() -> None:
     # ------------------------------------------------------------------
     scaled = []
     for cel in cels:
-        scaled.append(cel.resize((cel.width * SCALE, cel.height * SCALE), Image.LANCZOS))
+        scaled.append(
+            cel.resize((cel.width * SCALE, cel.height * SCALE), Image.LANCZOS)
+        )
 
     # ------------------------------------------------------------------
     # Pass 3: centre each cel on the shared canvas (full-frame originals).
@@ -126,7 +128,7 @@ def main() -> None:
         opx = orig.load()
         canvas = static.copy()
         cpx = canvas.load()
-        for (x, y) in varying_pixels:
+        for x, y in varying_pixels:
             cpx[x, y] = opx[x, y]
         canvas.save(DEST / f"cat-{i:02d}.png")
 

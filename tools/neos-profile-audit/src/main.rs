@@ -90,69 +90,64 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
         "uefi-x64.grub.eltorito",
     ];
 
-    let mut pacman_conf_found = false;
-    let mut bootmodes_found = false;
+    let mut pacman_conf_val = None;
+    let mut bootmodes_val = None;
 
-    // TODO(sentinel): Validate that the parsed values do not introduce command injection risks if used downstream.
+    // Extract values, taking the last definition in case of duplicates
     for line in content.lines() {
-        if pacman_conf_found && bootmodes_found {
-            break; // ⚡ Bolt: Early exit once all required properties are parsed to avoid processing the rest of the file
-        }
-
         let trimmed = line.trim();
-        if !pacman_conf_found && trimmed.starts_with("pacman_conf=") {
-            pacman_conf_found = true;
-            // ⚡ Bolt: Use slicing instead of trim_start_matches to avoid redundant string searching
-            let val = trimmed[12..].trim_matches(|c| c == '"' || c == '\'');
-            if val.is_empty() {
-                return Err("pacman_conf is set to an empty string in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Provide a valid file path for 'pacman_conf'.".to_string());
-            }
-
-            if val.starts_with('/')
-                || val.contains("..")
-                || val
-                    .chars()
-                    .any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-')
-            {
-                return Err("pacman_conf contains invalid characters or path traversal.\n\n💡 How to fix:\n  - Ensure 'pacman_conf' in 'profiledef.sh' only contains alphanumeric characters, '.', '_', '-', and '/' without path traversal ('..') or absolute paths ('/').".to_string());
-            }
-
-            let conf_path = root.join(val);
-            if !conf_path.exists() {
-                return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}.\n\n💡 How to fix:\n  - Verify the path provided for 'pacman_conf' in 'profiledef.sh' is correct and the file exists.", conf_path.display()));
-            }
-            let conf_content = fs::read_to_string(&conf_path)
-                .map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
-            if !conf_content.contains("DatabaseOptional") {
-                return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional.\n\n💡 How to fix:\n  - Open '{}'\n  - Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display(), conf_path.display()));
-            }
-        } else if !bootmodes_found && trimmed.starts_with("bootmodes=(") {
-            bootmodes_found = true;
-            // ⚡ Bolt: Use slicing instead of trim_start_matches to avoid redundant string searching
-            let val = trimmed[11..].trim_end_matches(')');
-            // Note: simple splitting by whitespace works because valid bootmodes don't contain spaces.
-            for mode_str in val.split_whitespace() {
-                let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
-
-                if mode
-                    .chars()
-                    .any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_')
-                {
-                    return Err("bootmodes contains invalid characters (possible command injection).\n\n💡 How to fix:\n  - Ensure 'bootmodes' in 'profiledef.sh' only contains alphanumeric characters, '.', '-', and '_'.".to_string());
-                }
-
-                if !valid_bootmodes.contains(&mode) {
-                    return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Update 'bootmodes' to only include valid modes.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
-                }
-            }
+        if let Some(stripped) = trimmed.strip_prefix("pacman_conf=") {
+            pacman_conf_val = Some(stripped.trim_matches(|c| c == '"' || c == '\'').to_string());
+        } else if let Some(stripped) = trimmed.strip_prefix("bootmodes=(") {
+            bootmodes_val = Some(stripped.trim_end_matches(')').to_string());
         }
     }
 
-    if !pacman_conf_found {
+    if let Some(val) = pacman_conf_val {
+        if val.is_empty() {
+            return Err("pacman_conf is set to an empty string in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Provide a valid file path for 'pacman_conf'.".to_string());
+        }
+
+        if val.starts_with('/')
+            || val.contains("..")
+            || val.starts_with('-')
+            || val
+                .chars()
+                .any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-')
+        {
+            return Err("pacman_conf contains invalid characters, path traversal, or starts with a hyphen.\n\n💡 How to fix:\n  - Ensure 'pacman_conf' in 'profiledef.sh' only contains alphanumeric characters, '.', '_', '-', and '/' without path traversal ('..'), absolute paths ('/'), or leading hyphens.".to_string());
+        }
+
+        let conf_path = root.join(&val);
+        if !conf_path.exists() {
+            return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}.\n\n💡 How to fix:\n  - Verify the path provided for 'pacman_conf' in 'profiledef.sh' is correct and the file exists.", conf_path.display()));
+        }
+        let conf_content = fs::read_to_string(&conf_path)
+            .map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
+        if !conf_content.contains("DatabaseOptional") {
+            return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional.\n\n💡 How to fix:\n  - Open '{}'\n  - Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display(), conf_path.display()));
+        }
+    } else {
         return Err("pacman_conf is NOT set in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Set 'pacman_conf' to the path of your pacman configuration file. This property is required by mkarchiso to build the image.".to_string());
     }
 
-    if !bootmodes_found {
+    if let Some(val) = bootmodes_val {
+        for mode_str in val.split_whitespace() {
+            let mode = mode_str.trim_matches(|c| c == '"' || c == '\'');
+
+            if mode.starts_with('-')
+                || mode
+                    .chars()
+                    .any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_')
+            {
+                return Err("bootmodes contains invalid characters or starts with a hyphen (possible command injection).\n\n💡 How to fix:\n  - Ensure 'bootmodes' in 'profiledef.sh' only contains alphanumeric characters, '.', '-', and '_', and does not start with a hyphen.".to_string());
+            }
+
+            if !valid_bootmodes.contains(&mode) {
+                return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Update 'bootmodes' to only include valid modes.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
+            }
+        }
+    } else {
         return Err("The bootmodes array is missing in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Define an array of valid 'bootmodes' (e.g., bootmodes=('uefi.grub' 'bios.syslinux')).".to_string());
     }
 
@@ -296,7 +291,10 @@ fn assert_arch_specific_expectations(
         .ok_or_else(|| "missing package set for packages.x86_64".to_string())?;
 
     if !x86.contains("linux") && !x86.contains("linux-zen") && !x86.contains("linux-lts") {
-        return Err("packages.x86_64 must include at least one kernel (linux, linux-zen, or linux-lts)".to_string());
+        return Err(
+            "packages.x86_64 must include at least one kernel (linux, linux-zen, or linux-lts)"
+                .to_string(),
+        );
     }
 
     Ok(())
@@ -398,7 +396,7 @@ mod tests {
         fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
 
         let err = assert_profiledef_properties(root).unwrap_err();
-        assert!(err.contains("invalid characters or path traversal"));
+        assert!(err.contains("invalid characters, path traversal, or starts with a hyphen"));
     }
 
     #[test]
@@ -413,7 +411,7 @@ mod tests {
         fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
 
         let err = assert_profiledef_properties(root).unwrap_err();
-        assert!(err.contains("invalid characters or path traversal"));
+        assert!(err.contains("invalid characters, path traversal, or starts with a hyphen"));
     }
 
     #[test]
@@ -431,7 +429,7 @@ mod tests {
         fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
 
         let err = assert_profiledef_properties(root).unwrap_err();
-        assert!(err.contains("bootmodes contains invalid characters (possible command injection)"));
+        assert!(err.contains("bootmodes contains invalid characters or starts with a hyphen"));
     }
 
     #[test]
@@ -447,5 +445,57 @@ mod tests {
 
         let err = parse_package_file(&path).unwrap_err();
         assert!(err.contains("contains invalid characters or whitespace in package entry (possible terminal injection)"));
+    }
+
+    #[test]
+    fn test_pacman_conf_leading_hyphen() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="-my_pacman.conf"
+        bootmodes=('uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("invalid characters, path traversal, or starts with a hyphen"));
+    }
+
+    #[test]
+    fn test_bootmode_leading_hyphen() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="my_pacman.conf"
+        bootmodes=('-uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let pacman_conf_content = "DatabaseOptional";
+        fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
+
+        let err = assert_profiledef_properties(root).unwrap_err();
+        assert!(err.contains("invalid characters or starts with a hyphen"));
+    }
+
+    #[test]
+    fn test_last_definition_wins() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+
+        let profiledef_content = r#"
+        pacman_conf="bad_pacman.conf"
+        pacman_conf="my_pacman.conf"
+        bootmodes=('invalid')
+        bootmodes=('uefi.grub')
+        "#;
+        fs::write(root.join("profiledef.sh"), profiledef_content).unwrap();
+
+        let pacman_conf_content = "DatabaseOptional";
+        fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
+
+        assert!(assert_profiledef_properties(root).is_ok());
     }
 }
