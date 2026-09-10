@@ -14,7 +14,7 @@
       "description": "Audit the systemd sandboxing directives in neos-autoupdate.service and neos-liveuser-setup.service. Ensure no critical privileges are unnecessarily granted. Ensure ReadWritePaths are strictly minimal.",
       "target_file": "profile/airootfs/etc/systemd/system/*.service",
       "status": "completed",
-      "resolution": "Dropped CAP_SYS_MODULE and ReadWritePaths=/srv from neos-autoupdate.service (unused by pacman/snapper). CAP_SYS_ADMIN kept — flagged as unverified without a full VM boot+update test. neos-liveuser-setup.service intentionally left unsandboxed per its own inline comment + regression-guard test."
+      "resolution": "Dropped CAP_SYS_MODULE and ReadWritePaths=/srv from neos-autoupdate.service (unused by pacman/snapper). CAP_SYS_ADMIN kept \u2014 flagged as unverified without a full VM boot+update test. neos-liveuser-setup.service intentionally left unsandboxed per its own inline comment + regression-guard test."
     },
     {
       "description": "Audit desktop configuration security. Audit newly introduced configuration files for potential privilege escalation vectors or unintended execution paths.",
@@ -191,7 +191,7 @@
     {
       "description": "Execute pending task: Acknowledge the continued Phase 8 Validation Strategic Pause (2026-09-08).",
       "target_file": "none",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
