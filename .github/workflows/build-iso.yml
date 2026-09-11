@@ -449,7 +449,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: ${{ steps.tag.outputs.value }}
-          name: NeOS "${{ steps.codename.outputs.value }} Beta" (${{ steps.tag.outputs.value }})
+          name: NeOS "${{ steps.codename.outputs.value }} Beta"
           generate_release_notes: true
           body_path: release-body.md
           files: |
