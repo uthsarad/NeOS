@@ -44,7 +44,7 @@ func main() {
 			mirrorlistPath = os.Args[2]
 		}
 		if err := runRankMirrors(mirrorlistPath); err != nil {
-			fmt.Fprintf(os.Stderr, "%s❌ Mirror ranking failed:%s %v\n", ColorRed, ColorReset, err)
+			fmt.Fprintf(os.Stderr, "%s[FAIL] Mirror ranking failed:%s %v\n", ColorRed, ColorReset, err)
 			os.Exit(1)
 		}
 
@@ -78,7 +78,7 @@ func printUsage() {
 
 func runInfo() {
 	fmt.Printf("%s=================================================================%s\n", ColorCyan, ColorReset)
-	fmt.Printf("%s🌸 NeOS Sovereign Distribution Core%s\n", ColorBold, ColorReset)
+	fmt.Printf("%sNeOS Sovereign Distribution Core%s\n", ColorBold, ColorReset)
 	fmt.Printf("%s=================================================================%s\n", ColorCyan, ColorReset)
 	fmt.Printf("  • Distribution:  %sNeOS (Next Evolution Operating System)%s\n", ColorGreen, ColorReset)
 	fmt.Printf("  • Base Platform: Arch Linux (Rolling)\n")

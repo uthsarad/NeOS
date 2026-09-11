@@ -20,6 +20,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 - **Manifest drift guard**: `tests/verify_manifest_drift.sh` regenerates `neos-packages.txt`/`neos-overlay.txt` via `tools/gen-manifests.sh` in an isolated copy of `profile/` and fails if the committed copies differ (also checks the AUTO-GENERATED headers). CI's pre-build test loop picks it up automatically; this closes the loop on the CWE-436 stale-manifest drift class documented in the 2026.07.03 and 2026.08.18 audits, which CI previously masked because the build job always regenerates before building.
 
+### Cleaned Up
+- **Repository hygiene (unslop)**: removed decorative emojis from README.md, all documentation files (ARCHITECTURE.md, ROADMAP.md, PERFORMANCE.md, BOOTLOADER.md, user-guide docs, archive docs), shell scripts (build.sh, gen-*.sh, tests/*), profile configs (pacman.conf, grub, sysctl.d, systemd units), and source code (Rust, Go, C#).
+- **Test output standardization**: replaced emojis in test output messages with standard [PASS]/[FAIL]/[WARN]/[INFO] prefixes for consistent, scriptable output.
+- **Archive documentation**: cleaned up emojis and placeholder references in historical audit reports (DEEP_AUDIT.md, AUDIT_ACTION_PLAN.md, ISO_BUILD_FIX.md) while preserving their archival value.
+
 ## [2026.09.08] - 2026-09-08
 
 ### Fixed

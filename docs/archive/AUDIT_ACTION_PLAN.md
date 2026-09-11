@@ -7,12 +7,12 @@ This document provides a prioritized action plan based on the comprehensive audi
 
 ---
 
-## 🚨 Immediate Actions (MUST FIX BEFORE RELEASE)
+## Immediate Actions (MUST FIX BEFORE RELEASE)
 
 ### 1. Fix Build-Blocking pacman.conf Issue
 **Priority:** CRITICAL  
 **Time:** 5 minutes  
-**Status:** ❌ Currently blocking all builds
+**Status:** [BLOCKED] Currently blocking all builds
 
 **Action:**
 ```bash
@@ -30,7 +30,7 @@ bash tests/verify_build_profile.sh  # Should pass
 
 ---
 
-## ⚠️ High Priority (Next 1-2 Weeks)
+## High Priority (Next 1-2 Weeks)
 
 ### 2. Add ISO Size Validation to CI
 **Priority:** HIGH  
@@ -48,10 +48,10 @@ bash tests/verify_build_profile.sh  # Should pass
     MAX_SIZE=$((2 * 1024 * 1024 * 1024))  # 2 GiB
     echo "ISO size: $ISO_SIZE bytes ($(numfmt --to=iec-i --suffix=B $ISO_SIZE))"
     if (( ISO_SIZE >= MAX_SIZE )); then
-      echo "❌ ISO exceeds GitHub release limit!"
+      echo "[FAIL] ISO exceeds GitHub release limit!"
       exit 1
     fi
-    echo "✅ ISO size is within limits"
+    echo "[PASS] ISO size is within limits"
 ```
 
 ### 3. Document Architecture Limitations
@@ -70,14 +70,14 @@ bash tests/verify_build_profile.sh  # Should pass
 ## Supported Architectures
 
 ### x86_64 (Primary)
-- ✅ Full feature set (Calamares installer, snapshots, ZRAM)
-- ✅ Official support and testing
-- ✅ Recommended for production use
+- [PASS] Full feature set (Calamares installer, snapshots, ZRAM)
+- [PASS] Official support and testing
+- [PASS] Recommended for production use
 
 ### i686 and aarch64 (Experimental)
-- ⚠️ Limited feature set (no GUI installer)
-- ⚠️ Community-supported
-- ⚠️ Use for testing/evaluation only
+- Limited feature set (no GUI installer)
+- Community-supported
+- Use for testing/evaluation only
 ```
 
 ### 4. Add Dependency Validation
@@ -103,7 +103,7 @@ fi
 
 ---
 
-## 📋 Medium Priority (Next Month)
+## Medium Priority (Next Month)
 
 ### 5. Fix Documentation URLs
 **Time:** 15 minutes  
@@ -163,19 +163,19 @@ echo "Verifying ISO size optimization settings..."
 
 # Check compression in profiledef.sh
 if ! grep -q "xz.*-b.*1M" profiledef.sh; then
-    echo "❌ Compression may not achieve target"
+    echo "[WARN] Compression may not achieve target"
     exit 1
 fi
 
 # Check NoExtract in pacman.conf
 for pattern in "usr/share/man" "usr/share/doc" "usr/share/locale"; do
     if ! grep -q "NoExtract.*$pattern" pacman.conf; then
-        echo "❌ Missing NoExtract for $pattern"
+        echo "[FAIL] Missing NoExtract for $pattern"
         exit 1
     fi
 done
 
-echo "✅ ISO size optimization verified"
+echo "[PASS] ISO size optimization verified"
 ```
 
 ### 9. Improve Error Handling
@@ -265,7 +265,7 @@ Document:
 
 ### 14. Add Security Scanning
 **Time:** 2 hours  
-**Status:** ✅ Complete
+**Status:** [DONE] Complete
 
 Integrate:
 - ShellCheck for bash scripts
@@ -278,39 +278,39 @@ Integrate:
 
 | Category | Status | Critical Issues | Tests Passing |
 |----------|--------|-----------------|---------------|
-| Build System | 🔴 | 1 | 7/8 |
-| Security | 🟢 | 0 | 3/3 |
-| Documentation | 🟡 | 0 | N/A |
-| CI/CD | 🟡 | 0 | N/A |
-| Testing | 🟢 | 0 | 7/8 |
+| Build System | BLOCKED | 1 | 7/8 |
+| Security | OK | 0 | 3/3 |
+| Documentation | WIP | 0 | N/A |
+| CI/CD | WIP | 0 | N/A |
+| Testing | OK | 0 | 7/8 |
 
 **Legend:**
-- 🔴 Red: Critical issues blocking release
-- 🟡 Yellow: Important issues, not blocking
-- 🟢 Green: Good state, minor improvements possible
+- BLOCKED: Critical issues blocking release
+- WIP: Important issues, not blocking
+- OK: Good state, minor improvements possible
 
 ---
 
-## 🎯 Release Readiness Checklist
+## Release Readiness Checklist
 
 Before first beta release:
 
-- [x] 🔴 **CRITICAL:** Fix pacman.conf DatabaseRequired issue
-- [x] 🔴 **CRITICAL:** Verify ISO builds successfully
-- [x] 🔴 **CRITICAL:** Test ISO boots in VM
-- [x] 🟠 **HIGH:** Add ISO size validation
-- [x] 🟠 **HIGH:** Document architecture limitations
-- [x] 🟠 **HIGH:** Fix documentation URLs
-- [x] 🟡 **MEDIUM:** Update CHANGELOG
-- [x] 🟡 **MEDIUM:** Add dependency validation
-- [x] 🟢 **NICE-TO-HAVE:** Pre-build CI tests
-- [x] 🟢 **NICE-TO-HAVE:** Troubleshooting guide
+- [x] CRITICAL: Fix pacman.conf DatabaseRequired issue
+- [x] CRITICAL: Verify ISO builds successfully
+- [x] CRITICAL: Test ISO boots in VM
+- [x] HIGH: Add ISO size validation
+- [x] HIGH: Document architecture limitations
+- [x] HIGH: Fix documentation URLs
+- [x] MEDIUM: Update CHANGELOG
+- [x] MEDIUM: Add dependency validation
+- [x] NICE-TO-HAVE: Pre-build CI tests
+- [x] NICE-TO-HAVE: Troubleshooting guide
 
 **Minimum for Release:** First 6 items checked
 
 ---
 
-## 📞 Getting Help
+## Getting Help
 
 If you need assistance with any of these items:
 
@@ -321,7 +321,7 @@ If you need assistance with any of these items:
 
 ---
 
-## 📈 Progress Tracking
+## Progress Tracking
 
 Update this section as items are completed:
 

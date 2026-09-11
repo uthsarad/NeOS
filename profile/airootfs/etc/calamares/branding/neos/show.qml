@@ -194,7 +194,7 @@ Presentation {
                     border.color: Qt.rgba(0.13, 0.77, 0.37, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "⚡"; color: presentation.cGreen
+                        text: ""; color: presentation.cGreen
                         font.pixelSize: 28
                     }
                 }
@@ -296,7 +296,7 @@ Presentation {
                     border.color: presentation.cBorder; border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "💻"; color: presentation.cBlue
+                        text: ""; color: presentation.cBlue
                         font.pixelSize: 28
                     }
                 }
@@ -335,7 +335,7 @@ Presentation {
                     border.color: Qt.rgba(0.92, 0.03, 0.55, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "🚀"; color: presentation.cMagenta
+                        text: ""; color: presentation.cMagenta
                         font.pixelSize: 28
                     }
                 }
