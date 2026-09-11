@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 )
@@ -40,17 +38,6 @@ func main() {
 
 	command := os.Args[1]
 	switch command {
-	case "audit":
-		profilePath := "profile"
-		if len(os.Args) >= 3 {
-			profilePath = os.Args[2]
-		}
-		if err := runAudit(profilePath); err != nil {
-			fmt.Fprintf(os.Stderr, "%s❌ Audit Failed:%s %v\n", ColorRed, ColorReset, err)
-			os.Exit(1)
-		}
-		fmt.Printf("%s✅ NeOS Profile Audit Passed via Go!%s\n", ColorGreen, ColorReset)
-
 	case "rank-mirrors":
 		mirrorlistPath := "profile/airootfs/etc/pacman.d/neos-mirrorlist"
 		if len(os.Args) >= 3 {
@@ -83,7 +70,6 @@ func printUsage() {
 	fmt.Println("USAGE:")
 	fmt.Println("  neosctl <command> [arguments]")
 	fmt.Println("\nCOMMANDS:")
-	fmt.Println("  audit [path]         Validate archiso profile hygiene and package completeness")
 	fmt.Println("  rank-mirrors [file]  Concurrently benchmark and rank Arch Linux mirrors")
 	fmt.Println("  info                 Display NeOS distribution metadata and system information")
 	fmt.Println("  version              Display neosctl version")
@@ -102,66 +88,8 @@ func runInfo() {
 	fmt.Printf("%s=================================================================%s\n", ColorCyan, ColorReset)
 }
 
-func runAudit(root string) error {
-	fmt.Printf("%s[neosctl::audit]%s Scanning profile at '%s'...\n", ColorCyan, ColorReset, root)
-
-	requiredFiles := []string{
-		"profiledef.sh",
-		"pacman.conf",
-		"grub/grub.cfg",
-		"syslinux/syslinux.cfg",
-		"packages.x86_64",
-		"airootfs/etc/pacman.d/neos-mirrorlist",
-		"airootfs/etc/pacman.d/chaotic-mirrorlist",
-	}
-
-	for _, file := range requiredFiles {
-		fullPath := filepath.Join(root, file)
-		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-			return fmt.Errorf("required file missing: %s", fullPath)
-		}
-	}
-
-	// Audit package list
-	pkgFile := filepath.Join(root, "packages.x86_64")
-	f, err := os.Open(pkgFile)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	pkgSet := make(map[string]struct{})
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-		if _, exists := pkgSet[line]; exists {
-			return fmt.Errorf("duplicate package in packages.x86_64: %s", line)
-		}
-		pkgSet[line] = struct{}{}
-	}
-
-	essentialPkgs := []string{"base", "mkinitcpio", "mkinitcpio-archiso", "networkmanager", "sudo", "vim"}
-	for _, p := range essentialPkgs {
-		if _, ok := pkgSet[p]; !ok {
-			return fmt.Errorf("missing essential package in packages.x86_64: %s", p)
-		}
-	}
-
-	// Verify kernel is present
-	_, hasKernel := pkgSet["linux"]
-	_, hasLts := pkgSet["linux-lts"]
-	_, hasZen := pkgSet["linux-zen"]
-	if !hasKernel && !hasLts && !hasZen {
-		return fmt.Errorf("packages.x86_64 must include a kernel (linux, linux-lts, or linux-zen)")
-	}
-
-	fmt.Printf("  ✓ Verified %d unique packages.\n", len(pkgSet))
-	fmt.Printf("  ✓ All required profile files and kernel invariants confirmed.\n")
-	return nil
-}
+// runAudit was removed: the canonical profile auditor is
+// tools/neos-profile-audit (Rust) — see reports/v2026.09.11/01-architect-report.md.
 
 func runRankMirrors(path string) error {
 	fmt.Printf("%s[neosctl::rank-mirrors]%s Parsing %s...\n", ColorCyan, ColorReset, path)

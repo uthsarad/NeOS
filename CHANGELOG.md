@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.09.11] - 2026-09-11
+
+### Changed
+- **Audit consolidation (single source of truth)**: profile auditing is now owned exclusively by `tools/neos-profile-audit` (Rust), which is a strict superset of every removed implementation and the only auditor CI actually executes.
+  - Removed the five duplicate auditors in `tools/polyglot/` (Kotlin, Swift, Common Lisp, Haskell, Free Pascal) and their verification gate `tests/verify_polyglot_languages.sh`.
+  - Removed the duplicate `audit` command from `tools/neosctl` (Go); the CLI keeps its unique concurrent `rank-mirrors` feature, and `verify_go_neosctl.sh` now builds the tool, guards against the duplicate returning, and exercises mirror-ranking dispatch.
+  - Replaced the Ruby `audit_profile` duplicate in `tools/neos_tasks.rb` with an ownership guard; `rake audit` and `ruby tools/neos_tasks.rb audit` now verify auditor ownership instead of re-implementing the audit. Removed the polyglot toolchain packages (`kotlin`, `sbcl`, `clisp`, `ghc`, `fpc`) from the installed-system developer manifest since their only consumers were the removed duplicates.
+  - `tools/NeosDiagnostics` (C#) is retained: it audits a distinct domain (security sysctl, ZRAM tuning, pacman signature posture), not the profile.
+- **Duplicate report relocation**: the eight root-level agent reports (`ARCHITECT_REPORT.md`, `ARCHITECT_SCOPE.json`, `BOLT_REPORT.md`, `PALETTE_REPORT.md`, `RISK_REPORT.md`, `SENTINEL_REPORT.md`, `SPECIALIST_GUIDANCE.json`, `STRATEGIC_DIRECTIVE.md`) moved to `reports/v2026.09.11/`, ending the parallel append-to-root duplication of the versioned report history.
+- **Install manifests refreshed**: regenerated `neos-packages.txt`/`neos-overlay.txt` via `tools/gen-manifests.sh`, picking up `usr/local/bin/chcon` which had silently drifted out of the committed overlay manifest (the exact stale-manifest regression class documented in the 2026.07.03 and 2026.08.18 audits).
+- **README / .gitattributes**: tooling table and Linguist rules updated for the consolidation.
+
+### Fixed
+- **Repo hygiene**: added `.gitignore` rules for .NET `bin/`/`obj/` build artifacts so local `tools/NeosDiagnostics` builds can no longer pollute `git status` or get committed.
+
 ## [2026.09.08] - 2026-09-08
 
 ### Fixed
