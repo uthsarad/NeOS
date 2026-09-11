@@ -1,8 +1,11 @@
 {
-  "allowed_files": ["*"],
-  "strategic_pause": false,
+  "allowed_files": [
+    "none"
+  ],
+  "strategic_pause": true,
   "constraints": [
-    "Phase 8 Validation Strategic Pause lifted 2026-09-11 by human review: repeated daily acknowledgment commits with no actual validation progress were traced to jules-auto-merge.yml self-approving bot PRs with no human review, which never forced the pause to clear.",
-    "Resume Phase 8 work. Each specialist should report concrete validation findings, not another pause acknowledgment."
+    "Strict Phase 8 Validation Strategic Pause enforced.",
+    "No new production code allowed.",
+    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks."
   ]
 }
