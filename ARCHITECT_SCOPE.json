@@ -1,9 +1,8 @@
 {
-  "allowed_files": [],
-  "strategic_pause": true,
+  "allowed_files": ["*"],
+  "strategic_pause": false,
   "constraints": [
-    "Observe continued Phase 8 Validation Strategic Pause.",
-    "Do not implement any new features.",
-    "Maestro update: 2026-09-10"
+    "Phase 8 Validation Strategic Pause lifted 2026-09-11 by human review: repeated daily acknowledgment commits with no actual validation progress were traced to jules-auto-merge.yml self-approving bot PRs with no human review, which never forced the pause to clear.",
+    "Resume Phase 8 work. Each specialist should report concrete validation findings, not another pause acknowledgment."
   ]
 }

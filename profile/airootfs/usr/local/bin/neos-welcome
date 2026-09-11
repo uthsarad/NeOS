@@ -14,7 +14,14 @@ if (( EUID == 0 )); then
 fi
 
 LOG="$(mktemp "${TMPDIR:-/tmp}/neos-installer.XXXXXX")"
-trap 'rm -f "$LOG"' EXIT INT TERM
+STABLE_LOG="$HOME/.cache/neos-installer.log"
+# Persist this wrapper's stdout/stderr to a fixed, known path on exit (success,
+# crash, or Ctrl-C) instead of just deleting the tempfile — a stall or crash
+# mid-install otherwise leaves nothing to inspect afterward. The detailed
+# Calamares module/job log itself is separate and already fixed at
+# /var/log/Calamares.log (Calamares' own default when run as root via sudo
+# above), so check that too.
+trap 'mkdir -p "$(dirname "$STABLE_LOG")" 2>/dev/null; cp -f "$LOG" "$STABLE_LOG" 2>/dev/null; rm -f "$LOG"' EXIT INT TERM
 
 notify_error() {
     local msg="$1"
