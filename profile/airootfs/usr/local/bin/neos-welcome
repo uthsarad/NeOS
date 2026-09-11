@@ -32,13 +32,13 @@ notify_error() {
 }
 
 if pgrep -x calamares >/dev/null 2>&1; then
-    kdialog --msgbox "The installer is already running." 2>/dev/null || \
-        echo "The installer is already running."
+    kdialog --msgbox "🚀 The installer is already running." 2>/dev/null || \
+        echo "🚀 The installer is already running."
     exit 0
 fi
 
 if ! command -v calamares >/dev/null 2>&1; then
-    notify_error "Calamares is not installed on this image. Cannot start the installer."
+    notify_error "❌ Calamares is not installed on this image. Cannot start the installer."
     exit 1
 fi
 
@@ -62,7 +62,7 @@ fi
 
 if command -v kdialog >/dev/null 2>&1; then
     kdialog --icon calamares --title "Install NeOS" \
-        --passivepopup "Starting the NeOS installer..." 4 2>/dev/null || true
+        --passivepopup "🚀 Starting the NeOS installer..." 4 2>/dev/null || true
 fi
 
 # Launch Calamares as root on the live session's X display, capturing output so
@@ -77,7 +77,7 @@ sudo --preserve-env=DISPLAY,XAUTHORITY \
 status=$?
 
 if [ "$status" -ne 0 ]; then
-    notify_error "The installer could not start (exit code $status).
+    notify_error "❌ The installer could not start (exit code $status).
 
 $(tail -n 15 "$LOG" 2>/dev/null)"
     exit "$status"

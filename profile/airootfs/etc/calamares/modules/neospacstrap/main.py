@@ -48,11 +48,11 @@ _INSTALL_RE = re.compile(
     r"^\((\d+)/(\d+)\)\s+(installing|upgrading|reinstalling)\s+(\S+)"
 )
 
-status = _("Preparing to install packages…")
+status = _("📦 Preparing to install packages…")
 
 
 def pretty_name():
-    return _("Installing base system (pacstrap)")
+    return _("📦 Installing base system (pacstrap)")
 
 
 def pretty_status_message():
@@ -70,7 +70,7 @@ def run():
                 _("neospacstrap must run after the mount job."))
 
     libcalamares.job.setprogress(0.0)
-    status = _("Downloading packages…")
+    status = _("⬇️ Downloading packages…")
 
     proc = subprocess.Popen(
         ["/usr/local/bin/neos-pacstrap", root],
@@ -109,7 +109,7 @@ def run():
                 n, total, _verb, pkg = match.groups()
                 n, total = int(n), int(total)
                 seen_install_phase = True
-                status = _("Installing {pkg} ({n}/{total})…").format(
+                status = _("⚙️ Installing {pkg} ({n}/{total})…").format(
                     pkg=pkg, n=n, total=total)
                 if total > 0:
                     libcalamares.job.setprogress(0.05 + 0.95 * (n / total))
@@ -126,15 +126,15 @@ def run():
         watchdog.cancel()
 
     if timed_out.is_set():
-        return (_("Installation timed out"),
+        return (_("⏱️ Installation timed out"),
                 _("neos-pacstrap did not finish within {timeout} seconds.")
                 .format(timeout=TIMEOUT_SECONDS))
 
     if returncode != 0:
         tail = "\n".join(output_lines[-40:])
-        return (_("Base system installation failed (exit {code})")
+        return (_("❌ Base system installation failed (exit {code})")
                 .format(code=returncode), tail)
 
     libcalamares.job.setprogress(1.0)
-    status = _("Base system installed.")
+    status = _("✅ Base system installed.")
     return None
