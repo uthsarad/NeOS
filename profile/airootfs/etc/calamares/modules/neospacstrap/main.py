@@ -28,7 +28,7 @@
 
 import re
 import subprocess
-import time
+import threading
 
 import libcalamares
 
@@ -80,41 +80,56 @@ def run():
         bufsize=1,
     )
 
-    deadline = time.monotonic() + TIMEOUT_SECONDS
+    # A wall-clock watchdog, not a per-line check: neos-pacstrap can go quiet
+    # for a while with no output (e.g. blocked in pacman-key/gpg entropy
+    # generation) and a check that only runs when a line arrives would never
+    # fire during exactly that silence — the one case this timeout most needs
+    # to cover. Timer fires independently of whether any output is flowing.
+    timed_out = threading.Event()
+
+    def _on_timeout():
+        timed_out.set()
+        proc.kill()
+
+    watchdog = threading.Timer(TIMEOUT_SECONDS, _on_timeout)
+    watchdog.start()
+
     output_lines = []
     seen_install_phase = False
 
-    assert proc.stdout is not None
-    for line in proc.stdout:
-        line = line.rstrip("\n")
-        output_lines.append(line)
-        libcalamares.utils.debug(f"neos-pacstrap: {line}")
+    try:
+        assert proc.stdout is not None
+        for line in proc.stdout:
+            line = line.rstrip("\n")
+            output_lines.append(line)
+            libcalamares.utils.debug(f"neos-pacstrap: {line}")
 
-        match = _INSTALL_RE.match(line)
-        if match:
-            n, total, _verb, pkg = match.groups()
-            n, total = int(n), int(total)
-            seen_install_phase = True
-            status = _("Installing {pkg} ({n}/{total})…").format(
-                pkg=pkg, n=n, total=total)
-            if total > 0:
-                libcalamares.job.setprogress(0.05 + 0.95 * (n / total))
-        elif not seen_install_phase:
-            # Still in the download phase, which pacman does not expose a
-            # reliable non-TTY percentage for — nudge the bar off zero so it
-            # doesn't look identical to "not started" and keep the status
-            # text moving so the UI clearly isn't frozen.
-            status = _("Downloading packages…")
-            libcalamares.job.setprogress(0.02)
+            match = _INSTALL_RE.match(line)
+            if match:
+                n, total, _verb, pkg = match.groups()
+                n, total = int(n), int(total)
+                seen_install_phase = True
+                status = _("Installing {pkg} ({n}/{total})…").format(
+                    pkg=pkg, n=n, total=total)
+                if total > 0:
+                    libcalamares.job.setprogress(0.05 + 0.95 * (n / total))
+            elif not seen_install_phase:
+                # Still in the download phase, which pacman does not expose a
+                # reliable non-TTY percentage for — nudge the bar off zero so
+                # it doesn't look identical to "not started" and keep the
+                # status text moving so the UI clearly isn't frozen.
+                status = _("Downloading packages…")
+                libcalamares.job.setprogress(0.02)
 
-        if time.monotonic() > deadline:
-            proc.kill()
-            proc.wait()
-            return (_("Installation timed out"),
-                    _("neos-pacstrap did not finish within {timeout} seconds.")
-                    .format(timeout=TIMEOUT_SECONDS))
+        returncode = proc.wait()
+    finally:
+        watchdog.cancel()
 
-    returncode = proc.wait()
+    if timed_out.is_set():
+        return (_("Installation timed out"),
+                _("neos-pacstrap did not finish within {timeout} seconds.")
+                .format(timeout=TIMEOUT_SECONDS))
+
     if returncode != 0:
         tail = "\n".join(output_lines[-40:])
         return (_("Base system installation failed (exit {code})")
