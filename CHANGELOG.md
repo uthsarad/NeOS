@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - **Repo hygiene**: added `.gitignore` rules for .NET `bin/`/`obj/` build artifacts so local `tools/NeosDiagnostics` builds can no longer pollute `git status` or get committed.
 
+### Added
+- **Manifest drift guard**: `tests/verify_manifest_drift.sh` regenerates `neos-packages.txt`/`neos-overlay.txt` via `tools/gen-manifests.sh` in an isolated copy of `profile/` and fails if the committed copies differ (also checks the AUTO-GENERATED headers). CI's pre-build test loop picks it up automatically; this closes the loop on the CWE-436 stale-manifest drift class documented in the 2026.07.03 and 2026.08.18 audits, which CI previously masked because the build job always regenerates before building.
+
 ## [2026.09.08] - 2026-09-08
 
 ### Fixed
