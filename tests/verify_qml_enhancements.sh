@@ -174,17 +174,17 @@ else
     exit 1
 fi
 
-# Check for Visual Focus Indicator on Button (Nations Trust Bank cyan #0096D5,
-# referenced via the presentation.cCyan brand property).
-if [[ "$QML_CONTENT" == *"border.color: presentation.cCyan"* ]]; then
-    echo "✅ Visual focus indicator (NTB cyan border) found."
+# Check for Visual Focus Indicator on Button (NeOS accent color, referenced
+# via the presentation.cAccent brand property — see tools/palette.json).
+if [[ "$QML_CONTENT" == *"border.color: presentation.cAccent"* ]]; then
+    echo "✅ Visual focus indicator (accent border) found."
 else
-    echo "❌ Visual focus indicator (NTB cyan border) missing!"
+    echo "❌ Visual focus indicator (accent border) missing!"
     echo ""
     # Palette: Multi-line actionable formatting with bulleted list
     echo "💡 How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'border.color: presentation.cCyan' to provide a clear visual indicator when the element has focus."
+    echo "   - Add 'border.color: presentation.cAccent' to provide a clear visual indicator when the element has focus."
     exit 1
 fi
 
