@@ -1,10 +1,7 @@
 /* ===========================================================================
-   NeOS — Calamares installer stylesheet (refined dark premium)
-   Inspired by Ubuntu's clean, modern Subiquity installer aesthetic with the
-   Nations Trust Bank (NTB) brand palette:
-     NTB blue #0088CF · NTB cyan #0096D5 · NTB magenta #EB008B
-   Uses a deep-navy base (#0b0e1a) with soft card surfaces and careful
-   typography for a polished, professional look.
+   NeOS — Calamares installer stylesheet (Apple/macOS-inspired refined dark)
+   One restrained accent (see tools/palette.json: #1F6FD6) on a deep-navy
+   base (#0b0e1a) with soft card surfaces and careful typography.
    =========================================================================== */
 
 /* ---- Base surfaces & text ------------------------------------------------ */
@@ -78,23 +75,23 @@ QPushButton:disabled {
     border-color: #1c2444;
 }
 
-/* Primary action (Next / Install / Done) — NTB blue */
+/* Primary action (Next / Install / Done) — accent */
 QPushButton:default {
-    background-color: #0088CF;
+    background-color: #1F6FD6;
     color: #ffffff;
-    border: 1px solid #0088CF;
+    border: 1px solid #1F6FD6;
     border-radius: 8px;
     padding: 8px 28px;
     font-weight: 600;
     font-size: 10.5pt;
 }
 QPushButton:default:hover {
-    background-color: #0096D5;
-    border-color: #0096D5;
+    background-color: #3D82E0;
+    border-color: #3D82E0;
 }
 QPushButton:default:pressed {
-    background-color: #006fa8;
-    border-color: #006fa8;
+    background-color: #17569F;
+    border-color: #17569F;
 }
 QPushButton:default:disabled {
     background-color: #1d3a4f;
@@ -109,13 +106,13 @@ QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
     border: 1px solid #2a3354;
     border-radius: 6px;
     padding: 8px 10px;
-    selection-background-color: #0088CF;
+    selection-background-color: #1F6FD6;
     selection-color: #ffffff;
     font-size: 10pt;
 }
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus,
 QSpinBox:focus, QDoubleSpinBox:focus {
-    border: 2px solid #0096D5;
+    border: 2px solid #3D82E0;
     padding: 7px 9px; /* compensate for thicker border */
 }
 QLineEdit:disabled, QSpinBox:disabled {
@@ -135,7 +132,7 @@ QComboBox {
     padding: 8px 10px;
     min-height: 20px;
 }
-QComboBox:focus { border: 2px solid #0096D5; padding: 7px 9px; }
+QComboBox:focus { border: 2px solid #3D82E0; padding: 7px 9px; }
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
@@ -153,7 +150,7 @@ QComboBox QAbstractItemView {
     color: #e6e9f2;
     border: 1px solid #2a3354;
     border-radius: 6px;
-    selection-background-color: #0088CF;
+    selection-background-color: #1F6FD6;
     selection-color: #ffffff;
     outline: 0;
     padding: 4px;
@@ -173,7 +170,7 @@ QListView, QTreeView, QTableView, QListWidget, QTreeWidget {
     color: #e6e9f2;
     border: 1px solid #222a47;
     border-radius: 8px;
-    selection-background-color: #0088CF;
+    selection-background-color: #1F6FD6;
     selection-color: #ffffff;
     outline: 0;
 }
@@ -215,7 +212,7 @@ QGroupBox::title {
     font-weight: 600;
 }
 
-/* ---- Check boxes & radio buttons (NTB accent) ---------------------------- */
+/* ---- Check boxes & radio buttons (accent) -------------------------------- */
 QCheckBox, QRadioButton {
     color: #e6e9f2;
     spacing: 10px;
@@ -229,19 +226,19 @@ QCheckBox::indicator, QRadioButton::indicator {
     border-radius: 4px;
 }
 QCheckBox::indicator:hover, QRadioButton::indicator:hover {
-    border-color: #0096D5;
+    border-color: #3D82E0;
 }
 QCheckBox::indicator:checked {
-    background-color: #0088CF;
-    border-color: #0088CF;
+    background-color: #1F6FD6;
+    border-color: #1F6FD6;
 }
 QRadioButton::indicator { border-radius: 10px; }
 QRadioButton::indicator:checked {
-    background-color: #0088CF;
-    border-color: #0088CF;
+    background-color: #1F6FD6;
+    border-color: #1F6FD6;
 }
 
-/* ---- Progress bar (NTB blue accent) -------------------------------------- */
+/* ---- Progress bar (accent) ------------------------------------------------ */
 QProgressBar {
     background-color: #0f1428;
     border: 1px solid #222a47;
@@ -253,7 +250,7 @@ QProgressBar {
 }
 QProgressBar::chunk {
     border-radius: 6px;
-    background-color: #0088CF;
+    background-color: #1F6FD6;
 }
 
 /* ---- Scroll bars --------------------------------------------------------- */
@@ -293,7 +290,7 @@ QTabBar::tab {
 }
 QTabBar::tab:hover { background: #1a2342; }
 QTabBar::tab:selected {
-    background: #0088CF;
+    background: #1F6FD6;
     color: #ffffff;
     font-weight: 600;
 }
@@ -302,7 +299,7 @@ QTabBar::tab:selected {
 QToolTip {
     background-color: #0f1428;
     color: #e6e9f2;
-    border: 1px solid #0096D5;
+    border: 1px solid #3D82E0;
     border-radius: 6px;
     padding: 6px 10px;
     font-size: 9.5pt;
@@ -321,6 +318,6 @@ QMenu::item {
     background-color: transparent;
 }
 QMenu::item:selected {
-    background-color: #0088CF;
+    background-color: #1F6FD6;
     color: #ffffff;
 }

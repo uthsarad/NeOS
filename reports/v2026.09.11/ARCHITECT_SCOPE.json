@@ -1,9 +1,11 @@
 {
-  "allowed_files": [],
+  "allowed_files": [
+    "none"
+  ],
   "strategic_pause": true,
   "constraints": [
-    "Observe continued Phase 8 Validation Strategic Pause.",
-    "Do not implement any new features.",
-    "Maestro update: 2026-09-09"
+    "Strict Phase 8 Validation Strategic Pause enforced.",
+    "No new production code allowed.",
+    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks."
   ]
 }

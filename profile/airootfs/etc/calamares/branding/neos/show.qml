@@ -1,8 +1,9 @@
 import QtQuick 2.15
 import Calamares 1.0
 
-// NeOS installer slideshow — Ubuntu-inspired polished design.
-// Smooth crossfade transitions between slides, NTB brand palette on a dark premium base.
+// NeOS installer slideshow — Apple/macOS-inspired polished design.
+// Smooth crossfade transitions between slides, one restrained accent on a
+// refined dark base. Palette: tools/palette.json.
 Presentation {
     id: presentation
     width: 800
@@ -13,17 +14,17 @@ Presentation {
     property int currentSlide: 0
     property int totalSlides: 6
 
-    // ---- NTB brand palette -------------------------------------------------
-    readonly property color cBg:      "#0b0e1a"
-    readonly property color cCard:    "#11172e"
-    readonly property color cBorder:  "#1c2444"
-    readonly property color cTitle:   "#ffffff"
-    readonly property color cBody:    "#c0c4d8"
-    readonly property color cSubtle:  "#7a8099"
-    readonly property color cBlue:    "#0088CF"
-    readonly property color cCyan:    "#0096D5"
-    readonly property color cMagenta: "#EB008B"
-    readonly property color cGreen:   "#22c55e"
+    // ---- NeOS brand palette (tools/palette.json) ----------------------------
+    readonly property color cBg:            "#0A0E1A"
+    readonly property color cCard:          "#11172E"
+    readonly property color cBorder:        "#1C2444"
+    readonly property color cTitle:         "#ffffff"
+    readonly property color cBody:          "#c0c4d8"
+    readonly property color cSubtle:        "#7a8099"
+    readonly property color cAccent:        "#1F6FD6"
+    readonly property color cAccentHover:   "#3D82E0"
+    readonly property color cAccentPressed: "#17569F"
+    readonly property color cGreen:         "#22c55e"
 
     // Auto-advance timer
     Timer {
@@ -33,15 +34,15 @@ Presentation {
         onTriggered: presentation.advance()
     }
 
-    // ---- Reusable accent gradient bar (NTB signature) ----------------------
+    // ---- Reusable accent bar: one hue, soft same-hue fade, no gradient shift -
     component AccentBar: Rectangle {
         width: 100; height: 3; radius: 2
         anchors.horizontalCenter: parent.horizontalCenter
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: presentation.cBlue }
-            GradientStop { position: 0.5; color: presentation.cCyan }
-            GradientStop { position: 1.0; color: presentation.cMagenta }
+            GradientStop { position: 0.0; color: presentation.cAccentPressed }
+            GradientStop { position: 0.5; color: presentation.cAccent }
+            GradientStop { position: 1.0; color: presentation.cAccentHover }
         }
     }
 
@@ -51,7 +52,7 @@ Presentation {
         anchors.fill: parent; color: presentation.cBg
         // Keyboard-focus feedback: cyan border when the presentation has focus
         // so keyboard users can see the slideshow is focused/navigable.
-        border.color: presentation.cCyan
+        border.color: presentation.cAccent
         border.width: presentation.activeFocus ? 2 : 0
 
         property var slideOpacity: [1, 0, 0, 0, 0, 0]
@@ -78,7 +79,7 @@ Presentation {
             x: parent.width / 2 - 300; y: parent.height / 2 - 300
             width: 600; height: 600; radius: 300
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Qt.rgba(0, 0.53, 0.81, 0.08) }
+                GradientStop { position: 0.0; color: Qt.rgba(0.122, 0.435, 0.839, 0.08) }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
@@ -105,7 +106,7 @@ Presentation {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: qsTr("Arch Linux, refined for everyone.")
-                    font.pixelSize: 20; color: presentation.cCyan
+                    font.pixelSize: 20; color: presentation.cAccent
                     font.weight: Font.Light
                     Accessible.role: Accessible.StaticText; Accessible.name: text
                 }
@@ -129,7 +130,7 @@ Presentation {
                         model: 3
                         Rectangle {
                             width: 8; height: 8; radius: 4
-                            color: presentation.cBlue
+                            color: presentation.cAccent
                             opacity: 0.3 + (0.7 * (Math.sin(Date.now() / 300 + index * 2) * 0.5 + 0.5))
                             Behavior on opacity { NumberAnimation { duration: 200 } }
                         }
@@ -151,11 +152,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0, 0.53, 0.81, 0.15)
+                    color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
                     border.color: presentation.cBorder; border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "↺"; color: presentation.cCyan
+                        text: "↺"; color: presentation.cAccent
                         font.pixelSize: 30; font.bold: true
                     }
                 }
@@ -241,11 +242,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.92, 0.03, 0.55, 0.12)
-                    border.color: Qt.rgba(0.92, 0.03, 0.55, 0.3); border.width: 1
+                    color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
+                    border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "🛡"; color: presentation.cMagenta
+                        text: "🛡"; color: presentation.cAccent
                         font.pixelSize: 28
                     }
                 }
@@ -292,13 +293,12 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0, 0.53, 0.81, 0.15)
-                    border.color: presentation.cBorder; border.width: 1
-                    Text {
-                        anchors.centerIn: parent
+                    color: Qt.rgba(0.122, 0.435, 0.839, 0.15)                       border.color: presentation.cBorder; border.width: 1
+                      Text {
+                          anchors.centerIn: parent
                         text: ""; color: presentation.cBlue
-                        font.pixelSize: 28
-                    }
+                          font.pixelSize: 28
+                      }
                 }
 
                 Text {
@@ -331,13 +331,12 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.92, 0.03, 0.55, 0.12)
-                    border.color: Qt.rgba(0.92, 0.03, 0.55, 0.3); border.width: 1
-                    Text {
-                        anchors.centerIn: parent
+                    color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
+                    border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1                      Text {
+                          anchors.centerIn: parent
                         text: ""; color: presentation.cMagenta
-                        font.pixelSize: 28
-                    }
+                          font.pixelSize: 28
+                      }
                 }
 
                 Text {
@@ -373,7 +372,7 @@ Presentation {
                 model: totalSlides
                 Rectangle {
                     width: 8; height: 8; radius: 4
-                    color: index === currentSlide ? presentation.cBlue : "#2a3354"
+                    color: index === currentSlide ? presentation.cAccent : "#2a3354"
                     Behavior on color { ColorAnimation { duration: 300 } }
                     Behavior on width { NumberAnimation { duration: 300 } }
                     width: index === currentSlide ? 24 : 8
@@ -414,9 +413,9 @@ Presentation {
     Rectangle {
         id: btn; width: 120; height: 42; radius: 8
         anchors { bottom: parent.bottom; right: parent.right; margins: 20 }
-        color: btnArea.containsMouse ? presentation.cCyan : presentation.cBlue
+        color: btnArea.containsMouse ? presentation.cAccentHover : presentation.cAccent
         activeFocusOnTab: true
-        border.color: Qt.lighter(presentation.cCyan, 1.2)
+        border.color: Qt.lighter(presentation.cAccent, 1.2)
         border.width: activeFocus ? 2 : 0
 
         Behavior on color { ColorAnimation { duration: 200 } }

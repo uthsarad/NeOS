@@ -2,34 +2,34 @@
 # Verify the netinstall (pacstrap) installer wiring.
 #
 # NeOS installs by pacstrapping a fresh base from the repos, NOT by cloning the
-# live squashfs. This guards that the Calamares sequence, the shellprocess
-# module, the backend script and the generated package list are all consistent.
+# live squashfs. This guards that the Calamares sequence, the neospacstrap
+# Python job module, the backend script and the generated package list are
+# all consistent.
 set -euo pipefail
 
 SETTINGS="profile/airootfs/etc/calamares/settings.conf"
-PACSTRAP_CONF="profile/airootfs/etc/calamares/modules/pacstrap.conf"
+NEOSPACSTRAP_DESC="profile/airootfs/etc/calamares/modules/neospacstrap/module.desc"
+NEOSPACSTRAP_MAIN="profile/airootfs/etc/calamares/modules/neospacstrap/main.py"
 PACSTRAP_BIN="profile/airootfs/usr/local/bin/neos-pacstrap"
 PKGLIST="profile/airootfs/etc/calamares/neos-packages.txt"
 OVERLAY="profile/airootfs/etc/calamares/neos-overlay.txt"
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
 FAIL=0
 
-echo "Verifying netinstall (pacstrap) installer configuration..."
-
-# 1. Sequence runs the pacstrap step and NOT the old live-clone unpackfs.
-if grep -q "shellprocess@pacstrap" "$SETTINGS"; then
-    echo "  [PASS] sequence runs shellprocess@pacstrap"
+echo "Verifying netinstall (pacstrap) installer configuration..."# 1. Sequence runs the pacstrap step and NOT the old live-clone unpackfs.
+if grep -qE 'shellprocess@pacstrap|neospacstrap' "$SETTINGS"; then
+    echo "  [PASS] sequence runs pacstrap"
 else
-    echo "[FAIL] sequence does not run shellprocess@pacstrap"; FAIL=1
-fi
+    echo "[FAIL] sequence does not run pacstrap"; FAIL=1
+ fi
 if grep -qE '^\s*-\s*unpackfs\s*$' "$SETTINGS"; then
     echo "[FAIL] sequence still runs unpackfs (live clone) — should be removed"; FAIL=1
 else
     echo "  [PASS] no unpackfs (live clone) in sequence"
 fi
 
-# 2. The pacstrap shellprocess instance is declared and points at the backend.
-if grep -q "config:   pacstrap.conf" "$SETTINGS" || grep -q "config: *pacstrap.conf" "$SETTINGS"; then
+# 2. The pacstrap instance is declared and points at the backend.
+if grep -qE 'config:\s*(pacstrap|neospacstrap)' "$SETTINGS"; then
     echo "  [PASS] pacstrap instance declared in settings.conf"
 else
     echo "[FAIL] pacstrap instance not declared in settings.conf"; FAIL=1
