@@ -2,7 +2,10 @@ name: Build NeOS ISO
 
 on:
   push:
-    branches: [main, testing]
+    # main is reserved for the official public release, which isn't ready
+    # yet — only testing builds/releases for now. Add main back here when
+    # it's time to resume shipping from it.
+    branches: [testing]
   workflow_dispatch:
 
 env:
@@ -32,7 +35,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml shellcheck trivy
+          pacman -Sy --noconfirm git wget awk grep diffutils syslinux python rust python-yaml shellcheck trivy
 
       - name: Validate PyYAML Installation
         run: |
