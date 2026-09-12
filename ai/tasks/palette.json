@@ -207,6 +207,11 @@
       "description": "Refine UX of snapshot selection and Acknowledge the continued Phase 8 Validation Strategic Pause",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Validate Phase 8 Operations Hub snapshot rollback UX.",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
