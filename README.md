@@ -1,7 +1,7 @@
 # NeOS (Next Evolution Operating System)
 
-[![Build NeOS ISO](https://github.com/NimuthuGanegoda/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=main)](https://github.com/NimuthuGanegoda/NeOS/actions/workflows/build-iso.yml)
-[![Latest Release](https://img.shields.io/github/v/release/NimuthuGanegoda/NeOS?style=flat-square&color=0078D4&label=release)](https://github.com/NimuthuGanegoda/NeOS/releases)
+[![Build NeOS ISO](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=testing)](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml)
+[![Latest Release](https://img.shields.io/github/v/release/uthsarad/NeOS?style=flat-square&color=0078D4&label=release)](https://github.com/uthsarad/NeOS/releases)
 ![Status](https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square)
 ![Architecture](https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
@@ -12,51 +12,46 @@ It ships as a full **live installer** — boot into a working desktop, try it, t
 
 ---
 
-## 🚀 Core Objectives
+## Core Objectives
 
 *   **Snapshot-Gated Stability**: Coherent package sets are validated and promoted via Btrfs snapshots to minimize breakage.
 *   **Refined User Experience**: A polished KDE Plasma 6 environment pre-configured with Windows-familiar defaults, branded boot splash, and wallpaper.
-*   **Automated Hardware Optimization**: Integrated driver management for NVIDIA, AMD, and Intel hardware with DKMs support, Intel thermal management, software-rendering fallback so the desktop comes up even inside VMs without 3D acceleration, and modern wireless/modem support.
+*   **Automated Hardware Optimization**: Integrated driver management for NVIDIA, AMD, and Intel hardware with DKMS support, Intel thermal management, software-rendering fallback so the desktop comes up even inside VMs without 3D acceleration, and modern wireless/modem support.
 *   **Secure by Default**: Hardened kernel parameters, pre-configured UFW, systemd service sandboxing, and user-initiated Secure Boot helpers (sbctl, mokutil, efitools).
 *   **Efficient Footprint**: Optimized build profile maintaining a sub-2GB ISO size for rapid deployment.
 
 ---
 
-## 🏗️ Repository Ecosystem
+## Repository Ecosystem
 
 NeOS leverages and extends several key projects within the Arch Linux ecosystem:
 
 | Project | Role |
 | :--- | :--- |
-| 🛠️ **[ALCI](https://github.com/arch-linux-calamares-installer)** | Base installer framework and Calamares integration. |
-| ⚡ **[Chaotic-AUR](https://github.com/chaotic-aur)** | High-performance kernels (Zen) and pre-compiled packages. |
-| 🧠 **[NeoCortex](https://github.com/uthsarad/NeoCortex)** | Local-first, capability-gated sovereign AI intelligence layer. |
-| 🛡️ **[Sovereign Core](https://github.com/NimuthuGanegoda/Sanctuary-of-Eternity)** | Architectural guidance and security policy foundations. |
-| 👨‍💻 **[NeOS Team](https://github.com/uthsarad/NeOS/graphs/contributors)** | Collaborative Development & Architectural Review. |
+| **[ALCI](https://github.com/arch-linux-calamares-installer)** | Base installer framework and Calamares integration. |
+| **[Chaotic-AUR](https://github.com/chaotic-aur)** | High-performance kernels (Zen) and pre-compiled packages. |
+| **[NeoCortex](https://github.com/uthsarad/NeoCortex)** | Local-first, capability-gated sovereign AI intelligence layer. |
+| **[Sovereign Core](https://github.com/NimuthuGanegada/Sanctuary-of-Eternity)** | Architectural guidance and security policy foundations. |
+| **[NeOS Team](https://github.com/uthsarad/NeOS/graphs/contributors)** | Collaborative Development & Architectural Review. |
 
 ---
 
-## 🛠️ Polyglot Architecture & Tooling Stack
+## Tooling Stack
 
-NeOS embraces a multi-paradigm, polyglot tooling ecosystem engineered for maximum performance, strict compliance verification, and developer empowerment:
+NeOS uses a focused tooling ecosystem for build automation, validation, and developer productivity:
 
 | Language | Component | Role |
 | :--- | :--- | :--- |
-| **Go** | [`tools/neosctl/`](tools/neosctl/) | High-speed CLI for concurrent mirror benchmarking & profile auditing. |
+| **Rust** | [`tools/neos-profile-audit/`](tools/neos-profile-audit/) | Type-safe profile hygiene and package invariant validator — the single source of truth for profile auditing. |
+| **Go** | [`tools/neosctl/`](tools/neosctl/) | High-speed CLI for concurrent mirror benchmarking. |
 | **C# (.NET 8)** | [`tools/NeosDiagnostics/`](tools/NeosDiagnostics/) | Enterprise compliance inspector for kernel sysctl and Btrfs security rules. |
-| **Ruby** | [`tools/neos_tasks.rb`](tools/neos_tasks.rb) / [`Rakefile`](Rakefile) | Object-oriented task runner for manifest generation and CI pipeline orchestration. |
-| **Rust** | [`tools/neos-profile-audit/`](tools/neos-profile-audit/) | Type-safe profile hygiene and package invariant validator. |
-| **Kotlin** | [`tools/polyglot/NeosAudit.kt`](tools/polyglot/NeosAudit.kt) | JVM multiplatform profile verification implementation. |
-| **Swift** | [`tools/polyglot/NeosAudit.swift`](tools/polyglot/NeosAudit.swift) | Modern safety-first Swift Foundation profile inspector. |
-| **Common Lisp** | [`tools/polyglot/neos_audit.lisp`](tools/polyglot/neos_audit.lisp) | Symbolic S-expression parser and profile verification engine. |
-| **Haskell** | [`tools/polyglot/NeosAudit.hs`](tools/polyglot/NeosAudit.hs) | Pure functional monadic profile and package integrity checker. |
-| **Free Pascal** | [`tools/polyglot/neos_audit.pas`](tools/polyglot/neos_audit.pas) | Native compiled Object Pascal verification utility. |
+| **Ruby** | [`tools/neos_tasks.rb`](tools/neos_tasks.rb) / [`Rakefile`](Rakefile) | Task runner for manifest generation and CI pipeline orchestration. |
 | **Python** | [`tools/gen-bootlogo-frames.py`](tools/gen-bootlogo-frames.py) | Asset pipeline and visual branding frame synthesis. |
 | **Shell / Bash** | [`build.sh`](build.sh) & `profile/airootfs/` | Low-level POSIX runtime hooks, installer execution, and system initialization. |
 
 ---
 
-## 🧪 Testing & Quality Assurance
+## Testing & Quality Assurance
 
 Because NeOS is a curated distribution, every release is exercised before it reaches users. QA is led by **Hajime**, covering:
 
@@ -64,11 +59,11 @@ Because NeOS is a curated distribution, every release is exercised before it rea
 *   **Installer validation** — the Calamares flow is run end-to-end so installs complete and reboot into a working system.
 *   **Automated build gates (CI)** — every push to `main` runs ShellCheck, Trivy, config checks, and a chroot verification that the installer's libraries resolve, so a broken installer fails the build instead of shipping.
 
-> ℹ️ CI cannot boot a desktop or run an interactive install on its own, so hardware/VM smoke testing by the QA team is the final gate before a release is trusted.
+> CI cannot boot a desktop or run an interactive install on its own, so hardware/VM smoke testing by the QA team is the final gate before a release is trusted.
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 Comprehensive documentation is available in the `docs/` directory:
 
@@ -80,18 +75,18 @@ Comprehensive documentation is available in the `docs/` directory:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-1.  **Download the ISO:** Head to the **[Releases](https://github.com/NimuthuGanegoda/NeOS/releases)** section and download the latest `neos-*-x86_64.iso`.
+1.  **Download the ISO:** Head to the **[Releases](https://github.com/uthsarad/NeOS/releases)** section and download the latest `neos-*-x86_64.iso`.
 2.  **Flash to USB:** Use Ventoy, Rufus, or BalenaEtcher.
 3.  **Boot & Try:** Boot the USB to explore the live KDE Plasma desktop.
 4.  **Install:** Launch **Install NeOS** and follow the curated Calamares installation wizard.
 
-*Note: The ISO is automatically forged in the cloud upon every push to the main branch, ensuring our eternity is always up to date.*
+*Note: The ISO is automatically built in the cloud upon every push to the main branch.*
 
 ---
 
-## 🛠️ Local Build Instructions
+## Local Build Instructions
 
 To generate a NeOS ISO locally, ensure `archiso` is installed and execute the build script from the repository root:
 
@@ -101,23 +96,21 @@ sudo ./build.sh
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome technical contributions that align with our stability-first philosophy. Please consult the **[Contribution Guidelines](CONTRIBUTING.md)** before submitting pull requests, and review our **[Code of Conduct](CODE_OF_CONDUCT.md)**.
 
 ---
 
-## 🖥️ Architecture Support Matrix
+## Architecture Support Matrix
 
 NeOS officially targets the `x86_64` architecture. Other architectures are maintained on a best-effort, experimental basis.
 
-*   ✅ **`x86_64` (Primary)**: Full feature parity, GUI installer support, snapshot-gated stability, and ZRAM optimization.
-*   ⚠️ **`i686` (Experimental)**: Minimal CLI base only. Lacks GUI installer, snapshot integration, and ZRAM support.
-*   ⚠️ **`aarch64` (Experimental)**: Minimal CLI base only. Lacks GUI installer, snapshot integration, and ZRAM support.
+*   **`x86_64` (Primary)**: Full feature parity, GUI installer support, snapshot-gated stability, and ZRAM optimization.
+*   **`i686` (Experimental)**: Minimal CLI base only. Lacks GUI installer, snapshot integration, and ZRAM support.
+*   **`aarch64` (Experimental)**: Minimal CLI base only. Lacks GUI installer, snapshot integration, and ZRAM support.
 
 <!-- SENTINEL: Validate that no external URLs are introduced here. -->
-<!-- PALETTE: Ensure the architecture matrix uses clear headings, lists, and emojis for readability. -->
-<!-- BOLT: Documentation update only; no performance optimizations required here. -->
 
 ---
 

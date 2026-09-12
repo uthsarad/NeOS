@@ -19,7 +19,7 @@ Unlike conventional distributions that clone an ephemeral live image to disk, Ne
 
 ---
 
-## 🛡️ Deep Vulnerability & Threat Vector Analysis
+## Deep Vulnerability & Threat Vector Analysis
 
 ### 1. Manifest & Overlay Desynchronization (CWE-436 / Configuration Drift)
 * **Vulnerability Class:** Configuration Drift / Incomplete Delivery
@@ -89,13 +89,13 @@ All background services adhere to strict systemd isolation (`ProtectSystem=stric
 
 ---
 
-## 🧪 Comprehensive Test Suite Verification (34/34 Passed)
+## Comprehensive Test Suite Verification (34/34 Passed)
 All 34 automated test suites in `tests/` pass with zero failures.
 
 ---
 
-## ⚡ Active Git & Pull Request State
+## Active Git & Pull Request State
 * **Upstream Repository:** `uthsarad/NeOS`
 * **Active PR:** `#843 — Hardening: Sync installer manifests, harden permissions and runtime hooks`
 * **Contributors:** `@RaidenShogun-AI` (`we_own_you_now@proton.me`), `Nimuthu Ganegoda` (`nimuthuganegoda@gmail.com`)
-* **Status:** 🟢 **ZERO UNRESOLVED VULNERABILITIES**
+* **Status:** [PASS] ZERO UNRESOLVED VULNERABILITIES

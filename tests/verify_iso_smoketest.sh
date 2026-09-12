@@ -5,7 +5,7 @@ OUT_DIR="out"
 
 if [[ ! -d "$OUT_DIR" ]]; then
     if [[ "${REQUIRE_ISO:-0}" == "1" ]]; then
-        echo "❌ Missing output directory: $OUT_DIR"
+        echo "[FAIL] Missing output directory: $OUT_DIR"
         echo "Run: sudo ./build.sh"
         exit 1
     else
@@ -23,7 +23,7 @@ ISO_COUNT=${#files[@]}
 
 if [[ "$ISO_COUNT" -eq 0 ]]; then
     if [[ "${REQUIRE_ISO:-0}" == "1" ]]; then
-        echo "❌ No ISO found in $OUT_DIR"
+        echo "[FAIL] No ISO found in $OUT_DIR"
         echo "Run: sudo ./build.sh"
         exit 1
     else
@@ -35,7 +35,7 @@ if [[ "$ISO_COUNT" -eq 0 ]]; then
     fi
 fi
 
-echo "✅ Found $ISO_COUNT ISO file(s) in $OUT_DIR"
+echo "[PASS] Found $ISO_COUNT ISO file(s) in $OUT_DIR"
 for file in "${files[@]}"; do
     # Bolt: Use native bash globbing and stat instead of slow find subprocesses
     size=$(stat -c%s "$file")
@@ -76,15 +76,15 @@ for file in "${files[@]}"; do
         set -e
 
         if ! boot_log_is_clean "$log"; then
-            echo "❌ QEMU $mode boot test failed: boot error detected in log."
+            echo "[FAIL] QEMU $mode boot test failed: boot error detected in log."
             grep -iE 'kernel panic|emergency mode|Failed to mount|Unable to mount root' "$log" | head -n 5
             exit 1
         fi
 
         if [[ $exit_code -eq 124 || $exit_code -eq 137 || $exit_code -eq 0 ]]; then
-            echo "✅ QEMU $mode boot test passed (no boot errors detected)."
+            echo "  [PASS] QEMU $mode boot test passed (no boot errors detected)."
         else
-            echo "❌ QEMU $mode boot test failed with exit code $exit_code."
+            echo "[FAIL] QEMU $mode boot test failed with exit code $exit_code."
             tail -n 20 "$log"
             exit 1
         fi

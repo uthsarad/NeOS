@@ -159,20 +159,20 @@
 
 | # | Fix | Finding | Effort | Status |
 |---|-----|---------|--------|--------|
-| 1 | Delete kiosk installer remnants (`liveuser-setup.conf`, `neos-install-identity`) | H1 | S | ✅ applied |
-| 2 | Ship `neos-secureboot-setup` in the overlay manifest | H3 | S | ✅ applied (via regenerated manifest) |
-| 3 | Remove `\|\| true` from CI test gates; make ISO-test coverage explicit | H2 | S | ✅ applied |
-| 4 | Fix stale pacman.conf comment; drop dead `outputs.body` / populate from CHANGELOG | L1, L2 | S | ✅ applied (`body_path` from CHANGELOG) |
-| 5 | Delete i686 + aarch64 package files + relax Rust audit | M1 | M | ✅ applied (both deleted) |
-| 6 | Tag releases from `VERSION`; changelog as release body | M3 | M | ✅ applied (`v<VERSION>-b<run>`) |
-| 7 | Deduplicate build-conf/manifest logic between build.sh and CI | M2 | M | ✅ applied (`tools/gen-build-conf.sh`, `tools/gen-manifests.sh`) |
-| 8 | Remove dead liveuser-creation branch from `neos-liveuser-setup` | M5 | S | ✅ applied (fails loudly if build-time user missing) |
-| 9 | Delete or rewrite `neos-installer-partition.sh` | M6 | S | ✅ applied (deleted, incl. test) |
-| 10 | Add no-sandbox regression test for `neos-liveuser-setup.service` | M7 | S | ✅ applied (in `verify_service_hardening.sh`) |
-| 11 | Ship ISO checksums (+ optional GPG signature) from CI | hygiene FAIL | M | ✅ SHA256SUMS shipped; GPG signing still open |
-| 12 | Randomize VM template MAC; align branding URLs/versions | L4, L6 | S | ✅ applied (MAC + publisher URL; productVersion left static) |
-| 13 | Containerize or document host-mutating build steps | M4 | M/L | ✅ documented in build.sh; containerization still open |
-| 14 | Verify/suppress mkinitcpio fallback image | matrix CHECK | S | ✅ applied (`etc/mkinitcpio.d/linux-lts.preset`, live-only) |
+| 1 | Delete kiosk installer remnants (`liveuser-setup.conf`, `neos-install-identity`) | H1 | S | [APPLIED] |
+| 2 | Ship `neos-secureboot-setup` in the overlay manifest | H3 | S | [APPLIED] (via regenerated manifest) |
+| 3 | Remove `\|\| true` from CI test gates; make ISO-test coverage explicit | H2 | S | [APPLIED] |
+| 4 | Fix stale pacman.conf comment; drop dead `outputs.body` / populate from CHANGELOG | L1, L2 | S | [APPLIED] (`body_path` from CHANGELOG) |
+| 5 | Delete i686 + aarch64 package files + relax Rust audit | M1 | M | [APPLIED] (both deleted) |
+| 6 | Tag releases from `VERSION`; changelog as release body | M3 | M | [APPLIED] (`v<VERSION>-b<run>`) |
+| 7 | Deduplicate build-conf/manifest logic between build.sh and CI | M2 | M | [APPLIED] (`tools/gen-build-conf.sh`, `tools/gen-manifests.sh`) |
+| 8 | Remove dead liveuser-creation branch from `neos-liveuser-setup` | M5 | S | [APPLIED] (fails loudly if build-time user missing) |
+| 9 | Delete or rewrite `neos-installer-partition.sh` | M6 | S | [APPLIED] (deleted, incl. test) |
+| 10 | Add no-sandbox regression test for `neos-liveuser-setup.service` | M7 | S | [APPLIED] (in `verify_service_hardening.sh`) |
+| 11 | Ship ISO checksums (+ optional GPG signature) from CI | hygiene FAIL | M | [APPLIED] SHA256SUMS shipped; GPG signing still open |
+| 12 | Randomize VM template MAC; align branding URLs/versions | L4, L6 | S | [APPLIED] (MAC + publisher URL; productVersion left static) |
+| 13 | Containerize or document host-mutating build steps | M4 | M/L | [APPLIED] documented in build.sh; containerization still open |
+| 14 | Verify/suppress mkinitcpio fallback image | matrix CHECK | S | [APPLIED] (`etc/mkinitcpio.d/linux-lts.preset`, live-only) |
 
 ## Remediation addendum (same day)
 

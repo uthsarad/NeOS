@@ -1,4 +1,4 @@
-# ⚡ Bolt Performance Report
+# Bolt Performance Report
 
 ## What was optimized
 Refactored `tests/verify_iso_grub.sh` to eliminate repeated `grep -q` shell invocations during test execution.

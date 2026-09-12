@@ -37,7 +37,7 @@ jobs:
       - name: Validate PyYAML Installation
         run: |
           set -euo pipefail
-          echo "::group::🐍 Validating PyYAML"
+          echo "::group::Validating PyYAML"
           python -c "import yaml; print('PyYAML version:', yaml.__version__)"
           echo "::endgroup::"
 
@@ -74,22 +74,22 @@ jobs:
         run: |
           set -euo pipefail
           echo "=============================="
-          echo "🛡️ Initiating Security Scans"
+          echo "Initiating Security Scans"
           echo "=============================="
           echo ""
 
           echo "Running ShellCheck..."
           find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
-          echo "✅ ShellCheck completed successfully."
+          echo "ShellCheck completed successfully."
           echo ""
 
-          echo "::group::🛡️ Trivy Vulnerability Scan"
+          echo "::group::Trivy Vulnerability Scan"
           trivy fs --exit-code 1 --severity CRITICAL,HIGH --ignore-unfixed ./
-          echo "✅ Trivy vulnerability scan completed successfully."
+          echo "Trivy vulnerability scan completed successfully."
           echo ""
 
           echo "=============================="
-          echo "🎉 All Security Scans Passed!"
+          echo "All Security Scans Passed!"
           echo "=============================="
 
   build:
@@ -341,7 +341,7 @@ jobs:
           ISO_FILE="${files[0]:-}"
 
           if [[ -z "$ISO_FILE" ]]; then
-            echo "❌ No ISO file found to validate"
+            echo "[FAIL] No ISO file found to validate"
             exit 1
           fi
 
@@ -367,9 +367,9 @@ jobs:
               "$((EXCESS_SIZE / 1048576))" \
               "$(((EXCESS_SIZE % 1048576) * 100 / 1048576))"
 
-            echo "❌ ISO exceeds GitHub release limit by ${EXCESS_SIZE_MB} MiB!"
+            echo "[FAIL] ISO exceeds GitHub release limit by ${EXCESS_SIZE_MB} MiB!"
             echo ""
-            echo "💡 How to fix:"
+            echo "How to fix:"
             echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
             echo "   - Utilize 'NoExtract' rules in 'pacman.conf'."
             echo "   - Check for large unintended assets in 'airootfs/'."
@@ -377,7 +377,7 @@ jobs:
 
             exit 1
           else
-            echo "✅ ISO size is within limits."
+            echo "ISO size is within limits."
           fi
 
       - name: Prepare ISO for upload
@@ -472,7 +472,7 @@ jobs:
           ISO_FILE="${files[0]:-}"
 
           if [[ -z "$ISO_FILE" ]]; then
-            echo "❌ No ISO file found to upload"
+            echo "[FAIL] No ISO file found to upload"
             exit 1
           fi
 
@@ -482,11 +482,11 @@ jobs:
           for attempt in 1 2 3; do
             echo "Attempt $attempt/3..."
             if gh release upload "$TAG" "$ISO_FILE" --clobber -R "$GITHUB_REPOSITORY" 2>&1; then
-              echo "✅ ISO uploaded successfully."
+              echo "ISO uploaded successfully."
               break
             fi
             if [[ $attempt -eq 3 ]]; then
-              echo "❌ Failed to upload ISO after 3 attempts"
+              echo "[FAIL] Failed to upload ISO after 3 attempts"
               exit 1
             fi
             DELAY=$((30 * attempt))
