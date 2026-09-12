@@ -36,14 +36,14 @@ images:
 slideshow:               "show.qml"
 slideshowAPI:            2
 
-# Nations Trust Bank (NTB) brand palette: blue #0088CF / cyan #0096D5, magenta #EB008B.
+# NeOS brand palette — single source of truth: tools/palette.json.
 # NOTE: current Calamares uses the CAPITALISED Sidebar* keys; the old lowercase
 # sidebarBackground/sidebarTextHighlight names are ignored, so the previous theming
-# never applied. The current step gets an NTB-blue background with white text.
+# never applied. The current step gets an accent-blue background with white text.
 style:
-   SidebarBackground:        "#0b0e1a"
-   SidebarText:              "#aeb4c7"
-   SidebarBackgroundCurrent: "#0A64BC"
+   SidebarBackground:        "#0A0E1A"
+   SidebarText:              "#AEB4C7"
+   SidebarBackgroundCurrent: "#1F6FD6"
    SidebarTextCurrent:       "#FFFFFF"
 
 # Let users upload installer logs for support (calamares "Upload" button).

@@ -11,25 +11,25 @@ FAIL=0
 
 echo "Verifying post-install setup in $SHELLPROCESS_CONF..."
 
-# ⚡ Bolt: Load file content once to eliminate repeated fork/exec overhead
+# Load file content once to eliminate repeated fork/exec overhead
 CONTENT=$(<"$SHELLPROCESS_CONF")
 
 if [[ "$CONTENT" == *"locale-gen"* ]]; then
-    echo "✅ locale-gen present"
+    echo "  [PASS] locale-gen present"
 else
-    echo "❌ locale-gen NOT found"; FAIL=1
+    echo "[FAIL] locale-gen NOT found"; FAIL=1
 fi
 
 if [[ "$CONTENT" == *"pacman-key --init"* ]]; then
-    echo "✅ pacman-key --init present"
+    echo "  [PASS] pacman-key --init present"
 else
-    echo "❌ pacman-key --init NOT found"; FAIL=1
+    echo "[FAIL] pacman-key --init NOT found"; FAIL=1
 fi
 
 if [[ "$CONTENT" == *"pacman-key --populate archlinux"* ]]; then
-    echo "✅ pacman-key --populate archlinux present"
+    echo "  [PASS] pacman-key --populate archlinux present"
 else
-    echo "❌ pacman-key --populate archlinux NOT found"; FAIL=1
+    echo "[FAIL] pacman-key --populate archlinux NOT found"; FAIL=1
 fi
 
 exit "$FAIL"

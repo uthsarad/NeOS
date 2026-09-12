@@ -4,11 +4,6 @@
 *.go linguist-detectable=true
 *.cs linguist-detectable=true
 *.rb linguist-detectable=true
-*.kt linguist-detectable=true
-*.swift linguist-detectable=true
-*.lisp linguist-detectable=true
-*.hs linguist-detectable=true
-*.pas linguist-detectable=true
 *.rs linguist-detectable=true
 *.py linguist-detectable=true
 

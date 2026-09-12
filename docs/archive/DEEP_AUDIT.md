@@ -47,7 +47,7 @@ Manual spot review focused on:
 
 ## Detailed Findings
 
-## ✅ Strengths Verified
+## Strengths Verified
 
 ### 1) Build-time vs Installed-time pacman signature policy is correctly separated
 
@@ -75,7 +75,7 @@ GRUB ISO entries, Syslinux configs, mkinitcpio hooks/modules, and ISO-size optim
 
 ---
 
-## ⚠️ Issues Requiring Attention
+## Issues Requiring Attention
 
 ### A) ISO smoke test is artifact-dependent and currently failing in this environment
 
@@ -112,13 +112,13 @@ GRUB ISO entries, Syslinux configs, mkinitcpio hooks/modules, and ISO-size optim
 
 | Area | Status | Residual Risk |
 |---|---|---|
-| Build configuration integrity | ✅ | Low |
-| Installed-system security baseline | ✅ | Low |
-| Installer/live-user cleanup safety | ✅ | Low |
-| Bootloader and initramfs consistency | ✅ | Low |
-| Release artifact validation (smoketest) | ⚠️ | Medium |
-| Mirror availability resilience | ⚠️ | Medium |
-| Audit toolchain completeness | ⚠️ | Low |
+| Build configuration integrity | PASS | Low |
+| Installed-system security baseline | PASS | Low |
+| Installer/live-user cleanup safety | PASS | Low |
+| Bootloader and initramfs consistency | PASS | Low |
+| Release artifact validation (smoketest) | WATCH | Medium |
+| Mirror availability resilience | WATCH | Medium |
+| Audit toolchain completeness | WATCH | Low |
 
 ---
 

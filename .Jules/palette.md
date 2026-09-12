@@ -1,13 +1,16 @@
-## 2026-02-17 - Baseline Initialization
-**Learning:** During the "Strategic Pause" baseline initialization, an Architect scope explicitly forbidding file modifications mandates a strictly zero-modification execution. In this unique scenario, skipping PR creation entirely is the correct procedure, prioritizing test validation and strict task completion logging over baseline reporting.
-**Action:** When a strict Strategic Pause is enforced by `ARCHITECT_SCOPE.json`, explicitly skip PRs (`request_code_review`), run codebase tests, complete the `pre_commit_instructions` tool, and call `done` directly to formally close the execution loop without violating the zero-modification constraint.
-## 2026-02-17 - UX Log Formatting
-**Learning:** Raw terminal error outputs without structured cues fail to guide users quickly, even when actionable data like the exit code and file line are logged.
-**Action:** Always wrap crucial script errors in high-contrast visual blocks with bulleted, easily scannable sections to improve the diagnostic UX.
+## 2026-02-18 - SDDM QML Accessibility
+**Learning:** When updating KDE Plasma SDDM custom QML themes, non-native UI components like Rectangle do not automatically inherit tab-navigation or focus states. This breaks keyboard accessibility.
+**Action:** Explicitly bind KeyNavigation.tab, activeFocusOnTab: true, and keyboard events (e.g., Keys.onReturnPressed, Keys.onEnterPressed) to ensure focus flows logically.
+## 2024-08-02 - SDDM QML Session Selector Keyboard Nav
+**Learning:** The session selector and power actions in the SDDM theme were implemented directly as Text elements which do not support tab-navigation natively.
+**Action:** Wrapped the elements in Rectangle items, explicitly bound activeFocusOnTab: true, updated KeyNavigation.tab for circular flow, and mapped Keys.onReturnPressed to ensure complete keyboard navigation functionality.
+## 2026-02-18 - Discover Offline Updates Experience
+**Learning:** By default, KDE Discover updates packages live while the desktop environment is running, which can lead to instability and unexpected crashes if a core library is replaced out from under a running app.
+**Action:** Configured `UseOfflineUpdates=true` in `discoverrc` to align the update flow with a more stable, non-intrusive Windows-familiar offline update paradigm.
+## 2026-02-18 - SDDM QML Accessibility Roles
+**Learning:** Even if custom QML components are styled to look like inputs and buttons and support keyboard navigation, screen readers won't know their semantic purpose without explicit accessibility roles and names.
+**Action:** Added `Accessible.role: Accessible.EditableText`, `Accessible.role: Accessible.Button`, and `Accessible.name` attributes to the custom username/password inputs and login/power action buttons in `Main.qml`.
 
-## 2024-07-20 - Custom Login Screen Keyboard Accessibility
-**Learning:** Custom QML login screens don't get automatic tab-navigation and focus states for non-native components like `Rectangle` buttons. Users who rely on keyboard navigation can get stuck if manual `KeyNavigation` and `activeFocusOnTab` properties aren't explicitly mapped, leading to an inaccessible login flow.
-**Action:** Always test tab flow explicitly on custom QML components and explicitly bind `activeFocusOnTab`, `Keys.onReturnPressed`, and focus-visible border styles to interactive elements that aren't native UI controls.
-## 2026-09-06 - Keyboard Focus Styles in PyQt6 Custom Themes
-**Learning:** When styling QPushButton elements in PyQt6 applications using custom QSS (Qt Style Sheets), the default focus styles (like the dotted outline) can often be overridden or hidden by explicit background and border declarations. This makes the UI inaccessible for keyboard users navigating via Tab unless explicit `:focus` pseudo-classes are defined in the stylesheet.
-**Action:** Always include explicitly defined `:focus` states in PyQt6 stylesheets alongside `:hover` and `:pressed` states, taking care to ensure that applying borders on focus doesn't cause layout shifting (e.g. by setting `border: 2px solid transparent` as the default).
+## 2024-05-24 - Semantic dialogs for Assistive Technologies
+**Learning:** Using generic `--msgbox` flags in `kdialog` for error states prevents screen readers (like Orca) from announcing the dialog's severity or nature. Native semantic flags like `--error` are required to trigger appropriate accessibility cues.
+**Action:** Always map UI dialog states (error, warning, info) to their precise semantic `kdialog` flag equivalents instead of relying solely on visual text content in generic message boxes.

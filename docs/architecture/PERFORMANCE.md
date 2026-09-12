@@ -1,15 +1,15 @@
 # NeOS Performance Standards
 
-[← Back to Documentation Index](../README.md#📚-documentation-vault)
+[← Back to Documentation Index](../README.md#documentation)
 
 Speed is a feature. To successfully replace existing operating systems, NeOS must be measurably faster and more responsive. This document defines the performance budgets and optimization strategies for the project.
 
 ## Table of Contents
-- [Performance Budgets](#-performance-budgets)
-- [Optimization Strategies](#-optimization-strategies)
-- [Measurement & Verification](#-measurement--verification)
+- [Performance Budgets](#performance-budgets)
+- [Optimization Strategies](#optimization-strategies)
+- [Measurement & Verification](#measurement--verification)
 
-## ⚡ Performance Budgets
+## Performance Budgets
 
 These targets apply to the "Stable" release channel on reference hardware (Modern x86-64, SSD, 8GB+ RAM).
 
@@ -21,7 +21,7 @@ These targets apply to the "Stable" release channel on reference hardware (Moder
 | **ISO Size** | < 2.5GB | 4GB | Critical for download speed and USB writing. |
 | **Installation Time** | < 5m | 10m | Automated install flow on SSD. |
 
-## 🔧 Optimization Strategies
+## Optimization Strategies
 
 ### Base System (Arch Linux)
 - **Kernel:** Evaluate `linux-zen` for better desktop interactive performance.
@@ -39,7 +39,7 @@ These targets apply to the "Stable" release channel on reference hardware (Moder
 - **Preloading:** Use speculative preloading for the default browser (Brave) and File Manager (Dolphin) if RAM permits.
 - **Updates:** Run `checkupdates` in a low-priority background process to avoid blocking interactive usage.
 
-## 📏 Measurement & Verification
+## Measurement & Verification
 
 Use these commands to verify the performance budgets:
 
@@ -71,4 +71,4 @@ Do not use `glxgears`. To profile application launch time (e.g., for Dolphin):
 /usr/bin/time -f "%E real,%U user,%S sys" dolphin --version
 ```
 
-> **Bolt's Maxim:** "Measure first, optimize second. Don't sacrifice readability for micro-optimizations."
+> **Note:** Measure first, optimize second. Don't sacrifice readability for micro-optimizations.
