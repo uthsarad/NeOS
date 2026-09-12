@@ -156,3 +156,8 @@ Refined the UX of the system update execution in `neos-operations-hub`. Previous
 - Acknowledged the continued Strategic Pause directed by the Architect.
 - No new UI/UX enhancements due to target_file being none.
 - Completed task manifest acknowledgement.
+
+## Refine UX of snapshot selection and Acknowledge the continued Phase 8 Validation Strategic Pause
+- Acknowledged the continued Strategic Pause directed by the Architect.
+- No new UI/UX enhancements due to target_file being none.
+- Completed task manifest acknowledgement.
