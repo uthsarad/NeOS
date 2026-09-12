@@ -195,7 +195,7 @@ Presentation {
                     border.color: Qt.rgba(0.13, 0.77, 0.37, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: ""; color: presentation.cGreen
+                        text: "⚡"; color: presentation.cGreen
                         font.pixelSize: 28
                     }
                 }
@@ -293,12 +293,13 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.122, 0.435, 0.839, 0.15)                       border.color: presentation.cBorder; border.width: 1
-                      Text {
-                          anchors.centerIn: parent
-                        text: ""; color: presentation.cBlue
-                          font.pixelSize: 28
-                      }
+                    color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
+                    border.color: presentation.cBorder; border.width: 1
+                    Text {
+                        anchors.centerIn: parent
+                        text: "💻"; color: presentation.cAccent
+                        font.pixelSize: 28
+                    }
                 }
 
                 Text {
@@ -332,11 +333,12 @@ Presentation {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
                     color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
-                    border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1                      Text {
-                          anchors.centerIn: parent
-                        text: ""; color: presentation.cMagenta
-                          font.pixelSize: 28
-                      }
+                    border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1
+                    Text {
+                        anchors.centerIn: parent
+                        text: "🚀"; color: presentation.cAccent
+                        font.pixelSize: 28
+                    }
                 }
 
                 Text {

@@ -16,33 +16,40 @@ OVERLAY="profile/airootfs/etc/calamares/neos-overlay.txt"
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
 FAIL=0
 
-echo "Verifying netinstall (pacstrap) installer configuration..."# 1. Sequence runs the pacstrap step and NOT the old live-clone unpackfs.
+echo "Verifying netinstall (pacstrap) installer configuration..."
+
+# 1. Sequence runs the pacstrap step and NOT the old live-clone unpackfs.
 if grep -qE 'shellprocess@pacstrap|neospacstrap' "$SETTINGS"; then
     echo "  [PASS] sequence runs pacstrap"
 else
     echo "[FAIL] sequence does not run pacstrap"; FAIL=1
- fi
+fi
 if grep -qE '^\s*-\s*unpackfs\s*$' "$SETTINGS"; then
     echo "[FAIL] sequence still runs unpackfs (live clone) — should be removed"; FAIL=1
 else
     echo "  [PASS] no unpackfs (live clone) in sequence"
 fi
 
-# 2. The pacstrap instance is declared and points at the backend.
-if grep -qE 'config:\s*(pacstrap|neospacstrap)' "$SETTINGS"; then
-    echo "  [PASS] pacstrap instance declared in settings.conf"
+# 2. The neospacstrap Python job module is declared and points at the backend.
+if [[ -f "$NEOSPACSTRAP_DESC" ]] && grep -q 'interface:.*"python"' "$NEOSPACSTRAP_DESC"; then
+    echo "  [PASS] neospacstrap/module.desc declares a python job"
 else
-    echo "[FAIL] pacstrap instance not declared in settings.conf"; FAIL=1
+    echo "[FAIL] neospacstrap/module.desc missing or not a python job"; FAIL=1
 fi
-if [[ -f "$PACSTRAP_CONF" ]] && grep -q "neos-pacstrap \${ROOT}" "$PACSTRAP_CONF"; then
-    echo "[PASS] pacstrap.conf invokes neos-pacstrap with \${ROOT}"
+if [[ -f "$NEOSPACSTRAP_MAIN" ]] && grep -q '/usr/local/bin/neos-pacstrap' "$NEOSPACSTRAP_MAIN"; then
+    echo "  [PASS] neospacstrap/main.py invokes neos-pacstrap"
 else
-    echo "[FAIL] pacstrap.conf missing or does not invoke neos-pacstrap \${ROOT}"; FAIL=1
+    echo "[FAIL] neospacstrap/main.py missing or does not invoke neos-pacstrap"; FAIL=1
 fi
-if grep -q "dontChroot: true" "$PACSTRAP_CONF" 2>/dev/null; then
-    echo "  [PASS] pacstrap runs on the host (dontChroot: true)"
+if [[ -f "$NEOSPACSTRAP_MAIN" ]] && grep -q 'globalstorage.value("rootMountPoint")' "$NEOSPACSTRAP_MAIN"; then
+    echo "  [PASS] neospacstrap reads the target root from rootMountPoint (runs on the host, installs INTO target)"
 else
-    echo "[FAIL] pacstrap must run with dontChroot: true (installs INTO target)"; FAIL=1
+    echo "[FAIL] neospacstrap must read rootMountPoint from global storage"; FAIL=1
+fi
+if [[ -f "$NEOSPACSTRAP_MAIN" ]] && grep -q 'job.setprogress' "$NEOSPACSTRAP_MAIN"; then
+    echo "  [PASS] neospacstrap reports incremental progress"
+else
+    echo "[FAIL] neospacstrap does not report progress — back to an opaque black-box job"; FAIL=1
 fi
 
 # 3. Backend script actually pacstraps.
