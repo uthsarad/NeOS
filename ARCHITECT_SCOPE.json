@@ -1,0 +1,11 @@
+{
+  "allowed_files": [
+    "none"
+  ],
+  "strategic_pause": true,
+  "constraints": [
+    "Halt all feature development and observe a strict Strategic Pause.",
+    "Do not write production code.",
+    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks."
+  ]
+}
