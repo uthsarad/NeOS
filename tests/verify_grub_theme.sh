@@ -29,7 +29,7 @@ if [[ -z "$LOADFONT_LINE" || -z "$SETTHEME_LINE" || "$LOADFONT_LINE" -ge "$SETTH
     echo "FAIL: loadfont must appear before 'set theme' in $ISO_CFG"
     exit 1
 fi
-echo "✅ ISO grub.cfg activates starfield with png + fonts loaded first"
+echo "[PASS] ISO grub.cfg activates starfield with png + fonts loaded first"
 
 # 2. Installed-disk GRUB (/etc/default/grub): GRUB_THEME points at the
 #    package-provided starfield theme; no GRUB_FONT (grub-mkconfig auto-loads
@@ -43,7 +43,7 @@ if grep -qE '^GRUB_FONT=' "$GRUB_DEFAULT"; then
     echo "FAIL: $GRUB_DEFAULT must NOT set GRUB_FONT (starfield bundles its own)"
     exit 1
 fi
-echo "✅ installed-disk /etc/default/grub points at starfield, no stale GRUB_FONT"
+echo "[PASS] installed-disk /etc/default/grub points at starfield, no stale GRUB_FONT"
 
 # 3. The dead NeOS GRUB theme assets must be gone (both menus and the overlay).
 for stale in \
@@ -58,6 +58,6 @@ if grep -qE 'grub/themes/neos' profile/airootfs/etc/calamares/neos-overlay.txt; 
     echo "FAIL: neos-overlay.txt still references the removed neos GRUB theme"
     exit 1
 fi
-echo "✅ stale NeOS GRUB theme assets removed"
+echo "[PASS] stale NeOS GRUB theme assets removed"
 
 echo "PASS: GRUB starfield theme wiring verified."

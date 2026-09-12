@@ -11,12 +11,12 @@ public class Program
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("=================================================================");
-        Console.WriteLine("⚡ NeOS System & Compliance Diagnostics (.NET Core Engine)");
+        Console.WriteLine("NeOS System & Compliance Diagnostics (.NET Core Engine)");
         Console.WriteLine("=================================================================");
         Console.ResetColor();
 
         string rootDir = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
-        Console.WriteLine($"🔍 Scanning Repository Root: {rootDir}\n");
+        Console.WriteLine($"Scanning Repository Root: {rootDir}\n");
 
         var report = SecurityInspector.RunAudit(rootDir);
 

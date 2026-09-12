@@ -5,12 +5,12 @@ GRUB_FILE="profile/grub/grub.cfg"
 PROFILE_FILE="profile/profiledef.sh"
 
 if [[ ! -f "$GRUB_FILE" ]]; then
-    echo "❌ Missing $GRUB_FILE"
+    echo "[FAIL] Missing $GRUB_FILE"
     exit 1
 fi
 
 if [[ ! -f "$PROFILE_FILE" ]]; then
-    echo "❌ Missing $PROFILE_FILE"
+    echo "[FAIL] Missing $PROFILE_FILE"
     exit 1
 fi
 
@@ -34,24 +34,24 @@ FORBIDDEN_STRINGS=(
     "amd_pstate=active"
 )
 
-# ⚡ Bolt: Load file content once to eliminate repeated fork/exec overhead
+# Load file content once to eliminate repeated fork/exec overhead
 GRUB_CONTENT=$(<"$GRUB_FILE")
 
 for STR in "${REQUIRED_STRINGS[@]}"; do
     if [[ "$GRUB_CONTENT" == *"$STR"* ]]; then
-        echo "✅ '$STR' found"
+        echo "  [PASS] '$STR' found"
     else
-        echo "❌ '$STR' NOT found"
+        echo "[FAIL] '$STR' NOT found"
         exit 1
     fi
 done
 
 for STR in "${FORBIDDEN_STRINGS[@]}"; do
     if [[ "$GRUB_CONTENT" == *"$STR"* ]]; then
-        echo "❌ '$STR' should not be present"
+        echo "[FAIL] '$STR' should not be present"
         exit 1
     else
-        echo "✅ '$STR' not present"
+        echo "  [PASS] '$STR' not present"
     fi
 done
 
@@ -67,9 +67,9 @@ PROFILE_CONTENT=$(<"$PROFILE_FILE")
 
 for STR in "${PROFILE_STRINGS[@]}"; do
     if [[ "$PROFILE_CONTENT" == *"$STR"* ]]; then
-        echo "✅ '$STR' found"
+        echo "  [PASS] '$STR' found"
     else
-        echo "❌ '$STR' NOT found"
+        echo "[FAIL] '$STR' NOT found"
         exit 1
     fi
 done

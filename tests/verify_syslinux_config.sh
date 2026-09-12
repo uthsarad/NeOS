@@ -11,24 +11,24 @@ ALL_PASSED=true
 for cfg in "$SYSLINUX_DIR"/*.cfg; do
     echo "Checking $cfg..."
 
-    # ⚡ Bolt: Load file content once to eliminate repeated fork/exec overhead
+    # Load file content once to eliminate repeated fork/exec overhead
     CONTENT=$(<"$cfg")
 
     # Check for the redundant prefix
     if [[ "$CONTENT" == *"boot/syslinux/"* ]]; then
-        echo "❌ $cfg contains redundant 'boot/syslinux/' prefix"
+        echo "[FAIL] $cfg contains redundant 'boot/syslinux/' prefix"
         grep -Hn "boot/syslinux/" "$cfg"
         ALL_PASSED=false
     else
-        echo "✅ $cfg does not contain redundant prefixes"
+        echo "  [PASS] $cfg does not contain redundant prefixes"
     fi
 
     if [[ "$CONTENT" == *"Try or Install"* ]]; then
-        echo "❌ $cfg uses live-OS wording instead of installer-media wording"
+        echo "[FAIL] $cfg uses live-OS wording instead of installer-media wording"
         grep -Hn "Try or Install" "$cfg"
         ALL_PASSED=false
     else
-        echo "✅ $cfg uses installer-media wording"
+        echo "  [PASS] $cfg uses installer-media wording"
     fi
 done
 

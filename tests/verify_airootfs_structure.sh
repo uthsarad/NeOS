@@ -31,9 +31,9 @@ ALL_PASSED=true
 
 for FILE in "${REQUIRED_FILES[@]}"; do
     if [[ -f "$FILE" ]]; then
-        echo "✅ $FILE"
+        echo "  [PASS] $FILE"
     else
-        echo "❌ Missing: $FILE"
+        echo "[FAIL] Missing: $FILE"
         ALL_PASSED=false
     fi
 done
@@ -53,9 +53,9 @@ echo "Verifying enabled services in $SERVICES_FILE..."
 SERVICES_CONTENT=$(<"$SERVICES_FILE")
 for SVC in "${REQUIRED_SERVICES[@]}"; do
     if [[ "$SERVICES_CONTENT" == *"$SVC"* ]]; then
-        echo "✅ Service '$SVC' enabled"
+        echo "  [PASS] Service '$SVC' enabled"
     else
-        echo "❌ Service '$SVC' NOT enabled"
+        echo "[FAIL] Service '$SVC' NOT enabled"
         ALL_PASSED=false
     fi
 done
@@ -75,9 +75,9 @@ echo "Verifying file permissions in $PROFILE_FILE..."
 PROFILE_CONTENT=$(<"$PROFILE_FILE")
 for PERM in "${REQUIRED_PERMS[@]}"; do
     if [[ "$PROFILE_CONTENT" == *"$PERM"* ]]; then
-        echo "✅ Permission entry for '$PERM' found"
+        echo "  [PASS] Permission entry for '$PERM' found"
     else
-        echo "❌ Permission entry for '$PERM' NOT found"
+        echo "[FAIL] Permission entry for '$PERM' NOT found"
         ALL_PASSED=false
     fi
 done
@@ -93,25 +93,25 @@ echo "Verifying installer-media startup behavior..."
 
 LIVEUSER_CONTENT=$(<"$LIVEUSER_SETUP")
 if [[ "$LIVEUSER_CONTENT" == *'welcome-neos.desktop'* ]]; then
-    echo "✅ Installer autostart is configured for the live user"
+    echo "[PASS] Installer autostart is configured for the live user"
 else
-    echo "❌ Installer autostart is not configured for the live user"
+    echo "[FAIL] Installer autostart is not configured for the live user"
     ALL_PASSED=false
 fi
 
 INSTALLER_SHORTCUT_CONTENT=$(<"$INSTALLER_SHORTCUT")
 if [[ "$INSTALLER_SHORTCUT_CONTENT" == *'Exec=/usr/local/bin/neos-welcome-app'* ]]; then
-    echo "✅ Desktop shortcut launches the welcome app"
+    echo "[PASS] Desktop shortcut launches the welcome app"
 else
-    echo "❌ Desktop shortcut does not launch the welcome app"
+    echo "[FAIL] Desktop shortcut does not launch the welcome app"
     ALL_PASSED=false
 fi
 
 INSTALLER_LAUNCHER_CONTENT=$(<"$INSTALLER_LAUNCHER")
 if [[ "$INSTALLER_LAUNCHER_CONTENT" == *'calamares'* ]]; then
-    echo "✅ Installer launcher starts Calamares"
+    echo "[PASS] Installer launcher starts Calamares"
 else
-    echo "❌ Installer launcher does not start Calamares"
+    echo "[FAIL] Installer launcher does not start Calamares"
     ALL_PASSED=false
 fi
 
@@ -122,9 +122,9 @@ echo "Verifying pacman hook format..."
 for HOOK in profile/airootfs/usr/share/neos/hooks/*.hook; do
     ACTION_COUNT=$(grep -c '^\[Action\]' "$HOOK")
     if [[ "$ACTION_COUNT" -eq 1 ]]; then
-        echo "✅ $HOOK has exactly 1 [Action] section"
+        echo "  [PASS] $HOOK has exactly 1 [Action] section"
     else
-        echo "❌ $HOOK has $ACTION_COUNT [Action] sections (expected 1)"
+        echo "[FAIL] $HOOK has $ACTION_COUNT [Action] sections (expected 1)"
         ALL_PASSED=false
     fi
 done

@@ -1,0 +1,11 @@
+{
+  "allowed_files": [
+    "none"
+  ],
+  "strategic_pause": true,
+  "constraints": [
+    "Strict Phase 8 Validation Strategic Pause enforced.",
+    "No new production code allowed.",
+    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks."
+  ]
+}
