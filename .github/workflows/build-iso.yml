@@ -2,7 +2,7 @@ name: Build NeOS ISO
 
 on:
   push:
-    branches: [main]
+    branches: [main, testing]
   workflow_dispatch:
 
 env:
@@ -212,13 +212,23 @@ jobs:
           # would change on every same-day rebuild and `--clobber` in the
           # "Upload ISO to Release" step wouldn't actually replace the old
           # ISO asset, just add a second one alongside it.
+          #
+          # Branch suffix keeps releases entirely separate per branch: main
+          # builds get the plain tag/filename, any other branch (e.g.
+          # testing) gets its own "-<branch>" suffixed tag/filename, so a
+          # testing build can never collide with or overwrite a main release
+          # (or vice versa) even on the same calendar day.
+          BRANCH_SUFFIX=""
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
+            BRANCH_SUFFIX="-${{ github.ref_name }}"
+          fi
           VERSION="$(tr -d '[:space:]' < VERSION)"
-          TODAY_TAG="v${VERSION}-$(date +%Y%m%d)"
+          TODAY_TAG="v${VERSION}-$(date +%Y%m%d)${BRANCH_SUFFIX}"
           CODENAME=""
           EXISTING_NAME=$(gh release view "$TODAY_TAG" --json name --jq '.name' 2>/dev/null || true)
           if [[ -n "$EXISTING_NAME" ]]; then
-            # Title looks like: NeOS "Perch Beta"
-            CODENAME=$(echo "$EXISTING_NAME" | sed -E 's/^NeOS "([A-Za-z0-9]+) Beta"$/\1/')
+            # Title looks like: NeOS "Perch Beta" or NeOS "Perch Beta" (testing)
+            CODENAME=$(echo "$EXISTING_NAME" | sed -E 's/^NeOS "([A-Za-z0-9]+) Beta"( \(.*\))?$/\1/')
             if [[ -n "$CODENAME" && "$CODENAME" != "$EXISTING_NAME" ]]; then
               echo "Reusing today's existing release codename: $CODENAME"
             else
@@ -265,9 +275,11 @@ jobs:
           echo "value=$CODENAME" >> "$GITHUB_OUTPUT"
 
           # ISO output filename is "${iso_name}-${iso_version}-${arch}.iso" —
-          # swap the date-based version for "<Codename>-Beta" so the shipped
-          # file reads e.g. neos-Marlin-Beta-x86_64.iso, no date/time.
-          sed -i "s/^iso_version=.*/iso_version=\"${CODENAME}-Beta\"/" \
+          # swap the date-based version for "<Codename>-Beta[-branch]" so the
+          # shipped file reads e.g. neos-Marlin-Beta-x86_64.iso (main) or
+          # neos-Marlin-Beta-testing-x86_64.iso (testing), no date/time, and
+          # never collides between branches.
+          sed -i "s/^iso_version=.*/iso_version=\"${CODENAME}-Beta${BRANCH_SUFFIX}\"/" \
             "$GITHUB_WORKSPACE/profile/profiledef.sh"
           grep '^iso_version=' "$GITHUB_WORKSPACE/profile/profiledef.sh"
 
@@ -352,7 +364,7 @@ jobs:
           bash tests/verify_iso_smoketest.sh
 
       - name: Validate ISO Size
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
 
@@ -405,7 +417,7 @@ jobs:
 
       - name: Prepare ISO for upload
         id: iso
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
 
@@ -427,14 +439,14 @@ jobs:
           ls -lh out/
 
       - name: Generate VM Appliance Templates
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
           chmod +x tools/gen-vm-appliance.sh
           ./tools/gen-vm-appliance.sh
 
       - name: Generate checksums
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
 
@@ -444,7 +456,7 @@ jobs:
 
       - name: Generate release tag and notes
         id: tag
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
 
@@ -456,9 +468,15 @@ jobs:
           # the same release/tag instead of piling up a new one each time
           # (matches the codename-reuse logic in the earlier "Generate
           # codename and set ISO version" step, which computes this exact
-          # same tag to check for an existing same-day release).
+          # same tag to check for an existing same-day release). Also
+          # branch-suffixed the same way that step is, so main and testing
+          # (or any other branch) never share a tag/release.
+          BRANCH_SUFFIX=""
+          if [[ "${{ github.ref_name }}" != "main" ]]; then
+            BRANCH_SUFFIX="-${{ github.ref_name }}"
+          fi
           VERSION="$(tr -d '[:space:]' < VERSION)"
-          echo "value=v${VERSION}-$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          echo "value=v${VERSION}-$(date +%Y%m%d)${BRANCH_SUFFIX}" >> "$GITHUB_OUTPUT"
 
           # Release body = the CHANGELOG section for this VERSION (empty file
           # if the section is missing; generate_release_notes still fills in
@@ -474,10 +492,11 @@ jobs:
 
       - name: Create GitHub Release (small assets)
         uses: softprops/action-gh-release@v3
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         with:
           tag_name: ${{ steps.tag.outputs.value }}
-          name: NeOS "${{ steps.codename.outputs.value }} Beta"
+          name: NeOS "${{ steps.codename.outputs.value }} Beta"${{ github.ref_name != 'main' && format(' ({0})', github.ref_name) || '' }}
+          prerelease: ${{ github.ref_name != 'main' }}
           generate_release_notes: true
           body_path: release-body.md
           files: |
@@ -485,7 +504,7 @@ jobs:
             out/vm/*
 
       - name: Upload ISO to Release
-        if: github.ref == 'refs/heads/main'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
