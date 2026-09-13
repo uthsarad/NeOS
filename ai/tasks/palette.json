@@ -211,7 +211,7 @@
     {
       "description": "Validate Phase 8 Operations Hub snapshot rollback UX.",
       "target_file": "none",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
