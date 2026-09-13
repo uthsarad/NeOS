@@ -1,12 +1,12 @@
 {
   "bolt": {
-    "guidance": "Clear pending task queue: Validate Phase 8 Operations Hub update mechanism performance."
+    "guidance": "Monitor kdialog performance and potential subprocess overhead from crash reporting tools in neos-operations-hub."
   },
   "palette": {
-    "guidance": "Clear pending task queue: Validate Phase 8 Operations Hub snapshot rollback UX."
+    "guidance": "Ensure the crash reporting configuration menu in neos-operations-hub is intuitive and accessible, following Phase 6 UX guidelines."
   },
   "sentinel": {
-    "guidance": "Clear pending task queue: Validate Phase 8 Operations Hub release channel switching security."
+    "guidance": "Audit the crash reporting tool invocation for potential privilege escalation or data leakage risks."
   },
-  "maestro_timestamp": "2026-09-12 (Strategic Pause)"
+  "maestro_timestamp": "2026-09-13"
 }
