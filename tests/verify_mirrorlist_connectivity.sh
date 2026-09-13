@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# Sentinel: Verify safe parsing of mirrorlist to prevent command injection
-# Bolt: Optimize file reading and avoid excessive subprocess overhead if possible
 # Network checks use strict timeouts to prevent CI hangs.
 
 if ! curl -I -s --connect-timeout 1 --max-time 2 -- "https://archlinux.org" > /dev/null; then
@@ -16,13 +14,11 @@ fi
 # We use awk to parse the mirrorlist safely and efficiently.
 # It extracts the base URL directly without the need for bash regex matching or subshells.
 # It handles up to 5 mirrors.
-# Sentinel: Added URL validation to ensure only valid HTTPS/HTTP URLs are processed, preventing injection.
 PIDS=()
 URLS=()
 
 while IFS= read -r BASE_URL; do
     echo "Testing connectivity to: $BASE_URL"
-    # Bolt: Ensure the connectivity check avoids excessive timeouts and dispatch as background jobs
     # NOTE: 1s connect / 2s total was too tight for legitimate mirrors that do
     # a redirect hop (e.g. mirrors.kernel.org -> mirrors.edge.kernel.org),
     # causing false-positive CI failures unrelated to actual mirror health.
@@ -48,8 +44,6 @@ for i in "${!PIDS[@]}"; do
         BASE_URL="${URLS[i]}"
         echo "[WARN]  Mirror $BASE_URL failed on first try. Retrying..."
 
-        # Bolt: Review if an exponential backoff strategy is needed for performance
-        # Sentinel: Ensure retry doesn't lead to DOS or exploit infinite loop vulnerabilities
         RETRY_DELAY=1
         MAX_RETRIES=3
         RETRY_COUNT=0
@@ -69,7 +63,6 @@ for i in "${!PIDS[@]}"; do
             if [[ "$BASE_URL" != "https://al.arch.niranjan.co/" ]]; then
                 (( FAILED_COUNT += 1 ))
             fi
-            # Palette: Ensure the format of the logged error message is clear and includes actionable steps
             echo -e "\n================================================================================" >&2
             echo -e "[ERROR] Failed to connect to $BASE_URL after retry" >&2
             echo -e "================================================================================\n" >&2

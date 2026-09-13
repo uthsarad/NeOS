@@ -1,11 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 
-# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
 
@@ -18,7 +16,6 @@ _error_handler() {
     exit "$err"
 }
 
-# Sentinel: Verify that trap commands safely handle variable expansion without introducing command injection risks. Ensure TOCTOU vulnerabilities are not introduced during file creation or logging.
 trap '_error_handler $? $LINENO' ERR
 
 # NeOS Driver Manager
