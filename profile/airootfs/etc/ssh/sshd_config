@@ -1,4 +1,3 @@
-# Sentinel: Hardened SSH Configuration for NeOS
 # Prevent empty password login (mitigates liveuser risk)
 PermitEmptyPasswords no
 # Disable root login
