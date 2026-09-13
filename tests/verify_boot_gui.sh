@@ -27,10 +27,10 @@ if [[ -f "$SERVICES" ]]; then
     SERVICES_CONTENT=$(<"$SERVICES")
 fi
 
-if [[ "$SERVICES_CONTENT" =~ (^|$'\n')[[:space:]]*targets: ]] && [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?graphical\"? ]]; then
+if [[ "$SERVICES_CONTENT" =~ (^|$'\n')[[:space:]]*units: ]] && [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?graphical(\.target)?\"? ]] && [[ "$SERVICES_CONTENT" =~ action:[[:space:]]*\"?set-default\"? ]]; then
     echo "PASS: services-systemd sets default target to graphical"
 else
-    echo "[FAIL] services-systemd must set 'targets: [graphical]' or it boots to tty1"; FAIL=1
+    echo "[FAIL] services-systemd must set 'graphical.target' with action 'set-default' or it boots to tty1"; FAIL=1
 fi
 if [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?sddm\"? ]]; then
     echo "PASS: sddm display manager is enabled"
