@@ -217,6 +217,11 @@
       "description": "Refine Phase 8 Operations Hub features, focusing on crash reporting opt-in UX and logic.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
       "status": "completed"
+    },
+    {
+      "description": "Ensure the crash reporting configuration menu in neos-operations-hub is intuitive and accessible, following Phase 6 UX guidelines.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "pending"
     }
   ]
 }

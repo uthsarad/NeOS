@@ -211,6 +211,11 @@
       "description": "Validate Phase 8 Operations Hub update mechanism performance.",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Monitor kdialog performance and potential subprocess overhead from crash reporting tools in neos-operations-hub.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "pending"
     }
   ]
 }

@@ -43,15 +43,19 @@ case "$ACTION" in
         ;;
     "4")
         if command -v drkonqi >/dev/null 2>&1; then
-            # Palette: Verify crash reporting UX is intuitive.
-            kdialog --icon dialog-information --title "Configure Crash Reporting"                 --yesno "Crash reporting helps improve NeOS by sending automated reports when a system component fails.
+            # Bolt: Monitor kdialog performance and potential subprocess overhead from crash reporting tools in neos-operations-hub.
+            # Palette: Ensure the crash reporting configuration menu in neos-operations-hub is intuitive and accessible, following Phase 6 UX guidelines.
+            # Sentinel: Audit the crash reporting tool invocation for potential privilege escalation or data leakage risks.
+            kdialog --icon dialog-information --title "Configure Crash Reporting" \
+                --yesno "NeOS is telemetry-free by default. Crash reporting helps improve the system by sending automated reports only when a component fails.
 
-Would you like to configure crash reporting now?"
+Would you like to explicitly opt-in and configure crash reporting now?"
             if [ $? -eq 0 ]; then
                 exec drkonqi >/dev/null 2>&1
             fi
         else
-            exec kdialog --icon dialog-information --title "Crash Reporting Unavailable"                 --msgbox "The automated crash reporting tool (drkonqi) is not currently installed or is unavailable in this session.
+            exec kdialog --icon dialog-information --title "Crash Reporting Unavailable" \
+                --msgbox "The automated crash reporting tool (drkonqi) is not currently installed or is unavailable in this session.
 
 System stability remains unaffected."
         fi
