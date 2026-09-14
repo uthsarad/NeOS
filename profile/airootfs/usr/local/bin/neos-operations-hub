@@ -54,7 +54,7 @@ case "$ACTION" in
         # Palette: Verify UX accessibility of the new snapshot dialog in neos-operations-hub.
         # Sentinel: Audit snapshot query mechanisms in neos-operations-hub for command injection.
         if command -v snapper >/dev/null 2>&1; then
-            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
+            TEMP_FILE=$(mktemp "${TMPDIR:-/tmp}/snaps.XXXXXX")
             trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
             snapper list > "$TEMP_FILE" 2>&1
             # Palette: Provide helpful empty state if no snapshots exist (only header line or empty)
@@ -96,7 +96,7 @@ Are you sure you want to proceed?"
         # Bolt: Monitor any file I/O overhead related to reading the license file in neos-operations-hub.
         # Palette: Verify UX accessibility of the licensing dialog in neos-operations-hub.
         # Sentinel: Audit license file read mechanisms in neos-operations-hub for path traversal risks.
-        TEMP_FILE=$(mktemp "/tmp/license.XXXXXX")
+        TEMP_FILE=$(mktemp "${TMPDIR:-/tmp}/license.XXXXXX")
         trap "rm -f \"$TEMP_FILE\"" EXIT INT TERM
         cat << 'LICENSE_EOF' | fold -s -w 90 > "$TEMP_FILE"
 MIT License
