@@ -1,11 +1,9 @@
 {
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub"
-  ],
-  "strategic_pause": false,
+  "allowed_files": [],
+  "strategic_pause": true,
   "constraints": [
-    "Refine Phase 8 Operations Hub features, focusing on crash reporting opt-in UX and logic.",
-    "Do not expand scope to new applications.",
-    "Ensure the solution handles cases where drkonqi is not installed gracefully."
+    "Halt all feature development.",
+    "Do not write production code.",
+    "Wait for Bolt, Palette, and Sentinel to clear pending validation tasks."
   ]
 }
