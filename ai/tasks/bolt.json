@@ -215,7 +215,7 @@
     {
       "description": "Monitor kdialog performance and potential subprocess overhead from crash reporting tools in neos-operations-hub.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
