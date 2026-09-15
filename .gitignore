@@ -20,9 +20,10 @@ target/
 .pytest_cache/
 
 # .NET build artifacts (tools/NeosDiagnostics)
-bin/
-obj/
+tools/NeosDiagnostics/bin/
+tools/NeosDiagnostics/obj/
 *.user
+!profile/airootfs/usr/local/bin/**
 
 # Logs and temp files
 *.log

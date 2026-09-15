@@ -133,6 +133,8 @@ qt5-svg
 breeze-icons
 chaotic-keyring
 xorg-xhost
+xorg-xrandr
+xorg-xinput
 python-pyqt6
 power-profiles-daemon
 ufw
