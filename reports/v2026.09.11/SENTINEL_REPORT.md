@@ -273,3 +273,21 @@ Autoupdate script requires execution as root, maintaining its inherent privilege
 ## Validate Phase 8 Operations Hub release channel switching security.
 **Status**: Completed
 **Findings**: Acknowledged the Strategic Pause for Phase 8 Operations Hub Validation. No new security audits or feature development performed.
+
+## Audit the crash reporting tool invocation for potential privilege escalation or data leakage risks.
+### Risks found
+- Identified a potential CWE-426 (Path Hijacking) vulnerability in `profile/airootfs/usr/local/bin/neos-operations-hub` where commands like `drkonqi`, `xdg-open`, and `kdialog` were called via relative paths or relying on `$PATH`.
+- Also found an unquoted `$DBUS_REF` variable which could lead to word splitting issues.
+### Fixes applied
+- Converted calls to `kdialog`, `xdg-open`, and `drkonqi` to use their absolute paths (e.g., `/usr/bin/kdialog`).
+- Added quotes around `$DBUS_REF` when parsing for D-Bus interactions.
+### Remaining attack surface
+- None identified regarding path hijacking in this script.
+### Severity summary
+- **Severity**: LOW
+- **Vulnerability**: Path Hijacking (CWE-426 risk mitigated)
+- **Status**: Fixed
+
+## Acknowledge Continued Phase 8 Operations Hub Validation (Strategic Pause). No new feature development from Architect.
+**Status**: Completed
+**Findings**: Acknowledged the continued Strategic Pause for Phase 8 Operations Hub Validation. No new feature development performed.

@@ -211,7 +211,7 @@
     {
       "description": "Audit the crash reporting tool invocation for potential privilege escalation or data leakage risks.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
