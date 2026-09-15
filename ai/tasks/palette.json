@@ -222,6 +222,11 @@
       "description": "Ensure the crash reporting configuration menu in neos-operations-hub is intuitive and accessible, following Phase 6 UX guidelines.",
       "target_file": "none",
       "status": "completed"
+    },
+    {
+      "description": "Acknowledge the continued Phase 8 Validation Strategic Pause",
+      "target_file": "none",
+      "status": "pending"
     }
   ]
 }
