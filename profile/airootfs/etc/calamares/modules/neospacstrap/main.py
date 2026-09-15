@@ -48,6 +48,15 @@ _INSTALL_RE = re.compile(
     r"^\((\d+)/(\d+)\)\s+(installing|upgrading|reinstalling)\s+(\S+)"
 )
 
+# Pacman non-TTY download output prints "downloading <pkgname>..."
+_DOWNLOAD_RE = re.compile(
+    r"^(?:downloading\s+(\S+?)(?:\.\.\.|\s|$)|::\s+(?:Retrieving packages|downloading\s+(\S+)))",
+    re.IGNORECASE
+)
+_TOTAL_PKGS_RE = re.compile(r"downloading latest (\d+) packages|installing (\d+) packages")
+_OVERLAY_RE = re.compile(r"applying NeOS overlay", re.IGNORECASE)
+_RETRY_RE = re.compile(r"pacstrap attempt (\d+)/(\d+)", re.IGNORECASE)
+
 status = _("📦 Preparing to install packages…")
 
 
@@ -96,6 +105,8 @@ def run():
 
     output_lines = []
     seen_install_phase = False
+    download_count = 0
+    estimated_total = 178
 
     try:
         assert proc.stdout is not None
@@ -104,21 +115,52 @@ def run():
             output_lines.append(line)
             libcalamares.utils.debug(f"neos-pacstrap: {line}")
 
-            match = _INSTALL_RE.match(line)
-            if match:
-                n, total, _verb, pkg = match.groups()
+            total_match = _TOTAL_PKGS_RE.search(line)
+            if total_match:
+                found_total = total_match.group(1) or total_match.group(2)
+                if found_total:
+                    estimated_total = int(found_total)
+
+            retry_match = _RETRY_RE.search(line)
+            if retry_match:
+                cur_attempt, max_attempts = retry_match.groups()
+                status = _("🔁 Mirror retry ({cur}/{max})…").format(
+                    cur=cur_attempt, max=max_attempts)
+
+            install_match = _INSTALL_RE.match(line)
+            if install_match:
+                n, total, _verb, pkg = install_match.groups()
                 n, total = int(n), int(total)
                 seen_install_phase = True
                 status = _("⚙️ Installing {pkg} ({n}/{total})…").format(
                     pkg=pkg, n=n, total=total)
                 if total > 0:
-                    libcalamares.job.setprogress(0.05 + 0.95 * (n / total))
-            elif not seen_install_phase:
-                # Still in the download phase, which pacman does not expose a
-                # reliable non-TTY percentage for — nudge the bar off zero so
-                # it doesn't look identical to "not started" and keep the
-                # status text moving so the UI clearly isn't frozen.
-                status = _("Downloading packages…")
+                    # Allocate 0.45 to 0.95 for package unpacking/installation
+                    libcalamares.job.setprogress(0.45 + 0.50 * (n / total))
+                continue
+
+            if _OVERLAY_RE.search(line):
+                status = _("🎨 Applying NeOS desktop configuration & branding…")
+                libcalamares.job.setprogress(0.97)
+                continue
+
+            download_match = _DOWNLOAD_RE.match(line)
+            if download_match and not seen_install_phase:
+                download_count += 1
+                pkg_raw = download_match.group(1) or download_match.group(2) or ""
+                # Strip archive extension and architecture if present
+                pkg_clean = re.sub(r"-(?:\d.*|\.pkg\.tar\..*)$", "", pkg_raw)
+                pkg_clean = pkg_clean.strip()
+                if pkg_clean:
+                    status = _("⬇️ Downloading {pkg} ({cur}/{total})…").format(
+                        pkg=pkg_clean, cur=download_count, total=estimated_total)
+                else:
+                    status = _("⬇️ Downloading packages ({cur}/{total})…").format(
+                        cur=download_count, total=estimated_total)
+                download_frac = min(1.0, download_count / max(estimated_total, 1))
+                # Allocate 0.05 to 0.45 for downloading packages
+                libcalamares.job.setprogress(0.05 + 0.40 * download_frac)
+            elif not seen_install_phase and download_count == 0:
                 libcalamares.job.setprogress(0.02)
 
         returncode = proc.wait()
@@ -138,3 +180,4 @@ def run():
     libcalamares.job.setprogress(1.0)
     status = _("✅ Base system installed.")
     return None
+

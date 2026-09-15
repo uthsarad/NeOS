@@ -170,7 +170,9 @@ jobs:
             qemu-system-x86 \
             qemu-img \
             util-linux \
-            github-cli
+            github-cli \
+            xorriso \
+            pacman-contrib
 
       - name: Prepare Build Config
         run: |
@@ -356,6 +358,45 @@ jobs:
           fi
 
           ls -lh
+
+      - name: Build offline install repo and embed into ISO
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+
+          REPO_ROOT="$GITHUB_WORKSPACE"
+          PROFILE_DIR="$REPO_ROOT/profile"
+          WORK_DIR="$REPO_ROOT/work"
+          OUT_DIR="$REPO_ROOT/out"
+          BUILD_CONF="$REPO_ROOT/pacman-build.conf"
+
+          echo "Building offline install package repo..."
+          bash tools/gen-install-repo.sh \
+              --repo-dir "$REPO_ROOT/$PROFILE_DIR/install-repo" \
+              --work-dir "$REPO_ROOT/$WORK_DIR" \
+              --profile "$REPO_ROOT/$PROFILE_DIR" \
+              --build-conf "$BUILD_CONF"
+
+          INSTALL_REPO="$REPO_ROOT/$PROFILE_DIR/install-repo"
+          if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+              echo "Adding offline package repo to ISO..."
+              ISO_PATH=$(find "$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+              if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
+                  TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
+                  xorriso -indev "$ISO_PATH" \
+                          -outdev "$TMP_ISO" \
+                          -map "$INSTALL_REPO" /neos/pkg \
+                          -boot_image any replay 2>&1 | tail -n 5 || {
+                      echo "Warning: Could not add repo to ISO. Continuing with base ISO."
+                      rm -f "$TMP_ISO" 2>/dev/null || true
+                  }
+                  if [[ -f "$TMP_ISO" ]]; then
+                      mv -f "$TMP_ISO" "$ISO_PATH"
+                      echo "Offline install repo successfully added to ISO at /neos/pkg/"
+                  fi
+              fi
+              rm -rf "$INSTALL_REPO" 2>/dev/null || true
+          fi
 
       - name: Validate ISO
         run: |

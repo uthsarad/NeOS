@@ -1,14 +1,32 @@
-# NeOS (Next Evolution Operating System)
+<p align="center">
+  <img src="docs/assets/neos-logo.png" alt="NeOS Logo" width="128" height="128">
+</p>
 
-[![Build NeOS ISO](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=testing)](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml)
-[![Latest Release](https://img.shields.io/github/v/release/uthsarad/NeOS?style=flat-square&color=0078D4&label=release)](https://github.com/uthsarad/NeOS/releases)
-![Status](https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square)
-![Architecture](https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+<h1 align="center">NeOS (Next Evolution Operating System)</h1>
+
+<p align="center">
+  <a href="https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml"><img src="https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=testing" alt="Build NeOS ISO"></a>
+  <a href="https://github.com/uthsarad/NeOS/releases"><img src="https://img.shields.io/github/v/release/uthsarad/NeOS?style=flat-square&color=0078D4&label=release" alt="Latest Release"></a>
+  <img src="https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square" alt="Status">
+  <img src="https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square" alt="Architecture">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+</p>
 
 **NeOS** is a curated, snapshot-based Arch Linux desktop distribution engineered for predictable behavior, system stability, and a refined **KDE Plasma 6** experience. Designed for users transitioning from Windows, NeOS bridges the gap between the flexibility of a rolling release and the reliability of a validated workstation environment.
 
 It ships as a full **live installer** — boot into a working desktop, try it, then install offline with the Calamares wizard, the same model as a mainstream desktop OS.
+
+---
+
+## Visual Overview
+
+| Desktop Environment & Wallpaper | Calamares Live Installer |
+| :---: | :---: |
+| ![NeOS Desktop](docs/assets/neos-desktop-wallpaper.png) | ![NeOS Installer](docs/assets/neos-calamares-installer.png) |
+
+| SDDM Login Display Manager |
+| :---: |
+| ![NeOS SDDM](docs/assets/neos-sddm-login.png) |
 
 ---
 

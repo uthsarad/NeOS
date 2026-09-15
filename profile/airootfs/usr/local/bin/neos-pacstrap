@@ -51,6 +51,16 @@ if [[ ! -s /etc/pacman.d/gnupg/trustdb.gpg ]]; then
 fi
 pacman-key --populate archlinux chaotic 2>/dev/null || true
 
+# Pre-seed the target root's keyring from the live host so pacman inside $ROOT
+# has both archlinux and chaotic keyrings pre-trusted and ready without waiting
+# on /dev/random for fresh GPG key generation inside the target container.
+mkdir -p "$ROOT/etc/pacman.d"
+if [[ -d /etc/pacman.d/gnupg ]] && [[ ! -d "$ROOT/etc/pacman.d/gnupg" ]]; then
+    log "🔑 pre-seeding target pacman keyring from live host..."
+    cp -a /etc/pacman.d/gnupg "$ROOT/etc/pacman.d/"
+    pacman-key --gpgdir "$ROOT/etc/pacman.d/gnupg" --populate archlinux chaotic 2>/dev/null || true
+fi
+
 # ---- Detect the local ISO package repo (embedded by build.sh) --------------
 LOCAL_REPO=""
 ISO_MOUNT="/run/archiso/bootmnt"
