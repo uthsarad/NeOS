@@ -1,0 +1,257 @@
+#!/bin/bash
+# neos-display-sync — synchronize display rotation with input coordinates and scaling
+#
+# Addresses X11 / KDE Plasma 6 limitations:
+# 1. Pointer rotation: X11 rotates display buffers via XRandR but leaves absolute
+#    input devices (touchscreens, VM tablet pointers, drawing tablets) unrotated,
+#    causing mouse coordinates to desync from the visual display.
+# 2. Display scaling: Dynamically applies and persists X11 DPI and Qt/GTK scaling.
+
+set -euo pipefail
+
+# Sentinel: Enforce strict PATH to prevent path hijacking
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Identity and rotation transformation matrices for Xinput (3x3 row-major)
+MATRIX_NORMAL="1 0 0 0 1 0 0 0 1"
+MATRIX_LEFT="0 -1 1 1 0 0 0 0 1"      # 90 deg counter-clockwise
+MATRIX_RIGHT="0 1 0 -1 0 1 0 0 1"     # 90 deg clockwise
+MATRIX_INVERTED="-1 0 1 0 -1 1 0 0 1"  # 180 deg
+
+get_matrix_for_rotation() {
+    local rot="${1:-normal}"
+    case "$rot" in
+        normal)   echo "$MATRIX_NORMAL" ;;
+        left)     echo "$MATRIX_LEFT" ;;
+        right)    echo "$MATRIX_RIGHT" ;;
+        inverted) echo "$MATRIX_INVERTED" ;;
+        *)        echo "$MATRIX_NORMAL" ;;
+    esac
+}
+
+get_primary_rotation() {
+    if ! command -v xrandr >/dev/null 2>&1; then
+        echo "normal"
+        return 0
+    fi
+    if [ -z "${DISPLAY:-}" ]; then
+        echo "normal"
+        return 0
+    fi
+
+    # Query xrandr for connected outputs and parse primary or first active output rotation
+    local line
+    line=$(xrandr --current 2>/dev/null | grep -E '\bconnected\b' | grep -E '\b(normal|left|right|inverted)\b' | head -n 1 || true)
+    if [ -z "$line" ]; then
+        echo "normal"
+        return 0
+    fi
+
+    if echo "$line" | grep -qE '\bleft\b'; then
+        echo "left"
+    elif echo "$line" | grep -qE '\bright\b'; then
+        echo "right"
+    elif echo "$line" | grep -qE '\binverted\b'; then
+        echo "inverted"
+    else
+        echo "normal"
+    fi
+}
+
+get_primary_output_name() {
+    if ! command -v xrandr >/dev/null 2>&1 || [ -z "${DISPLAY:-}" ]; then
+        return 0
+    fi
+    local out
+    out=$(xrandr --current 2>/dev/null | grep -E '\bconnected primary\b' | awk '{print $1}' || true)
+    if [ -z "$out" ]; then
+        out=$(xrandr --current 2>/dev/null | grep -E '\bconnected\b' | head -n 1 | awk '{print $1}' || true)
+    fi
+    echo "$out"
+}
+
+sync_rotation() {
+    if [ -z "${DISPLAY:-}" ]; then
+        echo "neos-display-sync: No active X11 DISPLAY found. Skipping rotation sync."
+        return 0
+    fi
+    if ! command -v xinput >/dev/null 2>&1; then
+        echo "neos-display-sync: xinput command not found. Cannot transform coordinates."
+        return 1
+    fi
+
+    local current_rot
+    current_rot=$(get_primary_rotation)
+    local matrix
+    matrix=$(get_matrix_for_rotation "$current_rot")
+
+    echo "==> Active display orientation: $current_rot"
+    echo "==> Applying Coordinate Transformation Matrix: [ $matrix ]"
+
+    # Enumerate all pointer input devices
+    local dev_line
+    xinput list --short 2>/dev/null | grep -iE 'slave\s+pointer' | while read -r dev_line; do
+        local dev_id
+        dev_id=$(echo "$dev_line" | grep -oE 'id=[0-9]+' | cut -d'=' -f2 || true)
+        if [ -z "$dev_id" ]; then
+            continue
+        fi
+
+        # Check if device supports the Coordinate Transformation Matrix property
+        if xinput list-props "$dev_id" 2>/dev/null | grep -q "Coordinate Transformation Matrix"; then
+            local dev_name
+            dev_name=$(echo "$dev_line" | sed -E 's/.*↳\s*//; s/\s*id=[0-9]+.*//' | xargs)
+
+            # Target absolute pointer devices: VM tablets, touchscreens, digitizers, stylus
+            if echo "$dev_name" | grep -qiE 'tablet|touch|virtualbox|vmware|qemu|wacom|stylus|digitizer|absolute' || \
+               xinput list-props "$dev_id" 2>/dev/null | grep -qiE 'tablet|touch|absolute'; then
+                echo "    -> Synchronizing device $dev_id ($dev_name)..."
+                # shellcheck disable=SC2086
+                xinput set-prop "$dev_id" "Coordinate Transformation Matrix" $matrix 2>/dev/null || true
+            fi
+        fi
+    done
+    echo "✓ Input coordinates synchronized 1:1 with $current_rot rotation."
+}
+
+rotate_display() {
+    local target_rot="${1:-normal}"
+    case "$target_rot" in
+        normal|left|right|inverted) ;;
+        *)
+            echo "Error: Invalid rotation '$target_rot'. Choose from: normal, left, right, inverted" >&2
+            return 1
+            ;;
+    esac
+
+    local output
+    output=$(get_primary_output_name)
+    if [ -z "$output" ]; then
+        echo "Error: No connected display output found to rotate." >&2
+        return 1
+    fi
+
+    echo "==> Rotating output $output to $target_rot..."
+    xrandr --output "$output" --rotate "$target_rot"
+    sync_rotation
+}
+
+apply_scale() {
+    local scale_factor="${1:-1.0}"
+    # Validate scale factor (e.g. 1.0, 1.25, 1.5, 2.0)
+    if ! [[ "$scale_factor" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+        echo "Error: Invalid scale factor '$scale_factor'. Must be a positive decimal number (e.g. 1.25, 1.5)." >&2
+        return 1
+    fi
+
+    local dpi
+    dpi=$(awk -v s="$scale_factor" 'BEGIN { printf "%.0f", s * 96 }')
+    echo "==> Setting global display scale factor: ${scale_factor}x (${dpi} DPI)..."
+
+    # 1. Apply to running X server xrdb
+    if command -v xrdb >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
+        echo "Xft.dpi: $dpi" | xrdb -merge 2>/dev/null || true
+    fi
+
+    # 2. Persist in user ~/.Xresources
+    local xres="$HOME/.Xresources"
+    if [ -f "$xres" ]; then
+        sed -i '/^Xft\.dpi:/d' "$xres"
+    fi
+    echo "Xft.dpi: $dpi" >> "$xres"
+
+    # 3. Update KDE Plasma 6 configuration if tools are available
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file kdeglobals --group General --key XftDPI "$dpi" 2>/dev/null || true
+        kwriteconfig6 --file kdeglobals --group KScreen --key ScaleFactor "$scale_factor" 2>/dev/null || true
+    fi
+
+    # 4. Set environment exports in user environment
+    local env_dir="${XDG_CONFIG_HOME:-$HOME/.config}/plasma-workspace/env"
+    mkdir -p "$env_dir"
+    cat << EOF > "$env_dir/20-neos-scaling.sh"
+#!/bin/sh
+# Generated by neos-display-sync
+export QT_SCALE_FACTOR=$scale_factor
+export GDK_SCALE=1
+export GDK_DPI_SCALE=$scale_factor
+EOF
+    chmod +x "$env_dir/20-neos-scaling.sh"
+
+    echo "✓ Display scale ${scale_factor}x (${dpi} DPI) applied and persisted."
+    echo "Note: Running Qt and GTK applications will adopt this scale immediately or on relaunch."
+}
+
+run_daemon() {
+    echo "==> Starting NeOS Display & Input Sync Daemon..."
+    if [ -z "${DISPLAY:-}" ]; then
+        echo "Waiting for active X11 DISPLAY..."
+        while [ -z "${DISPLAY:-}" ]; do
+            sleep 3
+        done
+    fi
+
+    local last_rot=""
+    # Initial sync
+    last_rot=$(get_primary_rotation)
+    sync_rotation || true
+
+    # Monitor rotation changes
+    while true; do
+        sleep 2
+        local current_rot
+        current_rot=$(get_primary_rotation)
+        if [ "$current_rot" != "$last_rot" ]; then
+            echo "Display rotation change detected: $last_rot -> $current_rot"
+            last_rot="$current_rot"
+            sync_rotation || true
+        fi
+    done
+}
+
+print_help() {
+    cat << EOF
+NeOS Display & Input Synchronization Utility
+
+Usage: neos-display-sync [COMMAND] [ARGUMENTS]
+
+Commands:
+  --sync, -s                  Detect active display rotation and synchronize pointer coordinates (default)
+  --rotate, -r <ORIENTATION>  Rotate display (normal, left, right, inverted) and synchronize coordinates
+  --scale <FACTOR>            Set global display scaling (e.g. 1.0, 1.25, 1.5, 2.0) via Xft DPI & Qt/GTK
+  --daemon, -d                Run as background monitor to automatically sync pointer on rotation changes
+  --help, -h                  Show this help text
+
+Examples:
+  neos-display-sync                         # Fix misaligned pointer after manual rotation
+  neos-display-sync --rotate left           # Rotate screen 90° CCW and sync mouse 1:1
+  neos-display-sync --scale 1.25            # Set global display scale to 125% (120 DPI)
+  neos-display-sync --daemon                # Start continuous background rotation watcher
+EOF
+}
+
+# Parse CLI arguments
+case "${1:-}" in
+    --help|-h)
+        print_help
+        ;;
+    --sync|-s|"")
+        sync_rotation
+        ;;
+    --rotate|-r)
+        shift
+        rotate_display "${1:-normal}"
+        ;;
+    --scale)
+        shift
+        apply_scale "${1:-1.0}"
+        ;;
+    --daemon|-d|--watch)
+        run_daemon
+        ;;
+    *)
+        echo "Unknown option: $1" >&2
+        print_help >&2
+        exit 1
+        ;;
+esac

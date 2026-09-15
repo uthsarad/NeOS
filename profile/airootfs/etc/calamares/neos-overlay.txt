@@ -28,6 +28,7 @@ etc/systemd/system/neos-vm-graphics.service
 etc/systemd/system/sddm.service.d/10-software-greeter.conf
 etc/systemd/zram-generator.conf
 etc/ufw/ufw.conf
+etc/xdg/autostart/neos-display-sync.desktop
 etc/xdg/discoverrc
 etc/xdg/kdeglobals
 etc/xdg/kglobalshortcutsrc
@@ -36,6 +37,7 @@ usr/local/bin/chcon
 usr/local/bin/neos-accessibility
 usr/local/bin/neos-autoupdate.sh
 usr/local/bin/neos-desktop-setup
+usr/local/bin/neos-display-sync
 usr/local/bin/neos-driver-manager
 usr/local/bin/neos-hardware-setup
 usr/local/bin/neos-operations-hub
