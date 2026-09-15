@@ -24,6 +24,8 @@ tools/NeosDiagnostics/bin/
 tools/NeosDiagnostics/obj/
 *.user
 !profile/airootfs/usr/local/bin/**
+profile/airootfs/usr/local/bin/**/__pycache__/
+profile/airootfs/usr/local/bin/**/*.py[co]
 
 # Logs and temp files
 *.log

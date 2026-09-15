@@ -87,6 +87,8 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^etc/skel/Desktop/welcome-neos\.desktop$' \
     -e '^etc/xdg/autostart/neos-welcome-app\.desktop$' \
     -e '^etc/skel/\.config/autostart/neos-desktop-setup\.desktop$' \
+    -e '__pycache__' \
+    -e '\.py[co]$' \
     | sort > "$NETINSTALL_OVERLAY"
 
 echo "Generated $(wc -l < "$NETINSTALL_OVERLAY") overlay entries"

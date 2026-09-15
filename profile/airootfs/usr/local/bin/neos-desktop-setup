@@ -13,6 +13,20 @@ if [[ ! -f "$HOME/.neos_polished" ]]; then
         plasma-apply-wallpaperimage /usr/share/backgrounds/neos-wallpaper.png 2>/dev/null || true
     fi
 
+    # Windows Familiarity: configure double-click to open files/folders in KDE
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file kdeglobals --group KDE --key SingleClick false
+        kwriteconfig6 --file dolphinrc --group General --key ShowFullPathInTitlebar true
+    elif command -v kwriteconfig5 >/dev/null 2>&1; then
+        kwriteconfig5 --file kdeglobals --group KDE --key SingleClick false
+        kwriteconfig5 --file dolphinrc --group General --key ShowFullPathInTitlebar true
+    fi
+
+    # Ensure Flathub repository is pre-configured for Flatpak applications
+    if command -v flatpak >/dev/null 2>&1; then
+        flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo 2>/dev/null || true
+    fi
+
     # Ensure desktop launchers are executable/trusted on desktop
     for launcher in welcome-neos.desktop neos-terminal.desktop; do
         if [[ -L "$HOME/Desktop" ]] || [[ -L "$HOME/Desktop/$launcher" ]]; then

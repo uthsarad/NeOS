@@ -21,8 +21,13 @@ fi
 echo "==> Committing: '$COMMIT_MSG'..."
 git commit -m "$COMMIT_MSG"
 
-echo "==> Pushing to origin $CURRENT_BRANCH..."
-git push origin "$CURRENT_BRANCH"
+PUSH_REMOTE="origin"
+if git remote get-url fork >/dev/null 2>&1; then
+    PUSH_REMOTE="fork"
+fi
+
+echo "==> Pushing to $PUSH_REMOTE $CURRENT_BRANCH..."
+git push "$PUSH_REMOTE" "$CURRENT_BRANCH"
 
 echo "==> Checking for existing open PR or creating new PR on $TARGET_BRANCH..."
 EXISTING_PR=$(gh pr list --repo "$UPSTREAM_REPO" --base "$TARGET_BRANCH" --head "MikoYae-AI:$CURRENT_BRANCH" --json number --jq '.[0].number' 2>/dev/null || true)
@@ -56,13 +61,18 @@ if [[ -n "${PR_NUM:-}" ]]; then
     done
 fi
 
-echo "==> Fetching latest upstream $TARGET_BRANCH..."
-git fetch upstream "$TARGET_BRANCH"
+UPSTREAM_REMOTE="upstream"
+if ! git remote get-url upstream >/dev/null 2>&1; then
+    UPSTREAM_REMOTE="origin"
+fi
+
+echo "==> Fetching latest $UPSTREAM_REMOTE $TARGET_BRANCH..."
+git fetch "$UPSTREAM_REMOTE" "$TARGET_BRANCH"
 
 PR_FINAL_STATE=$(gh pr view "${PR_NUM:-0}" --repo "$UPSTREAM_REPO" --json state --jq .state 2>/dev/null || true)
 if [[ "$PR_FINAL_STATE" == "MERGED" ]]; then
-    git reset --hard "upstream/$TARGET_BRANCH"
-    git push origin "$CURRENT_BRANCH" --force-with-lease 2>/dev/null || true
+    git reset --hard "$UPSTREAM_REMOTE/$TARGET_BRANCH"
+    git push "$PUSH_REMOTE" "$CURRENT_BRANCH" --force-with-lease 2>/dev/null || true
 fi
 
 echo "✓ Sync complete! Local, fork, and upstream are in total harmony on $TARGET_BRANCH."
