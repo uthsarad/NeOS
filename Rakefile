@@ -2,9 +2,9 @@
 
 require_relative 'tools/neos_tasks'
 
-desc 'Audit NeOS archiso profile hygiene'
+desc 'Verify profile auditing ownership (canonical auditor: tools/neos-profile-audit)'
 task :audit do
-  Neos::Tasks.audit_profile
+  Neos::Tasks.audit_ownership_guard
 end
 
 namespace :manifest do

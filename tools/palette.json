@@ -1,0 +1,16 @@
+{
+  "_comment": "Single source of truth for NeOS's brand colors. Every consuming file (QML, QSS, SVG, Python, KDE .colors, os-release) keeps its own literal hex copy of these values — see tests/verify_palette_consistency.sh, which asserts they all still match this file and that the old borrowed 'NTB' palette (#0088CF/#0096D5/#EB008B) is gone. If you change a value here, update every file tests/verify_palette_consistency.sh lists.",
+  "accent": "#1F6FD6",
+  "accentHover": "#3D82E0",
+  "accentPressed": "#17569F",
+  "bg": "#0A0E1A",
+  "bgGradientBottom": "#16203A",
+  "card": "#11172E",
+  "border": "#1C2444",
+  "borderStrong": "#2A3354",
+  "textPrimary": "#E6E9F2",
+  "textSecondary": "#9AA0B6",
+  "textTertiary": "#7A8099",
+  "success": "#22C55E",
+  "error": "#FF6B74"
+}

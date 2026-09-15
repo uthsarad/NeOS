@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if ! command -v cargo &> /dev/null; then
-    echo "⚠️ cargo not installed, skipping Rust profile audit validation to gracefully degrade."
+    echo "[WARN] cargo not installed, skipping Rust profile audit validation to gracefully degrade."
     exit 0
 fi
 

@@ -218,9 +218,9 @@ enroll_keys() {
 
 print_manual_enrollment_guide() {
     echo
-    echo -e "${YELLOW}================================================================================${NC}"
-    echo -e "${YELLOW} FIRMWARE IS NOT IN SETUP MODE — KEY ENROLLMENT SKIPPED (SAFE)${NC}"
-    echo -e "${YELLOW}================================================================================${NC}"
+echo -e "${YELLOW}================================================================================${NC}"
+echo -e "${YELLOW} FIRMWARE IS NOT IN SETUP MODE — KEY ENROLLMENT SKIPPED (SAFE)${NC}"
+echo -e "${YELLOW}================================================================================${NC}"
     echo
     echo "Your keys have been created and all binaries have been signed, but the"
     echo "UEFI firmware is not currently in Setup Mode so keys cannot be enrolled"

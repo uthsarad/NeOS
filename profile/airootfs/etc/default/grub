@@ -3,7 +3,7 @@
 GRUB_DEFAULT=0
 GRUB_TIMEOUT=1
 GRUB_DISTRIBUTOR="NeOS"
-# ⚡ Bolt: Performance Optimizations
+# Performance Optimizations
 # - nowatchdog: Disable watchdog timer to reduce CPU interrupts
 # - intel_pstate=enable: Force Intel P-state driver (if valid/supported)
 # - amd_pstate=active: Enable AMD P-state active mode for modern Ryzen CPUs

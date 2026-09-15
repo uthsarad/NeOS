@@ -22,6 +22,13 @@ jobs:
       pull-requests: write
     # SECURITY: workflow_dispatch runs require write access to the repository, so allow them
     # explicitly; PR-triggered runs remain limited to known actors and approved reviews.
+    #
+    # NOTE (2026-09-11): a human-review-only gate was tried here and reverted at the repo
+    # owner's explicit request — restored self-approve/auto-merge for the allow-listed bot
+    # actors below. This is a known re-introduction of the mechanism that previously drove
+    # bots to merge trivial "acknowledge pause" PRs with nobody looking at them (see
+    # ARCHITECT_SCOPE.json's strategic_pause history). If that loop recurs, the fix is to
+    # re-gate this on pull_request_review + approved, not to add more allow-listed actors.
     if: >-
       (github.event_name == 'workflow_dispatch' ||
        github.actor == 'google-labs-jules[bot]' ||

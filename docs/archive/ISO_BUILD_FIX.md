@@ -2,7 +2,7 @@
 
 **Issue:** VM cannot recognize/load the NeOS ISO  
 **Root Cause:** ISO build was failing, preventing ISO creation  
-**Status:** ✅ FIXED
+**Status:** FIXED
 
 ---
 
@@ -35,7 +35,7 @@ This setting causes `mkarchiso` to fail with **"missing required signature" erro
 
 **2. Installed System Configuration (`airootfs/etc/pacman.conf`)**
 ```ini
-SigLevel    = Required DatabaseRequired  # ✅ Unchanged - keeps security
+SigLevel    = Required DatabaseRequired  # [PASS] Unchanged - keeps security
 ```
 
 **Why:** The installed system (what users run after installation) maintains `DatabaseRequired` for maximum security.
@@ -50,8 +50,8 @@ NeOS uses **two separate pacman configurations**:
 | **Runtime** | `airootfs/etc/pacman.conf` | Used by installed system | `DatabaseRequired` |
 
 This separation ensures:
-- ✅ ISO builds succeed (build-time flexibility)
-- ✅ End users have maximum security (runtime strictness)
+- [PASS] ISO builds succeed (build-time flexibility)
+- [PASS] End users have maximum security (runtime strictness)
 
 ---
 
@@ -92,12 +92,12 @@ ls -lh out/
 ### Build Script Features
 
 The `build.sh` script:
-1. ✅ Checks for required dependencies (mkarchiso, squashfs-tools)
-2. ✅ Generates a temporary build configuration (`pacman-build.conf`)
-3. ✅ Validates the mirrorlist has active servers
-4. ✅ Runs mkarchiso with proper configuration
-5. ✅ Validates the built ISO with verification tests
-6. ✅ Reports build status
+1. [PASS] Checks for required dependencies (mkarchiso, squashfs-tools)
+2. [PASS] Generates a temporary build configuration (`pacman-build.conf`)
+3. [PASS] Validates the mirrorlist has active servers
+4. [PASS] Runs mkarchiso with proper configuration
+5. [PASS] Validates the built ISO with verification tests
+6. [PASS] Reports build status
 
 ### Expected Output
 
@@ -113,7 +113,7 @@ Building ISO...
 ==> Creating ISO image...
 ==> ISO image at out/neos-20260217-x86_64.iso
 Running ISO validation...
-✅ All validation tests passed
+[PASS] All validation tests passed
 Build complete! ISO is in out
 ```
 
@@ -195,8 +195,8 @@ The ISO supports multiple boot modes:
 
 | Mode | Bootloader | Firmware | Status |
 |------|-----------|----------|--------|
-| **UEFI** | GRUB | UEFI | ✅ Working |
-| **BIOS/Legacy** | SYSLINUX | Legacy BIOS | ✅ Working |
+| **UEFI** | GRUB | UEFI | [PASS] Working |
+| **BIOS/Legacy** | SYSLINUX | Legacy BIOS | [PASS] Working |
 
 ### Boot Configuration
 
@@ -299,13 +299,13 @@ done
 ```
 
 **Current Status:**
-- ✅ airootfs structure
-- ✅ build profile (fixed!)
-- ✅ GRUB config
-- ✅ ISO GRUB entries
-- ✅ performance config
-- ✅ security config (updated!)
-- ✅ sudoers fix
+- [PASS] airootfs structure
+- [PASS] build profile (fixed!)
+- [PASS] GRUB config
+- [PASS] ISO GRUB entries
+- [PASS] performance config
+- [PASS] security config (updated!)
+- [PASS] sudoers fix
 
 ---
 
@@ -338,7 +338,7 @@ The installed system uses `DatabaseRequired` to enforce strict security for end 
 **Solution:** Changed build-time config to `DatabaseOptional` while keeping runtime `DatabaseRequired`  
 **Result:** ISO builds successfully, boots in VMs with UEFI/BIOS support  
 
-**Status:** ✅ Fixed and verified with 7/7 tests passing
+**Status:** [FIXED] Fixed and verified with 7/7 tests passing
 
 ---
 
@@ -354,4 +354,4 @@ The installed system uses `DatabaseRequired` to enforce strict security for end 
 
 **Last Updated:** 2026-02-17  
 **Fix Applied:** Commit b5528ec  
-**Tests Passing:** 7/7 ✅
+**Tests Passing:** 7/7 [PASS]

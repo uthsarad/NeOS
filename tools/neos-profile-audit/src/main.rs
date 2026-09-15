@@ -30,12 +30,12 @@ fn main() -> ExitCode {
 
     match run_audit(&root) {
         Ok(summary) => {
-            println!("✅ NeOS profile audit passed");
+            println!("[PASS] NeOS profile audit passed");
             println!("{summary}");
             ExitCode::SUCCESS
         }
         Err(err) => {
-            eprintln!("❌ NeOS profile audit failed: {err}");
+            eprintln!("[FAIL] NeOS profile audit failed: {err}");
             ExitCode::from(1)
         }
     }
@@ -105,7 +105,7 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
 
     if let Some(val) = pacman_conf_val {
         if val.is_empty() {
-            return Err("pacman_conf is set to an empty string in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Provide a valid file path for 'pacman_conf'.".to_string());
+            return Err("pacman_conf is set to an empty string in profiledef.sh.\n\nHow to fix:\n  - Open 'profiledef.sh'\n  - Provide a valid file path for 'pacman_conf'.".to_string());
         }
 
         if val.starts_with('/')
@@ -115,20 +115,20 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
                 .chars()
                 .any(|c| !c.is_alphanumeric() && c != '.' && c != '/' && c != '_' && c != '-')
         {
-            return Err("pacman_conf contains invalid characters, path traversal, or starts with a hyphen.\n\n💡 How to fix:\n  - Ensure 'pacman_conf' in 'profiledef.sh' only contains alphanumeric characters, '.', '_', '-', and '/' without path traversal ('..'), absolute paths ('/'), or leading hyphens.".to_string());
+            return Err("pacman_conf contains invalid characters, path traversal, or starts with a hyphen.\n\nHow to fix:\n  - Ensure 'pacman_conf' in 'profiledef.sh' only contains alphanumeric characters, '.', '_', '-', and '/' without path traversal ('..'), absolute paths ('/'), or leading hyphens.".to_string());
         }
 
         let conf_path = root.join(&val);
         if !conf_path.exists() {
-            return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}.\n\n💡 How to fix:\n  - Verify the path provided for 'pacman_conf' in 'profiledef.sh' is correct and the file exists.", conf_path.display()));
+            return Err(format!("The pacman config referenced in profiledef.sh does not exist: {}.\n\nHow to fix:\n  - Verify the path provided for 'pacman_conf' in 'profiledef.sh' is correct and the file exists.", conf_path.display()));
         }
         let conf_content = fs::read_to_string(&conf_path)
             .map_err(|err| format!("unable to read {}: {err}", conf_path.display()))?;
         if !conf_content.contains("DatabaseOptional") {
-            return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional.\n\n💡 How to fix:\n  - Open '{}'\n  - Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display(), conf_path.display()));
+            return Err(format!("The pacman config referenced in profiledef.sh ({}) does not use DatabaseOptional.\n\nHow to fix:\n  - Open '{}'\n  - Ensure 'SigLevel = ... DatabaseOptional' is set to allow building the ISO.", conf_path.display(), conf_path.display()));
         }
     } else {
-        return Err("pacman_conf is NOT set in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Set 'pacman_conf' to the path of your pacman configuration file. This property is required by mkarchiso to build the image.".to_string());
+        return Err("pacman_conf is NOT set in profiledef.sh.\n\nHow to fix:\n  - Open 'profiledef.sh'\n  - Set 'pacman_conf' to the path of your pacman configuration file. This property is required by mkarchiso to build the image.".to_string());
     }
 
     if let Some(val) = bootmodes_val {
@@ -140,15 +140,15 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
                     .chars()
                     .any(|c| !c.is_alphanumeric() && c != '.' && c != '-' && c != '_')
             {
-                return Err("bootmodes contains invalid characters or starts with a hyphen (possible command injection).\n\n💡 How to fix:\n  - Ensure 'bootmodes' in 'profiledef.sh' only contains alphanumeric characters, '.', '-', and '_', and does not start with a hyphen.".to_string());
+                return Err("bootmodes contains invalid characters or starts with a hyphen (possible command injection).\n\nHow to fix:\n  - Ensure 'bootmodes' in 'profiledef.sh' only contains alphanumeric characters, '.', '-', and '_', and does not start with a hyphen.".to_string());
             }
 
             if !valid_bootmodes.contains(&mode) {
-                return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Update 'bootmodes' to only include valid modes.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
+                return Err(format!("Invalid bootmode in profiledef.sh: '{}'.\n\nHow to fix:\n  - Open 'profiledef.sh'\n  - Update 'bootmodes' to only include valid modes.\n  Valid modes are:\n    - {}", mode, valid_bootmodes.join("\n    - ")));
             }
         }
     } else {
-        return Err("The bootmodes array is missing in profiledef.sh.\n\n💡 How to fix:\n  - Open 'profiledef.sh'\n  - Define an array of valid 'bootmodes' (e.g., bootmodes=('uefi.grub' 'bios.syslinux')).".to_string());
+        return Err("The bootmodes array is missing in profiledef.sh.\n\nHow to fix:\n  - Open 'profiledef.sh'\n  - Define an array of valid 'bootmodes' (e.g., bootmodes=('uefi.grub' 'bios.syslinux')).".to_string());
     }
 
     Ok(())
@@ -178,7 +178,7 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
 
         let mut has_server = false;
 
-        // ⚡ Bolt: Reusing a single String buffer prevents per-line memory allocations when scanning
+        // Reusing a single String buffer prevents per-line memory allocations when scanning
         // potentially massive mirrorlists, significantly improving stream parsing performance.
         let mut raw_line = String::new();
         while reader
@@ -189,7 +189,7 @@ fn assert_mirrorlists_have_servers(root: &Path) -> Result<(), String> {
             let trimmed = raw_line.trim();
             if !trimmed.is_empty() && !trimmed.starts_with('#') && trimmed.starts_with("Server") {
                 has_server = true;
-                break; // ⚡ Bolt: Early exit once we find an active server entry
+                break; // Early exit once we find an active server entry
             }
             raw_line.clear();
         }
@@ -210,7 +210,7 @@ fn parse_package_file(path: &Path) -> Result<HashSet<String>, String> {
     let mut packages = HashSet::new();
     let mut duplicates = HashSet::new();
 
-    // ⚡ Bolt: Reusing a single String buffer across the loop prevents per-line memory allocations,
+    // Reusing a single String buffer across the loop prevents per-line memory allocations,
     // which is critical for performance when parsing large package lists or skipping numerous comment sections.
     let mut raw_line = String::new();
 

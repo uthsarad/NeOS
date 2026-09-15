@@ -32,6 +32,7 @@ etc/xdg/discoverrc
 etc/xdg/kdeglobals
 etc/xdg/kglobalshortcutsrc
 etc/xdg/plasma-workspace/env/10-neos-vm-graphics.sh
+usr/local/bin/chcon
 usr/local/bin/neos-accessibility
 usr/local/bin/neos-autoupdate.sh
 usr/local/bin/neos-desktop-setup

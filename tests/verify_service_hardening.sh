@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# ⚡ Bolt: Load file content once to eliminate repeated fork/exec overhead
+# Load file content once to eliminate repeated fork/exec overhead
 
 verify_service() {
     local SERVICE_FILE="$1"
@@ -26,7 +26,7 @@ verify_service() {
             CONTENT=$(grep -v '^[[:space:]]*#' "$SERVICE_FILE")
             for directive in ProtectSystem ProtectHome PrivateTmp NoNewPrivileges; do
                 if [[ "$CONTENT" == *"$directive="* ]]; then
-                    echo "❌ $SERVICE_FILE contains $directive= — sandboxing this unit breaks live autologin (it must write /etc and /home)"
+                    echo "[FAIL] $SERVICE_FILE contains $directive= — sandboxing this unit breaks live autologin (it must write /etc and /home)"
                     return 1
                 fi
             done
@@ -39,33 +39,33 @@ verify_service() {
 
     # Check for ProtectSystem=strict
     if [[ "$CONTENT" == *"ProtectSystem=strict"* ]]; then
-        echo "✅ ProtectSystem=strict found"
+        echo "  [PASS] ProtectSystem=strict found"
     else
-        echo "❌ ProtectSystem=strict NOT found"
+        echo "[FAIL] ProtectSystem=strict NOT found"
         return 1
     fi
 
     # Check for ProtectHome=yes or read-only
     if [[ "$CONTENT" == *"ProtectHome=yes"* ]] || [[ "$CONTENT" == *"ProtectHome=read-only"* ]]; then
-        echo "✅ ProtectHome=yes or read-only found"
+        echo "  [PASS] ProtectHome=yes or read-only found"
     else
-        echo "❌ ProtectHome=yes or read-only NOT found"
+        echo "[FAIL] ProtectHome=yes or read-only NOT found"
         return 1
     fi
 
     # Check for PrivateTmp=yes
     if [[ "$CONTENT" == *"PrivateTmp=yes"* ]]; then
-        echo "✅ PrivateTmp=yes found"
+        echo "  [PASS] PrivateTmp=yes found"
     else
-        echo "❌ PrivateTmp=yes NOT found"
+        echo "[FAIL] PrivateTmp=yes NOT found"
         return 1
     fi
 
     # Check for NoNewPrivileges=yes
     if [[ "$CONTENT" == *"NoNewPrivileges=yes"* ]]; then
-        echo "✅ NoNewPrivileges=yes found"
+        echo "  [PASS] NoNewPrivileges=yes found"
     else
-        echo "❌ NoNewPrivileges=yes NOT found"
+        echo "[FAIL] NoNewPrivileges=yes NOT found"
         return 1
     fi
 }

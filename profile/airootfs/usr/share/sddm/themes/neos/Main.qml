@@ -1,5 +1,5 @@
-// NeOS SDDM login theme — Ubuntu-inspired polished design.
-// Nations Trust Bank (NTB) palette on deep navy.
+// NeOS SDDM login theme — Apple/macOS-inspired polished design.
+// One restrained accent on deep navy. Palette: tools/palette.json.
 // Pure QtQuick (no QtQuick.Controls, no shaders/blur) for VM compatibility
 // with software rendering.
 import QtQuick 2.15
@@ -9,19 +9,19 @@ Rectangle {
     width: 1920; height: 1080
     color: "#0b0e1a"
 
-    // ---- NTB palette -------------------------------------------------------
-    readonly property color cBlue:    "#0088CF"
-    readonly property color cCyan:    "#0096D5"
-    readonly property color cMagenta: "#EB008B"
-    readonly property color cText:    "#e6e9f2"
-    readonly property color cMuted:   "#9aa0b6"
-    readonly property color cDimmed:  "#6b7080"
-    readonly property color cField:   "#0f1428"
-    readonly property color cBorder:  "#2a3354"
-    readonly property color cCard:    "#0e1326"
-    readonly property color cError:   "#ff6b74"
-    readonly property color cBgTop:   "#0a0e1a"
-    readonly property color cBgBot:   "#16203a"
+    // ---- NeOS brand palette (tools/palette.json) ----------------------------
+    readonly property color cAccent:        "#1F6FD6"
+    readonly property color cAccentHover:   "#3D82E0"
+    readonly property color cAccentPressed: "#17569F"
+    readonly property color cText:          "#e6e9f2"
+    readonly property color cMuted:         "#9aa0b6"
+    readonly property color cDimmed:        "#6b7080"
+    readonly property color cField:         "#0f1428"
+    readonly property color cBorder:        "#2a3354"
+    readonly property color cCard:          "#0e1326"
+    readonly property color cError:         "#ff6b74"
+    readonly property color cBgTop:         "#0a0e1a"
+    readonly property color cBgBot:         "#16203a"
 
     // ---- Session list (extracted from sessionModel via a hidden Repeater) --
     property var sessionNames: []
@@ -66,7 +66,7 @@ Rectangle {
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 40; height: 2; radius: 1
-            color: root.cBlue; opacity: 0.6
+            color: root.cAccent; opacity: 0.6
         }
     }
 
@@ -113,7 +113,7 @@ Rectangle {
             gradient: Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop { position: 0.0; color: "transparent" }
-                GradientStop { position: 0.5; color: root.cCyan }
+                GradientStop { position: 0.5; color: root.cAccent }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
@@ -128,7 +128,7 @@ Rectangle {
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: 56; height: 56; radius: 28
-                color: Qt.rgba(0, 0.53, 0.81, 0.15)
+                color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
                 border.color: root.cBorder; border.width: 1
                 Text {
                     anchors.centerIn: parent
@@ -140,7 +140,7 @@ Rectangle {
             Rectangle {
                 width: parent.width; height: 48; radius: 10
                 color: root.cField
-                border.color: userInput.activeFocus ? root.cCyan : root.cBorder
+                border.color: userInput.activeFocus ? root.cAccent : root.cBorder
                 border.width: userInput.activeFocus ? 2 : 1
                 TextInput {
                     id: userInput
@@ -168,7 +168,7 @@ Rectangle {
             Rectangle {
                 width: parent.width; height: 48; radius: 10
                 color: root.cField
-                border.color: passInput.activeFocus ? root.cCyan : root.cBorder
+                border.color: passInput.activeFocus ? root.cAccent : root.cBorder
                 border.width: passInput.activeFocus ? 2 : 1
                 TextInput {
                     id: passInput
@@ -193,12 +193,12 @@ Rectangle {
                 }
             }
 
-            // Login button (NTB blue, full-width)
+            // Login button (accent, full-width)
             Rectangle {
                 id: loginBtn
                 width: parent.width; height: 48; radius: 10
-                color: loginArea.pressed ? "#006fa8"
-                       : (loginArea.containsMouse || activeFocus ? root.cCyan : root.cBlue)
+                color: loginArea.pressed ? root.cAccentPressed
+                       : (loginArea.containsMouse || activeFocus ? root.cAccentHover : root.cAccent)
                 border.color: activeFocus ? "white" : "transparent"
                 border.width: activeFocus ? 2 : 0
                 activeFocusOnTab: true
@@ -241,7 +241,7 @@ Rectangle {
                     id: sessionSelector
                     width: sessionText.implicitWidth + 10; height: sessionText.implicitHeight + 10; radius: 4
                     color: "transparent"
-                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.color: activeFocus ? root.cAccent : "transparent"
                     border.width: activeFocus ? 2 : 0
                     activeFocusOnTab: true
                     KeyNavigation.tab: btnSleep
@@ -275,7 +275,7 @@ Rectangle {
                     visible: sddm.canSuspend
                     width: sleepText.implicitWidth + 10; height: sleepText.implicitHeight + 10; radius: 4
                     color: "transparent"
-                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.color: activeFocus ? root.cAccent : "transparent"
                     border.width: activeFocus ? 2 : 0
                     activeFocusOnTab: true
                     KeyNavigation.tab: btnRestart
@@ -296,7 +296,7 @@ Rectangle {
                     visible: sddm.canReboot
                     width: restartText.implicitWidth + 10; height: restartText.implicitHeight + 10; radius: 4
                     color: "transparent"
-                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.color: activeFocus ? root.cAccent : "transparent"
                     border.width: activeFocus ? 2 : 0
                     activeFocusOnTab: true
                     KeyNavigation.tab: btnShutdown
@@ -317,7 +317,7 @@ Rectangle {
                     visible: sddm.canPowerOff
                     width: shutdownText.implicitWidth + 10; height: shutdownText.implicitHeight + 10; radius: 4
                     color: "transparent"
-                    border.color: activeFocus ? root.cCyan : "transparent"
+                    border.color: activeFocus ? root.cAccent : "transparent"
                     border.width: activeFocus ? 2 : 0
                     activeFocusOnTab: true
                     KeyNavigation.tab: userInput

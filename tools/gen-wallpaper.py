@@ -9,8 +9,10 @@ grain pass to avoid banding on flat panels.
 Usage: tools/gen-wallpaper.py [output.png]
 """
 import sys
+import json
 import math
 import random
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else \
@@ -19,15 +21,29 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else \
 W, H = 3840, 2160
 SW, SH = 640, 360  # render gradients small, upscale for perfect smoothness
 
-# Brand palette: deep navy base, NeOS brand blue meeting a "Neo Red" accent.
-# Blue (identity) lower-left, red (named after Neo Red) upper-right, with a
-# magenta transition where they blend — a clean, premium fintech-app look.
-BASE_TOP = (6, 9, 18)
-BASE_BOTTOM = (12, 14, 28)
+
+def _hex_to_rgb(h):
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+# accent/bg come from the shared palette (tools/palette.json) so the
+# wallpaper can't drift from the rest of the UI the way it used to (this
+# file, the installer, and os-release each hardcoded a different "NeOS
+# blue" before tools/palette.json existed — see tests/verify_palette_consistency.sh).
+_PALETTE = json.loads((Path(__file__).parent / "palette.json").read_text())
+ACCENT = _hex_to_rgb(_PALETTE["accent"])
+BASE_TOP = _hex_to_rgb(_PALETTE["bg"])
+BASE_BOTTOM = tuple(min(255, c + 6) for c in BASE_TOP)  # near-black base, tiny lift for gradient
+
+# The rest of this wallpaper's palette is deliberately wallpaper-only art —
+# "Neo Red" and its blend/glow tones are not part of the shared UI palette
+# and don't appear anywhere outside this image.
+NEO_RED = (214, 46, 58)
 BLOBS = [
     # (cx, cy as fractions, radius fraction, color, strength)
-    (0.20, 0.78, 0.55, (31, 111, 214), 0.90),   # brand blue, lower-left
-    (0.84, 0.26, 0.52, (214, 46, 58), 0.78),    # Neo Red, upper-right
+    (0.20, 0.78, 0.55, ACCENT, 0.90),           # brand accent, lower-left
+    (0.84, 0.26, 0.52, NEO_RED, 0.78),          # Neo Red, upper-right
     (0.55, 0.50, 0.42, (150, 42, 120), 0.30),   # magenta blend, center
     (0.78, 0.80, 0.34, (190, 60, 70), 0.28),    # warm red glow, lower-right
     (0.30, 0.16, 0.40, (30, 60, 130), 0.34),    # cool blue top fill

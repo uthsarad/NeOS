@@ -28,17 +28,17 @@ if [[ -f "$SERVICES" ]]; then
 fi
 
 if [[ "$SERVICES_CONTENT" =~ (^|$'\n')[[:space:]]*targets: ]] && [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?graphical\"? ]]; then
-    echo "✅ services-systemd sets default target to graphical"
+    echo "PASS: services-systemd sets default target to graphical"
 else
-    echo "❌ services-systemd must set 'targets: [graphical]' or it boots to tty1"; FAIL=1
+    echo "[FAIL] services-systemd must set 'targets: [graphical]' or it boots to tty1"; FAIL=1
 fi
 if [[ "$SERVICES_CONTENT" =~ name:[[:space:]]*\"?sddm\"? ]]; then
-    echo "✅ sddm display manager is enabled"
+    echo "PASS: sddm display manager is enabled"
 else
-    echo "❌ sddm is not enabled"; FAIL=1
+    echo "[FAIL] sddm is not enabled"; FAIL=1
 fi
 
-# ⚡ Bolt: Read script content once to avoid repeated fork/exec overhead for substring checks
+# Read script content once to avoid repeated fork/exec overhead for substring checks
 SCRIPT_CONTENT=""
 if [[ -f "$SCRIPT" ]]; then
     SCRIPT_CONTENT=$(<"$SCRIPT")
@@ -48,51 +48,51 @@ fi
 #    wired into the script as the single still image.
 frames=$(find "$THEME_DIR" -maxdepth 1 -name 'cat-*.png' | wc -l)
 if [[ "$frames" -eq 29 ]]; then
-    echo "✅ 29 cat source frames present"
+    echo "PASS: 29 cat source frames present"
 else
-    echo "❌ expected 29 cat-NN.png frames, found $frames"; FAIL=1
+    echo "[FAIL] expected 29 cat-NN.png frames, found $frames"; FAIL=1
 fi
 if [[ "$SCRIPT_CONTENT" == *'"cat-00.png"'* ]]; then
-    echo "✅ neos.script shows the still cat-00 frame"
+    echo "PASS: neos.script shows the still cat-00 frame"
 else
-    echo "❌ neos.script does not reference cat-00.png"; FAIL=1
+    echo "[FAIL] neos.script does not reference cat-00.png"; FAIL=1
 fi
 if [[ "$SCRIPT_CONTENT" == *'SetRefreshFunction'* ]]; then
-    echo "❌ neos.script still animates the cat (SetRefreshFunction present)"; FAIL=1
+    echo "[FAIL] neos.script still animates the cat (SetRefreshFunction present)"; FAIL=1
 else
-    echo "✅ neos.script has no cat animation"
+    echo "PASS: neos.script has no cat animation"
 fi
 
 # 3. The cat is the ONLY element on the boot splash — no logo, wordmark,
 #    tagline, dots, or status text in the theme or the script.
 if [[ -f "$THEME_DIR/logo.png" ]]; then
-    echo "❌ theme still ships logo.png (boot splash must be cat-only)"; FAIL=1
+    echo "[FAIL] theme still ships logo.png (boot splash must be cat-only)"; FAIL=1
 else
-    echo "✅ no logo.png in the theme (cat-only splash)"
+    echo "PASS: no logo.png in the theme (cat-only splash)"
 fi
 # No wordmark or brand text
 if [[ "$SCRIPT_CONTENT" == *'"NeOS"'* ]]; then
-    echo "❌ neos.script still shows the NeOS wordmark"; FAIL=1
+    echo "[FAIL] neos.script still shows the NeOS wordmark"; FAIL=1
 else
-    echo "✅ neos.script has no wordmark"
+    echo "PASS: neos.script has no wordmark"
 fi
 # No tagline
 if [[ "$SCRIPT_CONTENT" == *'"Arch Linux'* ]]; then
-    echo "❌ neos.script still shows the tagline"; FAIL=1
+    echo "[FAIL] neos.script still shows the tagline"; FAIL=1
 else
-    echo "✅ neos.script has no tagline"
+    echo "PASS: neos.script has no tagline"
 fi
 # No dot indicator
 if [[ "$SCRIPT_CONTENT" == *'dot_'* ]]; then
-    echo "❌ neos.script still has dot indicator elements"; FAIL=1
+    echo "[FAIL] neos.script still has dot indicator elements"; FAIL=1
 else
-    echo "✅ neos.script has no dot indicator"
+    echo "PASS: neos.script has no dot indicator"
 fi
 # No status text
 if [[ "$SCRIPT_CONTENT" == *'Starting...'* ]]; then
-    echo "❌ neos.script still has status text"; FAIL=1
+    echo "[FAIL] neos.script still has status text"; FAIL=1
 else
-    echo "✅ neos.script has no status text"
+    echo "PASS: neos.script has no status text"
 fi
 
 # 3b. The KDE/Plasma login splash (ksplash) is disabled — the Plymouth cat is
@@ -104,21 +104,21 @@ if [[ -f "$KSPLASHRC" ]]; then
 fi
 
 if [[ -f "$KSPLASHRC" ]] && [[ "$KSPLASHRC_CONTENT" == *$'\nEngine=none'* || "$KSPLASHRC_CONTENT" == 'Engine=none'* ]] && [[ "$KSPLASHRC_CONTENT" == *$'\nTheme=None'* || "$KSPLASHRC_CONTENT" == 'Theme=None'* ]]; then
-    echo "✅ ksplash disabled via skel ksplashrc (no KDE boot screen)"
+    echo "PASS: ksplash disabled via skel ksplashrc (no KDE boot screen)"
 else
-    echo "❌ $KSPLASHRC missing or does not disable ksplash"; FAIL=1
+    echo "[FAIL] $KSPLASHRC missing or does not disable ksplash"; FAIL=1
 fi
 
 # 4. The old animated-spinner assets must stay gone (replaced by the cat loader).
 if find "$THEME_DIR" -maxdepth 1 -name 'spinner-*.png' | grep -q .; then
-    echo "❌ stale spinner-*.png assets still present in the theme"; FAIL=1
+    echo "[FAIL] stale spinner-*.png assets still present in the theme"; FAIL=1
 else
-    echo "✅ stale spinner assets removed"
+    echo "PASS: stale spinner assets removed"
 fi
 if [[ "$SCRIPT_CONTENT" == *'spinner'* ]]; then
-    echo "❌ neos.script still references removed spinner frames"; FAIL=1
+    echo "[FAIL] neos.script still references removed spinner frames"; FAIL=1
 else
-    echo "✅ neos.script has no stale spinner references"
+    echo "PASS: neos.script has no stale spinner references"
 fi
 
 if [[ "$FAIL" -ne 0 ]]; then

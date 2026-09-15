@@ -14,7 +14,7 @@ _error_handler() {
     local cmd="${BASH_COMMAND//[^[:print:]]/}"
     # Palette: Ensure logged error messages are clear and contain actionable steps for users.
     # Bolt: Ensure trap commands and error logging minimize subshell overhead.
-    printf -- "\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[31m🚨 [%s] CRITICAL SCRIPT FAILURE\\e[0m\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[36m💡 DIAGNOSTICS:\\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\\e[1m\\e[36m🔧 ACTIONABLE STEPS:\\e[0m\n  1. Inspect the system journal for detailed logs:\n     \\e[1mjournalctl -t neos-%s -n 50 --no-pager\\e[0m\n  2. Verify system state, permissions, and script configuration.\n\\e[1m\\e[31m================================================================================\\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
+    printf -- "\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[31m[CRITICAL] SCRIPT FAILURE: %s\\e[0m\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[36mDIAGNOSTICS:\\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\\e[1m\\e[36mACTIONABLE STEPS:\\e[0m\n  1. Inspect the system journal for detailed logs:\n     \\e[1mjournalctl -t neos-%s -n 50 --no-pager\\e[0m\n  2. Verify system state, permissions, and script configuration.\n\\e[1m\\e[31m================================================================================\\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
@@ -84,7 +84,7 @@ pacman -Sy --noconfirm -- archlinux-keyring
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
 
-# ⚡ Bolt: Check if key exists to avoid redundant imports and keyserver hits
+# Check if key exists to avoid redundant imports and keyserver hits
 if ! pacman-key --list-keys 3056513887B78AEB >/dev/null 2>&1; then
     echo "Importing Chaotic-AUR key..."
     pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
@@ -109,7 +109,7 @@ if ! pacman-key --list-keys BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 >/dev/null 
     pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
 fi
 
-# ⚡ Bolt: Cache keyring package locally and only update if remote is newer
+# Cache keyring package locally and only update if remote is newer
 CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
 CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
 

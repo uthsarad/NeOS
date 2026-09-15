@@ -19,6 +19,11 @@ target/
 .mypy_cache/
 .pytest_cache/
 
+# .NET build artifacts (tools/NeosDiagnostics)
+bin/
+obj/
+*.user
+
 # Logs and temp files
 *.log
 *.tmp

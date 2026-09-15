@@ -7,12 +7,12 @@ PROFILE_FILE="profile/profiledef.sh"
 PACMAN_CONF="profile/pacman.conf"
 
 if [[ ! -f "$PROFILE_FILE" ]]; then
-    echo "❌ $PROFILE_FILE not found"
+    echo "[FAIL] $PROFILE_FILE not found"
     exit 1
 fi
 
 if [[ ! -f "$PACMAN_CONF" ]]; then
-    echo "❌ $PACMAN_CONF not found"
+    echo "[FAIL] $PACMAN_CONF not found"
     exit 1
 fi
 
@@ -28,9 +28,9 @@ for line in "${PROFILE_LINES[@]}"; do
 done
 
 if [[ "$COMPRESSION_FOUND" == true ]]; then
-    echo "✅ Compression settings configured"
+    echo "  [PASS] Compression settings configured"
 else
-    echo "❌ No valid compression settings found in airootfs_image_tool_options"
+    echo "[FAIL] No valid compression settings found in airootfs_image_tool_options"
     exit 1
 fi
 
@@ -58,15 +58,15 @@ for pattern in "${REQUIRED_EXCLUDES[@]}"; do
     done
 
     if [[ "$PATTERN_FOUND" == true ]]; then
-        echo "✅ Exclude '$pattern' found"
+        echo "  [PASS] Exclude '$pattern' found"
     else
-        echo "❌ Exclude '$pattern' NOT found"
+        echo "[FAIL] Exclude '$pattern' NOT found"
         MISSING=true
     fi
 done
 
 if [[ "$MISSING" == true ]]; then
-    echo "❌ Some required NoExtract patterns are missing"
+    echo "[FAIL] Some required NoExtract patterns are missing"
     exit 1
 fi
 

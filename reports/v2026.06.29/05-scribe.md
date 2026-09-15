@@ -13,12 +13,12 @@ Documentation for v2026.06.29 release completed. All user-facing changes, GRUB t
 ## Files Updated
 
 ### 1. VERSION
-- **Status:** ✅ Created
+- **Status:** [DONE] Created
 - **Content:** `2026.06.29`
 - **Path:** `/home/nima/NeOS/VERSION`
 
 ### 2. CHANGELOG.md
-- **Status:** ✅ Updated
+- **Status:** [DONE] Updated
 - **Content:** Added v2026.06.29 section with:
   - Fixed: GRUB starfield theme selected-menu-entry visibility
   - Added: Firmware updates (fwupd), accessibility suite (orca, espeakup, brltty), flatpak, CJK fonts, NVIDIA dkms, Secure Boot helpers (sbctl, mokutil, efitools, neos-secureboot-setup), hardware/connectivity (thermald, modemmanager, networkmanager-openvpn, sane, sane-airscan)
@@ -27,14 +27,14 @@ Documentation for v2026.06.29 release completed. All user-facing changes, GRUB t
 - **House style:** Maintained "Keep a Changelog" format with detailed prose explaining rationale and tradeoffs
 
 ### 3. README.md
-- **Status:** ✅ Updated
+- **Status:** [DONE] Updated
 - **Changes:**
   - Enhanced "Automated Hardware Optimization" to mention NVIDIA dkms, Intel thermal, wireless/modem support
   - Enhanced "Secure by Default" to mention Secure Boot helpers
 - **Path:** `/home/nima/NeOS/README.md`
 
 ### 4. ADR 0006: Ubuntu Parity Capabilities
-- **Status:** ✅ Created
+- **Status:** [DONE] Created
 - **Content:** Architecture Decision Record documenting:
   - Ubuntu 26.04 feature gap analysis
   - Two-tier package placement strategy (live squashfs minimal; installed system network-pacstrapped)
@@ -53,16 +53,16 @@ Documentation for v2026.06.29 release completed. All user-facing changes, GRUB t
 - Previous release was 2026.06.24; this version is 5 days later
 
 ### Changelog Completeness
-- ✅ All three major change categories documented: Fixed, Added, Changed
-- ✅ Detailed explanations of GRUB fix and rationale behind package placement
-- ✅ ISO size constraint and accessibility support clearly explained
-- ✅ Secure Boot user-initiated approach and reasoning documented
+- [PASS] All three major change categories documented: Fixed, Added, Changed
+- [PASS] Detailed explanations of GRUB fix and rationale behind package placement
+- [PASS] ISO size constraint and accessibility support clearly explained
+- [PASS] Secure Boot user-initiated approach and reasoning documented
 
 ### Documentation Consistency
-- ✅ CHANGELOG entries match requested change descriptions
-- ✅ ADR explains strategic decisions behind package placement
-- ✅ README reflects new capabilities without introducing new sections (maintained existing structure)
-- ✅ Markdown well-formed; no broken internal paths
+- [PASS] CHANGELOG entries match requested change descriptions
+- [PASS] ADR explains strategic decisions behind package placement
+- [PASS] README reflects new capabilities without introducing new sections (maintained existing structure)
+- [PASS] Markdown well-formed; no broken internal paths
 
 ---
 
@@ -98,4 +98,4 @@ The ADR documents the strategic decision to achieve Ubuntu feature parity while 
 
 ## Status
 
-✅ **DOCUMENTATION COMPLETE** — All files updated, version unique, changelog detailed, ADR recorded. Ready for release.
+[COMPLETE] **DOCUMENTATION COMPLETE** — All files updated, version unique, changelog detailed, ADR recorded. Ready for release.

@@ -1,6 +1,6 @@
 # NeOS Architecture
 
-[← Back to Documentation Index](../README.md#📚-documentation-vault)
+[← Back to Documentation Index](../README.md#documentation)
 
 ## Table of Contents
 

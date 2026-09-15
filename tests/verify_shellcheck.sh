@@ -12,10 +12,10 @@ set -euo pipefail
 # finding — including info — so we do the same and let the failure propagate.
 
 if ! command -v shellcheck >/dev/null 2>&1; then
-  echo "⚠️ shellcheck not installed — skipping (install it to reproduce CI locally, e.g. 'apt install shellcheck')."
+  echo "[WARN] shellcheck not installed — skipping (install it to reproduce CI locally, e.g. 'apt install shellcheck')."
   exit 0
 fi
 
 echo "Running ShellCheck (CI-aligned: all *.sh, fail on any finding)..."
 find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
-echo "✅ ShellCheck validation passed."
+echo "[PASS] ShellCheck validation passed."

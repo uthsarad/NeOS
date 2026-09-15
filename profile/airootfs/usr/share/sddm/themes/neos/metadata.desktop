@@ -1,6 +1,6 @@
 [SddmGreeterTheme]
 Name=NeOS
-Description=NeOS NTB-branded login screen
+Description=NeOS login screen
 Author=NeOS
 License=GPL-3.0
 Type=sddm-theme

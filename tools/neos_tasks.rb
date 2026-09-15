@@ -6,39 +6,17 @@ require 'set'
 
 module Neos
   module Tasks
-    VERSION = '2026.08.18'
+    VERSION = '2026.09.11'
 
     class << self
-      def audit_profile(root_dir = '.')
-        puts "\e[1;36m[Ruby::Audit]\e[0m Auditing archiso profile at: #{root_dir}"
-        
-        required_files = %w[
-          profile/profiledef.sh
-          profile/pacman.conf
-          profile/grub/grub.cfg
-          profile/syslinux/syslinux.cfg
-          profile/packages.x86_64
-          profile/airootfs/etc/pacman.d/neos-mirrorlist
-          profile/airootfs/etc/pacman.d/chaotic-mirrorlist
-        ]
+      # Profile auditing was consolidated into tools/neos-profile-audit (Rust).
+      # The former Ruby duplicate (audit_profile) is gone; this guard keeps the
+      # Rakefile contract intact and fails if the duplicate is re-introduced.
+      def audit_ownership_guard
+        raise 'tools/neos-profile-audit/src/main.rs is missing — the canonical NeOS profile auditor' unless File.exist?(File.join('.', 'tools/neos-profile-audit/src/main.rs'))
+        raise 'Duplicate Ruby profile audit re-introduced: audit_profile must stay removed (owned by tools/neos-profile-audit)' if method_defined?(:audit_profile) || respond_to?(:audit_profile)
 
-        missing = required_files.reject { |f| File.exist?(File.join(root_dir, f)) }
-        unless missing.empty?
-          raise "Missing required profile files: #{missing.join(', ')}"
-        end
-
-        packages = File.readlines(File.join(root_dir, 'profile/packages.x86_64'))
-                       .map(&:strip)
-                       .reject { |l| l.empty? || l.start_with?('#') }
-
-        duplicates = packages.select { |p| packages.count(p) > 1 }.uniq
-        raise "Duplicate packages found: #{duplicates.join(', ')}" unless duplicates.empty?
-
-        required_pkgs = %w[base mkinitcpio mkinitcpio-archiso networkmanager sudo vim]
-        missing_pkgs = required_pkgs.reject { |p| packages.include?(p) }
-        raise "Missing required packages: #{missing_pkgs.join(', ')}" unless missing_pkgs.empty?
-
-        puts "\e[1;32m✓ Profile audit passed successfully! (#{packages.size} unique packages)\e[0m"
+        puts "\e[1;32m✓ Profile auditing owned by tools/neos-profile-audit (Rust) — single source of truth confirmed\e[0m"
         true
       end
 
@@ -77,12 +55,12 @@ end
 if __FILE__ == $PROGRAM_NAME
   case ARGV[0]
   when 'audit'
-    Neos::Tasks.audit_profile(ARGV[1] || '.')
+    Neos::Tasks.audit_ownership_guard
   when 'manifest'
     Neos::Tasks.generate_manifests(ARGV[1] || '.')
   when 'test'
     Neos::Tasks.run_tests(ARGV[1] || '.')
   else
-    puts "Usage: ruby tools/neos_tasks.rb [audit|manifest|test]"
+    puts "Usage: ruby tools/neos_tasks.rb [audit|manifest|test]\n  (audit verifies the canonical Rust auditor in tools/neos-profile-audit)"
   end
 end

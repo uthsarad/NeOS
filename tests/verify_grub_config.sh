@@ -8,7 +8,7 @@ echo "Verifying GRUB release configuration in $CONFIG_FILE..."
 CMDLINE=$(grep '^GRUB_CMDLINE_LINUX_DEFAULT=' "$CONFIG_FILE" | cut -d'"' -f2)
 
 if [ -z "$CMDLINE" ]; then
-    echo "❌ Could not find GRUB_CMDLINE_LINUX_DEFAULT in config"
+    echo "[FAIL] Could not find GRUB_CMDLINE_LINUX_DEFAULT in config"
     exit 1
 fi
 
@@ -21,19 +21,19 @@ ALL_PASSED=true
 
 for PARAM in "${REQUIRED_PARAMS[@]}"; do
     if [[ "$CMDLINE" == *"$PARAM"* ]]; then
-        echo "✅ '$PARAM' found in active configuration"
+        echo "  [PASS] '$PARAM' found in active configuration"
     else
-        echo "❌ '$PARAM' NOT found in active configuration"
+        echo "[FAIL] '$PARAM' NOT found in active configuration"
         ALL_PASSED=false
     fi
 done
 
 for PARAM in "${FORBIDDEN_PARAMS[@]}"; do
     if [[ "$CMDLINE" == *"$PARAM"* ]]; then
-        echo "❌ '$PARAM' should not be present in release configuration"
+        echo "[FAIL] '$PARAM' should not be present in release configuration"
         ALL_PASSED=false
     else
-        echo "✅ '$PARAM' is not present"
+        echo "  [PASS] '$PARAM' is not present"
     fi
 done
 

@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Sentinel: Verify safe parsing of mirrorlist to prevent command injection
 # Bolt: Optimize file reading and avoid excessive subprocess overhead if possible
-# ⚡ Bolt: Validated that network checks use strict timeouts to prevent CI hangs.
+# Network checks use strict timeouts to prevent CI hangs.
 
 if ! curl -I -s --connect-timeout 1 --max-time 2 -- "https://archlinux.org" > /dev/null; then
     echo -e "\n================================================================================"
@@ -46,7 +46,7 @@ TOTAL=${#URLS[@]}
 for i in "${!PIDS[@]}"; do
     if ! wait "${PIDS[i]}"; then
         BASE_URL="${URLS[i]}"
-        echo "⚠️  Mirror $BASE_URL failed on first try. Retrying..."
+        echo "[WARN]  Mirror $BASE_URL failed on first try. Retrying..."
 
         # Bolt: Review if an exponential backoff strategy is needed for performance
         # Sentinel: Ensure retry doesn't lead to DOS or exploit infinite loop vulnerabilities
@@ -71,9 +71,9 @@ for i in "${!PIDS[@]}"; do
             fi
             # Palette: Ensure the format of the logged error message is clear and includes actionable steps
             echo -e "\n================================================================================" >&2
-            echo -e "❌ ERROR: Failed to connect to $BASE_URL after retry" >&2
+            echo -e "[ERROR] Failed to connect to $BASE_URL after retry" >&2
             echo -e "================================================================================\n" >&2
-            echo -e "💡 How to fix:" >&2
+            echo -e "How to fix:" >&2
             echo -e "  1. Check your internet connection." >&2
             echo -e "  2. Verify the mirror is currently online." >&2
             echo -e "  3. If the mirror is permanently down, remove it from:" >&2
@@ -81,7 +81,7 @@ for i in "${!PIDS[@]}"; do
             echo -e "  4. Update the mirrorlist using a tool like reflector or rankmirrors.\n" >&2
             echo -e "================================================================================\n" >&2
         else
-            echo "✅ Mirror $BASE_URL succeeded on retry."
+            echo "  [PASS] Mirror $BASE_URL succeeded on retry."
         fi
     fi
 done
@@ -93,12 +93,12 @@ done
 # which is what a genuine mirrorlist misconfiguration looks like.
 QUORUM=$(( TOTAL / 2 + 1 ))
 if (( FAILED_COUNT >= QUORUM )); then
-    echo "❌ ${FAILED_COUNT}/${TOTAL} sampled mirrors unreachable — mirrorlist looks broken, not just flaky." >&2
+    echo "[FAIL] ${FAILED_COUNT}/${TOTAL} sampled mirrors unreachable — mirrorlist looks broken, not just flaky." >&2
     exit 1
 fi
 
 if (( FAILED_COUNT > 0 )); then
-    echo "⚠️  ${FAILED_COUNT}/${TOTAL} sampled mirror(s) unreachable, tolerated (not a majority)."
+    echo "[WARN]  ${FAILED_COUNT}/${TOTAL} sampled mirror(s) unreachable, tolerated (not a majority)."
 fi
 
 echo "Mirrorlist connectivity verified successfully."

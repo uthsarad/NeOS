@@ -201,7 +201,27 @@
     {
       "description": "Execute pending task: Refine UX of snapshot selection and Acknowledge the continued Phase 8 Validation Strategic Pause (2026-09-09).",
       "target_file": "none",
-      "status": "pending"
+      "status": "completed"
+    },
+    {
+      "description": "Refine UX of snapshot selection and Acknowledge the continued Phase 8 Validation Strategic Pause",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Validate Phase 8 Operations Hub snapshot rollback UX.",
+      "target_file": "none",
+      "status": "completed"
+    },
+    {
+      "description": "Refine Phase 8 Operations Hub features, focusing on crash reporting opt-in UX and logic.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
+      "status": "completed"
+    },
+    {
+      "description": "Ensure the crash reporting configuration menu in neos-operations-hub is intuitive and accessible, following Phase 6 UX guidelines.",
+      "target_file": "none",
+      "status": "completed"
     }
   ]
 }

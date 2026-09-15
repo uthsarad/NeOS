@@ -56,16 +56,16 @@ LOCAL_REPO=""
 ISO_MOUNT="/run/archiso/bootmnt"
 if [[ -d "$ISO_MOUNT/neos/pkg" ]] && [[ -n "$(ls -A "$ISO_MOUNT/neos/pkg"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
     LOCAL_REPO="$ISO_MOUNT/neos/pkg"
-    log "found local package repo at $LOCAL_REPO ($(find "$LOCAL_REPO" -name '*.pkg.tar.zst' 2>/dev/null | wc -l) packages)"
+    log "📦 found local package repo at $LOCAL_REPO ($(find "$LOCAL_REPO" -name '*.pkg.tar.zst' 2>/dev/null | wc -l) packages)"
 fi
 
 # ---- Check network availability (fast timeout for offline detection) -------
 NET_AVAILABLE=0
 if timeout 5 curl -fsS --max-time 3 -o /dev/null https://geo.mirror.pkgbuild.com/ 2>/dev/null; then
     NET_AVAILABLE=1
-    log "network is available — will download latest packages"
+    log "🌐 network is available — will download latest packages"
 else
-    log "no network detected"
+    log "🔌 no network detected"
 fi
 
 # ---- Helper: run pacstrap with retries --------------------------------
@@ -82,7 +82,7 @@ run_pacstrap_with_retry() {
     local attempt
     for attempt in $(seq 1 "$PACSTRAP_RETRIES"); do
         if [[ "$attempt" -gt 1 ]]; then
-            log "pacstrap attempt $attempt/$PACSTRAP_RETRIES — retrying after a mirror/network hiccup..."
+            log "🔁 pacstrap attempt $attempt/$PACSTRAP_RETRIES — retrying after a mirror/network hiccup..."
             pacman -Sy --noconfirm --config "$conf" 2>/dev/null || true
             sleep 5
         fi
@@ -95,7 +95,7 @@ run_pacstrap_with_retry() {
 
 # ---- Helper: install from local ISO repo (no network needed) --------------
 do_offline_install() {
-    log "installing ${#PKGS[@]} packages from local ISO repo at $LOCAL_REPO ..."
+    log "💾 installing ${#PKGS[@]} packages from local ISO repo at $LOCAL_REPO ..."
     TMP_LOCAL=$(mktemp /tmp/neos-pacman-local-XXXXXX)
     # Build a minimal pacman.conf that has the local repo + essential options
     {
@@ -114,7 +114,7 @@ do_offline_install() {
         return "$status"
     }
     rm -f "$TMP_LOCAL"
-    log "offline install complete"
+    log "✅ offline install complete"
 }
 
 # ---- Decide: online or offline install? UPFRONT (no mid-install fallback) --
@@ -132,7 +132,7 @@ fi
 
 net_ok=0
 if [[ "$NET_AVAILABLE" -eq 1 ]]; then
-    log "waiting for network to be fully up ..."
+    log "⏳ waiting for network to be fully up ..."
     for _ in $(seq 1 "$NET_RETRIES"); do
         if curl -fsS --max-time "$NET_TIMEOUT" -o /dev/null https://geo.mirror.pkgbuild.com/ 2>/dev/null; then
             net_ok=1
@@ -144,7 +144,7 @@ fi
 
 if [[ "$net_ok" -eq 1 ]]; then
     # ---- ONLINE: download fresh packages ----------------------------------
-    log "online install — downloading latest ${#PKGS[@]} packages from internet..."
+    log "⬇️  online install — downloading latest ${#PKGS[@]} packages from internet..."
     # Build a combined pacman.conf: local repo first (highest priority) when available
     TMP_PACMAN_CONF=$(mktemp /tmp/neos-pacman-conf-XXXXXX)
     trap 'rm -f "$TMP_PACMAN_CONF"' EXIT
@@ -186,10 +186,10 @@ done
 
 # ---- Apply the NeOS overlay (branding, Plymouth theme, wallpaper, etc.) ----
 if [[ -f "$OVERLAY" ]]; then
-    log "applying NeOS overlay onto $ROOT ..."
+    log "🎨 applying NeOS overlay onto $ROOT ..."
     rsync -a --files-from="$OVERLAY" / "$ROOT/"
 else
-    echo "neos-pacstrap: WARNING — overlay manifest '$OVERLAY' missing; installed system will lack NeOS branding" >&2
+    echo "neos-pacstrap: ⚠️  WARNING — overlay manifest '$OVERLAY' missing; installed system will lack NeOS branding" >&2
 fi
 
-log "base system installed into $ROOT"
+log "🎉 base system installed into $ROOT"

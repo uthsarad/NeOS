@@ -9,113 +9,113 @@ echo "Verifying security configuration in $CONFIG_FILE..."
 CONFIG_CONTENT=$(<"$CONFIG_FILE")
 
 if [[ "$CONFIG_CONTENT" == *"fs.protected_hardlinks = 1"* ]]; then
-    echo "✅ fs.protected_hardlinks found"
+    echo "  [PASS] fs.protected_hardlinks found"
 else
-    echo "❌ fs.protected_hardlinks NOT found"
+    echo "[FAIL] fs.protected_hardlinks NOT found"
     exit 1
 fi
 
 # Check for fs.protected_symlinks
 if [[ "$CONFIG_CONTENT" == *"fs.protected_symlinks = 1"* ]]; then
-    echo "✅ fs.protected_symlinks found"
+    echo "  [PASS] fs.protected_symlinks found"
 else
-    echo "❌ fs.protected_symlinks NOT found"
+    echo "[FAIL] fs.protected_symlinks NOT found"
     exit 1
 fi
 
 # Check for kernel.unprivileged_bpf_disabled
 if [[ "$CONFIG_CONTENT" == *"kernel.unprivileged_bpf_disabled = 1"* ]]; then
-    echo "✅ kernel.unprivileged_bpf_disabled found"
+    echo "  [PASS] kernel.unprivileged_bpf_disabled found"
 else
-    echo "❌ kernel.unprivileged_bpf_disabled NOT found"
+    echo "[FAIL] kernel.unprivileged_bpf_disabled NOT found"
     exit 1
 fi
 
 # Check for net.ipv4.tcp_syncookies
 if [[ "$CONFIG_CONTENT" == *"net.ipv4.tcp_syncookies = 1"* ]]; then
-    echo "✅ net.ipv4.tcp_syncookies found"
+    echo "  [PASS] net.ipv4.tcp_syncookies found"
 else
-    echo "❌ net.ipv4.tcp_syncookies NOT found"
+    echo "[FAIL] net.ipv4.tcp_syncookies NOT found"
     exit 1
 fi
 
 # Check for net.ipv4.conf.all.rp_filter
 if [[ "$CONFIG_CONTENT" == *"net.ipv4.conf.all.rp_filter = 1"* ]]; then
-    echo "✅ net.ipv4.conf.all.rp_filter found"
+    echo "  [PASS] net.ipv4.conf.all.rp_filter found"
 else
-    echo "❌ net.ipv4.conf.all.rp_filter NOT found"
+    echo "[FAIL] net.ipv4.conf.all.rp_filter NOT found"
     exit 1
 fi
 
 # Check for net.ipv4.icmp_echo_ignore_broadcasts
 if [[ "$CONFIG_CONTENT" == *"net.ipv4.icmp_echo_ignore_broadcasts = 1"* ]]; then
-    echo "✅ net.ipv4.icmp_echo_ignore_broadcasts found"
+    echo "  [PASS] net.ipv4.icmp_echo_ignore_broadcasts found"
 else
-    echo "❌ net.ipv4.icmp_echo_ignore_broadcasts NOT found"
+    echo "[FAIL] net.ipv4.icmp_echo_ignore_broadcasts NOT found"
     exit 1
 fi
 
 # Check for net.ipv4.conf.all.accept_source_route
 if [[ "$CONFIG_CONTENT" == *"net.ipv4.conf.all.accept_source_route = 0"* ]]; then
-    echo "✅ net.ipv4.conf.all.accept_source_route found"
+    echo "  [PASS] net.ipv4.conf.all.accept_source_route found"
 else
-    echo "❌ net.ipv4.conf.all.accept_source_route NOT found"
+    echo "[FAIL] net.ipv4.conf.all.accept_source_route NOT found"
     exit 1
 fi
 
 # Check for net.ipv4.tcp_rfc1337
 if [[ "$CONFIG_CONTENT" == *"net.ipv4.tcp_rfc1337 = 1"* ]]; then
-    echo "✅ net.ipv4.tcp_rfc1337 found"
+    echo "  [PASS] net.ipv4.tcp_rfc1337 found"
 else
-    echo "❌ net.ipv4.tcp_rfc1337 NOT found"
+    echo "[FAIL] net.ipv4.tcp_rfc1337 NOT found"
     exit 1
 fi
 
 # Check for kernel.sysrq (176 = safe subset: sync+remount-ro+reboot for emergency recovery)
 if [[ "$CONFIG_CONTENT" =~ kernel\.sysrq\ =\ (0|176) ]]; then
-    echo "✅ kernel.sysrq found"
+    echo "  [PASS] kernel.sysrq found"
 else
-    echo "❌ kernel.sysrq NOT found"
+    echo "[FAIL] kernel.sysrq NOT found"
     exit 1
 fi
 
 # Check for kernel.core_uses_pid
 if [[ "$CONFIG_CONTENT" == *"kernel.core_uses_pid = 1"* ]]; then
-    echo "✅ kernel.core_uses_pid found"
+    echo "  [PASS] kernel.core_uses_pid found"
 else
-    echo "❌ kernel.core_uses_pid NOT found"
+    echo "[FAIL] kernel.core_uses_pid NOT found"
     exit 1
 fi
 
 # Sentinel: Check for fs.suid_dumpable (0 = disabled, most secure)
 if [[ "$CONFIG_CONTENT" =~ fs\.suid_dumpable\ =\ [0-2] ]]; then
-    echo "✅ fs.suid_dumpable found"
+    echo "  [PASS] fs.suid_dumpable found"
 else
-    echo "❌ fs.suid_dumpable NOT found"
+    echo "[FAIL] fs.suid_dumpable NOT found"
     exit 1
 fi
 
 # Sentinel: Check for dev.tty.ldisc_autoload
 if [[ "$CONFIG_CONTENT" == *"dev.tty.ldisc_autoload = 0"* ]]; then
-    echo "✅ dev.tty.ldisc_autoload found"
+    echo "  [PASS] dev.tty.ldisc_autoload found"
 else
-    echo "❌ dev.tty.ldisc_autoload NOT found"
+    echo "[FAIL] dev.tty.ldisc_autoload NOT found"
     exit 1
 fi
 
 # Sentinel: Check for vm.unprivileged_userfaultfd
 if [[ "$CONFIG_CONTENT" == *"vm.unprivileged_userfaultfd = 0"* ]]; then
-    echo "✅ vm.unprivileged_userfaultfd found"
+    echo "  [PASS] vm.unprivileged_userfaultfd found"
 else
-    echo "❌ vm.unprivileged_userfaultfd NOT found"
+    echo "[FAIL] vm.unprivileged_userfaultfd NOT found"
     exit 1
 fi
 
 # Sentinel: Check for kernel.perf_event_paranoid
 if [[ "$CONFIG_CONTENT" == *"kernel.perf_event_paranoid = 3"* ]]; then
-    echo "✅ kernel.perf_event_paranoid found"
+    echo "  [PASS] kernel.perf_event_paranoid found"
 else
-    echo "❌ kernel.perf_event_paranoid NOT found"
+    echo "[FAIL] kernel.perf_event_paranoid NOT found"
     exit 1
 fi
 
@@ -127,12 +127,12 @@ PACMAN_CONF="profile/airootfs/etc/pacman.conf"
 echo "Verifying security configuration in $PACMAN_CONF..."
 
 if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseOptional" "$PACMAN_CONF"; then
-    echo "✅ SigLevel = Required DatabaseOptional found"
+    echo "  [PASS] SigLevel = Required DatabaseOptional found"
 elif grep -qE "^SigLevel\s*=\s*Required\s+DatabaseRequired" "$PACMAN_CONF"; then
-    echo "❌ SigLevel = Required DatabaseRequired in $PACMAN_CONF — official repos do not sign databases, this breaks installs. Use DatabaseOptional."
+    echo "[FAIL] SigLevel = Required DatabaseRequired in $PACMAN_CONF — official repos do not sign databases, this breaks installs. Use DatabaseOptional."
     exit 1
 else
-    echo "❌ SigLevel must be 'Required DatabaseOptional' in $PACMAN_CONF (require signed packages, optional db sig)"
+    echo "[FAIL] SigLevel must be 'Required DatabaseOptional' in $PACMAN_CONF (require signed packages, optional db sig)"
     exit 1
 fi
 
@@ -142,19 +142,19 @@ echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
 
 # Root pacman.conf is used during ISO build and uses DatabaseOptional to support mirrors without .db.sig
 if grep -qE "^SigLevel\s*=\s*Required\s+DatabaseOptional" "$ROOT_PACMAN_CONF"; then
-    echo "✅ SigLevel = Required DatabaseOptional found in root pacman.conf"
+    echo "[PASS] SigLevel = Required DatabaseOptional found in root pacman.conf"
 else
-    echo "❌ SigLevel = Required DatabaseOptional NOT found in $ROOT_PACMAN_CONF"
+    echo "[FAIL] SigLevel = Required DatabaseOptional NOT found in $ROOT_PACMAN_CONF"
     exit 1
 fi
 
 # Sentinel: Check for unsafe TrustAll directive in root pacman.conf
 # We use grep -v "^#" to ignore comments
 if grep -v "^#" "$ROOT_PACMAN_CONF" | grep -q "TrustAll"; then
-    echo "❌ TrustAll found in active configuration of $ROOT_PACMAN_CONF - This is insecure!"
+    echo "[FAIL] TrustAll found in active configuration of $ROOT_PACMAN_CONF - This is insecure!"
     exit 1
 else
-    echo "✅ TrustAll NOT found in active configuration of $ROOT_PACMAN_CONF (secure)"
+    echo "  [PASS] TrustAll NOT found in active configuration of $ROOT_PACMAN_CONF (secure)"
 fi
 
 # Sentinel: Check the build path uses the repo pacman.conf as its base.
@@ -166,9 +166,9 @@ echo "Verifying security configuration in $BUILD_SCRIPT / $GEN_CONF_SCRIPT..."
 
 if grep -q "gen-build-conf.sh" "$BUILD_SCRIPT" \
     && grep -q "cp \"\$PROFILE_DIR/pacman.conf\" \"\$BUILD_CONF\"" "$GEN_CONF_SCRIPT"; then
-    echo "✅ build path uses repo pacman.conf (via $GEN_CONF_SCRIPT)"
+    echo "  [PASS] build path uses repo pacman.conf (via $GEN_CONF_SCRIPT)"
 else
-    echo "❌ build path does NOT use repo pacman.conf"
+    echo "[FAIL] build path does NOT use repo pacman.conf"
     exit 1
 fi
 
@@ -186,7 +186,7 @@ if [ -f "$USERS_CONF" ]; then
             if [ -n "$match" ]; then
                 # Extract the group name from the match (e.g. "  - sys" -> "sys")
                 group="${match##*- }"
-                echo "❌ Unsafe group '$group' found in $USERS_CONF"
+                echo "[FAIL] Unsafe group '$group' found in $USERS_CONF"
                 UNSAFE_FOUND=true
             fi
         done < <(grep -E -o "$UNSAFE_PATTERN" "$USERS_CONF" || true)
@@ -194,14 +194,14 @@ if [ -f "$USERS_CONF" ]; then
         if [ "$UNSAFE_FOUND" = true ]; then
             exit 1
         else
-            echo "✅ User groups configuration is secure"
+            echo "  [PASS] User groups configuration is secure"
         fi
     else
-        echo "❌ defaultGroups or wheel not found in $USERS_CONF"
+        echo "[FAIL] defaultGroups or wheel not found in $USERS_CONF"
         exit 1
     fi
 else
-    echo "⚠️ $USERS_CONF not found, skipping check."
+    echo "[WARN] $USERS_CONF not found, skipping check."
 fi
 
 echo "All security checks passed!"

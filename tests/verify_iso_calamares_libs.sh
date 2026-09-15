@@ -14,7 +14,7 @@ set -euo pipefail
 skip_or_fail() {
     local msg="$1"
     if [[ "${REQUIRE_ISO:-0}" == "1" ]]; then
-        echo "❌ $msg"
+        echo "[FAIL] $msg"
         exit 1
     fi
     echo "⏭️  SKIPPED: $msg"
@@ -33,7 +33,7 @@ done
 
 CALA_REL="usr/bin/calamares"
 if [[ ! -x "$AIROOTFS/$CALA_REL" ]]; then
-    echo "❌ Calamares binary not found at $AIROOTFS/$CALA_REL"
+    echo "[FAIL] Calamares binary not found at $AIROOTFS/$CALA_REL"
     echo "   The installer would be missing entirely on the live ISO."
     exit 1
 fi
@@ -45,14 +45,14 @@ fi
 echo "Checking Calamares shared libraries in $AIROOTFS ..."
 MISSING="$(arch-chroot "$AIROOTFS" ldd "/$CALA_REL" 2>/dev/null | grep -i 'not found' || true)"
 if [[ -n "$MISSING" ]]; then
-    echo "❌ Calamares has unresolved shared libraries:"
+    echo "[FAIL] Calamares has unresolved shared libraries:"
     echo "$MISSING"
     echo "   This means the installer will fail to start (exit 127) on the live ISO."
     echo "   Most likely a soname bump in a dependency (e.g. yaml-cpp); update the"
     echo "   Calamares package source so it is rebuilt against current libraries."
     exit 1
 fi
-echo "✅ All Calamares shared libraries resolve."
+echo "[PASS] All Calamares shared libraries resolve."
 
 # Best-effort execution check. Calamares is a Qt GUI app, so even `--version`
 # initializes a Qt platform plugin; in a headless chroot we force the offscreen
@@ -61,9 +61,9 @@ echo "✅ All Calamares shared libraries resolve."
 # headless `--version` can legitimately fail for display reasons unrelated to a
 # broken install, so it must not fail the build on its own.
 if arch-chroot "$AIROOTFS" env QT_QPA_PLATFORM=offscreen calamares --version >/dev/null 2>&1; then
-    echo "✅ 'calamares --version' runs in the target rootfs."
+    echo "  [PASS] 'calamares --version' runs in the target rootfs."
 else
-    echo "⚠️  'calamares --version' did not exit cleanly headless (libraries still"
+    echo "[WARN]  'calamares --version' did not exit cleanly headless (libraries still"
     echo "    resolve, so this is informational, not a build failure)."
 fi
 
