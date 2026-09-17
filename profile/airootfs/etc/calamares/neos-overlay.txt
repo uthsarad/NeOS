@@ -7,8 +7,10 @@ etc/polkit-1/rules.d/50-neos-packagekit.rules
 etc/sddm.conf.d/10-displayserver.conf
 etc/sddm.conf.d/20-theme.conf
 etc/skel/.bashrc
+etc/skel/.config/autostart/neos-desktop-setup.desktop
 etc/skel/.config/ksplashrc
 etc/skel/Desktop/neos-terminal.desktop
+etc/skel/Desktop/welcome-neos.desktop
 etc/snapper/configs/root
 etc/ssh/sshd_config
 etc/sudoers.d/wheel
@@ -29,6 +31,7 @@ etc/systemd/system/sddm.service.d/10-software-greeter.conf
 etc/systemd/zram-generator.conf
 etc/ufw/ufw.conf
 etc/xdg/autostart/neos-display-sync.desktop
+etc/xdg/autostart/neos-welcome-app.desktop
 etc/xdg/discoverrc
 etc/xdg/kdeglobals
 etc/xdg/kglobalshortcutsrc
@@ -43,6 +46,8 @@ usr/local/bin/neos-hardware-setup
 usr/local/bin/neos-operations-hub
 usr/local/bin/neos-secureboot-setup
 usr/local/bin/neos-vm-graphics
+usr/local/bin/neos-welcome
+usr/local/bin/neos-welcome-app
 usr/share/applications/neos-operations-hub.desktop
 usr/share/backgrounds/neos-wallpaper.png
 usr/share/color-schemes/NeOS.colors

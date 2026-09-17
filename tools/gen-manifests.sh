@@ -82,12 +82,7 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^etc/sddm\.conf\.d/autologin\.conf$' \
     -e '^etc/sddm\.conf\.d/00-allow-empty-password\.conf$' \
     -e '^usr/local/bin/neos-liveuser-setup$' \
-    -e '^usr/local/bin/neos-welcome$' \
-    -e '^usr/local/bin/neos-welcome-app$' \
     -e '^usr/local/bin/neos-pacstrap$' \
-    -e '^etc/skel/Desktop/welcome-neos\.desktop$' \
-    -e '^etc/xdg/autostart/neos-welcome-app\.desktop$' \
-    -e '^etc/skel/\.config/autostart/neos-desktop-setup\.desktop$' \
     -e '__pycache__' \
     -e '\.py[co]$' \
     | sort > "$NETINSTALL_OVERLAY"
