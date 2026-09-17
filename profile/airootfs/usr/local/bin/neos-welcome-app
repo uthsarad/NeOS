@@ -222,47 +222,79 @@ class NeosWelcome(QWidget):
         layout.addLayout(optin_layout)
         layout.addSpacing(15)
 
+        is_live = is_live_mode()
+
         # ---- Buttons ----
         btn_layout = QHBoxLayout()
-        btn_layout.setSpacing(24)
+        btn_layout.setSpacing(16)
 
-        try_btn = QPushButton('Try NeOS')
-        try_btn.setObjectName('try_btn')
-        try_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        try_btn.clicked.connect(self.close)
-        try_btn.setToolTip('Explore NeOS without installing')
+        if is_live:
+            try_btn = QPushButton('Try NeOS')
+            try_btn.setObjectName('try_btn')
+            try_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            try_btn.clicked.connect(self.close)
+            try_btn.setToolTip('Explore NeOS without installing')
 
-        install_btn = QPushButton('Install NeOS')
-        install_btn.setObjectName('install_btn')
-        install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        install_btn.clicked.connect(self.run_installer)
-        install_btn.setToolTip('Install NeOS to your computer')
+            install_btn = QPushButton('Install NeOS')
+            install_btn.setObjectName('install_btn')
+            install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            install_btn.clicked.connect(self.run_installer)
+            install_btn.setToolTip('Install NeOS to your computer')
 
-        # Glow shadow on install button
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(30)
-        shadow.setColor(QColor(31, 111, 214, 100))
-        shadow.setOffset(0, 6)
-        install_btn.setGraphicsEffect(shadow)
+            # Glow shadow on install button
+            shadow = QGraphicsDropShadowEffect()
+            shadow.setBlurRadius(30)
+            shadow.setColor(QColor(31, 111, 214, 100))
+            shadow.setOffset(0, 6)
+            install_btn.setGraphicsEffect(shadow)
 
-        btn_layout.addWidget(try_btn)
-        btn_layout.addWidget(install_btn)
+            btn_layout.addWidget(try_btn)
+            btn_layout.addWidget(install_btn)
+            self.setTabOrder(self.telemetry_checkbox, try_btn)
+            self.setTabOrder(try_btn, install_btn)
+        else:
+            drivers_btn = QPushButton('Hardware Drivers')
+            drivers_btn.setObjectName('try_btn')
+            drivers_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            drivers_btn.clicked.connect(self.launch_drivers)
+            drivers_btn.setToolTip('Scan and configure hardware & GPU drivers')
+
+            discover_btn = QPushButton('App Center')
+            discover_btn.setObjectName('try_btn')
+            discover_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            discover_btn.clicked.connect(self.launch_discover)
+            discover_btn.setToolTip('Discover and install applications')
+
+            start_btn = QPushButton('Get Started')
+            start_btn.setObjectName('install_btn')
+            start_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            start_btn.clicked.connect(self.close)
+            start_btn.setToolTip('Close and start using your workstation')
+
+            shadow = QGraphicsDropShadowEffect()
+            shadow.setBlurRadius(30)
+            shadow.setColor(QColor(31, 111, 214, 100))
+            shadow.setOffset(0, 6)
+            start_btn.setGraphicsEffect(shadow)
+
+            btn_layout.addWidget(drivers_btn)
+            btn_layout.addWidget(discover_btn)
+            btn_layout.addWidget(start_btn)
+            self.setTabOrder(self.telemetry_checkbox, drivers_btn)
+            self.setTabOrder(drivers_btn, discover_btn)
+            self.setTabOrder(discover_btn, start_btn)
+
         btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
         layout.addLayout(btn_layout)
         layout.addSpacing(10)
 
         # ---- Version info ----
-        version_lbl = QLabel('v2026.07')
+        version_lbl = QLabel(get_os_version())
         version_lbl.setObjectName('tagline')
         version_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version_lbl)
 
         layout.addStretch(1)
-
-        # Set explicit tab order
-        self.setTabOrder(self.telemetry_checkbox, try_btn)
-        self.setTabOrder(try_btn, install_btn)
 
         self.setLayout(layout)
         self.center_on_screen()
@@ -274,6 +306,7 @@ class NeosWelcome(QWidget):
             x = (geo.width() - self.width()) // 2
             y = (geo.height() - self.height()) // 2
             self.move(x, y)
+
     def closeEvent(self, event):
         # Securely save telemetry state to user config and /tmp
         try:
@@ -300,19 +333,64 @@ class NeosWelcome(QWidget):
                     f.write(state + "\n")
                 os.chmod(tmp_file, 0o644)
                 os.replace(tmp_file, tmp_target)
+
+            # 3. If running on installed system, mark first-boot onboarding complete
+            if not is_live_mode():
+                pathlib.Path(os.path.join(neos_dir, "firstboot-done")).touch()
         except Exception as e:
             import sys
-            print(f"Error saving telemetry state: {e}", file=sys.stderr)
+            print(f"Error saving onboarding state: {e}", file=sys.stderr)
         super().closeEvent(event)
-
-
 
     def run_installer(self):
         subprocess.Popen(['/usr/local/bin/neos-welcome'])
         self.close()
 
+    def launch_drivers(self):
+        try:
+            subprocess.Popen(['/usr/local/bin/neos-driver-manager'])
+        except Exception as e:
+            print(f"Error launching driver manager: {e}", file=sys.stderr)
+
+    def launch_discover(self):
+        try:
+            subprocess.Popen(['plasma-discover'])
+        except Exception:
+            try:
+                subprocess.Popen(['discover'])
+            except Exception as e:
+                print(f"Error launching app center: {e}", file=sys.stderr)
+
+
+def is_live_mode():
+    import os
+    return (
+        os.path.exists('/run/archiso/bootmnt') or
+        os.path.exists('/run/archiso') or
+        os.environ.get('USER') == 'liveuser'
+    )
+
+
+def get_os_version():
+    import os
+    try:
+        if os.path.exists('/etc/os-release'):
+            with open('/etc/os-release') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('PRETTY_NAME='):
+                        return line.split('=', 1)[1].strip('"\'')
+                    if line.startswith('VERSION_ID='):
+                        return 'v' + line.split('=', 1)[1].strip('"\'')
+    except Exception:
+        pass
+    return 'v2026.09'
+
 
 if __name__ == '__main__':
+    import os
+    if not is_live_mode() and os.path.exists(os.path.expanduser('~/.config/neos/firstboot-done')) and '--force' not in sys.argv:
+        sys.exit(0)
     app = QApplication(sys.argv)
     app.setApplicationName('NeOS')
     app.setDesktopFileName('neos-welcome')

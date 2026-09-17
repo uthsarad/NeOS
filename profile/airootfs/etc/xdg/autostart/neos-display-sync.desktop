@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=NeOS Display & Input Sync
+Comment=Synchronizes X11 display rotation with input coordinates and scaling
+Exec=/usr/local/bin/neos-display-sync --daemon
+Terminal=false
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-phase=2

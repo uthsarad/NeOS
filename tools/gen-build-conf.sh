@@ -10,7 +10,6 @@
 
 set -euo pipefail
 
-# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 REPO_ROOT="${1:-$PWD}"

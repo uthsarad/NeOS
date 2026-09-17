@@ -1,14 +1,32 @@
-# NeOS (Next Evolution Operating System)
+<p align="center">
+  <img src="docs/assets/neos-logo.png" alt="NeOS Logo" width="128" height="128">
+</p>
 
-[![Build NeOS ISO](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=testing)](https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml)
-[![Latest Release](https://img.shields.io/github/v/release/uthsarad/NeOS?style=flat-square&color=0078D4&label=release)](https://github.com/uthsarad/NeOS/releases)
-![Status](https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square)
-![Architecture](https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+<h1 align="center">NeOS (Next Evolution Operating System)</h1>
+
+<p align="center">
+  <a href="https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml"><img src="https://github.com/uthsarad/NeOS/actions/workflows/build-iso.yml/badge.svg?branch=testing" alt="Build NeOS ISO"></a>
+  <a href="https://github.com/uthsarad/NeOS/releases"><img src="https://img.shields.io/github/v/release/uthsarad/NeOS?style=flat-square&color=0078D4&label=release" alt="Latest Release"></a>
+  <img src="https://img.shields.io/badge/Status-Active_Development-0078D4?style=flat-square" alt="Status">
+  <img src="https://img.shields.io/badge/Arch-x86__64-informational?style=flat-square" alt="Architecture">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
+</p>
 
 **NeOS** is a curated, snapshot-based Arch Linux desktop distribution engineered for predictable behavior, system stability, and a refined **KDE Plasma 6** experience. Designed for users transitioning from Windows, NeOS bridges the gap between the flexibility of a rolling release and the reliability of a validated workstation environment.
 
 It ships as a full **live installer** — boot into a working desktop, try it, then install offline with the Calamares wizard, the same model as a mainstream desktop OS.
+
+---
+
+## Visual Overview
+
+| Desktop Environment & Wallpaper | Calamares Live Installer |
+| :---: | :---: |
+| ![NeOS Desktop](docs/assets/neos-desktop-wallpaper.png) | ![NeOS Installer](docs/assets/neos-calamares-installer.png) |
+
+| SDDM Login Display Manager |
+| :---: |
+| ![NeOS SDDM](docs/assets/neos-sddm-login.png) |
 
 ---
 
@@ -26,12 +44,15 @@ It ships as a full **live installer** — boot into a working desktop, try it, t
 
 NeOS leverages and extends several key projects within the Arch Linux ecosystem:
 
-| Project | Role |
+| Project / Contributor | Role |
 | :--- | :--- |
 | **[ALCI](https://github.com/arch-linux-calamares-installer)** | Base installer framework and Calamares integration. |
 | **[Chaotic-AUR](https://github.com/chaotic-aur)** | High-performance kernels (Zen) and pre-compiled packages. |
 | **[NeoCortex](https://github.com/uthsarad/NeoCortex)** | Local-first, capability-gated sovereign AI intelligence layer. |
-| **[Sovereign Core](https://github.com/NimuthuGanegada/Sanctuary-of-Eternity)** | Architectural guidance and security policy foundations. |
+| **[Uthsara](https://github.com/uthsarad)** | Creator & Lead Systems Architect. |
+| **[Nimuthu Ganegoda](https://github.com/NimuthuGanegoda)** | Core Contributor & Systems Engineer. |
+| **[Miko Yae](https://github.com/MikoYae-AI)** | Core Collaborator, Autonomous Tooling & Systems Engineering. |
+| **[Sovereign Core](https://github.com/NimuthuGanegoda/Sanctuary-of-Eternity)** | Architectural guidance and security policy foundations. |
 | **[NeOS Team](https://github.com/uthsarad/NeOS/graphs/contributors)** | Collaborative Development & Architectural Review. |
 
 ---

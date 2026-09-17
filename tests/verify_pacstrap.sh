@@ -10,6 +10,8 @@ set -euo pipefail
 SETTINGS="profile/airootfs/etc/calamares/settings.conf"
 NEOSPACSTRAP_DESC="profile/airootfs/etc/calamares/modules/neospacstrap/module.desc"
 NEOSPACSTRAP_MAIN="profile/airootfs/etc/calamares/modules/neospacstrap/main.py"
+NEOSPACSTRAP_LIB_DESC="profile/airootfs/usr/lib/calamares/modules/neospacstrap/module.desc"
+NEOSPACSTRAP_LIB_MAIN="profile/airootfs/usr/lib/calamares/modules/neospacstrap/main.py"
 PACSTRAP_BIN="profile/airootfs/usr/local/bin/neos-pacstrap"
 PKGLIST="profile/airootfs/etc/calamares/neos-packages.txt"
 OVERLAY="profile/airootfs/etc/calamares/neos-overlay.txt"
@@ -30,11 +32,18 @@ else
     echo "  [PASS] no unpackfs (live clone) in sequence"
 fi
 
-# 2. The neospacstrap Python job module is declared and points at the backend.
-if [[ -f "$NEOSPACSTRAP_DESC" ]] && grep -q 'interface:.*"python"' "$NEOSPACSTRAP_DESC"; then
-    echo "  [PASS] neospacstrap/module.desc declares a python job"
+# Ensure modules-search includes system module path and etc module path
+if grep -q "/usr/lib/calamares/modules" "$SETTINGS" && grep -q "/etc/calamares/modules" "$SETTINGS"; then
+    echo "  [PASS] settings.conf includes explicit module search paths (/usr/lib and /etc)"
 else
-    echo "[FAIL] neospacstrap/module.desc missing or not a python job"; FAIL=1
+    echo "[FAIL] settings.conf missing explicit module search paths"; FAIL=1
+fi
+
+# 2. The neospacstrap Python job module is declared in usr/lib and etc, and points at the backend.
+if [[ -f "$NEOSPACSTRAP_LIB_DESC" && -f "$NEOSPACSTRAP_DESC" ]] && grep -q 'interface:.*"python"' "$NEOSPACSTRAP_LIB_DESC"; then
+    echo "  [PASS] neospacstrap/module.desc declares a python job in /usr/lib and /etc"
+else
+    echo "[FAIL] neospacstrap/module.desc missing from /usr/lib or not a python job"; FAIL=1
 fi
 if [[ -f "$NEOSPACSTRAP_MAIN" ]] && grep -q '/usr/local/bin/neos-pacstrap' "$NEOSPACSTRAP_MAIN"; then
     echo "  [PASS] neospacstrap/main.py invokes neos-pacstrap"

@@ -75,6 +75,10 @@ alsa-utils
 xf86-video-amdgpu
 xf86-video-ati
 xf86-video-nouveau
+xf86-video-vmware
+xf86-video-qxl
+xf86-video-vesa
+xf86-video-fbdev
 xf86-input-libinput
 pciutils
 usbutils
@@ -112,6 +116,8 @@ qt5-svg
 breeze-icons
 chaotic-keyring
 xorg-xhost
+xorg-xrandr
+xorg-xinput
 python-pyqt6
 power-profiles-daemon
 ufw

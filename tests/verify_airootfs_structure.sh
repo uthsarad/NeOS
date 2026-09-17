@@ -25,6 +25,7 @@ REQUIRED_FILES=(
     "profile/grub/grub.cfg"
     "profile/profiledef.sh"
     "profile/packages.x86_64"
+    "profile/airootfs/usr/local/bin/neos-display-sync"
 )
 
 ALL_PASSED=true
@@ -67,6 +68,7 @@ REQUIRED_PERMS=(
     "neos-autoupdate.sh"
     "neos-liveuser-setup"
     "chcon"
+    "neos-display-sync"
 )
 
 echo ""

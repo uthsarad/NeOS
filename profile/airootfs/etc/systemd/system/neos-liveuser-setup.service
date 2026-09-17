@@ -3,8 +3,6 @@ Description=NeOS Liveuser Setup
 Before=display-manager.service sddm.service
 
 [Service]
-# Bolt: Monitor startup time overhead
-# Palette: Ensure journal logs are clear
 Type=oneshot
 Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-liveuser-setup
@@ -15,7 +13,6 @@ ExecStart=/usr/local/bin/neos-liveuser-setup
 # never created, and SDDM drops to a manual greeter with no user (no autologin).
 # An upstream merge (bc64daa) re-added that sandboxing and broke the live boot.
 
-# Sentinel: Safe systemd sandboxing (omitting ProtectSystem/ProtectHome/NoNewPrivileges which break useradd)
 ProtectKernelTunables=yes
 ProtectControlGroups=yes
 ProtectHostname=yes

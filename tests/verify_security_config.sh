@@ -87,7 +87,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for fs.suid_dumpable (0 = disabled, most secure)
 if [[ "$CONFIG_CONTENT" =~ fs\.suid_dumpable\ =\ [0-2] ]]; then
     echo "  [PASS] fs.suid_dumpable found"
 else
@@ -95,7 +94,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for dev.tty.ldisc_autoload
 if [[ "$CONFIG_CONTENT" == *"dev.tty.ldisc_autoload = 0"* ]]; then
     echo "  [PASS] dev.tty.ldisc_autoload found"
 else
@@ -103,7 +101,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for vm.unprivileged_userfaultfd
 if [[ "$CONFIG_CONTENT" == *"vm.unprivileged_userfaultfd = 0"* ]]; then
     echo "  [PASS] vm.unprivileged_userfaultfd found"
 else
@@ -111,7 +108,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for kernel.perf_event_paranoid
 if [[ "$CONFIG_CONTENT" == *"kernel.perf_event_paranoid = 3"* ]]; then
     echo "  [PASS] kernel.perf_event_paranoid found"
 else
@@ -136,7 +132,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for SigLevel = Required DatabaseOptional in root pacman.conf (build-time config)
 ROOT_PACMAN_CONF="profile/pacman.conf"
 echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
 
@@ -148,7 +143,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for unsafe TrustAll directive in root pacman.conf
 # We use grep -v "^#" to ignore comments
 if grep -v "^#" "$ROOT_PACMAN_CONF" | grep -q "TrustAll"; then
     echo "[FAIL] TrustAll found in active configuration of $ROOT_PACMAN_CONF - This is insecure!"
@@ -157,7 +151,6 @@ else
     echo "  [PASS] TrustAll NOT found in active configuration of $ROOT_PACMAN_CONF (secure)"
 fi
 
-# Sentinel: Check the build path uses the repo pacman.conf as its base.
 # The generation logic lives in tools/gen-build-conf.sh (shared by build.sh
 # and CI); build.sh must call it.
 BUILD_SCRIPT="build.sh"
@@ -172,7 +165,6 @@ else
     exit 1
 fi
 
-# Sentinel: Check for unsafe user groups in Calamares configuration
 USERS_CONF="profile/airootfs/etc/calamares/modules/users.conf"
 echo "Verifying user groups in $USERS_CONF..."
 

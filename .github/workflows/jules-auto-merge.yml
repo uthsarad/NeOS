@@ -3,8 +3,10 @@ name: Auto-merge Jules
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
+    branches: [testing]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    branches: [testing]
   pull_request_review:
     types: [submitted]
   workflow_dispatch:
@@ -21,14 +23,20 @@ jobs:
       contents: write
       pull-requests: write
     # SECURITY: workflow_dispatch runs require write access to the repository, so allow them
-    # explicitly; PR-triggered runs remain limited to known actors and approved reviews.
+    # explicitly (branch-agnostic — a human explicitly named the PR); PR-triggered runs remain
+    # limited to known actors, approved reviews, AND (2026-09-12) PRs targeting `testing` only.
+    # `main` is meant to only move via the repo owner's own manual merge from `testing` — see
+    # ARCHITECT_SCOPE.json's strategic_pause history for why bot PRs landing straight on main
+    # unattended is the thing to avoid. The `branches: [testing]` filter above already covers
+    # pull_request/pull_request_target; pull_request_review doesn't support a branches filter
+    # in the trigger syntax, so it's checked here instead via the PR's base ref.
     #
     # NOTE (2026-09-11): a human-review-only gate was tried here and reverted at the repo
     # owner's explicit request — restored self-approve/auto-merge for the allow-listed bot
     # actors below. This is a known re-introduction of the mechanism that previously drove
-    # bots to merge trivial "acknowledge pause" PRs with nobody looking at them (see
-    # ARCHITECT_SCOPE.json's strategic_pause history). If that loop recurs, the fix is to
-    # re-gate this on pull_request_review + approved, not to add more allow-listed actors.
+    # bots to merge trivial "acknowledge pause" PRs with nobody looking at them. If that loop
+    # recurs, the fix is to re-gate this on pull_request_review + approved, not to add more
+    # allow-listed actors.
     if: >-
       (github.event_name == 'workflow_dispatch' ||
        github.actor == 'google-labs-jules[bot]' ||
@@ -42,7 +50,8 @@ jobs:
        github.event.pull_request.user.login == 'RaidenShogun-AI' ||
        github.event.pull_request.user.login == 'MikoYae-AI' ||
        github.actor == github.repository_owner) &&
-      (github.event_name != 'pull_request_review' || github.event.review.state == 'approved')
+      (github.event_name != 'pull_request_review' ||
+       (github.event.review.state == 'approved' && github.event.pull_request.base.ref == 'testing'))
     steps:
       - name: Auto-merge
         # Bolt: Removed actions/checkout as the gh CLI is API-driven and does not need local repo context

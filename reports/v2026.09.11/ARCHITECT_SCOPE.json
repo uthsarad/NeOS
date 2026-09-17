@@ -1,9 +1,0 @@
-{
-  "allowed_files": ["*"],
-  "strategic_pause": false,
-  "constraints": [
-    "Phase 8 Validation Strategic Pause lifted 2026-09-12 by human review (second time — it was flipped back to true by PR #975, which re-triggered the same daily acknowledge-pause commit loop this pause mechanism doesn't seem to resolve on its own).",
-    "Resume Phase 8 work. Each specialist should report concrete validation findings, not another pause acknowledgment.",
-    "If you are a specialist/bot reading this file: opening another PR to re-enforce or acknowledge the pause is what caused the loop last time. Do actual validation work instead."
-  ]
-}
