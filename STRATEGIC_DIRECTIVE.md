@@ -43,6 +43,6 @@ Maestro coordinates priorities and work allocation among the three specialist ag
 | :--- | :--- | :--- |
 | **Bolt** | `build.sh` | Profile and eliminate redundant subprocess invocations in the build/packaging loop. |
 | **Palette** | `profile/airootfs/usr/local/bin/neos-welcome-app` | Audit keyboard navigation and ensure high-contrast focus rings on interactive elements. |
-| **Sentinel** | `profile/airootfs/usr/local/bin/neos-autoupdate.sh` | Audit temporary file creation and secure permissions against CWE-59 vulnerabilities. |
+| **Sentinel** | `profile/airootfs/usr/local/bin/neos-autoupdate.sh` | Audit temporary file handling and enforce restrictive umask defaults. |
 
-*Coordinated by Maestro - Updated 2026-09-19*
+*Coordinated by Maestro - Updated 2026-09-19T23:15:52Z*
