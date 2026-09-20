@@ -17,3 +17,8 @@ Acknowledging Strategic Pause. Halting all feature development to observe the st
 
 ## Acknowledge the continued Phase 8 Validation Strategic Pause
 Acknowledging Strategic Pause. Halting all feature development to observe the strict Strategic Pause requested by Architect Scope. Validation is marked as completed without changes.
+
+## Audit keyboard navigation, focus indicators, and tab order in neos-welcome-app
+- Fixed focus layout jumping on the telemetry opt-in checkbox in the Welcome App.
+- Added explicit keyboard shortcuts (`Esc` for Try, `Enter` for Install) to the primary action buttons.
+- Appended keyboard shortcuts to button tooltips to improve discoverability.

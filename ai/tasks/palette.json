@@ -74,7 +74,8 @@
     {
       "description": "Audit keyboard navigation, focus indicators, and tab order in neos-welcome-app",
       "target_file": "profile/airootfs/usr/local/bin/neos-welcome-app",
-      "status": "pending"
+      "status": "completed",
+      "resolution": "Added layout-stable focus indicators and keyboard shortcuts (Esc/Enter) to primary buttons."
     },
     {
       "description": "Format user-facing error outputs and add actionable troubleshooting hints in neos-driver-manager",

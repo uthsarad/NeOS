@@ -14,3 +14,7 @@
 ## 2024-05-24 - Semantic dialogs for Assistive Technologies
 **Learning:** Using generic `--msgbox` flags in `kdialog` for error states prevents screen readers (like Orca) from announcing the dialog's severity or nature. Native semantic flags like `--error` are required to trigger appropriate accessibility cues.
 **Action:** Always map UI dialog states (error, warning, info) to their precise semantic `kdialog` flag equivalents instead of relying solely on visual text content in generic message boxes.
+
+## Audit keyboard navigation, focus indicators, and tab order in neos-welcome-app
+**Learning:** Adding a border exclusively on `:focus` causes layout jumping.
+**Action:** Always add `border: 1px solid transparent;` to the default state to reserve the space.

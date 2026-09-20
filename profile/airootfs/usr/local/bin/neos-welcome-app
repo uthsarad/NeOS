@@ -207,6 +207,8 @@ class NeosWelcome(QWidget):
                 font-size: 13px;
                 spacing: 8px;
                 padding: 4px;
+                border: 1px solid transparent;
+                border-radius: 4px;
             }
             QCheckBox:focus {
                 border: 1px solid #1F6FD6;
@@ -230,13 +232,15 @@ class NeosWelcome(QWidget):
         try_btn.setObjectName('try_btn')
         try_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         try_btn.clicked.connect(self.close)
-        try_btn.setToolTip('Explore NeOS without installing')
+        try_btn.setToolTip('Explore NeOS without installing (Esc)')
+        try_btn.setShortcut('Esc')
 
         install_btn = QPushButton('Install NeOS')
         install_btn.setObjectName('install_btn')
         install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         install_btn.clicked.connect(self.run_installer)
-        install_btn.setToolTip('Install NeOS to your computer')
+        install_btn.setToolTip('Install NeOS to your computer (Enter)')
+        install_btn.setShortcut('Return')
 
         # Glow shadow on install button
         shadow = QGraphicsDropShadowEffect()
