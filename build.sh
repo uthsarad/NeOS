@@ -195,9 +195,27 @@ bash tools/gen-install-repo.sh \
 # directory on the ISO filesystem. This keeps packages accessible to the
 # installer at /run/archiso/bootmnt/neos/pkg/ without bloating the SquashFS.
 INSTALL_REPO="$REPO_ROOT/$PROFILE_DIR/install-repo"
-if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+
+# Bolt: Use bash native nullglob instead of a subshell and ls subprocess overhead
+has_pkgs=0
+shopt -s nullglob
+for _ in "$INSTALL_REPO"/*.pkg.tar.zst; do
+    has_pkgs=1
+    break
+done
+shopt -u nullglob
+
+if [[ -d "$INSTALL_REPO" ]] && (( has_pkgs )); then
     echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
-    ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+
+    # Bolt: Replace find/sort/head/cut pipeline with native bash globbing and -nt
+    ISO_PATH=""
+    shopt -s nullglob
+    for _iso in "$REPO_ROOT/$OUT_DIR"/*.iso; do
+        [[ -z "$ISO_PATH" || "$_iso" -nt "$ISO_PATH" ]] && ISO_PATH="$_iso"
+    done
+    shopt -u nullglob
+
     if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
         # Create a temporary ISO with the repo added
         TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
