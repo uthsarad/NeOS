@@ -5,15 +5,15 @@
   },
   "bolt": {
     "role": "Performance & Efficiency",
-    "guidance": "Focus on real code optimizations in build.sh. Eliminate subshell fork overhead, streamline loop execution, and profile packaging bottlenecks."
+    "guidance": "Focus on real code optimizations in build.sh. Optimize subprocess overhead in packaging and compression pipelines."
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
-    "guidance": "Refine keyboard accessibility and focus navigation in neos-welcome-app. Improve CLI error readability and actionable next-steps for the user."
+    "guidance": "No immediate active tasks. Standby for UX/accessibility audits."
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Harden neos-autoupdate.sh input sanitization, verify secure temporary file handling (avoid CWE-59), and ensure systemd services adhere to least privilege."
+    "guidance": "Harden neos-autoupdate.sh input sanitization, verify secure temporary file handling (avoid CWE-59), and enforce restrictive umask defaults."
   },
-  "maestro_timestamp": "2026-09-19T23:15:52Z"
+  "maestro_timestamp": "2026-09-22T00:00:00Z"
 }
