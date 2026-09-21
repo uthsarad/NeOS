@@ -6,6 +6,9 @@
 
 set -euo pipefail
 
+# Sentinel: [Security] Enforce restrictive umask defaults globally to prevent permissive temp files
+umask 077
+
 # Sentinel: [Security] Enforce strict PATH to prevent path hijacking
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
@@ -37,7 +40,7 @@ fi
 
 # Ensure log file exists with secure permissions
 if [[ ! -f "$LOG_FILE" ]]; then
-    (umask 077; set -C; true > "$LOG_FILE") 2>/dev/null || true
+    (set -C; true > "$LOG_FILE") 2>/dev/null || true
 fi
 
 # SECURITY: Enforce ownership and permissions
@@ -52,7 +55,7 @@ fi
 
 # Ensure lock file exists with secure permissions
 if [[ ! -f "$LOCK_FILE" ]]; then
-    (umask 077; set -C; true > "$LOCK_FILE") 2>/dev/null || true
+    (set -C; true > "$LOCK_FILE") 2>/dev/null || true
 fi
 
 # SECURITY: Enforce ownership and permissions

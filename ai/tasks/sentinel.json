@@ -74,7 +74,8 @@
     {
       "description": "Audit temporary file handling and enforce restrictive umask defaults in neos-autoupdate.sh",
       "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
-      "status": "pending"
+      "status": "completed",
+      "resolution": "Applied global restrictive umask 077 to prevent permissive temp files."
     },
     {
       "description": "Audit systemd sandboxing parameters for neos-operations-hub and restrict unnecessary root privileges",
