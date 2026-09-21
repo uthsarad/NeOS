@@ -33,18 +33,18 @@ echo -e "${GREEN}Starting NeOS ISO Build Process...${NC}"
 
 # Check for root privileges
 if [ "$EUID" -ne 0 ]; then
-  echo -e "${RED}Error: This script must be run as root.${NC}"
+  echo -e "${RED}Error: This script must be run as root.${NC}" >&2
   exit 1
 fi
 
 # Check for dependencies
 if ! command -v mkarchiso &> /dev/null; then
-    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso'.${NC}"
+    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso'.${NC}" >&2
     exit 1
 fi
 
 if ! command -v mksquashfs &> /dev/null; then
-    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}"
+    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}" >&2
     exit 1
 fi
 
@@ -73,7 +73,7 @@ fi
 BUILD_CONF="pacman-build.conf"
 
 # Update Arch Linux Keyring to prevent signature errors.
-# NOTE: this build is NOT hermetic — it syncs the host's pacman databases,
+# NOTE: this build is NOT hermetic -- it syncs the host's pacman databases,
 # updates the host keyring package, and imports/lsigns third-party keys into
 # the host keyring below. Run inside a container/nspawn (as CI does) if you do
 # not want your host mutated.
@@ -116,7 +116,7 @@ CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
 # --retry: cdn-mirror.chaotic.cx intermittently returns 503, which previously
 # failed the whole build on a single bad request. Fall back to geo-mirror
 # (virtual/auto-routing, different backing infra) if cdn-mirror stays down
-# across all retries — a real outage, not just a blip, has been observed.
+# across all retries -- a real outage, not just a blip, has been observed.
 CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors)
 CHAOTIC_HOSTS=(
     'https://cdn-mirror.chaotic.cx/chaotic-aur'
@@ -158,7 +158,7 @@ fi
 # for mkarchiso to verify packages. The ISO will install its own chaotic-keyring
 # via packages.x86_64.
 
-# Generate the build pacman.conf (shared with CI — tools/gen-build-conf.sh is
+# Generate the build pacman.conf (shared with CI -- tools/gen-build-conf.sh is
 # the single source of truth for this logic).
 REPO_ROOT="$PWD"
 echo "Generating temporary build configuration..."
@@ -170,7 +170,7 @@ bash tools/gen-build-conf.sh "$REPO_ROOT" "$REPO_ROOT/$BUILD_CONF"
 # build here.
 
 # Generate the netinstall manifests (Calamares pacstrap package list + overlay
-# copy manifest). Shared with CI — tools/gen-manifests.sh is the single source
+# copy manifest). Shared with CI -- tools/gen-manifests.sh is the single source
 # of truth; a stale manifest means installed systems silently miss files.
 bash tools/gen-manifests.sh "$REPO_ROOT"
 
@@ -181,8 +181,8 @@ yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DI
 # ---- Build offline install repo (local package cache for the ISO) ---------
 # Downloads all packages listed in neos-packages.txt and creates a pacman
 # repo database. Reuses packages already cached by mkarchiso in work/pkgs/
-# to avoid redundant downloads. This repo sits OUTSIDE the SquashFS — it gets
-# added to the ISO root below — so it does not inflate the live environment.
+# to avoid redundant downloads. This repo sits OUTSIDE the SquashFS -- it gets
+# added to the ISO root below -- so it does not inflate the live environment.
 echo -e "${YELLOW}Building offline install package repo...${NC}"
 bash tools/gen-install-repo.sh \
     --repo-dir "$REPO_ROOT/$PROFILE_DIR/install-repo" \

@@ -18,3 +18,6 @@
 ## Audit keyboard navigation, focus indicators, and tab order in neos-welcome-app
 **Learning:** Adding a border exclusively on `:focus` causes layout jumping.
 **Action:** Always add `border: 1px solid transparent;` to the default state to reserve the space.
+## 2026-09-22 - Notify-send Markup Learning
+**Learning:** `notify-send` does not format markdown backticks (e.g. \`command\`), making shell variable errors look confusing. It exclusively supports Pango markup (like `<b>`, `<i>`, `<u>`).
+**Action:** Always use Pango markup like `<b>` for bolding paths and variables in UI notifications to ensure good visual clarity.

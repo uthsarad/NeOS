@@ -18,7 +18,7 @@ _error_handler() {
     local err=$1
     local line=$2
     local cmd="${BASH_COMMAND//[^[:print:]]/}"
-    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 [%s] CRITICAL SCRIPT FAILURE\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 DIAGNOSTICS:\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\e[1m\e[36m🔧 ACTIONABLE STEPS:\e[0m\n  1. Inspect the system journal for detailed logs:\n     \e[1mjournalctl -t neos-%s -n 50 --no-pager\e[0m\n  2. Verify system state, permissions, and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m[CRITICAL] [%s] SCRIPT FAILURE\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m[DIAGNOSTICS]:\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\e[1m\e[36m[ACTIONABLE STEPS]:\e[0m\n  1. Inspect the system journal for detailed logs:\n     \e[1mjournalctl -t neos-%s -n 50 --no-pager\e[0m\n  2. Verify system state, permissions, and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
@@ -120,7 +120,7 @@ check_dependencies() {
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
-        local err_msg="INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
+        local err_msg="INFO: <b>snapper</b> utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install <b>snapper</b> and configure a root configuration."
         log "$err_msg"
         notify_users "$err_msg" "System Update Skipped" "dialog-information" "normal"
         exit 0
@@ -129,10 +129,10 @@ check_dependencies() {
     local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
-            local err_msg="Required command \`$cmd\` not found.
+            local err_msg="Required command <b>$cmd</b> not found.
 
-Please install the package containing \`$cmd\` to enable automatic system updates."
-            log "Error: Required command \`$cmd\` not found."
+Please install the package containing <b>$cmd</b> to enable automatic system updates."
+            log "Error: Required command <b>$cmd</b> not found."
             notify_users "$err_msg" "Update Failed: Missing Dependency" "dialog-error" "critical"
             exit 1
         fi
