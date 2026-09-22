@@ -6,6 +6,13 @@ on:
     # yet — only testing builds/releases for now. Add main back here when
     # it's time to resume shipping from it.
     branches: [testing]
+  # Pull requests run the `test` job only: the gate suite is the point of a PR,
+  # but the `build` job publishes a release and pushes to SourceForge, so it is
+  # explicitly excluded from pull_request events below. Without this trigger the
+  # gates only ran after a merge, i.e. they could not gate anything
+  # (reports/v2026.09.18 H3/O3).
+  pull_request:
+    branches: [testing, main]
   workflow_dispatch:
 
 env:
@@ -142,6 +149,9 @@ jobs:
 
   build:
     needs: test
+    # Never on pull_request: this job creates a GitHub Release, pushes to
+    # SourceForge and builds for up to 90 minutes. PRs get the `test` job only.
+    if: github.event_name != 'pull_request'
     permissions:
       contents: write
 
