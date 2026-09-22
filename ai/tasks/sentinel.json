@@ -82,6 +82,12 @@
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
       "status": "completed",
       "resolution": "Administratively closed by Maestro to enforce strict target scope."
+    },
+    {
+      "description": "Audit neos-autoupdate.sh for input sanitization and secure temporary file handling.",
+      "target_file": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+      "status": "pending"
     }
-  ]
+  ],
+  "architect_timestamp": "2026-09-22T08:00:00Z"
 }

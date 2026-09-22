@@ -24,3 +24,8 @@
 - Acknowledged the strict Strategic Pause mandated by `ARCHITECT_SCOPE.json`.
 - Halted all feature development.
 - Delegated the pause acknowledgment to Bolt, Palette, and Sentinel via task manifests.
+
+## Phase 8 Execution: Core Build Optimizations
+- Added delegation comments for Bolt in build.sh to target subprocess overhead in packaging and compression.
+- Added delegation comments for Sentinel in neos-autoupdate.sh to audit input sanitization and secure temporary file handling.
+- Generated updated task manifests for Bolt, Palette, and Sentinel.

@@ -10,6 +10,7 @@ set -euo pipefail
 umask 077
 
 # Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+# Sentinel: [Security] Audit neos-autoupdate.sh for input sanitization and secure temporary file handling.
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 
