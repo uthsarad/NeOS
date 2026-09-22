@@ -49,12 +49,30 @@ Flash the ISO to your USB drive using a tool like:
 ### 3. Boot NeOS
 Insert the USB drive, restart your computer, and enter the Boot Menu (usually F12, F11, or Del). Select your USB drive.
 
+The firmware boot menu (GRUB on UEFI, Syslinux on BIOS) is shown for 3 seconds.
+The default entry is fine on most hardware. Other entries:
+
+*   **Copy to RAM** — loads the live image into memory so you can unplug the USB stick. Needs enough RAM.
+*   **Safe Graphics** — `nomodeset`, when the desktop never appears.
+*   **Verbose** — full kernel/systemd messages, for a hung boot.
+*   **Accessibility** — screen reader.
+
+If the live session comes up looking wrong, run **NeOS Doctor** from the
+application menu (or `neos-doctor --json` in a terminal) and keep the report.
+
 ### 4. Install
 Once booted, the NeOS welcome app starts automatically and offers **Try NeOS** or **Install NeOS**; picking Install launches the Calamares wizard (the desktop "Install NeOS" shortcut does the same, so you can reopen it at any point). Follow the on-screen instructions:
 *   **Location**: Set your timezone.
 *   **Keyboard**: Choose your layout.
 *   **Partitions**: "Erase Disk" is easiest for a clean install. "Manual Partitioning" is for advanced users.
 *   **Users**: Create your username and password.
+
+Internet is optional: a locally built ISO (`sudo ./build.sh`) embeds an offline
+package repo, and Calamares no longer refuses to continue without a network.
+CI-published ISOs still install from the network.
+
+For a hands-off install (second volume labelled `cidata` with
+`autoinstall.yaml`), see **[Unattended install](AUTOINSTALL.md)**.
 
 ### 5. First Boot
 After installation, remove the USB drive and reboot. You will be greeted by the NeOS login screen.

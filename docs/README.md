@@ -7,6 +7,7 @@
 | Document | What it covers |
 | :--- | :--- |
 | [Deployment Handbook](user-guide/HANDBOOK.md) | Installation, first steps, project structure, building from source. |
+| [Unattended install](user-guide/AUTOINSTALL.md) | Omarchy-style cidata autoinstall (`autoinstall.yaml` on a second volume). |
 | [Troubleshooting (user guide)](user-guide/TROUBLESHOOTING.md) | Recovery, display/scaling issues, snapshot rollback, driver problems. |
 | [Virtual machine setup](user-guide/VM_STARTUP.md) | Running NeOS under VMware, VirtualBox and QEMU/KVM. |
 | [Secure Boot](SECURE_BOOT.md) | The user-initiated `sbctl` own-keys flow and its trade-offs. |

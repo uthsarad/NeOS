@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [2026.09.22] - 2026-09-22
 
+### Added
+- **Auto-merge into `testing`**: every non-draft PR targeting `testing` is approved and squash-merged automatically, with `--admin` if branch rules would block it. `main` stays manual. The workflow does not check out PR code.
+- **Copy-to-RAM and Verbose live boot entries** (GRUB and Syslinux), with a 3s firmware menu so they are actually reachable. Copy-to-RAM uses `copytoram=y` so the USB stick can be removed after the image is in memory.
+- **Omarchy-style cidata autoinstall** (`neos-autoinstall`): a volume labelled `cidata`/`NEOSCIDATA` (or `/run/archiso/bootmnt/neos/autoinstall/`) with `autoinstall.yaml` pre-fills Calamares, and with `erase: true` plus credentials launches it unattended. Live-only — excluded from the installed overlay.
+- **`neos-doctor`** (and `neos-doctor --json`) for humans and agents: graphical.target, SDDM, failed units, firmware, virt, installer log.
+- **`VERSION_ID` in `/etc/os-release`**, matching `VERSION`, so the welcome app and doctor show a real number (M10).
+
+### Changed
+- **Calamares no longer requires internet** at the welcome page (still checked, not blocking). Offline ISOs with an embedded package repo can finish without a network.
+- **ISO version step accepts PR refs**: `github.ref_name` on `pull_request` is `<n>/merge`, which broke `sed` in "Generate codename and set ISO version". The step now uses the head branch and sanitises to `[A-Za-z0-9._-]`.
+
 This entry covers the two commits that landed after the 2026.09.18 metadata sync
 (`523a269`, `4fab136` — neither had a CHANGELOG entry) plus the follow-up work in
 `reports/v2026.09.22/UPDATES_NEEDED.md`. That report is the authoritative list of what

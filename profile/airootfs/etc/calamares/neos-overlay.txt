@@ -41,6 +41,7 @@ usr/local/bin/neos-accessibility
 usr/local/bin/neos-autoupdate.sh
 usr/local/bin/neos-desktop-setup
 usr/local/bin/neos-display-sync
+usr/local/bin/neos-doctor
 usr/local/bin/neos-driver-manager
 usr/local/bin/neos-hardware-setup
 usr/local/bin/neos-operations-hub
@@ -48,6 +49,7 @@ usr/local/bin/neos-secureboot-setup
 usr/local/bin/neos-vm-graphics
 usr/local/bin/neos-welcome
 usr/local/bin/neos-welcome-app
+usr/share/applications/neos-doctor.desktop
 usr/share/applications/neos-operations-hub.desktop
 usr/share/backgrounds/neos-wallpaper.png
 usr/share/color-schemes/NeOS.colors

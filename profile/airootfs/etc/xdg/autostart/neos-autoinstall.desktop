@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=NeOS Autoinstall
+Comment=Apply an Omarchy-style cidata autoinstall if a config volume is present
+Exec=/usr/local/bin/neos-autoinstall apply
+Icon=calamares
+Type=Application
+Categories=System;
+X-KDE-autostart-phase=1
+NoDisplay=true
+OnlyShowIn=KDE;
