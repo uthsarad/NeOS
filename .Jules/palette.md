@@ -21,3 +21,7 @@
 ## 2026-09-22 - Notify-send Markup Learning
 **Learning:** `notify-send` does not format markdown backticks (e.g. \`command\`), making shell variable errors look confusing. It exclusively supports Pango markup (like `<b>`, `<i>`, `<u>`).
 **Action:** Always use Pango markup like `<b>` for bolding paths and variables in UI notifications to ensure good visual clarity.
+
+## 2026-09-22 - Notify-send Markup Learning
+**Learning:** `notify-send` does not format markdown backticks (e.g. \`command\`), making shell variable errors look confusing. It exclusively supports Pango markup (like `<b>`, `<i>`, `<u>`).
+**Action:** Always use Pango markup like `<b>` for bolding paths and variables in UI notifications to ensure good visual clarity.

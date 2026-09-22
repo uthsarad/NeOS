@@ -124,7 +124,8 @@ check_dependencies() {
     hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
         local err_msg="INFO: <b>snapper</b> utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install <b>snapper</b> and configure a root configuration."
-        log "$err_msg"
+        local log_msg="INFO: 'snapper' utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install 'snapper' and configure a root configuration."
+        log "$log_msg"
         notify_users "$err_msg" "System Update Skipped" "dialog-information" "normal"
         exit 0
     fi
@@ -135,7 +136,7 @@ check_dependencies() {
             local err_msg="Required command <b>$cmd</b> not found.
 
 Please install the package containing <b>$cmd</b> to enable automatic system updates."
-            log "Error: Required command <b>$cmd</b> not found."
+            log "Error: Required command '$cmd' not found."
             notify_users "$err_msg" "Update Failed: Missing Dependency" "dialog-error" "critical"
             exit 1
         fi
@@ -169,8 +170,8 @@ check_disk_space() {
         # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
         local err_msg="Insufficient disk space for update.
 
-Available: $((available_space / 1024)) MB
-Required: $((min_space / 1024)) MB
+<b>Available:</b> $((available_space / 1024)) MB
+<b>Required:</b> $((min_space / 1024)) MB
 
 Please free up some space and try again."
         log "Error: Insufficient disk space. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB."

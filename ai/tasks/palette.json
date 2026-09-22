@@ -3,7 +3,8 @@
     {
       "description": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.",
       "target_file": "build.sh",
-      "status": "completed"
+      "status": "completed",
+      "resolution": "Removed HTML/Pango markup from internal log files in neos-autoupdate.sh to maintain clean text logging, while ensuring notifications retain rich formatting for the UI."
     },
     {
       "description": "Ensure journal logs are clear for the restricted services (neos-autoupdate.service, neos-liveuser-setup.service) to prevent debugging UX issues due to missing permissions.",
