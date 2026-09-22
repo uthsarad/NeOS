@@ -16,7 +16,7 @@
 
 It ships as a full **live installer** — boot into a working desktop, try it, then install with the Calamares wizard, the same model as a mainstream desktop OS.
 
-> **Installing without a network:** an ISO built locally with `sudo ./build.sh` embeds an offline package repository, so the installer completes with no internet connection. The cloud-built ISOs published to Releases are produced by a different build path that does not embed that repository, so installing from a released ISO requires a network connection.
+> **Installing without a network:** an ISO built locally with `sudo ./build.sh` embeds an offline package repository, so the installer completes with no internet connection. CI passes `--no-offline-repo` to the same script, so the ISOs published to Releases install from the network.
 
 ---
 
@@ -80,9 +80,10 @@ Because NeOS is a curated distribution, every release is exercised before it rea
 
 *   **Boot validation** — the ISO is booted (BIOS and UEFI) to confirm it reaches the live desktop, including in virtual machines (VMware, VirtualBox, QEMU/KVM).
 *   **Installer validation** — the Calamares flow is run end-to-end so installs complete and reboot into a working system.
-*   **Automated build gates (CI)** — every push to `testing` runs ShellCheck, Trivy, config checks, and a chroot verification that the installer's libraries resolve, so a broken installer fails the build instead of shipping.
+*   **Automated build gates (CI)** — every push to `testing` runs ShellCheck, Trivy, the 40-odd `tests/verify_*.sh` gates with `REQUIRE_TOOLS=1` (the Ruby, Go, .NET and Rust toolchains are installed, so a gate can no longer quietly degrade into a grep), and a chroot verification that the installer's libraries resolve.
+*   **Boot verification** — the built ISO is booted in QEMU (BIOS and UEFI) and the build fails unless the guest reports an active `graphical.target` and renders a non-blank frame; a timeout is not a pass.
 
-> CI cannot boot a desktop or run an interactive install on its own, so hardware/VM smoke testing by the QA team is the final gate before a release is trusted.
+> CI boots the live desktop and asserts it rendered, but it cannot click through an interactive install, so hardware/VM install testing by the QA team remains the final gate before a release is trusted.
 
 ---
 
@@ -90,6 +91,7 @@ Because NeOS is a curated distribution, every release is exercised before it rea
 
 Comprehensive documentation is available in the `docs/` directory:
 
+*   **[Documentation index](docs/README.md)** — Everything in `docs/`, indexed.
 *   **[Deployment Handbook](docs/user-guide/HANDBOOK.md)** — Installation and initial setup.
 *   **[System Architecture](docs/architecture/ARCHITECTURE.md)** — In-depth look at the NeOS stability model.
 *   **[Development Roadmap](docs/architecture/ROADMAP.md)** — Feature milestones and release phases.
@@ -114,8 +116,14 @@ Comprehensive documentation is available in the `docs/` directory:
 To generate a NeOS ISO locally, ensure `archiso` is installed and execute the build script from the repository root:
 
 ```bash
-sudo ./build.sh
+sudo ./build.sh                 # full build, including the offline install repo
+sudo ./build.sh --no-offline-repo   # smaller/faster; the ISO then installs from the network
+sudo ./build.sh --ci            # non-interactive (never prompts about a stale work/)
 ```
+
+`build.sh` is the single build entrypoint: CI runs the same script (with
+`--ci --no-offline-repo`), so the image you build locally is produced by the same
+code path as the published one.
 
 ---
 

@@ -18,7 +18,7 @@ These targets apply to the "Stable" release channel on reference hardware (Moder
 | **Cold Boot Time** | < 10s | 15s | From bootloader to lock screen. |
 | **Login to Desktop** | < 3s | 5s | From password entry to usable desktop. |
 | **Idle RAM Usage** | < 800MB | 1.2GB | Post-boot with no user apps open. |
-| **ISO Size** | < 2.5GB | 4GB | Critical for download speed and USB writing. |
+| **ISO Size** | < 2.5GB | 4GB | Download speed, USB writing and live-session RAM. Not an enforced gate — releases ship via SourceForge, so this is a design target only. |
 | **Installation Time** | < 5m | 10m | Automated install flow on SSD. |
 
 ## Optimization Strategies

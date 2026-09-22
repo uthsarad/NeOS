@@ -4,7 +4,7 @@
 
 iso_name="neos"
 iso_label="NEOS_ISO"
-iso_publisher="NeOS Team <https://github.com/NimuthuGanegoda/NeOS>"
+iso_publisher="NeOS Team <https://github.com/uthsarad/NeOS>"
 iso_application="NeOS Installation Media"
 iso_version="$(date +%Y.%m.%d)"
 install_dir="neos"

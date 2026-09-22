@@ -11,8 +11,10 @@ SETTINGS="profile/airootfs/etc/calamares/settings.conf"
 NEOSPACSTRAP_DESC="profile/airootfs/etc/calamares/modules/neospacstrap/module.desc"
 NEOSPACSTRAP_MAIN="profile/airootfs/etc/calamares/modules/neospacstrap/main.py"
 NEOSPACSTRAP_LIB_DESC="profile/airootfs/usr/lib/calamares/modules/neospacstrap/module.desc"
+NEOSPACSTRAP_LIB_MAIN="profile/airootfs/usr/lib/calamares/modules/neospacstrap/main.py"
 PACSTRAP_BIN="profile/airootfs/usr/local/bin/neos-pacstrap"
 PKGLIST="profile/airootfs/etc/calamares/neos-packages.txt"
+LIVE_PKGLIST="profile/packages.x86_64"
 OVERLAY="profile/airootfs/etc/calamares/neos-overlay.txt"
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
 FAIL=0
@@ -43,6 +45,35 @@ if [[ -f "$NEOSPACSTRAP_LIB_DESC" && -f "$NEOSPACSTRAP_DESC" ]] && grep -q 'inte
     echo "  [PASS] neospacstrap/module.desc declares a python job in /usr/lib and /etc"
 else
     echo "[FAIL] neospacstrap/module.desc missing from /usr/lib or not a python job"; FAIL=1
+fi
+# The job code lives in exactly one place: /usr/lib/calamares/modules (first
+# entry in settings.conf's modules-search, and the copy profiledef.sh grants
+# 0:0:755). /etc/calamares/modules is the *second* search path, so its copy is
+# a relative symlink rather than a hand-maintained duplicate — two copies of an
+# installer job is how a fix silently fails to take effect depending on search
+# order (reports/v2026.09.18 M1 / UPDATES_NEEDED §4.5).
+if [[ -f "$NEOSPACSTRAP_LIB_MAIN" && -f "$NEOSPACSTRAP_LIB_DESC" ]]; then
+    for pair in "main.py" "module.desc"; do
+        etc_copy="$(dirname "$NEOSPACSTRAP_MAIN")/$pair"
+        lib_copy="$(dirname "$NEOSPACSTRAP_LIB_MAIN")/$pair"
+        if [[ ! -e "$etc_copy" ]]; then
+            echo "[FAIL] /etc/calamares/modules/neospacstrap/$pair is missing"; FAIL=1
+        elif [[ -L "$etc_copy" ]]; then
+            if [[ "$(readlink -f "$etc_copy")" == "$(readlink -f "$lib_copy")" ]]; then
+                echo "  [PASS] /etc copy of $pair is a symlink to the single canonical /usr/lib copy"
+            else
+                echo "[FAIL] /etc/calamares/modules/neospacstrap/$pair points at $(readlink "$etc_copy"), not the canonical /usr/lib copy"; FAIL=1
+            fi
+        elif cmp -s "$etc_copy" "$lib_copy"; then
+            echo "  [PASS] /etc and /usr/lib copies of $pair are byte-identical (unsymlinked copy)"
+        else
+            echo "[FAIL] the /etc and /usr/lib neospacstrap copies of $pair have diverged"
+            diff -u "$lib_copy" "$etc_copy" | head -20 || true
+            FAIL=1
+        fi
+    done
+else
+    echo "[FAIL] neospacstrap main.py/module.desc missing from /usr/lib"; FAIL=1
 fi
 if [[ -f "$NEOSPACSTRAP_MAIN" ]] && grep -q '/usr/local/bin/neos-pacstrap' "$NEOSPACSTRAP_MAIN"; then
     echo "  [PASS] neospacstrap/main.py invokes neos-pacstrap"
@@ -75,6 +106,23 @@ if [[ -f "$PKGLIST" ]]; then
     else
         echo "[FAIL] neos-packages.txt looks too small ($count packages)"; FAIL=1
     fi
+    # The manifest is derived from profile/packages.x86_64, so the same package
+    # legitimately appears in both files — but a repeated entry *inside* either
+    # list would make pacstrap/auditing see a package twice (reports/v2026.09.18
+    # M1). Nothing checked that until now.
+    DUPES=$(grep -vE '^\s*(#|$)' "$PKGLIST" | LC_ALL=C sort | uniq -d)
+    if [[ -z "$DUPES" ]]; then
+        echo "  [PASS] neos-packages.txt has no duplicate entries"
+    else
+        echo "[FAIL] neos-packages.txt contains duplicate entries:"; while IFS= read -r d; do printf '       %s\n' "$d"; done <<<"$DUPES"; FAIL=1
+    fi
+    DUPES_LIVE=$(grep -vE '^\s*(#|$)' "$LIVE_PKGLIST" | LC_ALL=C sort | uniq -d)
+    if [[ -z "$DUPES_LIVE" ]]; then
+        echo "  [PASS] $LIVE_PKGLIST has no duplicate entries"
+    else
+        echo "[FAIL] $LIVE_PKGLIST contains duplicate entries:"; while IFS= read -r d; do printf '       %s\n' "$d"; done <<<"$DUPES_LIVE"; FAIL=1
+    fi
+
     PKGLIST_CONTENT=$(<"$PKGLIST")
     for must in base linux-lts grub sddm plasma-desktop; do
         if [[ "$PKGLIST_CONTENT" =~ (^|$'

@@ -23,9 +23,10 @@ jobs:
     # CI changes unreviewed via JULES_AUTO_MERGE_TOKEN (repo+workflow scope). Merge now requires
     # an actual "Approved" review from an OWNER/MEMBER/COLLABORATOR on a PR targeting `testing`,
     # or an explicit workflow_dispatch by someone with write access. `main` still only moves via
-    # the repo owner's own manual merge from `testing` — see ARCHITECT_SCOPE.json's
-    # strategic_pause history for why bot PRs landing straight on main unattended is the thing
-    # to avoid.
+    # the repo owner's own manual merge from `testing` — see the historical
+    # reports/v2026.09.11/ARCHITECT_SCOPE.json (strategic_pause) for why bot PRs landing
+    # straight on main unattended is the thing to avoid. Note that report is a 2026-09-12
+    # snapshot, not a live policy: the pause it describes was lifted.
     #
     # HISTORY (2026-09-11): a human-review-only gate was tried here and reverted at the repo
     # owner's request, restoring self-approve/auto-merge for allow-listed bot actors — that is
@@ -88,9 +89,13 @@ jobs:
             echo "✓ Force squashed and merged PR successfully."
           elif gh pr merge "$PR_URL" --merge --delete-branch; then
             echo "✓ Direct merged PR successfully."
-          elif gh pr merge "$PR_URL" --squash --admin; then
-            echo "✓ Force admin squashed and merged PR successfully."
           else
-            echo "WARNING: Failed to auto-merge PR automatically." >&2
+            # No `--admin` fallback: bypassing required status checks (and, on a
+            # protected branch, review requirements) to land a bot PR is exactly
+            # the failure mode this file's review gate exists to prevent
+            # (reports/v2026.09.18 M3). A PR that cannot merge under the branch's
+            # own rules is left for a human to merge.
+            echo "WARNING: Could not auto-merge PR (branch protection or failing checks). A maintainer must merge it manually." >&2
+            gh pr comment "$PR_URL" --body "Auto-merge did not complete: the PR cannot be merged under the current branch protection or checks. No admin bypass was attempted — a maintainer should review and merge manually." || true
             exit 0
           fi

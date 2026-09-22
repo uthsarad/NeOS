@@ -80,6 +80,11 @@ work/
 out/
 pacman-build.conf
 
+# Offline install package repo assembled by tools/gen-install-repo.sh during a
+# local build (embedded into the ISO, then removed). Never commit it — it is
+# ~hundreds of MB and is rebuilt every time.
+profile/install-repo/
+
 # Architect: CI/CD test hardening specific
 tests/*.log
 

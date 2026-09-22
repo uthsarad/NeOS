@@ -15,18 +15,28 @@ navigation: widget
 strings:
     productName:         NeOS
     shortProductName:    NeOS
-    productVersion:      2026.07
-    shortProductVersion: 2026.07
-    versionedName:       NeOS 2026.07
-    shortVersionedName:  NeOS 2026.07
+    # These four are display-only and are stamped with the real build version by
+    # CI (build-iso.yml, "Generate codename and set ISO version"). The committed
+    # values are the fallback used by an unmodified local build — never a date,
+    # which is stale the day after it is written
+    # (reports/v2026.09.22/UPDATES_NEEDED.md, M10).
+    productVersion:      Beta
+    shortProductVersion: Beta
+    versionedName:       NeOS Beta
+    shortVersionedName:  NeOS Beta
     bootloaderEntryName: NeOS
     # URLs for the welcome-page info buttons. Calamares reads the URLs from here;
     # welcome.conf's show*Url booleans decide which buttons appear. Without these
     # the welcome page rendered with no support/known-issues/release-notes links.
-    productUrl:          "https://github.com/NimuthuGanegoda/NeOS"
-    supportUrl:          "https://github.com/NimuthuGanegoda/NeOS/issues"
-    knownIssuesUrl:      "https://github.com/NimuthuGanegoda/NeOS/issues"
-    releaseNotesUrl:     "https://github.com/NimuthuGanegoda/NeOS/blob/main/CHANGELOG.md"
+    # These MUST name the canonical repository: this repository is a fork whose
+    # Issues are disabled, so a fork URL ships a dead end to every user
+    # (guarded by tests/verify_repo_urls.sh).
+    productUrl:          "https://github.com/uthsarad/NeOS"
+    supportUrl:          "https://github.com/uthsarad/NeOS/issues"
+    knownIssuesUrl:      "https://github.com/uthsarad/NeOS/issues"
+    # Releases are cut from `testing` while `main` stays idle until the official
+    # public release, so the notes link follows the branch releases come from.
+    releaseNotesUrl:     "https://github.com/uthsarad/NeOS/blob/testing/CHANGELOG.md"
 
 images:
     productLogo:         "logo.png"

@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	Version     = "2026.09.18"
+	Version     = "2026.09.22"
 	AppName     = "neosctl"
 	ColorCyan   = "\033[1;36m"
 	ColorGreen  = "\033[1;32m"
@@ -89,7 +89,8 @@ func runInfo() {
 }
 
 // runAudit was removed: the canonical profile auditor is
-// tools/neos-profile-audit (Rust) — see reports/v2026.09.11/01-architect-report.md.
+// tools/neos-profile-audit (Rust) — see reports/v2026.09.18/AUDIT_AND_RECOMMENDATIONS.md
+// and the ownership guard in tests/verify_go_neosctl.sh.
 
 func runRankMirrors(path string) error {
 	fmt.Printf("%s[neosctl::rank-mirrors]%s Parsing %s...\n", ColorCyan, ColorReset, path)

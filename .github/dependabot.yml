@@ -1,15 +1,18 @@
 # Dependabot configuration.
 #
-# Why this exists: the workflows consume third-party actions by floating tag
-# (actions/checkout@v5, softprops/action-gh-release@v3, actions/ai-inference@v2,
-# actions/labeler@v6). The release workflow runs with `contents: write` and
-# pushes to SourceForge, so a compromised or retagged action is a direct path
-# to a tampered release. Dependabot keeps these current and visible.
+# Why this exists: every third-party action is now pinned to a commit SHA (with
+# the upstream tag in a trailing `# vN` comment), because the release workflow
+# runs with `contents: write` and pushes to SourceForge — a compromised or
+# retagged action is a direct path to a tampered release. Dependabot is what
+# keeps those pins current (it understands `uses: owner/repo@<sha> # vN` and
+# raises a PR when a newer release exists), so the pins never rot into
+# unpatched versions.
 #
-# Note: this supersedes the earlier plan to pin every action to a commit SHA.
-# SHA pinning is still the stronger end state and should be done with SHAs
-# verified against the upstream tags (see reports/v2026.09.18/) rather than
-# transcribed by hand, because an incorrect SHA fails the release build.
+# SHAs were resolved from the upstream tags through the GitHub API rather than
+# transcribed by hand: actions/checkout v5, softprops/action-gh-release v3,
+# actions/labeler v6, actions/ai-inference v2.
+# Previously this file deferred the pinning; reports/v2026.09.18 recommended it
+# and reports/v2026.09.22/UPDATES_NEEDED.md tracked it as open item M4.
 version: 2
 
 updates:
