@@ -177,6 +177,10 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Install dependencies
+        # edk2-ovmf is for tests/verify_iso_smoketest.sh: without it the UEFI
+        # half of the boot gate is skipped with an [INFO] notice, so the
+        # GRUB/EFI entries — the ones that carry the serial console — were
+        # never exercised in CI.
         run: |
           set -euo pipefail
 
@@ -232,6 +236,7 @@ jobs:
             rust \
             python \
             qemu-system-x86 \
+            edk2-ovmf \
             qemu-img \
             util-linux \
             github-cli \
