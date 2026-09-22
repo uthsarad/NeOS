@@ -19,8 +19,19 @@
 set -euo pipefail
 
 OUT_DIR="out"
-BOOT_TIMEOUT="${BOOT_TIMEOUT:-300}"        # seconds to wait for the marker
 MARKER="NEOS-BOOT-OK"
+# Seconds to wait for the marker. Without KVM the guest runs under QEMU's TCG
+# interpreter, where bringing up a full Plasma live session takes several times
+# longer than on hardware — so the default scales with the accelerator instead
+# of reporting a slow-but-healthy boot as a dead one. Override explicitly with
+# BOOT_TIMEOUT=<seconds> (e.g. on a very slow host or under CI load).
+if [[ -z "${BOOT_TIMEOUT:-}" ]]; then
+    if [[ -w /dev/kvm ]]; then
+        BOOT_TIMEOUT=300
+    else
+        BOOT_TIMEOUT=900
+    fi
+fi
 # Set ALLOW_BLANK_FRAME=1 only to debug a real session that genuinely renders
 # an (almost) all-black frame; the marker assertion still applies.
 ALLOW_BLANK_FRAME="${ALLOW_BLANK_FRAME:-0}"
@@ -189,18 +200,19 @@ run_boot() {
     local shot="$OUT_DIR/smoke_${mode}.ppm"
     QMP_SOCK="$OUT_DIR/smoke_${mode}.qmp"
 
-    echo "Starting QEMU $mode boot test for $name..."
+    echo "Starting QEMU $mode boot test for $name (timeout: ${BOOT_TIMEOUT}s, acceleration: ${KVM_LABEL:-tcg})..."
     rm -f "$serial_log" "$shot" "$QMP_SOCK"
     : > "$serial_log"
 
     # -display none keeps the guest VGA device (so screendump works) while
     # -serial file: captures the console the ISO's cmdline points at. KVM is
-    # used when the host exposes it (GitHub runners do), otherwise the boot is
-    # emulated and simply takes longer than BOOT_TIMEOUT would allow for a
-    # hardware-equivalent boot.
+    # used only when the host actually exposes it — GitHub-hosted runners do
+    # not, so CI boots under TCG emulation; BOOT_TIMEOUT above accounts for it.
     local KVM_ARGS=()
+    local KVM_LABEL="tcg"
     if [[ -w /dev/kvm ]]; then
         KVM_ARGS=(-enable-kvm)
+        KVM_LABEL="kvm"
     fi
 
     qemu-system-x86_64 \
