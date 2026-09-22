@@ -77,15 +77,30 @@ if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
 fi
 
 # Locate an OVMF firmware image so we can also exercise the UEFI/GRUB boot
-# path (previously only the BIOS/syslinux path was ever tested).
+# path (previously only the BIOS/syslinux path was ever tested). CI installs
+# edk2-ovmf for this; a host without it skips the UEFI half with a notice.
 OVMF=""
+OVMF_VARS=""
 for f in \
     /usr/share/edk2/x64/OVMF_CODE.4m.fd \
     /usr/share/edk2/x64/OVMF.4m.fd \
     /usr/share/edk2-ovmf/x64/OVMF_CODE.fd \
     /usr/share/OVMF/OVMF_CODE.fd \
     /usr/share/ovmf/x64/OVMF.fd; do
-    [[ -f "$f" ]] && OVMF="$f" && break
+    if [[ -f "$f" ]]; then
+        OVMF="$f"
+        # A matching variable store, when the distribution ships one. OVMF's
+        # flash driver expects pflash0 = code and pflash1 = vars; running with a
+        # read-only code image and no varstore leaves the firmware without a
+        # place to keep its variables, so supply a writable copy when we can.
+        vars_candidate="${f/OVMF_CODE/OVMF_VARS}"
+        if [[ -f "$vars_candidate" ]]; then
+            OVMF_VARS="$vars_candidate"
+        elif [[ -f "${f%/*}/OVMF_VARS.4m.fd" ]]; then
+            OVMF_VARS="${f%/*}/OVMF_VARS.4m.fd"
+        fi
+        break
+    fi
 done
 
 PPM_STATS_PY=$(mktemp /tmp/neos_ppm_stats.XXXXXX.py)
@@ -315,12 +330,18 @@ for file in "${files[@]}"; do
     run_boot "bios"
 
     if [[ -n "$OVMF" ]]; then
-        run_boot "uefi" -drive "if=pflash,format=raw,readonly=on,file=$OVMF"
+        UEFI_DRIVES=(-drive "if=pflash,format=raw,readonly=on,file=$OVMF")
+        if [[ -n "$OVMF_VARS" ]]; then
+            # Never write to the system's varstore: boot a throwaway copy.
+            cp "$OVMF_VARS" "$OUT_DIR/ovmf_vars.fd"
+            UEFI_DRIVES+=(-drive "if=pflash,format=raw,file=$OUT_DIR/ovmf_vars.fd")
+        fi
+        run_boot "uefi" "${UEFI_DRIVES[@]}"
     elif [[ "${REQUIRE_ISO:-0}" == "1" ]]; then
         echo "[FAIL] REQUIRE_ISO=1 but no OVMF firmware found — the UEFI boot path cannot be verified."
         exit 1
     else
-        echo "[INFO] SKIPPED: no OVMF firmware found; UEFI boot path not tested."
+        echo "[INFO] SKIPPED: no OVMF firmware found; UEFI boot path not tested (install edk2-ovmf to cover it)."
     fi
 done
 

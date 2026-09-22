@@ -177,6 +177,10 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Install dependencies
+        # edk2-ovmf is for tests/verify_iso_smoketest.sh: without it the UEFI
+        # half of the boot gate is skipped with an [INFO] notice, so the
+        # GRUB/EFI entries — the ones that carry the serial console — were
+        # never exercised in CI.
         run: |
           set -euo pipefail
 
@@ -232,6 +236,7 @@ jobs:
             rust \
             python \
             qemu-system-x86 \
+            edk2-ovmf \
             qemu-img \
             util-linux \
             github-cli \
@@ -253,6 +258,22 @@ jobs:
           # builds get the plain tag/filename, any other branch (e.g.
           # testing) gets its own "-<branch>" suffixed tag/filename.
           #
+          # The suffix must be safe in a filename, a tag and a sed replacement.
+          # On a pull_request event github.ref_name is "123/merge" — not a branch
+          # and not safe: the slash terminated the `sed s/…/…/` expression below
+          # and the whole job died at this step in ~0s. Take the PR's head branch
+          # instead, and sanitise either source to [A-Za-z0-9._-].
+          SUFFIX_SOURCE="${{ github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            SUFFIX_SOURCE="${{ github.head_ref }}"
+          fi
+          BRANCH_SUFFIX=""
+          if [[ "$SUFFIX_SOURCE" != "main" ]]; then
+            SAFE_SUFFIX="${SUFFIX_SOURCE//[^A-Za-z0-9._-]/-}"
+            SAFE_SUFFIX="${SAFE_SUFFIX%-}"
+            if [[ -n "$SAFE_SUFFIX" ]]; then
+              BRANCH_SUFFIX="-$SAFE_SUFFIX"
+            fi
           # pull_request events set github.ref_name to "<n>/merge". The slash
           # terminates the sed below (`sed: unknown option to 's'`) and the
           # ISO never builds. Use the head branch on PRs and strip anything
