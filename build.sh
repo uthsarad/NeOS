@@ -210,8 +210,26 @@ bash tools/gen-build-conf.sh "$REPO_ROOT" "$REPO_ROOT/$BUILD_CONF"
 bash tools/gen-manifests.sh "$REPO_ROOT"
 
 # Run mkarchiso
+#
+# `yes ""` feeds blank answers to any prompt mkarchiso may emit. When mkarchiso
+# exits it stops reading, so `yes` is killed by SIGPIPE — exit status 141 — and
+# with `pipefail` that 141 becomes the *pipeline's* status, which the ERR trap
+# would turn into a failed build moments after a successful one (observed as
+# "Process completed with exit code 141" in the first CI run that executed this
+# script). errexit/pipefail are therefore suspended around the pipeline and only
+# mkarchiso's own status (PIPESTATUS[1]) is judged. The pre-unification CI build
+# did exactly this; build.sh never had it, so the developer path aborted at the
+# end of every successful build and nobody noticed because CI was not running
+# this script at all (reports/v2026.09.22/UPDATES_NEEDED.md C2).
 echo -e "${GREEN}Building ISO...${NC}"
+set +e +o pipefail
 yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
+MKARCHISO_EXIT=${PIPESTATUS[1]:-$?}
+set -e -o pipefail
+if [[ "$MKARCHISO_EXIT" -ne 0 ]]; then
+    echo -e "${RED}Error: mkarchiso failed with exit code $MKARCHISO_EXIT${NC}" >&2
+    exit "$MKARCHISO_EXIT"
+fi
 
 # ---- Build offline install repo (local package cache for the ISO) ---------
 # Downloads all packages listed in neos-packages.txt and creates a pacman
