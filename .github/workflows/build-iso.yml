@@ -252,9 +252,23 @@ jobs:
           # Branch suffix keeps releases entirely separate per branch: main
           # builds get the plain tag/filename, any other branch (e.g.
           # testing) gets its own "-<branch>" suffixed tag/filename.
+          #
+          # The suffix must be safe in a filename, a tag and a sed replacement.
+          # On a pull_request event github.ref_name is "123/merge" — not a branch
+          # and not safe: the slash terminated the `sed s/…/…/` expression below
+          # and the whole job died at this step in ~0s. Take the PR's head branch
+          # instead, and sanitise either source to [A-Za-z0-9._-].
+          SUFFIX_SOURCE="${{ github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            SUFFIX_SOURCE="${{ github.head_ref }}"
+          fi
           BRANCH_SUFFIX=""
-          if [[ "${{ github.ref_name }}" != "main" ]]; then
-            BRANCH_SUFFIX="-${{ github.ref_name }}"
+          if [[ "$SUFFIX_SOURCE" != "main" ]]; then
+            SAFE_SUFFIX="${SUFFIX_SOURCE//[^A-Za-z0-9._-]/-}"
+            SAFE_SUFFIX="${SAFE_SUFFIX%-}"
+            if [[ -n "$SAFE_SUFFIX" ]]; then
+              BRANCH_SUFFIX="-$SAFE_SUFFIX"
+            fi
           fi
           VERSION="$(tr -d '[:space:]' < VERSION)"
           CODENAME=""
