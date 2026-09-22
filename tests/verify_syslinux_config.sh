@@ -32,6 +32,23 @@ for cfg in "$SYSLINUX_DIR"/*.cfg; do
     fi
 done
 
+SYS_CFG="$SYSLINUX_DIR/archiso_sys.cfg"
+SYS_CONTENT=$(<"$SYS_CFG")
+for label in "NeOS (Copy to RAM)" "NeOS (Verbose)" "NeOS (Safe Graphics)"; do
+    if [[ "$SYS_CONTENT" == *"$label"* ]]; then
+        echo "  [PASS] $SYS_CFG has '$label'"
+    else
+        echo "[FAIL] $SYS_CFG missing boot entry '$label'"
+        ALL_PASSED=false
+    fi
+done
+if [[ "$SYS_CONTENT" == *"copytoram=y"* ]]; then
+    echo "  [PASS] $SYS_CFG offers copytoram=y"
+else
+    echo "[FAIL] $SYS_CFG missing copytoram=y"
+    ALL_PASSED=false
+fi
+
 if [ "$ALL_PASSED" = true ]; then
     echo "All Syslinux configuration checks passed!"
     exit 0

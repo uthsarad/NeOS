@@ -399,6 +399,19 @@ if __name__ == '__main__':
     import os
     if not is_live_mode() and os.path.exists(os.path.expanduser('~/.config/neos/firstboot-done')) and '--force' not in sys.argv:
         sys.exit(0)
+    # cidata autoinstall: if an unattended config is already visible, hand off
+    # and do not open the welcome window on top of Calamares.
+    if is_live_mode() and os.path.isfile('/usr/local/bin/neos-autoinstall'):
+        try:
+            probe = subprocess.run(
+                ['/usr/local/bin/neos-autoinstall', 'probe'],
+                capture_output=True, text=True, timeout=8, check=False,
+            )
+            if 'MODE=UNATTENDED' in (probe.stdout or ''):
+                subprocess.Popen(['/usr/local/bin/neos-autoinstall', 'apply'])
+                sys.exit(0)
+        except Exception:
+            pass
     app = QApplication(sys.argv)
     app.setApplicationName('NeOS')
     app.setDesktopFileName('neos-welcome')

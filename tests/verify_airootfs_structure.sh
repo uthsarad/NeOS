@@ -26,6 +26,8 @@ REQUIRED_FILES=(
     "profile/profiledef.sh"
     "profile/packages.x86_64"
     "profile/airootfs/usr/local/bin/neos-display-sync"
+    "profile/airootfs/usr/local/bin/neos-autoinstall"
+    "profile/airootfs/usr/local/bin/neos-doctor"
 )
 
 ALL_PASSED=true
@@ -69,6 +71,8 @@ REQUIRED_PERMS=(
     "neos-liveuser-setup"
     "chcon"
     "neos-display-sync"
+    "neos-autoinstall"
+    "neos-doctor"
 )
 
 echo ""

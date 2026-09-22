@@ -1,0 +1,439 @@
+#!/usr/bin/env bash
+# neos-autoinstall — Omarchy-style unattended install from a cidata volume.
+#
+# Looks for a filesystem labeled cidata / NEOSCIDATA (or a directory on the
+# live ISO at /run/archiso/bootmnt/neos/autoinstall/) containing autoinstall.yaml.
+# Without erase: true it only pre-fills Calamares. With erase: true plus a
+# username and password it launches Calamares unattended.
+#
+# Subcommands:
+#   probe              print FOUND= and MODE= (UNATTENDED|PREFILL) if a config exists
+#   parse <file|dir>   print the parsed key=value view (for tests / agents)
+#   apply              live-session entrypoint (no-op if not live / no config)
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+AI_HOSTNAME=""
+AI_USERNAME=""
+AI_FULLNAME=""
+AI_PASSWORD=""
+AI_HASHED_PASSWORD=""
+AI_LOCALE="en_US"
+AI_KEYBOARD="us"
+AI_TIMEZONE="UTC"
+AI_DISK=""
+AI_ERASE=0
+AI_REBOOT=1
+AI_SOURCE=""
+
+usage() {
+    cat <<'EOF'
+Usage: neos-autoinstall probe|parse <file|dir>|apply
+EOF
+}
+
+is_live() {
+    [[ -e /run/archiso/bootmnt || -d /run/archiso || "${USER:-}" == "liveuser" ]]
+}
+
+trim() {
+    local s="$1"
+    s="${s#"${s%%[![:space:]]*}"}"
+    s="${s%"${s##*[![:space:]]}"}"
+    printf '%s' "$s"
+}
+
+unquote() {
+    local s="$1"
+    if [[ "$s" == \"*\" && "$s" == *\" ]]; then
+        s="${s#\"}"
+        s="${s%\"}"
+    elif [[ "$s" == \'*\' && "$s" == *\' ]]; then
+        s="${s#\'}"
+        s="${s%\'}"
+    fi
+    printf '%s' "$s"
+}
+
+truthy() {
+    case "${1,,}" in
+        true|yes|1|on) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+reset_ai() {
+    AI_HOSTNAME=""
+    AI_USERNAME=""
+    AI_FULLNAME=""
+    AI_PASSWORD=""
+    AI_HASHED_PASSWORD=""
+    AI_LOCALE="en_US"
+    AI_KEYBOARD="us"
+    AI_TIMEZONE="UTC"
+    AI_DISK=""
+    AI_ERASE=0
+    AI_REBOOT=1
+}
+
+parse_file() {
+    local file="$1" line key value
+    [[ -f "$file" ]] || return 1
+    AI_SOURCE="$file"
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%%#*}"
+        line="$(trim "$line")"
+        [[ -z "$line" ]] && continue
+        if [[ "$line" == *:* ]]; then
+            key="$(trim "${line%%:*}")"
+            value="$(trim "${line#*:}")"
+        elif [[ "$line" == *=* ]]; then
+            key="$(trim "${line%%=*}")"
+            value="$(trim "${line#*=}")"
+        else
+            continue
+        fi
+        value="$(unquote "$value")"
+        case "${key,,}" in
+            hostname) AI_HOSTNAME="$value" ;;
+            username|login|loginname) AI_USERNAME="$value" ;;
+            fullname|full_name|name) AI_FULLNAME="$value" ;;
+            password) AI_PASSWORD="$value" ;;
+            hashed_password|password_hash) AI_HASHED_PASSWORD="$value" ;;
+            locale) AI_LOCALE="$value" ;;
+            keyboard|keymap) AI_KEYBOARD="$value" ;;
+            timezone) AI_TIMEZONE="$value" ;;
+            disk|target_disk|device) AI_DISK="$value" ;;
+            erase|wipe|erase_disk)
+                if truthy "$value"; then AI_ERASE=1; else AI_ERASE=0; fi
+                ;;
+            reboot)
+                if truthy "$value"; then AI_REBOOT=1; else AI_REBOOT=0; fi
+                ;;
+        esac
+    done < "$file"
+}
+
+find_config_in_dir() {
+    local dir="$1" candidate
+    for candidate in \
+        "$dir/autoinstall.yaml" \
+        "$dir/autoinstall.yml" \
+        "$dir/autoinstall.conf" \
+        "$dir/neos.yaml" \
+        "$dir/user_configuration.yaml"; do
+        if [[ -f "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
+parse_path() {
+    local target="$1" file
+    reset_ai
+    if [[ -d "$target" ]]; then
+        file="$(find_config_in_dir "$target")" || return 1
+    elif [[ -f "$target" ]]; then
+        file="$target"
+    else
+        return 1
+    fi
+    parse_file "$file"
+}
+
+mode_of() {
+    if [[ "$AI_ERASE" -eq 1 && -n "$AI_USERNAME" && ( -n "$AI_PASSWORD" || -n "$AI_HASHED_PASSWORD" ) ]]; then
+        printf 'UNATTENDED'
+    elif [[ -n "$AI_USERNAME" || -n "$AI_HOSTNAME" || "$AI_ERASE" -eq 1 ]]; then
+        printf 'PREFILL'
+    else
+        printf 'NONE'
+    fi
+}
+
+dump_parsed() {
+    printf 'source=%s\n' "$AI_SOURCE"
+    printf 'hostname=%s\n' "$AI_HOSTNAME"
+    printf 'username=%s\n' "$AI_USERNAME"
+    printf 'fullname=%s\n' "$AI_FULLNAME"
+    printf 'locale=%s\n' "$AI_LOCALE"
+    printf 'keyboard=%s\n' "$AI_KEYBOARD"
+    printf 'timezone=%s\n' "$AI_TIMEZONE"
+    printf 'disk=%s\n' "$AI_DISK"
+    printf 'erase=%s\n' "$AI_ERASE"
+    printf 'reboot=%s\n' "$AI_REBOOT"
+    local has_pw=0
+    if [[ -n "$AI_PASSWORD" || -n "$AI_HASHED_PASSWORD" ]]; then
+        has_pw=1
+    fi
+    printf 'has_password=%s\n' "$has_pw"
+    printf 'MODE=%s\n' "$(mode_of)"
+}
+
+iso_autoinstall_dirs() {
+    printf '%s\n' \
+        /run/archiso/bootmnt/neos/autoinstall \
+        /run/archiso/bootmnt/autoinstall
+}
+
+find_cidata_device() {
+    local label
+    for label in cidata CIDATA NEOSCIDATA neoscidata; do
+        if [[ -e "/dev/disk/by-label/$label" ]]; then
+            printf '%s\n' "/dev/disk/by-label/$label"
+            return 0
+        fi
+    done
+    return 1
+}
+
+mount_device() {
+    local dev="$1" out mnt
+    if command -v udisksctl >/dev/null 2>&1; then
+        out="$(udisksctl mount -b "$dev" --no-user-interaction 2>/dev/null || true)"
+        if [[ "$out" == *" at "* ]]; then
+            mnt="${out##* at }"
+            mnt="${mnt%.}"
+            mnt="$(trim "$mnt")"
+            if [[ -d "$mnt" ]]; then
+                printf '%s\n' "$mnt"
+                return 0
+            fi
+        fi
+    fi
+    mnt="$(mktemp -d /tmp/neos-cidata.XXXXXX)"
+    if mount -o ro,nosuid,nodev,noexec "$dev" "$mnt" 2>/dev/null; then
+        printf '%s\n' "$mnt"
+        return 0
+    fi
+    rmdir "$mnt" 2>/dev/null || true
+    return 1
+}
+
+# Locate a config without waiting. Used by `probe` so the welcome app can
+# hand off instantly.
+probe_now() {
+    local dir file dev mnt
+    while IFS= read -r dir; do
+        if file="$(find_config_in_dir "$dir")"; then
+            parse_file "$file"
+            printf 'FOUND=%s\n' "$file"
+            printf 'MODE=%s\n' "$(mode_of)"
+            return 0
+        fi
+    done < <(iso_autoinstall_dirs)
+    if dev="$(find_cidata_device)"; then
+        if mnt="$(mount_device "$dev")"; then
+            if file="$(find_config_in_dir "$mnt")"; then
+                parse_file "$file"
+                printf 'FOUND=%s\n' "$file"
+                printf 'MODE=%s\n' "$(mode_of)"
+                return 0
+            fi
+        fi
+    fi
+    return 1
+}
+
+validate_identity() {
+    if [[ -n "$AI_USERNAME" && ! "$AI_USERNAME" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
+        echo "neos-autoinstall: invalid username '$AI_USERNAME'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_HOSTNAME" && ! "$AI_HOSTNAME" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,62}$ ]]; then
+        echo "neos-autoinstall: invalid hostname '$AI_HOSTNAME'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_PASSWORD" && ! "$AI_PASSWORD" =~ ^[A-Za-z0-9._@%+=!-]{6,}$ ]]; then
+        echo "neos-autoinstall: password must be 6+ chars from [A-Za-z0-9._@%+=!-]" >&2
+        return 1
+    fi
+    return 0
+}
+
+yaml_escape() {
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+generate_calamares_config() {
+    local dest="$1"
+    local src="/etc/calamares"
+    [[ -d "$src" ]] || return 1
+    mkdir -p "$dest"
+    cp -a "$src/." "$dest/"
+
+    if [[ -f "$dest/settings.conf" ]]; then
+        sed -i \
+            -e 's/^prompt-install:.*/prompt-install: false/' \
+            -e 's/^quit-at-end:.*/quit-at-end: true/' \
+            "$dest/settings.conf"
+    fi
+
+    if [[ -f "$dest/modules/users.conf" ]]; then
+        local users_tmp
+        users_tmp="$(mktemp)"
+        sed '/^presets:/,$d' "$dest/modules/users.conf" > "$users_tmp"
+        {
+            cat "$users_tmp"
+            printf 'presets:\n'
+            if [[ -n "$AI_FULLNAME" ]]; then
+                printf '    fullName:\n        value: "%s"\n        editable: false\n' "$(yaml_escape "$AI_FULLNAME")"
+            fi
+            if [[ -n "$AI_USERNAME" ]]; then
+                printf '    loginName:\n        value: "%s"\n        editable: false\n' "$(yaml_escape "$AI_USERNAME")"
+            fi
+        } > "$dest/modules/users.conf"
+        rm -f "$users_tmp"
+        if [[ -n "$AI_HOSTNAME" ]]; then
+            sed -i "s/^  template:.*/  template: \"$(yaml_escape "$AI_HOSTNAME")\"/" "$dest/modules/users.conf" \
+                || true
+        fi
+    fi
+
+    if [[ -n "$AI_KEYBOARD" ]]; then
+        printf '---\nXkbLayout: "%s"\n' "$(yaml_escape "$AI_KEYBOARD")" > "$dest/modules/keyboard.conf"
+    fi
+    if [[ -n "$AI_LOCALE" ]]; then
+        printf '---\nlocaleGenPath: /etc/locale.gen\n' > "$dest/modules/locale.conf"
+    fi
+
+    if [[ -f "$dest/modules/shellprocess.conf" && -n "$AI_USERNAME" ]]; then
+        if [[ -n "$AI_HASHED_PASSWORD" ]]; then
+            printf '    - command: "usermod -p '\''%s'\'' %s"\n' \
+                "$AI_HASHED_PASSWORD" "$AI_USERNAME" >> "$dest/modules/shellprocess.conf"
+        elif [[ -n "$AI_PASSWORD" ]]; then
+            printf '    - command: "echo %s:%s | chpasswd"\n' \
+                "$AI_USERNAME" "$AI_PASSWORD" >> "$dest/modules/shellprocess.conf"
+        fi
+    fi
+
+    if [[ "$AI_REBOOT" -eq 1 && -f "$dest/modules/finished.conf" ]]; then
+        sed -i 's/^restartNowChecked:.*/restartNowChecked: true/' "$dest/modules/finished.conf"
+    fi
+}
+
+launch_installer() {
+    local cfg="$1"
+    local extra=()
+    if [[ "$(mode_of)" == "UNATTENDED" ]]; then
+        extra+=(--unattended)
+    fi
+    extra+=(--config "$cfg")
+    local status
+    if [[ -x /usr/local/bin/neos-welcome ]]; then
+        /usr/local/bin/neos-welcome "${extra[@]}"
+        status=$?
+        return "$status"
+    fi
+    echo "neos-autoinstall: neos-welcome is missing" >&2
+    return 1
+}
+
+cmd_parse() {
+    local target="${1:-}"
+    if [[ -z "$target" ]]; then
+        usage >&2
+        return 2
+    fi
+    if ! parse_path "$target"; then
+        echo "neos-autoinstall: no autoinstall config in $target" >&2
+        return 1
+    fi
+    validate_identity
+    dump_parsed
+}
+
+cmd_probe() {
+    if probe_now; then
+        return 0
+    fi
+    printf 'FOUND=\nMODE=NONE\n'
+    return 1
+}
+
+cmd_apply() {
+    if ! is_live; then
+        echo "neos-autoinstall: not a live session, nothing to do"
+        return 0
+    fi
+
+    local lockdir="${XDG_RUNTIME_DIR:-/tmp}/neos-autoinstall.lock"
+    mkdir -p "$(dirname "$lockdir")" 2>/dev/null || true
+    if ! mkdir "$lockdir" 2>/dev/null; then
+        echo "neos-autoinstall: another apply is already running"
+        return 0
+    fi
+    # Expand lockdir now: a single-quoted trap would look up a function-local
+    # that is already gone when EXIT fires.
+    trap "rmdir '$lockdir' 2>/dev/null || true" EXIT
+
+    if pgrep -x calamares >/dev/null 2>&1; then
+        echo "neos-autoinstall: Calamares is already running"
+        return 0
+    fi
+
+    local waited=0
+    local file=""
+    while (( waited <= 30 )); do
+        if probe_now >/dev/null; then
+            break
+        fi
+        sleep 2
+        waited=$((waited + 2))
+    done
+
+    if ! probe_now >/tmp/neos-autoinstall.probe 2>/dev/null; then
+        echo "neos-autoinstall: no cidata / autoinstall config found"
+        return 0
+    fi
+    # probe_now already parsed into AI_* globals when it succeeded; re-run
+    # for the printed path so generate_calamares_config has AI_SOURCE.
+    file="$(awk -F= '/^FOUND=/{print substr($0,7); exit}' /tmp/neos-autoinstall.probe || true)"
+    rm -f /tmp/neos-autoinstall.probe
+    if [[ -n "$file" && -f "$file" ]]; then
+        parse_file "$file"
+    fi
+
+    if ! validate_identity; then
+        echo "neos-autoinstall: refusing to apply an invalid config" >&2
+        return 1
+    fi
+
+    if [[ "$(mode_of)" == "NONE" ]]; then
+        echo "neos-autoinstall: config present but empty"
+        return 0
+    fi
+
+    if [[ ! -d /etc/calamares ]]; then
+        echo "neos-autoinstall: /etc/calamares missing" >&2
+        return 1
+    fi
+
+    local cfg
+    cfg="${XDG_RUNTIME_DIR:-/tmp}/neos-calamares-autoinstall"
+    rm -rf "$cfg"
+    generate_calamares_config "$cfg"
+    echo "neos-autoinstall: launching installer (MODE=$(mode_of)) from $AI_SOURCE"
+    launch_installer "$cfg"
+}
+
+main() {
+    local cmd="${1:-}"
+    case "$cmd" in
+        probe) shift; cmd_probe "$@" ;;
+        parse) shift; cmd_parse "$@" ;;
+        apply) shift; cmd_apply "$@" ;;
+        -h|--help|help) usage ;;
+        "") usage >&2; return 2 ;;
+        *)
+            echo "neos-autoinstall: unknown command '$cmd'" >&2
+            usage >&2
+            return 2
+            ;;
+    esac
+}
+
+main "$@"

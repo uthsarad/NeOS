@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=NeOS Doctor
+Comment=Diagnose boot, display, and installer issues
+Exec=konsole -e /usr/local/bin/neos-doctor
+Icon=utilities-system-monitor
+Type=Application
+Categories=System;Utility;
+Terminal=false

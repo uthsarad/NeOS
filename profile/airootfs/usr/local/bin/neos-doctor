@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+# neos-doctor — boot/install diagnostics for humans and agents.
+#
+# Prints a readable report by default. Pass --json for a machine-readable
+# object an agent can act on (Omarchy-style: the OS should be debuggable
+# without spelunking). Exit status 0 if the session looks healthy, 1 otherwise.
+set -u
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+JSON=0
+if [[ "${1:-}" == "--json" || "${1:-}" == "-j" ]]; then
+    JSON=1
+fi
+
+healthy=1
+note() { printf '%s\n' "$*"; }
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+json_escape() {
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+LIVE=0
+if [[ -e /run/archiso/bootmnt || -d /run/archiso ]]; then
+    LIVE=1
+fi
+
+GRAPHICAL="unknown"
+if have systemctl; then
+    if systemctl is-active --quiet graphical.target 2>/dev/null; then
+        GRAPHICAL="active"
+    else
+        GRAPHICAL="inactive"
+        healthy=0
+    fi
+fi
+
+SDDM="unknown"
+if have systemctl; then
+    if systemctl is-active --quiet sddm.service 2>/dev/null; then
+        SDDM="active"
+    else
+        SDDM="inactive"
+        healthy=0
+    fi
+fi
+
+NM="unknown"
+if have systemctl; then
+    if systemctl is-active --quiet NetworkManager.service 2>/dev/null; then
+        NM="active"
+    else
+        NM="inactive"
+    fi
+fi
+
+FAILED_UNITS=""
+if have systemctl; then
+    FAILED_UNITS="$(systemctl --failed --no-legend --plain 2>/dev/null | awk '{print $1}' | tr '\n' ' ')"
+    FAILED_UNITS="${FAILED_UNITS%"${FAILED_UNITS##*[![:space:]]}"}"
+    if [[ -n "$FAILED_UNITS" ]]; then
+        healthy=0
+    fi
+fi
+
+MEM_AVAIL=""
+if [[ -r /proc/meminfo ]]; then
+    MEM_AVAIL="$(awk '/MemAvailable:/ {printf "%d", $2/1024}' /proc/meminfo)"
+fi
+
+DISK_ROOT=""
+if have df; then
+    DISK_ROOT="$(df -P / 2>/dev/null | awk 'NR==2 {print $5}')"
+fi
+
+VIRT="none"
+if have systemd-detect-virt; then
+    VIRT="$(systemd-detect-virt 2>/dev/null || echo none)"
+fi
+
+FIRMWARE="unknown"
+if [[ -d /sys/firmware/efi ]]; then
+    FIRMWARE="uefi"
+else
+    FIRMWARE="bios"
+fi
+
+CALAMARES_LOG=""
+if [[ -f /var/log/Calamares.log ]]; then
+    CALAMARES_LOG="/var/log/Calamares.log"
+elif [[ -f "${HOME:-/root}/.cache/neos-installer.log" ]]; then
+    CALAMARES_LOG="${HOME:-/root}/.cache/neos-installer.log"
+fi
+
+OS_PRETTY="NeOS"
+if [[ -r /etc/os-release ]]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    OS_PRETTY="${PRETTY_NAME:-NeOS}"
+    if [[ -n "${VERSION_ID:-}" ]]; then
+        OS_PRETTY="${PRETTY_NAME:-NeOS} ${VERSION_ID}"
+    fi
+fi
+
+CMDLINE=""
+if [[ -r /proc/cmdline ]]; then
+    CMDLINE="$(tr -d '\n' < /proc/cmdline)"
+fi
+
+if [[ "$JSON" -eq 1 ]]; then
+    printf '{'
+    printf '"healthy": %s,' "$([[ "$healthy" -eq 1 ]] && echo true || echo false)"
+    printf '"os": "%s",' "$(json_escape "$OS_PRETTY")"
+    printf '"live": %s,' "$([[ "$LIVE" -eq 1 ]] && echo true || echo false)"
+    printf '"firmware": "%s",' "$(json_escape "$FIRMWARE")"
+    printf '"virt": "%s",' "$(json_escape "$VIRT")"
+    printf '"graphical_target": "%s",' "$(json_escape "$GRAPHICAL")"
+    printf '"sddm": "%s",' "$(json_escape "$SDDM")"
+    printf '"networkmanager": "%s",' "$(json_escape "$NM")"
+    printf '"failed_units": "%s",' "$(json_escape "$FAILED_UNITS")"
+    printf '"mem_available_mb": "%s",' "$(json_escape "$MEM_AVAIL")"
+    printf '"root_disk_used": "%s",' "$(json_escape "$DISK_ROOT")"
+    printf '"calamares_log": "%s",' "$(json_escape "$CALAMARES_LOG")"
+    printf '"cmdline": "%s"' "$(json_escape "$CMDLINE")"
+    printf '}\n'
+else
+    note "NeOS doctor"
+    note "  os:               $OS_PRETTY"
+    note "  live session:     $([[ "$LIVE" -eq 1 ]] && echo yes || echo no)"
+    note "  firmware:         $FIRMWARE"
+    note "  virtualization:   $VIRT"
+    note "  graphical.target: $GRAPHICAL"
+    note "  sddm:             $SDDM"
+    note "  NetworkManager:   $NM"
+    note "  failed units:     ${FAILED_UNITS:-none}"
+    note "  mem available:    ${MEM_AVAIL:-?} MiB"
+    note "  / used:           ${DISK_ROOT:-?}"
+    note "  installer log:    ${CALAMARES_LOG:-none}"
+    if [[ "$healthy" -eq 1 ]]; then
+        note "status: healthy"
+    else
+        note "status: UNHEALTHY — pass this report to an agent or see docs/user-guide/TROUBLESHOOTING.md"
+    fi
+fi
+
+exit "$([[ "$healthy" -eq 1 ]] && echo 0 || echo 1)"

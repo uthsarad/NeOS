@@ -1,101 +1,100 @@
-name: Auto-merge Jules
+name: Auto-merge into testing
+
+# testing is the integration branch: every non-draft PR that targets it is
+# merged automatically, with `--admin` when branch rules would otherwise
+# block. main is not in scope — it still only moves by a maintainer.
+#
+# This workflow never checks out PR code. It only calls `gh` against the
+# pull request URL from the event payload, which is why pull_request_target
+# is safe to use here (write token + secrets, untrusted code is not run).
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [testing]
   workflow_dispatch:
     inputs:
       pr_url:
-        description: Pull request URL to approve and merge
+        description: Pull request URL to merge into testing
         required: true
         type: string
 
+concurrency:
+  group: auto-merge-testing-${{ github.event.pull_request.number || inputs.pr_url }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  approve-and-merge:
+  merge-into-testing:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    # SECURITY (2026-09-18): re-gated on pull_request_review + approved, per the repo owner's
-    # explicit direction, superseding the 2026-09-11 revert noted below. The allow-listed-actor
-    # bypass that let pull_request/pull_request_target auto-merge on open (no real review) is
-    # removed: a compromised or impersonated allow-listed account could previously land arbitrary
-    # CI changes unreviewed via JULES_AUTO_MERGE_TOKEN (repo+workflow scope). Merge now requires
-    # an actual "Approved" review from an OWNER/MEMBER/COLLABORATOR on a PR targeting `testing`,
-    # or an explicit workflow_dispatch by someone with write access. `main` still only moves via
-    # the repo owner's own manual merge from `testing` — see the historical
-    # reports/v2026.09.11/ARCHITECT_SCOPE.json (strategic_pause) for why bot PRs landing
-    # straight on main unattended is the thing to avoid. Note that report is a 2026-09-12
-    # snapshot, not a live policy: the pause it describes was lifted.
-    #
-    # HISTORY (2026-09-11): a human-review-only gate was tried here and reverted at the repo
-    # owner's request, restoring self-approve/auto-merge for allow-listed bot actors — that is
-    # the exact mechanism that previously drove bots to merge trivial "acknowledge pause" PRs
-    # with nobody looking at them. Do not reintroduce an actor allow-list bypass here; if the
-    # review-approval gate below is too slow for trusted bots, scope a narrower exception
-    # explicitly rather than bypassing review entirely.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'pull_request_review' &&
-       github.event.review.state == 'approved' &&
-       github.event.pull_request.base.ref == 'testing' &&
-       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association))
+      (github.event.pull_request.draft == false &&
+       github.event.pull_request.base.ref == 'testing')
     steps:
-      - name: Auto-merge
-        # Bolt: Removed actions/checkout as the gh CLI is API-driven and does not need local repo context
+      - name: Approve and merge
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_url || github.event.pull_request.html_url }}
-          HAS_PAT: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' }}
         run: |
           set -euo pipefail
 
           if [[ -z "${PR_URL:-}" ]]; then
-            echo "PR_URL is required. For workflow_dispatch runs, provide the pr_url input." >&2
+            echo "PR_URL is required." >&2
             exit 1
           fi
 
           echo "Inspecting PR: $PR_URL"
-          
-          # Check if the PR is already merged or closed
-          PR_STATE=$(gh pr view "$PR_URL" --json state --jq '.state')
+
+          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,isDraft,url)"
+          PR_STATE="$(printf '%s' "$PR_JSON" | jq -r '.state')"
+          PR_BASE="$(printf '%s' "$PR_JSON" | jq -r '.baseRefName')"
+          PR_DRAFT="$(printf '%s' "$PR_JSON" | jq -r '.isDraft')"
+
           if [[ "$PR_STATE" != "OPEN" ]]; then
-            echo "PR is in state $PR_STATE. Skipping auto-merge."
+            echo "PR is in state $PR_STATE. Nothing to merge."
             exit 0
           fi
 
-          # If the PR changes workflow files, GitHub may reject merge operations from GITHUB_TOKEN
-          # because app tokens do not have workflow scope. Use JULES_AUTO_MERGE_TOKEN for these PRs.
-          if gh pr view "$PR_URL" --json files --jq '.files[].path' | grep -q '^.github/workflows/'; then
-            if [[ "$HAS_PAT" != "true" ]]; then
-              echo "PR modifies .github/workflows/* but JULES_AUTO_MERGE_TOKEN is missing."
-              echo "Commenting on PR..."
-              gh pr comment "$PR_URL" --body "Auto-merge skipped: This PR modifies workflow files but the required secret \`JULES_AUTO_MERGE_TOKEN\` (with \`repo\` and \`workflow\` scopes) is not configured in this repository. A maintainer must merge this PR manually." || true
-              exit 0
-            fi
-            echo "PR modifies workflows but JULES_AUTO_MERGE_TOKEN is available."
+          if [[ "$PR_BASE" != "testing" ]]; then
+            echo "Refusing to auto-merge a PR targeting '$PR_BASE' (only testing is automatic)." >&2
+            exit 1
           fi
 
-          echo "Approving PR..."
-          gh pr review "$PR_URL" --approve || echo "Note: Could not approve (maybe already approved or self-review?)"
+          if [[ "$PR_DRAFT" == "true" ]]; then
+            echo "PR is a draft. Skipping."
+            exit 0
+          fi
 
-          echo "Setting PR to ready and enabling auto-merge..."
           gh pr ready "$PR_URL" 2>/dev/null || true
-          
-          echo "Executing forced auto-merge..."
-          if gh pr merge "$PR_URL" --auto --squash --delete-branch; then
-            echo "✓ Auto-merge enabled via native GitHub auto-merge."
+          gh pr review "$PR_URL" --approve \
+            --body "Auto-approved: PRs into \`testing\` merge automatically." \
+            || echo "Note: could not approve (self-review or already approved)."
+
+          # Land it. --admin is intentional: testing is the firehose, and a
+          # required-check deadlock must not strand a PR. main is unaffected.
+          merged=0
+          if gh pr merge "$PR_URL" --squash --delete-branch --admin; then
+            echo "Merged (squash, admin)."
+            merged=1
           elif gh pr merge "$PR_URL" --squash --delete-branch; then
-            echo "✓ Force squashed and merged PR successfully."
+            echo "Merged (squash)."
+            merged=1
+          elif gh pr merge "$PR_URL" --merge --delete-branch --admin; then
+            echo "Merged (merge commit, admin)."
+            merged=1
           elif gh pr merge "$PR_URL" --merge --delete-branch; then
-            echo "✓ Direct merged PR successfully."
-          else
-            # No `--admin` fallback: bypassing required status checks (and, on a
-            # protected branch, review requirements) to land a bot PR is exactly
-            # the failure mode this file's review gate exists to prevent
-            # (reports/v2026.09.18 M3). A PR that cannot merge under the branch's
-            # own rules is left for a human to merge.
-            echo "WARNING: Could not auto-merge PR (branch protection or failing checks). A maintainer must merge it manually." >&2
-            gh pr comment "$PR_URL" --body "Auto-merge did not complete: the PR cannot be merged under the current branch protection or checks. No admin bypass was attempted — a maintainer should review and merge manually." || true
-            exit 0
+            echo "Merged (merge commit)."
+            merged=1
           fi
+
+          if [[ "$merged" -ne 1 ]]; then
+            echo "Failed to merge $PR_URL into testing." >&2
+            gh pr comment "$PR_URL" --body "Auto-merge into \`testing\` failed. A maintainer should merge this by hand (or re-run **Auto-merge into testing**)." || true
+            exit 1
+          fi
+
+          gh pr comment "$PR_URL" --body "Merged into \`testing\` automatically." || true

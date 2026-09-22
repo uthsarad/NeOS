@@ -252,10 +252,22 @@ jobs:
           # Branch suffix keeps releases entirely separate per branch: main
           # builds get the plain tag/filename, any other branch (e.g.
           # testing) gets its own "-<branch>" suffixed tag/filename.
-          BRANCH_SUFFIX=""
-          if [[ "${{ github.ref_name }}" != "main" ]]; then
-            BRANCH_SUFFIX="-${{ github.ref_name }}"
+          #
+          # pull_request events set github.ref_name to "<n>/merge". The slash
+          # terminates the sed below (`sed: unknown option to 's'`) and the
+          # ISO never builds. Use the head branch on PRs and strip anything
+          # that is not ISO-filename-safe.
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            REF_NAME="${{ github.head_ref }}"
+          else
+            REF_NAME="${{ github.ref_name }}"
           fi
+          REF_SAFE="$(printf '%s' "$REF_NAME" | tr -c 'A-Za-z0-9._-' '-' | sed -E 's/-+/-/g; s/^-+//; s/-+$//')"
+          BRANCH_SUFFIX=""
+          if [[ "$REF_SAFE" != "main" && -n "$REF_SAFE" ]]; then
+            BRANCH_SUFFIX="-${REF_SAFE}"
+          fi
+          echo "branch_suffix=$BRANCH_SUFFIX" >> "$GITHUB_OUTPUT"
           VERSION="$(tr -d '[:space:]' < VERSION)"
           CODENAME=""
 
@@ -417,14 +429,10 @@ jobs:
           # Tag from the repo VERSION file so releases map to CHANGELOG
           # entries. Suffix with date and run_number to allow multiple releases
           # per day.
-          # Branch suffix keeps releases entirely separate per branch: main
-          # builds get the plain tag/filename, any other branch (e.g.
-          # testing) gets its own "-<branch>" suffixed tag/filename.
-          BRANCH_SUFFIX=""
-          if [[ "${{ github.ref_name }}" != "main" ]]; then
-            BRANCH_SUFFIX="-${{ github.ref_name }}"
-          fi
           VERSION="$(tr -d '[:space:]' < VERSION)"
+          # Branch suffix is computed in the codename step so PR refs cannot
+          # inject a slash into the tag either.
+          BRANCH_SUFFIX="${{ steps.codename.outputs.branch_suffix }}"
           # Inject codename into tag to make it readable in the UI and SourceForge URLs (without date/version prefix)
           TAG_VAL="${{ steps.codename.outputs.value }}-b${{ github.run_number }}${BRANCH_SUFFIX}"
           echo "value=$TAG_VAL" >> "$GITHUB_OUTPUT"

@@ -14,7 +14,7 @@
 
 **NeOS** is a curated, snapshot-based Arch Linux desktop distribution engineered for predictable behavior, system stability, and a refined **KDE Plasma 6** experience. Designed for users transitioning from Windows, NeOS bridges the gap between the flexibility of a rolling release and the reliability of a validated workstation environment.
 
-It ships as a full **live installer** — boot into a working desktop, try it, then install with the Calamares wizard, the same model as a mainstream desktop OS.
+It ships as a full **live installer** — boot into a working desktop, try it, then install with the Calamares wizard, the same model as a mainstream desktop OS. Hold the firmware menu for Copy-to-RAM or Safe Graphics; attach a `cidata` volume for an Omarchy-style unattended install.
 
 > **Installing without a network:** an ISO built locally with `sudo ./build.sh` embeds an offline package repository, so the installer completes with no internet connection. CI passes `--no-offline-repo` to the same script, so the ISOs published to Releases install from the network.
 
@@ -78,7 +78,7 @@ NeOS uses a focused tooling ecosystem for build automation, validation, and deve
 
 Because NeOS is a curated distribution, every release is exercised before it reaches users. QA is led by **Hajime**, covering:
 
-*   **Boot validation** — the ISO is booted (BIOS and UEFI) to confirm it reaches the live desktop, including in virtual machines (VMware, VirtualBox, QEMU/KVM).
+*   **Boot validation** — the ISO is booted (BIOS and UEFI) to confirm it reaches the live desktop, including in virtual machines (VMware, VirtualBox, QEMU/KVM). Copy-to-RAM, Safe Graphics and Verbose entries are first-class boot options; `neos-doctor` reports whether `graphical.target` actually came up.
 *   **Installer validation** — the Calamares flow is run end-to-end so installs complete and reboot into a working system.
 *   **Automated build gates (CI)** — every push to `testing` runs ShellCheck, Trivy, the 40-odd `tests/verify_*.sh` gates with `REQUIRE_TOOLS=1` (the Ruby, Go, .NET and Rust toolchains are installed, so a gate can no longer quietly degrade into a grep), and a chroot verification that the installer's libraries resolve.
 *   **Boot verification** — the built ISO is booted in QEMU (BIOS and UEFI) and the build fails unless the guest reports an active `graphical.target` and renders a non-blank frame; a timeout is not a pass.

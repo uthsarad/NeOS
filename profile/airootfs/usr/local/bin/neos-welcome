@@ -8,6 +8,39 @@
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+UNATTENDED=0
+CONFIG_DIR=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --unattended|-u) UNATTENDED=1 ;;
+        --config|-c)
+            CONFIG_DIR="${2:-}"
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: neos-welcome [--unattended] [--config DIR]"
+            exit 0
+            ;;
+        *)
+            echo "neos-welcome: unknown option: $1" >&2
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+CAL_ARGS=()
+if [[ "$UNATTENDED" -eq 1 ]]; then
+    CAL_ARGS+=(-u)
+fi
+if [[ -n "$CONFIG_DIR" ]]; then
+    if [[ ! -d "$CONFIG_DIR" ]]; then
+        echo "neos-welcome: --config directory does not exist: $CONFIG_DIR" >&2
+        exit 1
+    fi
+    CAL_ARGS+=(-c "$CONFIG_DIR")
+fi
+
 if (( EUID == 0 )); then
     echo "Error: This script is a user-level GUI wrapper and must not be run as root." >&2
     exit 1
@@ -73,7 +106,7 @@ sudo --preserve-env=DISPLAY,XAUTHORITY \
         DISPLAY="$DISPLAY_TO_USE" \
         XAUTHORITY="$XAUTH_TO_USE" \
         "${GL_ENV[@]}" \
-        calamares >"$LOG" 2>&1
+        calamares "${CAL_ARGS[@]}" >"$LOG" 2>&1
 status=$?
 
 if [ "$status" -ne 0 ]; then
