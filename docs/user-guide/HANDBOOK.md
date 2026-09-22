@@ -50,7 +50,7 @@ Flash the ISO to your USB drive using a tool like:
 Insert the USB drive, restart your computer, and enter the Boot Menu (usually F12, F11, or Del). Select your USB drive.
 
 ### 4. Install
-Once booted, the temporary installer session starts Calamares automatically. Use the desktop "Install NeOS" shortcut if you close the installer and need to open it again. Follow the on-screen instructions:
+Once booted, the NeOS welcome app starts automatically and offers **Try NeOS** or **Install NeOS**; picking Install launches the Calamares wizard (the desktop "Install NeOS" shortcut does the same, so you can reopen it at any point). Follow the on-screen instructions:
 *   **Location**: Set your timezone.
 *   **Keyboard**: Choose your layout.
 *   **Partitions**: "Erase Disk" is easiest for a clean install. "Manual Partitioning" is for advanced users.
@@ -99,42 +99,42 @@ This repository is an **Archiso profile**. If you are new, focus on these key pa
 | `profile/profiledef.sh` | Core Archiso profile settings (ISO label, publisher, build modes, file permissions). | You need to change identity, metadata, permissions, or boot profile behavior. |
 | `build.sh` | Wrapper script to build the ISO with project defaults. | You want to change build flow (output/work directories, cleanup, build args). |
 | `profile/packages.x86_64` | Package list for the supported architecture. | You are adding or removing software from the live image. |
-| `profile/bootstrap_packages.*` | Minimal package sets used during bootstrap stages (only consulted for `bootstrap` build modes). | You are changing early build/bootstrap dependencies. |
+| `profile/bootstrap_packages.*` | Left over from Arch upstream's profile template. Unused here: `profiledef.sh` sets `buildmodes=('iso')` only, so nothing reads it. | Nothing — edit `profile/packages.x86_64` instead. |
 | `profile/pacman.conf` | Package manager configuration for the build environment (repos, signatures, options). | Repositories or package trust configuration must change. |
-| `airootfs/` | Files copied directly into the live root filesystem. | You are changing system defaults, services, scripts, installer behavior, or branding. |
-| `grub/` and `syslinux/` | UEFI/BIOS bootloader menus and boot parameters. | You need to adjust boot entries, kernel parameters, or boot UX. |
+| `profile/airootfs/` | Files copied directly into the live root filesystem. | You are changing system defaults, services, scripts, installer behavior, or branding. |
+| `profile/grub/` and `profile/syslinux/` | UEFI/BIOS bootloader menus and boot parameters. | You need to adjust boot entries, kernel parameters, or boot UX. |
 | `tests/` | Verification scripts for profile integrity and release gates. | You are validating or extending quality checks. |
 | `docs/` | Architecture, roadmap, mission, and operational documentation. | You are updating design intent, process, or contributor guidance. |
 | `.github/workflows/` | CI pipelines that run checks/builds in automation. | You need to change automated build/test behavior. |
 
-### `airootfs/` quick map
+### `profile/airootfs/` quick map
 
-`airootfs/` is the most important directory for day-to-day system customization:
+`profile/airootfs/` is the most important directory for day-to-day system customization:
 
-*   `airootfs/etc/`: System configuration shipped in the live/install image (systemd units, security defaults, Calamares settings, kernel/sysctl tuning).
-*   `airootfs/usr/local/bin/`: Project-maintained operational scripts (for example, auto-update and maintenance helpers).
-*   `airootfs/etc/calamares/`: Installer modules and branding behavior.
-*   `airootfs/etc/pacman.d/`: Mirrorlists and package-manager hooks that run on package transactions.
+*   `profile/airootfs/etc/`: System configuration shipped in the live/install image (systemd units, security defaults, Calamares settings, kernel/sysctl tuning).
+*   `profile/airootfs/usr/local/bin/`: Project-maintained operational scripts (for example, auto-update and maintenance helpers).
+*   `profile/airootfs/etc/calamares/`: Installer modules and branding behavior.
+*   `profile/airootfs/etc/pacman.d/`: Mirrorlists and package-manager hooks that run on package transactions.
 
 ### Safe change workflow
 
 When modifying key structure files:
 
-1. Update the source file(s) (for example `packages.x86_64`, `profiledef.sh`, or files under `airootfs/`).
+1. Update the source file(s) (for example `profile/packages.x86_64`, `profile/profiledef.sh`, or files under `profile/airootfs/`).
 2. Run the relevant script(s) in `tests/` that validate your change area.
-3. If boot behavior was modified, verify both `grub/` and `syslinux/` paths stay consistent.
+3. If boot behavior was modified, verify both `profile/grub/` and `profile/syslinux/` paths stay consistent.
 4. Document intent in `docs/` whenever a change affects architecture, defaults, or contributor workflow.
 
 ## Customization
 
 ### Adding Packages
-Edit `packages.x86_64` and add the package name on a new line.
+Edit `profile/packages.x86_64` and add the package name on a new line.
 
 ### Changing Default Settings
-Modify files in `airootfs/etc/`. For example, to change the default wallpaper, you might edit `airootfs/usr/share/wallpapers/`.
+Modify files under `profile/airootfs/etc/`. For example, the default wallpaper is `profile/airootfs/usr/share/backgrounds/neos-wallpaper.png` (referenced from the KDE and SDDM configuration).
 
 ### Custom Scripts
-Place your scripts in `airootfs/usr/local/bin/` and ensure they are executable. You can set permissions in `profiledef.sh`.
+Place your scripts in `profile/airootfs/usr/local/bin/` and ensure they are executable. You can set permissions in `profile/profiledef.sh`.
 
 ## Troubleshooting
 

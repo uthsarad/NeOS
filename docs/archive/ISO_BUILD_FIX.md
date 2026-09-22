@@ -352,11 +352,11 @@ The installed system uses `DatabaseRequired` to enforce strict security for end 
 
 ## Additional Resources
 
-- [NeOS Handbook](HANDBOOK.md) - Complete installation guide
-- [Architecture Documentation](ARCHITECTURE.md) - System design
+- [NeOS Handbook](../user-guide/HANDBOOK.md) - Complete installation guide
+- [Architecture Documentation](../architecture/ARCHITECTURE.md) - System design
 - [Deep Audit Report](DEEP_AUDIT.md) - Comprehensive analysis
 - [Archiso Wiki](https://wiki.archlinux.org/title/Archiso) - Official documentation
-- [GRUB Configuration](BOOTLOADER.md) - Boot loader details
+- [GRUB Configuration](../architecture/BOOTLOADER.md) - Boot loader details
 
 ---
 

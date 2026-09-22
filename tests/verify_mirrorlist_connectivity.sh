@@ -5,7 +5,7 @@ set -euo pipefail
 
 if ! curl -I -s --connect-timeout 1 --max-time 2 -- "https://archlinux.org" > /dev/null; then
     echo -e "\n================================================================================"
-    echo -e "⏭️  SKIPPED: Network isolation detected."
+    echo -e "[INFO] SKIPPED: Network isolation detected."
     echo -e "   Mirrorlist connectivity test bypassed gracefully."
     echo -e "================================================================================\n"
     exit 0

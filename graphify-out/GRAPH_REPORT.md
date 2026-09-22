@@ -1,5 +1,14 @@
 # Graph Report - .  (2026-09-18)
 
+> **Snapshot, not current output.** Generated 2026-09-18. It predates the changes
+> recorded in `CHANGELOG.md` under [2026.09.22], the relocation of the agent reports
+> into `reports/v2026.09.11/` and `reports/v2026.09.22/`, and the removal of the ISO
+> size gate. The manifest covers 192 files; files added since (`.github/dependabot.yml`,
+> most of `etc/calamares/modules/`, the SDDM `Main.qml`, the pacman hooks, …) are
+> absent, and the community list still contains "ISO Size And Audit History".
+> Regenerate with the `graphify` tool (`graphify-out/README.md`) before relying on the
+> counts, communities or edges below.
+
 ## Corpus Check
 - 192 files · ~209,712 words
 - Verdict: corpus is large enough that graph structure adds value.

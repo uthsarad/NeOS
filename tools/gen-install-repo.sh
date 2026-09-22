@@ -93,38 +93,40 @@ if [[ ${#PKGS[@]} -eq 0 ]]; then
 fi
 
 # ---- Check what's already cached ------------------------------------------
+# Runs for every invocation (including --skip-download), so the cached/missing
+# accounting is exercised by tests/verify_install_repo.sh without a network.
 CACHED_COUNT=0
 MISSING_PKGS=()
 
+# Exact-name lookup table keyed by base package name (strip -VERSION-REL-ARCH).
+# A prefix glob like "${pkg}-*.pkg.tar.zst" would wrongly match sibling
+# packages (e.g. "base" matching "base-devel-...", "docker" matching
+# "docker-compose-..."), silently treating the real package as cached
+# when it was never downloaded.
+declare -A REPO_HAVE=()
+for f in "$REPO_DIR"/*.pkg.tar.zst; do
+    [[ -f "$f" ]] || continue
+    base="${f##*/}"
+    base="${base%%-[0-9]*}"
+    REPO_HAVE["$base"]="$f"
+done
+
+# NOTE: use assignment form (VAR=$((VAR + 1))), never a bare ((VAR++)).
+# Under `set -e` a post-increment evaluates to the OLD value, so the very
+# first increment from 0 returns exit status 1 and aborts the whole script
+# before any package is fetched.
+for pkg in "${PKGS[@]}"; do
+    if [[ -n "${REPO_HAVE[$pkg]:-}" ]]; then
+        CACHED_COUNT=$((CACHED_COUNT + 1))
+    else
+        MISSING_PKGS+=("$pkg")
+    fi
+done
+
+echo "Already cached: $CACHED_COUNT"
+echo "Missing: ${#MISSING_PKGS[@]}"
+
 if [[ "$SKIP_DOWNLOAD" == false ]]; then
-    # Exact-name lookup table keyed by base package name (strip -VERSION-REL-ARCH).
-    # A prefix glob like "${pkg}-*.pkg.tar.zst" would wrongly match sibling
-    # packages (e.g. "base" matching "base-devel-...", "docker" matching
-    # "docker-compose-..."), silently treating the real package as cached
-    # when it was never downloaded.
-    declare -A REPO_HAVE=()
-    for f in "$REPO_DIR"/*.pkg.tar.zst; do
-        [[ -f "$f" ]] || continue
-        base="${f##*/}"
-        base="${base%%-[0-9]*}"
-        REPO_HAVE["$base"]="$f"
-    done
-
-    # NOTE: use assignment form (VAR=$((VAR + 1))), never a bare ((VAR++)).
-    # Under `set -e` a post-increment evaluates to the OLD value, so the very
-    # first increment from 0 returns exit status 1 and aborts the whole script
-    # before any package is fetched.
-    for pkg in "${PKGS[@]}"; do
-        if [[ -n "${REPO_HAVE[$pkg]:-}" ]]; then
-            CACHED_COUNT=$((CACHED_COUNT + 1))
-        else
-            MISSING_PKGS+=("$pkg")
-        fi
-    done
-
-    echo "Already cached: $CACHED_COUNT"
-    echo "Missing: ${#MISSING_PKGS[@]}"
-
     if [[ ${#MISSING_PKGS[@]} -gt 0 || "$FORCE_REFRESH" == true ]]; then
         # ---- First, try to reuse packages from mkarchiso's cache ------------
         REUSED_COUNT=0
@@ -172,6 +174,8 @@ if [[ "$SKIP_DOWNLOAD" == false ]]; then
                 "${PKGS[@]}" || true
         fi
     fi
+else
+    echo "--skip-download: metadata only — no packages will be downloaded."
 fi
 
 # ---- Cleanup: remove stale packages not in the package list --------------

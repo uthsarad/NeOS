@@ -1,7 +1,39 @@
 #!/bin/bash
+# NeOS ISO build entrypoint — the single build path shared by local builds and
+# CI (.github/workflows/build-iso.yml calls this script, it no longer
+# re-implements the build inline; see reports/v2026.09.22/UPDATES_NEEDED.md C2).
+#
+# Usage: sudo ./build.sh [--ci] [--no-offline-repo]
+#   --ci               non-interactive: always remove a stale work/ directory
+#   --no-offline-repo  skip the offline install package repo (tools/gen-install-repo.sh)
+#                      and the xorriso step that embeds it. CI uses this: the
+#                      published ISOs install from the network, and embedding
+#                      ~200 packages would balloon the build. The offline repo
+#                      remains available to local builds, which is the only
+#                      path that produces an offline-capable ISO (README).
 set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+CI_BUILD="false"
+OFFLINE_REPO="true"
+
+usage() {
+    sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+for arg in "$@"; do
+    case "$arg" in
+        --ci)              CI_BUILD="true" ;;
+        --no-offline-repo) OFFLINE_REPO="false" ;;
+        -h|--help)         usage; exit 0 ;;
+        *)
+            echo "Unknown option: $arg" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
 
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
@@ -10,6 +42,11 @@ _error_handler() {
     local err=$1
     local line=$2
     local cmd="${BASH_COMMAND//[^[:print:]]/}"
+    # Do not leave build scratch inside the git-tracked tree (reports/v2026.09.18
+    # M8): the offline repo and a half-written temporary ISO are both rebuilt
+    # from scratch on the next run.
+    rm -f "${TMP_ISO:-}" 2>/dev/null || true
+    rm -rf "${REPO_ROOT:-.}/profile/install-repo" 2>/dev/null || true
     printf -- "\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[31m[CRITICAL] SCRIPT FAILURE: %s\\e[0m\n\\e[1m\\e[31m================================================================================\\e[0m\n\\e[1m\\e[36mDIAGNOSTICS:\\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\\e[1m\\e[36mACTIONABLE STEPS:\\e[0m\n  1. Inspect the system journal for detailed logs:\n     \\e[1mjournalctl -t neos-%s -n 50 --no-pager\\e[0m\n  2. Verify system state, permissions, and script configuration.\n\\e[1m\\e[31m================================================================================\\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
@@ -51,9 +88,14 @@ OUT_DIR="out"
 # Clean previous build artifacts if requested
 if [ -d "$WORK_DIR" ]; then
     echo -e "${YELLOW}Work directory '$WORK_DIR' exists.${NC}"
-    if [[ "${CI:-}" == "true" ]]; then
-        echo "Running in CI environment. Removing $WORK_DIR..."
+    if [[ "$CI_BUILD" == "true" || "${CI:-}" == "true" ]]; then
+        echo "Running in CI mode. Removing $WORK_DIR..."
         rm -rf -- "$WORK_DIR"
+    elif [[ ! -t 0 ]]; then
+        # No TTY (e.g. piped/automated invocation): a bare `read` would hit EOF
+        # and abort the whole build through the ERR trap. Skip the prompt and
+        # keep the existing directory instead.
+        echo "Not running interactively: keeping the existing $WORK_DIR (pass --ci to remove it)."
     else
         read -p "Clean work directory before building? (y/N) " -n 1 -r
         echo
@@ -176,40 +218,51 @@ yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DI
 # repo database. Reuses packages already cached by mkarchiso in work/pkgs/
 # to avoid redundant downloads. This repo sits OUTSIDE the SquashFS — it gets
 # added to the ISO root below — so it does not inflate the live environment.
-echo -e "${YELLOW}Building offline install package repo...${NC}"
-bash tools/gen-install-repo.sh \
-    --repo-dir "$REPO_ROOT/$PROFILE_DIR/install-repo" \
-    --work-dir "$REPO_ROOT/$WORK_DIR" \
-    --profile "$REPO_ROOT/$PROFILE_DIR" \
-    --build-conf "$REPO_ROOT/$BUILD_CONF"
+if [[ "$OFFLINE_REPO" == "true" ]]; then
+    echo -e "${YELLOW}Building offline install package repo...${NC}"
+    bash tools/gen-install-repo.sh \
+        --repo-dir "$REPO_ROOT/$PROFILE_DIR/install-repo" \
+        --work-dir "$REPO_ROOT/$WORK_DIR" \
+        --profile "$REPO_ROOT/$PROFILE_DIR" \
+        --build-conf "$REPO_ROOT/$BUILD_CONF"
 
-# ---- Embed the install repo into the ISO ----------------------------------
-# After mkarchiso produces the ISO, we add the local package repo as a new
-# directory on the ISO filesystem. This keeps packages accessible to the
-# installer at /run/archiso/bootmnt/neos/pkg/ without bloating the SquashFS.
-INSTALL_REPO="$REPO_ROOT/$PROFILE_DIR/install-repo"
-if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
-    echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
-    ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
-    if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
-        # Create a temporary ISO with the repo added
-        TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
-        xorriso -indev "$ISO_PATH" \
-                -outdev "$TMP_ISO" \
-                -map "$INSTALL_REPO" /neos/pkg \
-                -boot_image any replay 2>&1 | tail -n 5 || {
-            echo -e "${YELLOW}Warning: Could not add repo to ISO. Install will still work with internet.${NC}"
-            rm -f "$TMP_ISO" 2>/dev/null || true
-        }
-        if [[ -f "$TMP_ISO" ]]; then
-            mv -f "$TMP_ISO" "$ISO_PATH"
-            echo "Offline install repo added to ISO at /neos/pkg/"
+    # ---- Embed the install repo into the ISO ------------------------------
+    # After mkarchiso produces the ISO, we add the local package repo as a new
+    # directory on the ISO filesystem. This keeps packages accessible to the
+    # installer at /run/archiso/bootmnt/neos/pkg/ without bloating the SquashFS.
+    INSTALL_REPO="$REPO_ROOT/$PROFILE_DIR/install-repo"
+    TMP_ISO=""
+    # A failed xorriso run must not leave a *-with-repo.iso behind: it sorts
+    # before the real image and used to be picked up by the first-glob ISO
+    # consumers (reports/v2026.09.18 M5).
+    trap 'rm -f "${TMP_ISO:-}"' EXIT
+    if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+        echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
+        ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+        if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
+            # Create a temporary ISO with the repo added
+            TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
+            xorriso -indev "$ISO_PATH" \
+                    -outdev "$TMP_ISO" \
+                    -map "$INSTALL_REPO" /neos/pkg \
+                    -boot_image any replay 2>&1 | tail -n 5 || {
+                echo -e "${YELLOW}Warning: Could not add repo to ISO. Install will still work with internet.${NC}"
+                rm -f "$TMP_ISO" 2>/dev/null || true
+            }
+            if [[ -f "$TMP_ISO" ]]; then
+                mv -f "$TMP_ISO" "$ISO_PATH"
+                TMP_ISO=""
+                echo "Offline install repo added to ISO at /neos/pkg/"
+            fi
+        else
+            echo -e "${YELLOW}Warning: xorriso not found or no ISO to patch. Install will need internet.${NC}"
         fi
-    else
-        echo -e "${YELLOW}Warning: xorriso not found or no ISO to patch. Install will need internet.${NC}"
+        # Clean up the build-time repo (no longer needed)
+        rm -rf "$INSTALL_REPO" 2>/dev/null || true
     fi
-    # Clean up the build-time repo (no longer needed)
-    rm -rf "$INSTALL_REPO" 2>/dev/null || true
+else
+    echo -e "${YELLOW}--no-offline-repo: skipping the offline install package repo "
+    echo -e "(the ISO will require a network connection to install).${NC}"
 fi
 
 echo -e "${GREEN}Running ISO validation...${NC}"

@@ -4,8 +4,11 @@ ID=neos
 ID_LIKE=arch
 BUILD_ID=rolling
 ANSI_COLOR="38;2;31;111;214"
-HOME_URL="https://github.com/NimuthuGanegoda/NeOS"
-DOCUMENTATION_URL="https://github.com/NimuthuGanegoda/NeOS/tree/main/docs"
-SUPPORT_URL="https://github.com/NimuthuGanegoda/NeOS/issues"
-BUG_REPORT_URL="https://github.com/NimuthuGanegoda/NeOS/issues"
+# Canonical project repository. This file ships inside the installed system, so
+# every URL here must resolve for users — do not point them at the development
+# fork, whose Issues are disabled (tests/verify_repo_urls.sh guards this).
+HOME_URL="https://github.com/uthsarad/NeOS"
+DOCUMENTATION_URL="https://github.com/uthsarad/NeOS/tree/testing/docs"
+SUPPORT_URL="https://github.com/uthsarad/NeOS/issues"
+BUG_REPORT_URL="https://github.com/uthsarad/NeOS/issues"
 LOGO=neos-logo

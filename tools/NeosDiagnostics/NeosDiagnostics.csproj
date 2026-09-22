@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>neos-diag</AssemblyName>
     <RootNamespace>Neos.Diagnostics</RootNamespace>
-    <Version>2026.09.18</Version>
+    <Version>2026.09.22</Version>
     <Authors>NeOS Core Team</Authors>
     <Description>NeOS High-Performance Cross-Platform Diagnostic &amp; Security Compliance Inspector</Description>
   </PropertyGroup>

@@ -1,5 +1,33 @@
 # NeOS Deep Audit — v2026.09.18
 
+> **Superseded in part (2026-09-19 → 2026-09-22).** This report describes the state of
+> the tree at `332d8c5`. Two changes since then invalidate parts of it, and the
+> follow-up work is recorded in `reports/v2026.09.22/UPDATES_NEEDED.md`:
+>
+> - **H1 / M5 / O1 are closed by removal, not by enforcement.** Commit `4fab136`
+>   deleted `tests/verify_iso_size.sh` and dropped the CI size step; the ISO size
+>   limit is deliberately not enforced (releases ship via SourceForge, which has no
+>   per-asset cap). Read "H1 — the documented 2 GiB ISO budget was enforced nowhere"
+>   as *the budget was retired*, not as *a gate now exists*.
+> - **H3 / O3 are fixed**: CI's `test` job installs `ruby`, `go` and `dotnet-sdk`
+>   and exports `REQUIRE_TOOLS=1`, so a missing toolchain fails the build instead of
+>   degrading to a static grep; `verify_rust_profile_audit.sh` now also runs
+>   `cargo test`; `tools/gen-install-repo.sh` is exercised by
+>   `tests/verify_install_repo.sh` (see C2 below).
+> - **C2 / O2 are fixed**: CI now calls `build.sh --ci --no-offline-repo` — one
+>   build entrypoint for both paths, with the offline repo opt-out explicit.
+> - **H4 is fixed**: the live ISO boots with a serial console and ships
+>   `neos-boot-probe.service`, and `tests/verify_iso_smoketest.sh` now fails unless
+>   the guest reports an active `graphical.target` and renders a non-blank frame —
+>   a timeout is no longer a pass. `tests/verify_boot_evidence.sh` guards the wiring.
+> - M5's "first glob match" consumers now select the newest image by mtime, and
+>   `build.sh` removes a partially written `-with-repo.iso` on failure.
+>
+> **Still open:** M1 (live/installed manifest duplication), M3 (`--admin` merge
+> fallback), M4 (action SHA pinning), M6 (UFW rules), M7 (installed-system repo
+> trust), M10 (version sources — partially addressed), M11 (`NoExtract` comment),
+> and an unattended end-to-end Calamares install test (O4).
+
 **Date:** 2026-09-18
 **Branch:** `testing`
 **Scope:** Whole repository, prioritized — build & install pipeline, security

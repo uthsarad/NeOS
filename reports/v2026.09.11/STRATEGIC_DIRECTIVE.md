@@ -2,7 +2,7 @@
 
 ## PHASE 1 — Product Alignment Check
 - **Product Goal:** A curated, snapshot-based Arch Linux desktop distribution engineered for predictable behavior, system stability, and a refined KDE Plasma 6 experience, designed for users transitioning from Windows.
-- **Alignment:** Initiate a Strategic Pause. Specialist validation tasks are pending.
+- **Alignment:** Initiate a continued Strategic Pause. Specialist validation tasks are still pending.
 - **Leverage:** Focus on clearing the specialist validation queue.
 
 ## PHASE 2 — Technical Posture Review
@@ -19,7 +19,7 @@
 - **Constraints:** Architect must observe a strict Strategic Pause and write no production code.
 
 ## PHASE 5 — Delegation Strategy
-- **Architect:** Halt new feature development. Observe Strategic Pause.
-- **Bolt:** Clear pending task queue.
-- **Palette:** Clear pending task queue.
-- **Sentinel:** Clear pending task queue.
+- **Architect:** Halt new feature development. Observe continued Phase 8 Validation Strategic Pause.
+- **Bolt:** Clear pending task queue (Acknowledge the continued Phase 8 Validation Strategic Pause).
+- **Palette:** Clear pending task queue (Refine UX of snapshot selection and Acknowledge the continued Phase 8 Validation Strategic Pause).
+- **Sentinel:** Clear pending task queue (Acknowledge the continued Phase 8 Validation Strategic Pause).

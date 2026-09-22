@@ -372,19 +372,27 @@ def is_live_mode():
 
 
 def get_os_version():
+    # Always derived from the running system's /etc/os-release — never a
+    # hardcoded date. There is deliberately no built-in version literal here:
+    # a stale one shipped in the live image and drifted from VERSION
+    # (reports/v2026.09.22/UPDATES_NEEDED.md, item 5/M10).
     import os
+    version_id = ''
+    pretty_name = ''
     try:
         if os.path.exists('/etc/os-release'):
             with open('/etc/os-release') as f:
                 for line in f:
                     line = line.strip()
-                    if line.startswith('PRETTY_NAME='):
-                        return line.split('=', 1)[1].strip('"\'')
                     if line.startswith('VERSION_ID='):
-                        return 'v' + line.split('=', 1)[1].strip('"\'')
+                        version_id = line.split('=', 1)[1].strip('"\'')
+                    elif line.startswith('PRETTY_NAME='):
+                        pretty_name = line.split('=', 1)[1].strip('"\'')
     except Exception:
         pass
-    return 'v2026.09'
+    if version_id:
+        return 'v' + version_id
+    return pretty_name or 'NeOS'
 
 
 if __name__ == '__main__':
