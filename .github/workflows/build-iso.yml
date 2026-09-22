@@ -149,9 +149,15 @@ jobs:
 
   build:
     needs: test
-    # Never on pull_request: this job creates a GitHub Release, pushes to
-    # SourceForge and builds for up to 90 minutes. PRs get the `test` job only.
-    if: github.event_name != 'pull_request'
+    # Runs on pull requests too, so the ISO *build* is verified before merge.
+    # Publishing stays impossible from a PR: every release step below is gated
+    # on github.ref being refs/heads/{main,testing}, and on a pull_request event
+    # github.ref is refs/pull/<n>/merge. That gating — rather than skipping the
+    # job — is what lets a PR prove the image builds: the first CI run that
+    # executed build.sh failed here with the `yes | mkarchiso` SIGPIPE, and a
+    # merge into testing was the first thing to find out (see CHANGELOG).
+    # Cost: ~20-35 minutes of runner time per PR. To opt out, restore
+    # `if: github.event_name != 'pull_request'`.
     permissions:
       contents: write
 
