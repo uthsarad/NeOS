@@ -28,13 +28,16 @@ REPORT_FILE="$(mktemp "${TMPDIR:-/tmp}/neos-driver-manager.XXXXXX")"
 trap 'rm -f "$REPORT_FILE"; _error_handler $? $LINENO' ERR
 trap 'rm -f "$REPORT_FILE"' EXIT
 
-{
-echo -e "\e[1m\e[36m🔍 NeOS Hardware Intelligence starting...\e[0m"
-
+# Fail fast here, in the main shell: this check used to live inside the
+# `{ ... } | sed` block below, where `exit 1` only exits the pipeline's
+# subshell and the script carried on with an empty report.
 if ! command -v lspci &> /dev/null; then
-    echo -e "\e[1m\e[31m🚨 pciutils is missing! Hardware detection is disabled.\e[0m"
+    echo -e "\e[1m\e[31m🚨 pciutils is missing! Hardware detection is disabled.\e[0m" >&2
     exit 1
 fi
+
+{
+echo -e "\e[1m\e[36m🔍 NeOS Hardware Intelligence starting...\e[0m"
 
 LSPCI_K_OUT=$(lspci -k || true)
 PROC_MODULES="$(</proc/modules)"
@@ -58,7 +61,7 @@ while IFS= read -r line; do
                 echo -e "    \e[32m✅ NVIDIA proprietary drivers are installed.\e[0m"
                 is_loaded "nvidia" || { echo "    🚀 Loading modules..."; modprobe -- nvidia nvidia_modeset nvidia_uvm nvidia_drm || true; }
             else
-                echo -e "    \e[33m💡 Suggestion:\e[0m Install 'nvidia' for maximum performance."
+                echo -e "    \e[33m💡 Suggestion:\e[0m Install 'nvidia-open-lts' (prebuilt for the NeOS LTS kernel) for maximum performance."
             fi
         elif [[ "$line" =~ "Intel" ]]; then
             echo -e "    \e[34m🔵 Intel drivers are active.\e[0m"
@@ -151,4 +154,14 @@ fi
 echo -e "\n\e[1m\e[32m✅ NeOS Driver Intelligence check complete.\e[0m"
 } | sed -e 's/\x1b\[[0-9;]*m//g' | fold -s -w 90 > "$REPORT_FILE"
 
-kdialog --icon preferences-system --title "NeOS Driver Manager - Hardware Report" --textbox "$REPORT_FILE" 800 600
+# Show the report graphically only when a display exists. This script also
+# runs as a boot-time systemd unit (neos-driver-manager.service, before any
+# graphical session), where an unconditional kdialog fails on the missing
+# display and marks the unit failed on EVERY boot. Without a display the
+# report goes to stdout instead, which lands in the journal for `neos-doctor`
+# and support; the driver modprobe fixes above already ran either way.
+if [[ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] && command -v kdialog &> /dev/null; then
+    kdialog --icon preferences-system --title "NeOS Driver Manager - Hardware Report" --textbox "$REPORT_FILE" 800 600
+else
+    cat "$REPORT_FILE"
+fi

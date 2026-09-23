@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 import sys
 import subprocess
-import math
 from PyQt6.QtWidgets import (QCheckBox, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QGraphicsDropShadowEffect,
-                             QGraphicsOpacityEffect, QSpacerItem, QSizePolicy,
                              QFrame)
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QScreen
+from PyQt6.QtGui import QColor
 
 
 class NeosWelcome(QWidget):

@@ -90,6 +90,15 @@ fi
 # "pacstrap -K" call fails even though most packages downloaded fine.
 # Retrying is cheap — packages already fetched are cached under
 # $ROOT/var/cache/pacman/pkg, so a retry only re-fetches what actually failed.
+#
+# pacstrap's interface is `pacstrap [options] root [packages...]` with
+# getopts-style SHORT options only (see arch-install-scripts' pacstrap.in:
+# `getopts ':C:cDGiKMNPU'`). Option parsing stops at the first operand, and
+# there is no long `--config` — so the config MUST be passed as `-C` BEFORE
+# the root. A trailing `--config` would be treated as a package name and the
+# install would fail (it only ever appeared to work online because pacstrap
+# then fell back to the identical host config; the offline repo was silently
+# ignored and offline installs could never resolve their packages).
 PACSTRAP_RETRIES=3
 run_pacstrap_with_retry() {
     local conf="$1"
@@ -100,7 +109,7 @@ run_pacstrap_with_retry() {
             pacman -Sy --noconfirm --config "$conf" 2>/dev/null || true
             sleep 5
         fi
-        if pacstrap -K "$ROOT" "${PKGS[@]}" --config "$conf"; then
+        if pacstrap -K -C "$conf" "$ROOT" "${PKGS[@]}"; then
             return 0
         fi
     done

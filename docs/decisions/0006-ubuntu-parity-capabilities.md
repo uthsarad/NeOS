@@ -44,3 +44,24 @@ This two-tier approach allows us to deliver Ubuntu-parity features to the instal
 - Live-image size discipline: there is no enforced ISO size gate (the 2048 MiB gate was removed when releases moved to SourceForge). The two-tier split stands on RAM, download-time and CI-turnaround grounds, not on a release limit.
 - Live accessibility is functional (screen reader works in live session).
 - Secure Boot helpers prevent brick risk via user-initiated approach.
+
+## Amendment (2026-09-23)
+
+Placement drifted from the table above and the record is corrected here:
+
+- **Moved to the live image** (needed in the live session or tiny enough that
+  the split bought nothing): `fwupd`, `flatpak`, `thermald`, `sbctl`,
+  `mokutil`, `efitools`, `modemmanager` (+ `usb_modeswitch`,
+  `mobile-broadband-provider-info`), `print-manager`. The WWAN stack is live
+  because the README claims modem support as a live feature and the installed
+  system enables ModemManager; `efitools` is live so firmware state can be
+  inspected before installing.
+- **Still installed-system only**: `noto-fonts-cjk`, `nvidia-open-lts`,
+  `networkmanager-openvpn`, `sane`, `sane-airscan` (the last three were
+  promised by this ADR but missing from both lists until this amendment).
+- **Stale trade-off**: "NVIDIA drivers require compilation on first boot" no
+  longer holds — installed systems get the prebuilt `nvidia-open-lts`
+  module; DKMS + headers stay only for the tiny `broadcom-wl-dkms` build.
+
+The two-tier principle (lean live image, full installed system) is unchanged;
+only the placement table is updated to match the shipped profile.
