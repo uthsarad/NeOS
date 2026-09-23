@@ -44,9 +44,8 @@ if [[ ! -f "$LOG_FILE" ]]; then
     (set -C; true > "$LOG_FILE") 2>/dev/null || true
 fi
 
-# SECURITY: Enforce ownership and permissions
-chown root:root "$LOG_FILE"
-chmod 600 "$LOG_FILE"
+# SECURITY: Ownership and permissions handled securely by umask 077.
+# Avoided chown/chmod to eliminate TOCTOU risks.
 
 # SECURITY: Prevent symlink attacks on lock file
 if [[ -L "$LOCK_FILE" ]]; then
@@ -59,9 +58,8 @@ if [[ ! -f "$LOCK_FILE" ]]; then
     (set -C; true > "$LOCK_FILE") 2>/dev/null || true
 fi
 
-# SECURITY: Enforce ownership and permissions
-chown root:root "$LOCK_FILE"
-chmod 600 "$LOCK_FILE"
+# SECURITY: Ownership and permissions handled securely by umask 077.
+# Avoided chown/chmod to eliminate TOCTOU risks.
 
 # Apply flock
 exec 9> "$LOCK_FILE"
@@ -105,8 +103,13 @@ notify_users() {
     fi
 
     while read -r uid user_name _; do
-        sudo -u "$user_name" \
-            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        # Sentinel: Sanitize inputs to prevent argument injection
+        uid="${uid//[^0-9]/}"
+        user_name="${user_name//[^a-zA-Z0-9_.-]/}"
+        if [[ -z "$uid" || -z "$user_name" ]]; then continue; fi
+
+        # Sentinel: Enforce safe execution boundary using -- and env
+        sudo -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
             notify-send -- "$title" "$err_msg" --icon="$icon" --urgency="$urgency" || true
     done < <(loginctl list-users --no-legend)
 }
@@ -189,6 +192,12 @@ perform_update() {
     local desc="Pre-update snapshot"
     local snap_id
     snap_id=$("$SNAPPER_BIN" create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
+    # Sentinel: Sanitize snap_id to prevent injection on subsequent calls
+    snap_id="${snap_id//[^0-9]/}"
+    if [[ -z "$snap_id" ]]; then
+        log "Error: Invalid or missing snapshot ID."
+        exit 1
+    fi
 
     log "Created pre-update snapshot: $snap_id"
 
