@@ -48,6 +48,12 @@ if ! command -v mksquashfs &> /dev/null; then
     exit 1
 fi
 
+# Sentinel: [Security] Ensure required compression dependencies are present for pipelines
+if ! command -v zstd &> /dev/null; then
+    echo -e "${RED}Error: zstd could not be found. Please install 'zstd'.${NC}" >&2
+    exit 1
+fi
+
 # Configuration
 PROFILE_DIR="profile"
 WORK_DIR="work"
@@ -174,7 +180,7 @@ bash tools/gen-build-conf.sh "$REPO_ROOT" "$REPO_ROOT/$BUILD_CONF"
 # of truth; a stale manifest means installed systems silently miss files.
 bash tools/gen-manifests.sh "$REPO_ROOT"
 
-# Bolt: [Performance] Optimize subprocess overhead in packaging and compression pipelines
+# Bolt: [Performance] Optimize subprocess overhead in packaging and compression pipelines (Delegated by Architect)
 # Run mkarchiso
 echo -e "${GREEN}Building ISO...${NC}"
 yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
