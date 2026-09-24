@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# neos-autoinstall — Omarchy-style assisted install from a cidata volume.
+# neos-autoinstall — NeOS-style assisted install from a cidata volume.
 #
 # Looks for a filesystem labeled cidata / NEOSCIDATA (or a directory on the
 # live ISO at /run/archiso/bootmnt/neos/autoinstall/) containing autoinstall.yaml.

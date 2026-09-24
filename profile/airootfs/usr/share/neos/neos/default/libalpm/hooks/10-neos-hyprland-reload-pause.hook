@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = neos-settings
+Target = neos-settings-dev
+
+[Action]
+Description = Pausing Hyprland config auto-reload for NeOS settings update...
+When = PreTransaction
+Depends = neos
+Exec = /usr/bin/neos-hyprland-reload-guard pause

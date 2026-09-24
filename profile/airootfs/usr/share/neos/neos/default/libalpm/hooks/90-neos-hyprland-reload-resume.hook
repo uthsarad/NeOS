@@ -1,0 +1,12 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = neos-settings
+Target = neos-settings-dev
+
+[Action]
+Description = Reloading Hyprland after NeOS settings update...
+When = PostTransaction
+Depends = neos
+Exec = /usr/bin/neos-hyprland-reload-guard resume

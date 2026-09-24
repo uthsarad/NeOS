@@ -1,0 +1,19 @@
+# Changes require a restart to take effect.
+
+# UWSM doesn't source /etc/profile.d, so pull the env bootstrap in directly.
+[ -r /usr/share/neos/default/bash/env-bootstrap ] && . /usr/share/neos/default/bash/env-bootstrap
+
+# NeOS session defaults. Users can override these in ~/.config/uwsm/default
+# or, preferably, ~/.config/uwsm/env.d/*.
+if [ -f "${NEOS_PATH%/}/default/uwsm/default" ]; then
+  . "${NEOS_PATH%/}/default/uwsm/default"
+else
+  export TERMINAL=xdg-terminal-exec
+  export EDITOR="neos-launch-editor --inline"
+fi
+
+# Optional user overrides kept for compatibility with older installs.
+[ -f "$HOME/.config/uwsm/default" ] && . "$HOME/.config/uwsm/default"
+
+# Activate mise if present on the system
+neos-cmd-present mise && eval "$(mise activate bash --shims)"

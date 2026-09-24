@@ -1,0 +1,7 @@
+: "${NEOS_PATH:=/usr/share/neos}"
+source "$NEOS_PATH/default/bash/envs"
+source "$NEOS_PATH/default/bash/shell"
+source "$NEOS_PATH/default/bash/aliases"
+source "$NEOS_PATH/default/bash/functions"
+source "$NEOS_PATH/default/bash/init"
+[[ $- == *i* ]] && bind -f "$NEOS_PATH/default/bash/inputrc"

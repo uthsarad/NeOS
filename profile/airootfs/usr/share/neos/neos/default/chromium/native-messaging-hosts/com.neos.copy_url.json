@@ -1,0 +1,9 @@
+{
+  "name": "com.neos.copy_url",
+  "description": "NeOS Copy URL clipboard host",
+  "path": "__HOST_PATH__",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://bgpiichlckmfanooecilcjemknkcpngb/"
+  ]
+}

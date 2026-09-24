@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Checking NeOS update entrypoint...
+When = PreTransaction
+Depends = neos
+Exec = /usr/bin/neos-update-pacman-guard
+AbortOnFail

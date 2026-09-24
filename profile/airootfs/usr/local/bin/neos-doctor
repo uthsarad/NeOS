@@ -2,7 +2,7 @@
 # neos-doctor — boot/install diagnostics for humans and agents.
 #
 # Prints a readable report by default. Pass --json for a machine-readable
-# object an agent can act on (Omarchy-style: the OS should be debuggable
+# object an agent can act on (NeOS-style: the OS should be debuggable
 # without spelunking). Exit status 0 if the session looks healthy, 1 otherwise.
 set -u
 

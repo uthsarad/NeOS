@@ -1,0 +1,12 @@
+NAME="NeOS"
+PRETTY_NAME="NeOS"
+ID=neos
+ID_LIKE=arch
+BUILD_ID="4.0.4"
+VERSION_ID="4.0.4"
+ANSI_COLOR="38;2;158;206;106"
+HOME_URL="https://neos.org/"
+DOCUMENTATION_URL="https://learn.omacom.io/2/the-neos-manual"
+SUPPORT_URL="https://discord.gg/tXFUdasqhY"
+BUG_REPORT_URL="https://github.com/basecamp/neos/issues"
+LOGO=neos
