@@ -1,3 +1,4 @@
+# shellcheck disable=SC2148,SC2034
 # Disk partitioning helpers, shared by the ISO configurator and its tests.
 #
 # The rule here is: never predict a partition number. parted fills the lowest

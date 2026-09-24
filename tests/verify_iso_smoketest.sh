@@ -198,7 +198,7 @@ s.close()
 PY
 
 cleanup() {
-    [[ -n "${QEMU_PID:-}" ]] && kill "$QEMU_PID" 2>/dev/null || true
+    if [[ -n "${QEMU_PID:-}" ]]; then kill "$QEMU_PID" 2>/dev/null || true; fi
     rm -f "$PPM_STATS_PY" "$QMP_PY"
     rm -f "${QMP_SOCK:-}" 2>/dev/null || true
 }

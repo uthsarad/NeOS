@@ -10,18 +10,18 @@ Rectangle {
     color: "#0b0e1a"
 
     // ---- NeOS brand palette (tools/palette.json) ----------------------------
-    readonly property color cAccent:        "#1F6FD6"
-    readonly property color cAccentHover:   "#3D82E0"
-    readonly property color cAccentPressed: "#17569F"
-    readonly property color cText:          "#e6e9f2"
-    readonly property color cMuted:         "#9aa0b6"
-    readonly property color cDimmed:        "#6b7080"
-    readonly property color cField:         "#0f1428"
-    readonly property color cBorder:        "#2a3354"
-    readonly property color cCard:          "#0e1326"
-    readonly property color cError:         "#ff6b74"
-    readonly property color cBgTop:         "#0a0e1a"
-    readonly property color cBgBot:         "#16203a"
+    readonly property color cAccent:        "#38bdf8"
+    readonly property color cAccentHover:   "#22d3ee"
+    readonly property color cAccentPressed: "#0284c7"
+    readonly property color cText:          "#e6f1ff"
+    readonly property color cMuted:         "#9db2cc"
+    readonly property color cDimmed:        "#5a6f8d"
+    readonly property color cField:         "#0a0f1a"
+    readonly property color cBorder:        "#1a263d"
+    readonly property color cCard:          "#0d1420"
+    readonly property color cError:         "#fb7185"
+    readonly property color cBgTop:         "#060a12"
+    readonly property color cBgBot:         "#0a0f1a"
 
     // ---- Session list (extracted from sessionModel via a hidden Repeater) --
     property var sessionNames: []

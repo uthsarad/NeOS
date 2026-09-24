@@ -1,19 +1,19 @@
 /* ===========================================================================
    NeOS — Calamares installer stylesheet (Apple/macOS-inspired refined dark)
-   One restrained accent (see tools/palette.json: #1F6FD6) on a deep-navy
-   base (#0b0e1a) with soft card surfaces and careful typography.
+   One restrained accent (see tools/palette.json: #38bdf8) on a deep-navy
+   base (#060a12) with soft card surfaces and careful typography.
    =========================================================================== */
 
 /* ---- Base surfaces & text ------------------------------------------------ */
 QWidget {
-    color: #e6e9f2;
+    color: #e6f1ff;
     font-family: "Noto Sans", "Cantarell", "DejaVu Sans", sans-serif;
     font-size: 10pt;
 }
 
 #mainApp,
 QWidget#mainApp {
-    background-color: #0b0e1a;
+    background-color: #060a12;
 }
 
 /* Page containers — transparent to show the navy base */
@@ -23,7 +23,7 @@ QScrollArea > QWidget > QWidget {
 }
 
 QLabel {
-    color: #e6e9f2;
+    color: #e6f1ff;
     background: transparent;
 }
 QLabel:disabled { color: #5a607a; }
@@ -39,7 +39,7 @@ QLabel[font-weight="bold"] {
 
 /* ---- Sidebar (progress steps) -------------------------------------------- */
 #sidebarApp {
-    background-color: #080b14;
+    background-color: #030509;
 }
 #sidebarApp QLabel {
     color: #aeb4c7;
@@ -77,21 +77,21 @@ QPushButton:disabled {
 
 /* Primary action (Next / Install / Done) — accent */
 QPushButton:default {
-    background-color: #1F6FD6;
+    background-color: #38bdf8;
     color: #ffffff;
-    border: 1px solid #1F6FD6;
+    border: 1px solid #38bdf8;
     border-radius: 8px;
     padding: 8px 28px;
     font-weight: 600;
     font-size: 10.5pt;
 }
 QPushButton:default:hover {
-    background-color: #3D82E0;
-    border-color: #3D82E0;
+    background-color: #22d3ee;
+    border-color: #22d3ee;
 }
 QPushButton:default:pressed {
-    background-color: #17569F;
-    border-color: #17569F;
+    background-color: #0284c7;
+    border-color: #0284c7;
 }
 QPushButton:default:disabled {
     background-color: #1d3a4f;
@@ -102,17 +102,17 @@ QPushButton:default:disabled {
 /* ---- Text inputs --------------------------------------------------------- */
 QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox {
     background-color: #0f1428;
-    color: #e6e9f2;
+    color: #e6f1ff;
     border: 1px solid #2a3354;
     border-radius: 6px;
     padding: 8px 10px;
-    selection-background-color: #1F6FD6;
+    selection-background-color: #38bdf8;
     selection-color: #ffffff;
     font-size: 10pt;
 }
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus,
 QSpinBox:focus, QDoubleSpinBox:focus {
-    border: 2px solid #3D82E0;
+    border: 2px solid #22d3ee;
     padding: 7px 9px; /* compensate for thicker border */
 }
 QLineEdit:disabled, QSpinBox:disabled {
@@ -126,13 +126,13 @@ QLineEdit:error, QTextEdit:error, QPlainTextEdit:error {
 /* ---- Combo boxes --------------------------------------------------------- */
 QComboBox {
     background-color: #0f1428;
-    color: #e6e9f2;
+    color: #e6f1ff;
     border: 1px solid #2a3354;
     border-radius: 6px;
     padding: 8px 10px;
     min-height: 20px;
 }
-QComboBox:focus { border: 2px solid #3D82E0; padding: 7px 9px; }
+QComboBox:focus { border: 2px solid #22d3ee; padding: 7px 9px; }
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
@@ -147,10 +147,10 @@ QComboBox::down-arrow {
 }
 QComboBox QAbstractItemView {
     background-color: #0f1428;
-    color: #e6e9f2;
+    color: #e6f1ff;
     border: 1px solid #2a3354;
     border-radius: 6px;
-    selection-background-color: #1F6FD6;
+    selection-background-color: #38bdf8;
     selection-color: #ffffff;
     outline: 0;
     padding: 4px;
@@ -167,10 +167,10 @@ QComboBox QAbstractItemView::item:hover {
 QListView, QTreeView, QTableView, QListWidget, QTreeWidget {
     background-color: #0e1326;
     alternate-background-color: #11172e;
-    color: #e6e9f2;
+    color: #e6f1ff;
     border: 1px solid #222a47;
     border-radius: 8px;
-    selection-background-color: #1F6FD6;
+    selection-background-color: #38bdf8;
     selection-color: #ffffff;
     outline: 0;
 }
@@ -214,7 +214,7 @@ QGroupBox::title {
 
 /* ---- Check boxes & radio buttons (accent) -------------------------------- */
 QCheckBox, QRadioButton {
-    color: #e6e9f2;
+    color: #e6f1ff;
     spacing: 10px;
     background: transparent;
     font-size: 10pt;
@@ -226,16 +226,16 @@ QCheckBox::indicator, QRadioButton::indicator {
     border-radius: 4px;
 }
 QCheckBox::indicator:hover, QRadioButton::indicator:hover {
-    border-color: #3D82E0;
+    border-color: #22d3ee;
 }
 QCheckBox::indicator:checked {
-    background-color: #1F6FD6;
-    border-color: #1F6FD6;
+    background-color: #38bdf8;
+    border-color: #38bdf8;
 }
 QRadioButton::indicator { border-radius: 10px; }
 QRadioButton::indicator:checked {
-    background-color: #1F6FD6;
-    border-color: #1F6FD6;
+    background-color: #38bdf8;
+    border-color: #38bdf8;
 }
 
 /* ---- Progress bar (accent) ------------------------------------------------ */
@@ -245,12 +245,12 @@ QProgressBar {
     border-radius: 6px;
     height: 8px;
     text-align: center;
-    color: #e6e9f2;
+    color: #e6f1ff;
     font-size: 9pt;
 }
 QProgressBar::chunk {
     border-radius: 6px;
-    background-color: #1F6FD6;
+    background-color: #38bdf8;
 }
 
 /* ---- Scroll bars --------------------------------------------------------- */
@@ -290,7 +290,7 @@ QTabBar::tab {
 }
 QTabBar::tab:hover { background: #1a2342; }
 QTabBar::tab:selected {
-    background: #1F6FD6;
+    background: #38bdf8;
     color: #ffffff;
     font-weight: 600;
 }
@@ -298,8 +298,8 @@ QTabBar::tab:selected {
 /* ---- Tooltips ------------------------------------------------------------ */
 QToolTip {
     background-color: #0f1428;
-    color: #e6e9f2;
-    border: 1px solid #3D82E0;
+    color: #e6f1ff;
+    border: 1px solid #22d3ee;
     border-radius: 6px;
     padding: 6px 10px;
     font-size: 9.5pt;
@@ -308,7 +308,7 @@ QToolTip {
 /* ---- Menus --------------------------------------------------------------- */
 QMenu {
     background-color: #0f1428;
-    color: #e6e9f2;
+    color: #e6f1ff;
     border: 1px solid #2a3354;
     border-radius: 6px;
     padding: 4px 0px;
@@ -318,6 +318,6 @@ QMenu::item {
     background-color: transparent;
 }
 QMenu::item:selected {
-    background-color: #1F6FD6;
+    background-color: #38bdf8;
     color: #ffffff;
 }

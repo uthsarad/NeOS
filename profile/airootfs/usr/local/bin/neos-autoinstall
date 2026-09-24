@@ -435,6 +435,7 @@ cmd_apply() {
     # Expand lockdir now: a single-quoted trap would look up a function-local
     # that is already gone when EXIT fires. cleanup_cidata_mounts is a
     # top-level function, so it is still available at exit time.
+    # shellcheck disable=SC2064
     trap "cleanup_cidata_mounts; rmdir '$lockdir' 2>/dev/null || true" EXIT
 
     if pgrep -x calamares >/dev/null 2>&1; then

@@ -6,8 +6,8 @@
 # tools/gen-bootlogo-frames.py and committed; only cat-00.png is used here.
 
 # --- Background: deep navy gradient (#0A0E1A -> #16203A) ---
-Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
-Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
+Window.SetBackgroundTopColor(0.024, 0.039, 0.071);
+Window.SetBackgroundBottomColor(0.039, 0.059, 0.102);
 
 # --- Load the still cat image ---
 cat_image = Image("cat-00.png");

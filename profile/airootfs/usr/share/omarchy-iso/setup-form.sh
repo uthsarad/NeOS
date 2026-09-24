@@ -1,3 +1,4 @@
+# shellcheck disable=SC2148,SC2034
 # The setup form: every question Omarchy asks a human to describe their machine
 # — keyboard, account, hostname, timezone — plus the rules those answers are
 # checked against. Shared by the two places that ask them: the ISO
