@@ -274,6 +274,7 @@ jobs:
             if [[ -n "$SAFE_SUFFIX" ]]; then
               BRANCH_SUFFIX="-$SAFE_SUFFIX"
             fi
+          fi
           # pull_request events set github.ref_name to "<n>/merge". The slash
           # terminates the sed below (`sed: unknown option to 's'`) and the
           # ISO never builds. Use the head branch on PRs and strip anything
