@@ -232,10 +232,12 @@ if [[ "$MKARCHISO_EXIT" -ne 0 ]]; then
 fi
 
 # ---- Build offline install repo (local package cache for the ISO) ---------
-# Downloads all packages listed in neos-packages.txt and creates a pacman
-# repo database. Reuses packages already cached by mkarchiso in work/pkgs/
-# to avoid redundant downloads. This repo sits OUTSIDE the SquashFS — it gets
-# added to the ISO root below — so it does not inflate the live environment.
+# Downloads the full install closure for neos-packages.txt (targets + group
+# members + recursive dependencies) and creates a pacman repo database.
+# Reuses packages already sitting in the host pacman cache (where mkarchiso
+# downloads through `pacstrap -c`) to avoid redundant downloads. This repo
+# sits OUTSIDE the SquashFS — it gets added to the ISO root below — so it
+# does not inflate the live environment.
 if [[ "$OFFLINE_REPO" == "true" ]]; then
     echo -e "${YELLOW}Building offline install package repo...${NC}"
     bash tools/gen-install-repo.sh \

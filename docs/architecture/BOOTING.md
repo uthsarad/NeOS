@@ -47,8 +47,9 @@ The BIOS boot process is handled by Syslinux in `profile/syslinux/`:
 2. systemd's default target is `graphical.target`; SDDM autologs in `liveuser`
    to the X11 Plasma session (`plasmax11`).
 3. If a volume labelled `cidata` / `NEOSCIDATA` is present,
-   `neos-autoinstall` may start Calamares unattended — see
-   [Unattended install](../user-guide/AUTOINSTALL.md).
+   `neos-autoinstall` may auto-launch Calamares with identity pre-filled
+   (partitioning is still confirmed) — see
+   [Assisted install](../user-guide/AUTOINSTALL.md).
 4. Otherwise the welcome app offers Try / Install.
 
 `neos-doctor` (and `neos-doctor --json`) reports whether `graphical.target`

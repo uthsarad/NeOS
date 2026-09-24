@@ -196,4 +196,15 @@ else
     echo "[WARN] $USERS_CONF not found, skipping check."
 fi
 
+# neos-secureboot-setup must only sign PE binaries (GRUB EFI + kernel). The
+# initramfs is a cpio archive: sbsign rejects it, which aborts the script
+# under `set -e` on what would otherwise be the success path.
+SB_SETUP="profile/airootfs/usr/local/bin/neos-secureboot-setup"
+if grep -qE 'sbctl sign.*initramfs|sbctl sign.*initrd' "$SB_SETUP"; then
+    echo "[FAIL] neos-secureboot-setup must not sign the initramfs (not a PE binary)"
+    exit 1
+else
+    echo "  [PASS] neos-secureboot-setup signs only PE binaries"
+fi
+
 echo "All security checks passed!"

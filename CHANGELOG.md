@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.09.23] - 2026-09-23
+
+Live-ISO fine-tuning pass: every installer path, package list and boot-time
+service was audited against its upstream contract (pacstrap, Calamares,
+mkarchiso, polkit sources verified). Two headline features — offline install
+and cidata autoinstall — were broken end to end and are repaired below.
+
+### Fixed (installer-critical)
+- **`neos-pacstrap` passed its config in a form pacstrap does not understand** (`pacstrap -K ROOT PKGS... --config CONF`). pacstrap takes getopts short options before the root only, so `--config` became a package name; online installs merely looked fine (pacstrap fell back to the identical host config) while the offline repo was silently ignored. Now `pacstrap -K -C CONF ROOT PKGS...`, with a regression test.
+- **The offline install repo contained no dependencies.** `gen-install-repo.sh` matched files against the literal package list (deleting the `base` metapackage's bash/glibc and every other dep), `pacman -Sw` skipped host-installed packages the empty target still needs, and cache reuse read `work/pkgs/`, which mkarchiso never writes (it downloads through the host cache with `pacstrap -c`). The generator now builds the full install closure (targets + groups + recursive deps, virtuals resolved), downloads it against an empty dbpath, reuses the host pacman cache, and prunes against the closure.
+- **`neos-driver-manager.service` failed on every boot**: it called `kdialog` unconditionally in a pre-graphical unit. The report is now display-guarded (journal/stdout fallback), the pciutils check moved out of the pipeline subshell where `exit 1` could not abort, and the NVIDIA suggestion names the prebuilt `nvidia-open-lts`.
+- **`neos-secureboot-setup` aborted signing the fallback initrd**: a cpio archive is not PE-signable, so sbsign failed under `set -e` on the success path. Only the bootloader and kernel are signed now (the sbctl/GRUB model).
+- **cidata autoinstall could not mount as liveuser and leaked mounts**: `udisks2` was missing (a plain `mount` fails for liveuser), and every probe stacked a fresh mount plus tmpdir. `udisks2` is now installed (which also fixes removable-device mounting in Dolphin), mounts are idempotent (existing mounts reused, one fixed directory per label), and apply/probe release what they mounted.
+- **Removed the dead `calamares -u` passthrough**: upstream Calamares has no unattended CLI switch (only `-d`/`-D`/`-T`/`-c`/`-X`; verified against upstream `main.cpp`), so `-u` was silently ignored. `neos-welcome --unattended` is gone; a complete cidata config auto-launches the installer with identity pre-filled and partitioning is still confirmed interactively — a safety property, documented as such in `AUTOINSTALL.md`.
+
+### Added (packages — live image)
+- `modemmanager` + `usb_modeswitch` + `mobile-broadband-provider-info` (ModemManager was enabled on installed systems while the package was in neither list; README and ADR-0006 promise modem support), `efitools` (promised by README, `SECURE_BOOT.md` and the setup script header), `udisks2`, `libnotify` (autoupdate failure notices were silently dead), `drkonqi` (Operations Hub crash reporting errored without it).
+- `xf86-video-vmware` (the VMware X11 driver was the one guest gap), `vulkan-swrast` (software Vulkan for VMs without 3D), `libva-mesa-driver` (AMD VAAPI, complementing the Intel drivers).
+- Desktop completeness: `kate`, `kcalc`, `gwenview`, `partitionmanager`, `plasma-firewall` (UFW ships enabled with no GUI), `sddm-kcm`, `print-manager` (live CUPS stack had no GUI; removed from the installed-only extras to match).
+- Removed `breeze-grub` (unreferenced; both boot menus use the starfield theme from the `grub` package).
+
+### Added (packages — installed-system only, per ADR-0006)
+- `networkmanager-openvpn`, `sane`, `sane-airscan` (Ubuntu-parity VPN + scanner promise; neither is needed to install).
+
+### Changed
+- Installed systems now enable `snapper-timeline.timer` + `snapper-cleanup.timer` (the shipped snapper config asks for timeline snapshots nothing ever took) and the four VM guest agents (safe on bare metal via new `ConditionVirtualization=`/`ConditionPathExists=` drop-ins that skip — rather than fail — each agent on the wrong platform; the live session gets the same guards).
+- Live session ships a passwordless PackageKit rule for `liveuser` only (Discover installs previously failed against an unauthenticatable AUTH_ADMIN prompt; the account has no password). Installed systems keep the strict rule.
+- New `/etc/skel/.zshrc` (zsh is the default shell but had no baseline, so every first terminal opened the new-user wizard).
+- `hashed_password` in cidata configs is now charset-validated (crypt alphabet only) since it is interpolated into a generated installer command.
+- Stale comments corrected (`neos-welcome` Wayland claim, root-shell installer claim); stray `__pycache__` bytecode removed from the overlay.
+- Version bumped to `2026.09.23` (`VERSION`, os-release, Go/Ruby/.NET literals).
+
+### Tests
+- `verify_pacstrap.sh`: pacstrap `-C` form regression + "every enabled vendor unit has its package in the manifest" map (14 units).
+- `verify_autoinstall.sh`: dead-flag absence guards, `udisks2` presence, hashed-password rejection case.
+- `verify_hardware_setup.sh`: driver-manager display guard + `nvidia-open-lts` suggestion. `verify_security_config.sh`: no initramfs signing.
+
 ## [2026.09.22] - 2026-09-22
 
 ### Added

@@ -6,7 +6,7 @@ require 'set'
 
 module Neos
   module Tasks
-    VERSION = '2026.09.22'
+    VERSION = '2026.09.23'
 
     class << self
       # Profile auditing was consolidated into tools/neos-profile-audit (Rust).

@@ -14,7 +14,7 @@
 
 **NeOS** is a curated, snapshot-based Arch Linux desktop distribution engineered for predictable behavior, system stability, and a refined **KDE Plasma 6** experience. Designed for users transitioning from Windows, NeOS bridges the gap between the flexibility of a rolling release and the reliability of a validated workstation environment.
 
-It ships as a full **live installer** — boot into a working desktop, try it, then install with the Calamares wizard, the same model as a mainstream desktop OS. Hold the firmware menu for Copy-to-RAM or Safe Graphics; attach a `cidata` volume for an Omarchy-style unattended install.
+It ships as a full **live installer** — boot into a working desktop, try it, then install with the Calamares wizard, the same model as a mainstream desktop OS. Hold the firmware menu for Copy-to-RAM or Safe Graphics; attach a `cidata` volume for an Omarchy-style assisted install (auto-launch with your identity pre-filled; partitioning is still confirmed).
 
 > **Installing without a network:** an ISO built locally with `sudo ./build.sh` embeds an offline package repository, so the installer completes with no internet connection. CI passes `--no-offline-repo` to the same script, so the ISOs published to Releases install from the network.
 

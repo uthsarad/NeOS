@@ -58,10 +58,35 @@ if [[ -f "$OVERLAY" ]]; then
     fi
 fi
 
-if grep -q -- '--unattended' "$WELCOME" && grep -q -- '--config' "$WELCOME"; then
-    echo "  [PASS] neos-welcome accepts --unattended / --config"
+if grep -q -- '--config' "$WELCOME"; then
+    echo "  [PASS] neos-welcome accepts --config"
 else
-    echo "[FAIL] $WELCOME must accept --unattended and --config"
+    echo "[FAIL] $WELCOME must accept --config"
+    FAIL=1
+fi
+
+# Upstream Calamares has no -u/--unattended switch (only -d/-D/-T/-c/-X), so a
+# passthrough flag would be silently ignored and fake an automation contract.
+# Neither side may carry the dashed literal (comments say "unattended flag").
+if grep -q -- '--unattended' "$WELCOME"; then
+    echo "[FAIL] $WELCOME must not accept --unattended (Calamares has no such switch)"
+    FAIL=1
+else
+    echo "  [PASS] neos-welcome has no dead --unattended flag"
+fi
+if grep -q -- '--unattended' "$BIN"; then
+    echo "[FAIL] $BIN must not pass --unattended (Calamares has no such switch)"
+    FAIL=1
+else
+    echo "  [PASS] neos-autoinstall passes no dead --unattended flag"
+fi
+
+# cidata is mounted by the live user, for whom a plain `mount` fails — the
+# live image must ship udisks2 or volume discovery is dead on arrival.
+if grep -qxF 'udisks2' profile/packages.x86_64; then
+    echo "  [PASS] live image ships udisks2 (cidata mountable by liveuser)"
+else
+    echo "[FAIL] profile/packages.x86_64 must ship udisks2 for cidata discovery"
     FAIL=1
 fi
 
@@ -117,6 +142,21 @@ else
     echo "[FAIL] expected MODE=PREFILL for a partial config"
     echo "$OUT2"
     FAIL=1
+fi
+
+# A hashed password is interpolated into a generated shellprocess command, so
+# anything outside the crypt alphabet (quotes, shell metacharacters) must be
+# rejected instead of breaking the YAML or the shell.
+cat > "$WORKDIR/badhash.yaml" <<'EOF'
+username: alice
+erase: true
+hashed_password: "bad;rm -rf"
+EOF
+if "$BIN" parse "$WORKDIR/badhash.yaml" >/dev/null 2>&1; then
+    echo "[FAIL] parse accepted a hashed_password with shell metacharacters"
+    FAIL=1
+else
+    echo "  [PASS] parse rejects a hashed_password with shell metacharacters"
 fi
 
 if (( FAIL )); then

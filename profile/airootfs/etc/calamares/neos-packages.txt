@@ -23,14 +23,21 @@ xorg-server
 plasma-pa
 plasma-nm
 plasma-systemmonitor
+plasma-firewall
 powerdevil
 kscreen
 systemsettings
 kinfocenter
 sddm
+sddm-kcm
 konsole
 dolphin
 spectacle
+kate
+kcalc
+gwenview
+partitionmanager
+drkonqi
 pipewire
 pipewire-alsa
 pipewire-pulse
@@ -65,6 +72,8 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
+libva-mesa-driver
+vulkan-swrast
 virtualbox-guest-utils
 open-vm-tools
 qemu-guest-agent
@@ -76,13 +85,18 @@ xf86-video-amdgpu
 xf86-video-ati
 xf86-video-nouveau
 xf86-video-qxl
+xf86-video-vmware
 xf86-video-vesa
 xf86-video-fbdev
 xf86-input-libinput
 pciutils
 usbutils
+udisks2
+modemmanager
+usb_modeswitch
+mobile-broadband-provider-info
+libnotify
 grub
-breeze-grub
 syslinux
 os-prober
 mtools
@@ -128,6 +142,7 @@ pacman-contrib
 rsync
 sbctl
 mokutil
+efitools
 discover
 packagekit-qt6
 flatpak
@@ -155,6 +170,7 @@ intel-media-driver
 libva-intel-driver
 cups
 cups-pdf
+print-manager
 ghostscript
 gsfonts
 gutenprint
@@ -195,6 +211,8 @@ elixir
 odin
 crystal
 # --- heavy desktop applications and drivers (installed-system only) ---
-print-manager
 noto-fonts-cjk
 nvidia-open-lts
+networkmanager-openvpn
+sane
+sane-airscan

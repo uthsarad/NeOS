@@ -110,9 +110,11 @@ graph TD
    - Offer post-install updates on first boot.
    - Run driver detection and firmware installation.
    - Provide privacy and telemetry opt-in controls.
-3. **Unattended install**
-   - Omarchy-style cidata volume (`autoinstall.yaml`) launches Calamares
-     unattended when `erase: true` plus credentials are present.
+3. **Assisted install**
+   - Omarchy-style cidata volume (`autoinstall.yaml`) auto-launches
+     Calamares with identity pre-filled when `erase: true` plus credentials
+     are present (partitioning is always confirmed interactively —
+     Calamares has no unattended switch).
 
 **Acceptance Criteria**
 

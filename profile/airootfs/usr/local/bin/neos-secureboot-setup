@@ -186,13 +186,12 @@ sign_binaries() {
         warn "  sbctl sign -s /boot/vmlinuz-linux-lts"
     fi
 
-    # Also sign a fallback initramfs if present (some GRUB configs reference it).
-    local fallback_initrd="/boot/initramfs-linux-lts-fallback.img"
-    if [[ -f "$fallback_initrd" ]]; then
-        info "Signing fallback initrd: ${fallback_initrd}"
-        sbctl sign -s "$fallback_initrd"
-        ok "Signed: ${fallback_initrd}"
-    fi
+    # NOTE: the initramfs images are deliberately NOT signed. They are cpio
+    # archives, not PE binaries, so sbsign rejects them ("Invalid DOS header
+    # magic") — attempting it aborts this script under `set -e` on what would
+    # otherwise be the success path. In the sbctl/GRUB model only the bootloader
+    # and the kernel carry signatures; GRUB loads the initrd unverified unless
+    # you switch to unified kernel images (which is out of scope here).
 }
 
 # ---------------------------------------------------------------------------

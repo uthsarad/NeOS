@@ -49,9 +49,15 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     # and CPU spike inside the RAM-backed installer, wasted on machines with no
     # NVIDIA GPU. dkms/linux-lts-headers stay in the live list for
     # broadcom-wl-dkms, which is tiny to build.
+    # networkmanager-openvpn, sane and sane-airscan fulfil the Ubuntu-parity
+    # promise of docs/decisions/0006 (VPN + scanner support). They are
+    # installed-system only: neither VPN tunnels nor scanning are needed to
+    # install from the live session. (print-manager used to live here; it moved
+    # to the live list so the live session's full CUPS stack has a GUI.)
     echo "# --- heavy desktop applications and drivers (installed-system only) ---"
     printf '%s\n' \
-        print-manager noto-fonts-cjk nvidia-open-lts
+        noto-fonts-cjk nvidia-open-lts \
+        networkmanager-openvpn sane sane-airscan
 } > "$NETINSTALL_PKGS"
 
 # Generate the NeOS overlay manifest that Calamares copies onto the target

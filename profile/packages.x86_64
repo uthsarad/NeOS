@@ -25,14 +25,21 @@ xorg-server
 plasma-pa
 plasma-nm
 plasma-systemmonitor
+plasma-firewall
 powerdevil
 kscreen
 systemsettings
 kinfocenter
 sddm
+sddm-kcm
 konsole
 dolphin
 spectacle
+kate
+kcalc
+gwenview
+partitionmanager
+drkonqi
 
 # Audio
 pipewire
@@ -77,6 +84,8 @@ ntfs-3g
 amd-ucode
 intel-ucode
 mesa
+libva-mesa-driver
+vulkan-swrast
 virtualbox-guest-utils
 open-vm-tools
 qemu-guest-agent
@@ -88,15 +97,20 @@ xf86-video-amdgpu
 xf86-video-ati
 xf86-video-nouveau
 xf86-video-qxl
+xf86-video-vmware
 xf86-video-vesa
 xf86-video-fbdev
 xf86-input-libinput
 pciutils
 usbutils
+udisks2
+modemmanager
+usb_modeswitch
+mobile-broadband-provider-info
+libnotify
 
 # Bootloader
 grub
-breeze-grub
 syslinux
 os-prober
 mtools
@@ -149,6 +163,7 @@ rsync
 # Architect Requirements
 sbctl
 mokutil
+efitools
 
 # Software Management (Phase 7)
 discover
@@ -178,6 +193,7 @@ intel-media-driver
 libva-intel-driver
 cups
 cups-pdf
+print-manager
 ghostscript
 gsfonts
 gutenprint

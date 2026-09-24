@@ -10,6 +10,7 @@ etc/sddm.conf.d/20-theme.conf
 etc/skel/.bashrc
 etc/skel/.config/autostart/neos-desktop-setup.desktop
 etc/skel/.config/ksplashrc
+etc/skel/.zshrc
 etc/skel/Desktop/neos-terminal.desktop
 etc/skel/Desktop/welcome-neos.desktop
 etc/snapper/configs/root
@@ -28,7 +29,11 @@ etc/systemd/system/neos-autoupdate.service
 etc/systemd/system/neos-autoupdate.timer
 etc/systemd/system/neos-driver-manager.service
 etc/systemd/system/neos-vm-graphics.service
+etc/systemd/system/qemu-guest-agent.service.d/10-neos-vm-only.conf
 etc/systemd/system/sddm.service.d/10-software-greeter.conf
+etc/systemd/system/spice-vdagentd.service.d/10-neos-vm-only.conf
+etc/systemd/system/vboxservice.service.d/10-neos-vm-only.conf
+etc/systemd/system/vmtoolsd.service.d/10-neos-vm-only.conf
 etc/systemd/zram-generator.conf
 etc/ufw/ufw.conf
 etc/xdg/autostart/neos-display-sync.desktop

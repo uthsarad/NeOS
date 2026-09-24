@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# neos-autoinstall — Omarchy-style unattended install from a cidata volume.
+# neos-autoinstall — Omarchy-style assisted install from a cidata volume.
 #
 # Looks for a filesystem labeled cidata / NEOSCIDATA (or a directory on the
 # live ISO at /run/archiso/bootmnt/neos/autoinstall/) containing autoinstall.yaml.
 # Without erase: true it only pre-fills Calamares. With erase: true plus a
-# username and password it launches Calamares unattended.
+# username and password it auto-launches Calamares with the identity
+# pre-filled — partitioning is still confirmed interactively, because upstream
+# Calamares has no unattended CLI switch and a silent disk wipe would be a
+# safety bug, not a feature.
 #
 # Subcommands:
 #   probe              print FOUND= and MODE= (UNATTENDED|PREFILL) if a config exists
@@ -190,8 +193,43 @@ find_cidata_device() {
     return 1
 }
 
+# Mounts this script created itself, for cleanup. Probing runs repeatedly (the
+# welcome-app probe plus up to ~16 probes in cmd_apply's wait loop), so mounts
+# MUST be idempotent: an already-mounted device is reused untouched, and the
+# manual fallback mounts each label at a FIXED directory instead of stacking a
+# fresh mktemp mount (and tmpdir) on every probe.
+CIDATA_UDISKS=()
+CIDATA_MANUAL=()
+
+cleanup_cidata_mounts() {
+    local mnt
+    if ((${#CIDATA_UDISKS[@]} > 0)); then
+        for mnt in "${CIDATA_UDISKS[@]}"; do
+            udisksctl unmount -p "$mnt" --no-user-interaction 2>/dev/null \
+                || umount "$mnt" 2>/dev/null \
+                || true
+        done
+    fi
+    if ((${#CIDATA_MANUAL[@]} > 0)); then
+        for mnt in "${CIDATA_MANUAL[@]}"; do
+            umount "$mnt" 2>/dev/null || true
+            rmdir "$mnt" 2>/dev/null || true
+        done
+    fi
+    CIDATA_UDISKS=()
+    CIDATA_MANUAL=()
+}
+
 mount_device() {
     local dev="$1" out mnt
+    # Already mounted anywhere? Reuse it and leave cleanup to its owner.
+    mnt="$(findmnt -rn -S "$dev" -o TARGET 2>/dev/null | head -n 1 || true)"
+    if [[ -n "$mnt" && -d "$mnt" ]]; then
+        printf '%s\n' "$mnt"
+        return 0
+    fi
+    # udisks2 is installed on the live image, so the live user can mount the
+    # cidata volume without root (a plain `mount` here would fail for liveuser).
     if command -v udisksctl >/dev/null 2>&1; then
         out="$(udisksctl mount -b "$dev" --no-user-interaction 2>/dev/null || true)"
         if [[ "$out" == *" at "* ]]; then
@@ -199,13 +237,24 @@ mount_device() {
             mnt="${mnt%.}"
             mnt="$(trim "$mnt")"
             if [[ -d "$mnt" ]]; then
+                CIDATA_UDISKS+=("$mnt")
                 printf '%s\n' "$mnt"
                 return 0
             fi
         fi
     fi
-    mnt="$(mktemp -d /tmp/neos-cidata.XXXXXX)"
+    # Manual fallback (root without udisks2): one stable directory per device
+    # so repeated probes reuse the mount instead of stacking new ones. Only a
+    # fresh mount is recorded — reusing an existing mountpoint records nothing,
+    # so cleanup never unmounts something it did not mount.
+    mnt="/tmp/neos-cidata-${dev##*/}"
+    mkdir -p "$mnt" 2>/dev/null || true
+    if mountpoint -q "$mnt" 2>/dev/null; then
+        printf '%s\n' "$mnt"
+        return 0
+    fi
     if mount -o ro,nosuid,nodev,noexec "$dev" "$mnt" 2>/dev/null; then
+        CIDATA_MANUAL+=("$mnt")
         printf '%s\n' "$mnt"
         return 0
     fi
@@ -249,6 +298,16 @@ validate_identity() {
     fi
     if [[ -n "$AI_PASSWORD" && ! "$AI_PASSWORD" =~ ^[A-Za-z0-9._@%+=!-]{6,}$ ]]; then
         echo "neos-autoinstall: password must be 6+ chars from [A-Za-z0-9._@%+=!-]" >&2
+        return 1
+    fi
+    # A hashed password is interpolated into a generated shellprocess command
+    # (`usermod -p '<hash>'`), so it must be crypt-alphabet only: no quotes,
+    # whitespace, backslashes or shell metacharacters that could break the
+    # YAML or the shell. (Kept in a variable so the `$` stays literal: an
+    # inline `\$` inside brackets would also match a backslash.)
+    local hash_re='^[A-Za-z0-9./$=]{10,256}$'
+    if [[ -n "$AI_HASHED_PASSWORD" && ! "$AI_HASHED_PASSWORD" =~ $hash_re ]]; then
+        echo "neos-autoinstall: hashed_password is not a valid crypt hash" >&2
         return 1
     fi
     return 0
@@ -317,14 +376,11 @@ generate_calamares_config() {
 
 launch_installer() {
     local cfg="$1"
-    local extra=()
-    if [[ "$(mode_of)" == "UNATTENDED" ]]; then
-        extra+=(--unattended)
-    fi
-    extra+=(--config "$cfg")
     local status
+    # Pre-filled config only: neos-welcome has no unattended flag because
+    # Calamares itself has no unattended switch to pass through to.
     if [[ -x /usr/local/bin/neos-welcome ]]; then
-        /usr/local/bin/neos-welcome "${extra[@]}"
+        /usr/local/bin/neos-welcome --config "$cfg"
         status=$?
         return "$status"
     fi
@@ -347,9 +403,19 @@ cmd_parse() {
 }
 
 cmd_probe() {
-    if probe_now; then
+    # probe_now MUST run in the current shell (output redirected to a file),
+    # not in $(): a command substitution would run it in a subshell where the
+    # CIDATA_* mount records are lost and cleanup below unmounts nothing.
+    local probe_tmp
+    probe_tmp="$(mktemp /tmp/neos-autoinstall-probe.XXXXXX)"
+    if probe_now >"$probe_tmp" 2>/dev/null; then
+        cat "$probe_tmp"
+        rm -f "$probe_tmp"
+        cleanup_cidata_mounts
         return 0
     fi
+    rm -f "$probe_tmp"
+    cleanup_cidata_mounts
     printf 'FOUND=\nMODE=NONE\n'
     return 1
 }
@@ -367,8 +433,9 @@ cmd_apply() {
         return 0
     fi
     # Expand lockdir now: a single-quoted trap would look up a function-local
-    # that is already gone when EXIT fires.
-    trap "rmdir '$lockdir' 2>/dev/null || true" EXIT
+    # that is already gone when EXIT fires. cleanup_cidata_mounts is a
+    # top-level function, so it is still available at exit time.
+    trap "cleanup_cidata_mounts; rmdir '$lockdir' 2>/dev/null || true" EXIT
 
     if pgrep -x calamares >/dev/null 2>&1; then
         echo "neos-autoinstall: Calamares is already running"
@@ -396,6 +463,11 @@ cmd_apply() {
     if [[ -n "$file" && -f "$file" ]]; then
         parse_file "$file"
     fi
+    # The config is parsed into memory; nothing below reads the volume again
+    # (the generated Calamares config is copied from /etc/calamares), so
+    # release our mounts now instead of holding them for the whole install.
+    # The EXIT trap re-runs this as a backstop on failure paths.
+    cleanup_cidata_mounts
 
     if ! validate_identity; then
         echo "neos-autoinstall: refusing to apply an invalid config" >&2

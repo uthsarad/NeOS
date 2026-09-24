@@ -1,24 +1,28 @@
 #!/bin/bash
 # Installer launcher for NeOS installation media.
 #
-# Launches Calamares as root on top of the live user's (X)Wayland session.
-# The live session is KDE Plasma on Wayland, so Calamares runs through
-# XWayland (QT_QPA_PLATFORM=xcb). Any failure is surfaced to the user via
-# kdialog instead of failing silently.
+# Launches Calamares as root on top of the live user's X11 Plasma session
+# (QT_QPA_PLATFORM=xcb). Any failure is surfaced to the user via kdialog
+# instead of failing silently.
+#
+# NOTE: there is deliberately no unattended flag. Upstream Calamares has no
+# unattended CLI switch (its parser only knows -d/-D/-T/-c/-X), so a `-u` here
+# would be silently ignored and fake an automation contract. Automation
+# (neos-autoinstall) instead auto-launches this wrapper with a pre-filled
+# --config directory; the user still reviews partitioning, which is a safety
+# feature, not a limitation.
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-UNATTENDED=0
 CONFIG_DIR=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --unattended|-u) UNATTENDED=1 ;;
         --config|-c)
             CONFIG_DIR="${2:-}"
             shift
             ;;
         -h|--help)
-            echo "Usage: neos-welcome [--unattended] [--config DIR]"
+            echo "Usage: neos-welcome [--config DIR]"
             exit 0
             ;;
         *)
@@ -30,9 +34,6 @@ while [[ $# -gt 0 ]]; do
 done
 
 CAL_ARGS=()
-if [[ "$UNATTENDED" -eq 1 ]]; then
-    CAL_ARGS+=(-u)
-fi
 if [[ -n "$CONFIG_DIR" ]]; then
     if [[ ! -d "$CONFIG_DIR" ]]; then
         echo "neos-welcome: --config directory does not exist: $CONFIG_DIR" >&2

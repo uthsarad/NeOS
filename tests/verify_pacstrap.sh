@@ -98,6 +98,19 @@ else
     echo "[FAIL] neos-pacstrap missing or does not run pacstrap"; FAIL=1
 fi
 
+# 3b. The config reaches pacstrap in the only form it understands: short
+# options BEFORE the root (`pacstrap [options] root [packages...]`, getopts
+# style, no long options). A trailing `--config` would be treated as a
+# package name — failing the install while silently ignoring the offline
+# repo, which is exactly how offline installs broke.
+if grep -qE 'pacstrap[[:space:]]+.*--config' "$PACSTRAP_BIN"; then
+    echo "[FAIL] neos-pacstrap passes '--config' to pacstrap, which only understands '-C' before the root"; FAIL=1
+elif grep -qE 'pacstrap +-K +-C ' "$PACSTRAP_BIN"; then
+    echo "  [PASS] neos-pacstrap passes its config as '-C' before the root"
+else
+    echo "[FAIL] neos-pacstrap does not pass '-C <conf>' to pacstrap"; FAIL=1
+fi
+
 # 4. Generated package list exists, is non-trivial, and excludes live-only pkgs.
 if [[ -f "$PKGLIST" ]]; then
     count=$(grep -vcE '^\s*(#|$)' "$PKGLIST")
@@ -200,6 +213,40 @@ if [[ -f "$SERVICES" && -f "$OVERLAY" ]]; then
             echo "[FAIL] installer enables '$unit' but no overlay file delivers it"; FAIL=1
         fi
     done < <(grep -oE 'name: *"neos-[^"]+"' "$SERVICES" | sed -E 's/.*"(neos-[^"]+)".*/\1/')
+fi
+
+# 8. Every vendor unit the installer enables must have its package in the
+# install manifest, otherwise the enable fails on a unit that was never
+# installed (this caught ModemManager being enabled while modemmanager was
+# in neither package list). neos-* units are covered by section 7 above;
+# fstrim.timer ships with util-linux via `base`, and graphical.target is a
+# target, not a unit — neither needs a manifest entry.
+if [[ -f "$SERVICES" && -f "$PKGLIST" ]]; then
+    while IFS='=' read -r unit pkg; do
+        [[ -z "$unit" ]] && continue
+        if grep -qE "name: *\"$unit\"" "$SERVICES"; then
+            if grep -qxF "$pkg" <(grep -vE '^\s*(#|$)' "$PKGLIST"); then
+                echo "  [PASS] enabled unit '$unit' has package '$pkg' in the manifest"
+            else
+                echo "[FAIL] installer enables '$unit' but '$pkg' is not in neos-packages.txt"; FAIL=1
+            fi
+        fi
+    done <<'UNITMAP'
+NetworkManager=networkmanager
+bluetooth=bluez
+sddm=sddm
+ModemManager=modemmanager
+ufw=ufw
+cups.socket=cups
+cups.path=cups
+thermald=thermald
+snapper-timeline.timer=snapper
+snapper-cleanup.timer=snapper
+vboxservice=virtualbox-guest-utils
+vmtoolsd=open-vm-tools
+qemu-guest-agent=qemu-guest-agent
+spice-vdagentd=spice-vdagent
+UNITMAP
 fi
 
 if [[ "$FAIL" -ne 0 ]]; then
