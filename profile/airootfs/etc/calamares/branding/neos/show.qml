@@ -21,7 +21,7 @@ Presentation {
     readonly property color cTitle:         "#ffffff"
     readonly property color cBody:          "#c0c4d8"
     readonly property color cSubtle:        "#7a8099"
-    readonly property color cAccent:        "#1F6FD6"
+    readonly property color cAccent:        "#38bdf8"
     readonly property color cAccentHover:   "#3D82E0"
     readonly property color cAccentPressed: "#17569F"
     readonly property color cGreen:         "#22c55e"

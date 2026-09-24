@@ -53,7 +53,7 @@ slideshowAPI:            2
 style:
    SidebarBackground:        "#0A0E1A"
    SidebarText:              "#AEB4C7"
-   SidebarBackgroundCurrent: "#1F6FD6"
+   SidebarBackgroundCurrent: "#38bdf8"
    SidebarTextCurrent:       "#FFFFFF"
 
 # Let users upload installer logs for support (calamares "Upload" button).

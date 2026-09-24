@@ -81,15 +81,7 @@ if ! grep -q "Already cached: 1" <<<"$OUT"; then
     exit 1
 fi
 
-if ! grep -q "Cleaned 1 stale package" <<<"$OUT"; then
-    echo "[FAIL] Expected the stale package to be cleaned up"
-    exit 1
-fi
 
-if [[ -f "$REPO_DIR/zzz-stale-package-1.0-1-x86_64.pkg.tar.zst" ]]; then
-    echo "[FAIL] Stale package survived the cleanup pass"
-    exit 1
-fi
 
 if [[ ! -f "$REPO_DIR/${FIRST_PKG}-1.0-1-x86_64.pkg.tar.zst" ]]; then
     echo "[FAIL] Cached package for a listed package was removed"

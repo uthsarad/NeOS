@@ -46,7 +46,7 @@ class NeosWelcome(QWidget):
             }
             QFrame#divider {
                 background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #17569F, stop:0.5 #1F6FD6, stop:1 #3D82E0);
+                    stop:0 #17569F, stop:0.5 #38bdf8, stop:1 #3D82E0);
                 max-height: 2px;
                 min-height: 2px;
                 border: none;
@@ -59,7 +59,7 @@ class NeosWelcome(QWidget):
             }
             QLabel#feature_icon {
                 font-size: 16px;
-                color: #1F6FD6;
+                color: #38bdf8;
             }
             QLabel#feature_text {
                 font-size: 13px;
@@ -86,12 +86,12 @@ class NeosWelcome(QWidget):
                 color: #ffffff;
             }
             QPushButton#try_btn:focus {
-                border-color: #1F6FD6;
+                border-color: #38bdf8;
                 color: #ffffff;
                 background-color: rgba(42, 51, 84, 0.2);
             }
             QPushButton#install_btn {
-                background-color: #1F6FD6;
+                background-color: #38bdf8;
                 border: 2px solid transparent;
                 color: #ffffff;
                 border-radius: 12px;
@@ -207,7 +207,7 @@ class NeosWelcome(QWidget):
                 padding: 4px;
             }
             QCheckBox:focus {
-                border: 1px solid #1F6FD6;
+                border: 1px solid #38bdf8;
                 border-radius: 4px;
                 background-color: rgba(31, 111, 214, 0.1);
             }
