@@ -29,3 +29,10 @@
 - Added delegation comments for Bolt in build.sh to target subprocess overhead in packaging and compression.
 - Added delegation comments for Sentinel in neos-autoupdate.sh to audit input sanitization and secure temporary file handling.
 - Generated updated task manifests for Bolt, Palette, and Sentinel.
+
+## 2026-09-25 (Phase 8 Execution: Core Build Optimizations)
+- Checked `ARCHITECT_SCOPE.json` (strategic_pause: false).
+- Verified delegation comments are present in `build.sh` (for Bolt) and `neos-autoupdate.sh` (for Sentinel).
+- Updated JSON task manifests for Bolt, Palette, and Sentinel to coordinate modifications.
+- Delegated performance optimization in `build.sh` to Bolt.
+- Delegated security hardening in `neos-autoupdate.sh` to Sentinel.
