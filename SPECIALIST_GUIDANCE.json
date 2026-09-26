@@ -1,19 +1,19 @@
 {
   "maestro_coordination": {
     "role": "Lead Orchestrator",
-    "rule": "Enforce strict separation of duties between Bolt, Palette, and Sentinel. Reject any meta-reports, dummy pause acknowledgments, or commits without real code improvements."
+    "rule": "Enforce strict zero-slop policy. Reject meta-reports, dummy pause acknowledgments, or commits without real code improvements. Focus specialists strictly on their assigned targets."
   },
   "bolt": {
     "role": "Performance & Efficiency",
-    "guidance": "Focus on real code optimizations in build.sh. Optimize subprocess overhead in packaging and compression pipelines."
+    "guidance": "Focus on tangible code optimizations in build.sh. Specifically optimize subprocess overhead in the packaging and compression pipelines."
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
-    "guidance": "No immediate active tasks. Standby for UX/accessibility audits."
+    "guidance": "No immediate active tasks. Remain on standby for UX/accessibility audits."
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Harden neos-autoupdate.sh input sanitization, verify secure temporary file handling (avoid CWE-59), and enforce restrictive umask defaults."
+    "guidance": "Harden neos-autoupdate.sh: ensure strict input sanitization, verify secure temporary file handling to prevent CWE-59 vulnerabilities, and enforce restrictive umask defaults."
   },
-  "maestro_timestamp": "2026-09-25T00:00:00Z"
+  "maestro_timestamp": "2026-09-26T23:35:00Z"
 }
