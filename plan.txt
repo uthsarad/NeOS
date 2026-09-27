@@ -1,0 +1,10 @@
+1. Modify `build.sh` using `sed`.
+2. Verify `build.sh` modification.
+3. Modify `ai/tasks/bolt.json` using `jq`.
+4. Verify `ai/tasks/bolt.json` modification.
+5. Append report to `BOLT_REPORT.md` using `grep -q || cat << EOF >>`.
+6. Verify `BOLT_REPORT.md` modification.
+7. Execute `tests/verify_build_profile.sh`.
+8. Execute `ruby tools/neos_tasks.rb test`.
+9. Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done.
+10. Submit PR.

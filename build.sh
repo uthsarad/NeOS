@@ -183,7 +183,7 @@ bash tools/gen-manifests.sh "$REPO_ROOT"
 # Bolt: [Performance] Optimize subprocess overhead in packaging and compression pipelines (Delegated by Architect)
 # Run mkarchiso
 echo -e "${GREEN}Building ISO...${NC}"
-yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
+mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR" < /dev/null
 
 # ---- Build offline install repo (local package cache for the ISO) ---------
 # Downloads all packages listed in neos-packages.txt and creates a pacman
