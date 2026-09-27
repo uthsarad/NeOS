@@ -128,7 +128,13 @@ check_dependencies() {
     # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
-        local err_msg="INFO: <b>snapper</b> utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install <b>snapper</b> and configure a root configuration."
+        local err_msg="Automatic updates are paused because <b>snapper</b> is missing.
+
+Without it, NeOS cannot create safety snapshots to protect your system.
+
+<b>How to fix:</b>
+1. Install the snapper package.
+2. Configure a root snapshot profile."
         local log_msg="INFO: 'snapper' utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install 'snapper' and configure a root configuration."
         log "$log_msg"
         notify_users "$err_msg" "System Update Skipped" "dialog-information" "normal"
@@ -138,9 +144,10 @@ check_dependencies() {
     local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
-            local err_msg="Required command <b>$cmd</b> not found.
+            local err_msg="The system update requires <b>$cmd</b>, which is missing.
 
-Please install the package containing <b>$cmd</b> to enable automatic system updates."
+<b>How to fix:</b>
+Please install the package containing <b>$cmd</b> to resume automatic updates."
             log "Error: Required command '$cmd' not found."
             notify_users "$err_msg" "Update Failed: Missing Dependency" "dialog-error" "critical"
             exit 1
@@ -173,12 +180,13 @@ check_disk_space() {
 
     if (( available_space < min_space )); then
         # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
-        local err_msg="Insufficient disk space for update.
+        local err_msg="The system update requires more disk space.
 
 <b>Available:</b> $((available_space / 1024)) MB
 <b>Required:</b> $((min_space / 1024)) MB
 
-Please free up some space and try again."
+<b>How to fix:</b>
+Please free up some disk space to continue."
         log "Error: Insufficient disk space. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB."
         notify_users "$err_msg" "Update Failed: Disk Full" "drive-harddisk" "critical"
 
@@ -209,10 +217,10 @@ perform_update() {
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
-        local err_msg="The system update failed during execution.
+        local err_msg="The system update encountered an error.
 
-Please review the update logs for more details:
-<b>/var/log/neos-autoupdate.log</b>"
+<b>How to investigate:</b>
+Please review the logs at <b>/var/log/neos-autoupdate.log</b> for more details."
         log "System update failed. Check pacman logs."
         notify_users "$err_msg" "System Update Failed" "dialog-error" "critical"
         # Still create post snapshot to close the pair, but mark as failed
