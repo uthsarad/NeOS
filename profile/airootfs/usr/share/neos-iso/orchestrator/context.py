@@ -99,10 +99,12 @@ class InstallContext:
             # with. Generate a throwaway passphrase (staged for first-boot
             # re-key by the stage_provisioning_state phase) and hand it to archinstall
             # through both places it may look: the disk_encryption block and
-            # the credentials file.
+            # runtime credentials object.
             _inject_provisioning_encryption_password(arch_configuration, user_credentials)
             creds_path = state_dir / "provisioning-user_credentials.json"
-            creds_path.write_text(json.dumps(user_credentials, indent=2) + "\n")
+            persisted_credentials = dict(user_credentials)
+            persisted_credentials.pop("encryption_password", None)
+            creds_path.write_text(json.dumps(persisted_credentials, indent=2) + "\n")
             creds_path.chmod(0o600)
 
         arch_config_path = state_dir / "archinstall-user_configuration.json"
