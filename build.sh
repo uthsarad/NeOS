@@ -123,7 +123,8 @@ CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
 # failed the whole build on a single bad request. Fall back to geo-mirror
 # (virtual/auto-routing, different backing infra) if cdn-mirror stays down
 # across all retries -- a real outage, not just a blip, has been observed.
-CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors)
+# Sentinel: [Security] Enforce strict HTTPS and TLS v1.2+ for curl to prevent protocol downgrade attacks
+CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors --proto '=https' --tlsv1.2)
 CHAOTIC_HOSTS=(
     'https://cdn-mirror.chaotic.cx/chaotic-aur'
     'https://geo-mirror.chaotic.cx/chaotic-aur'

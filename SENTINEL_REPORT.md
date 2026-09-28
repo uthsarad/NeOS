@@ -15,6 +15,11 @@
 - **Severity:** Medium
 - The risk is mitigated globally, removing isolated TOCTOU windows during temporary file and lock creations.
 
+### Audit neos-autoupdate.sh for input sanitization and secure temporary file handling.
+**Vulnerability:** Weak protocol configurations for `curl` during system build could permit protocol downgrade attacks (e.g., from HTTPS to HTTP or FTP) or malicious redirects, leading to potential supply chain or SSRF vulnerabilities.
+**Learning:** External network calls fetching critical assets like package keyrings must proactively restrict allowed protocols and enforce modern TLS standards.
+**Prevention:** Always append `--proto '=https' --tlsv1.2` to `curl` configurations when fetching sensitive assets to eliminate downgrade risks.
+
 ## Audit neos-autoupdate.sh for input sanitization and secure temporary file handling.
 **Vulnerability:** Redundant `chown`/`chmod` commands executed on newly created files in predictable locations created Time-of-Check to Time-of-Use (TOCTOU) windows where symlink redirection could occur. Input parameters from external binaries (`loginctl`, `snapper`) were passed into subsequent subprocess execution environments (`sudo`, subshell interpolations) without explicit input sanitization boundaries, exposing potential argument/command injection vulnerabilities if the external dependencies returned malformed or crafted outputs.
 **Learning:** Enforcing restrictive `umask 077` makes sequential file-mode adjustments superfluous and actively dangerous due to symlink traversal by default coreutils implementations. Subprocess boundaries require strict environment variable scoping (`env`) and explicit option terminators (`--`) to prevent input-driven flag injection.
