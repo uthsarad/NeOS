@@ -213,6 +213,7 @@ perform_update() {
     # Perform update
     if "$PACMAN_BIN" -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
         log "System update completed successfully."
+        notify_users "Your system has been successfully updated to the latest version." "System Update Complete" "system-software-update" "normal"
         # Create post-update snapshot
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"

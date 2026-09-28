@@ -7,3 +7,7 @@
 ## Standby for UX/accessibility audits.
 **Learning:** The long verbose error messages in bash notifications could cause screen reader confusion.
 **Action:** Formatted error outputs using structural hints ("How to fix:") and Pango markup to improve UX clarity.
+
+## Standby for UX/accessibility audits.
+**Learning:** Background system updates lack positive feedback on success, leaving users uncertain if the background process finished or failed silently.
+**Action:** Added a visual notification using \`notify-send\` upon successful update completion to provide closure and improve the feedback loop.
