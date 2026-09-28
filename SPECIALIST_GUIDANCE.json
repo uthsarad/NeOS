@@ -5,7 +5,7 @@
   },
   "bolt": {
     "role": "Performance & Efficiency",
-    "guidance": "Focus on tangible code optimizations in build.sh. Specifically optimize subprocess overhead in the packaging and compression pipelines."
+    "guidance": "Focus on tangible code optimizations in neos-operations-hub. Specifically optimize subprocess overhead and I/O efficiency."
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
@@ -13,7 +13,7 @@
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Harden neos-autoupdate.sh: ensure strict input sanitization, verify secure temporary file handling to prevent CWE-59 vulnerabilities, and enforce restrictive umask defaults."
+    "guidance": "Harden neos-operations-hub: ensure strict input sanitization and verify secure privilege execution boundaries."
   },
-  "maestro_timestamp": "2026-09-27T23:25:16Z"
+  "maestro_timestamp": "2026-09-28T23:04:18Z"
 }
