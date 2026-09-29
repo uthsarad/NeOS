@@ -4,9 +4,12 @@
   ],
   "strategic_pause": false,
   "constraints": [
-    "Enforce zero-slop policy: autonomous code improvements only; no dummy commits or empty PRs.",
-    "Favor minimal, test-covered changes over wide refactors.",
-    "Maintain strict backward compatibility with existing NeOS configurations."
+    "Prevent feature creep.",
+    "Favor incremental delivery.",
+    "Protect long-term maintainability over speed.",
+    "If requirements are ambiguous, choose the smallest viable interpretation.",
+    "Enforce zero-slop policy: no dummy commits, empty PRs, or endless pause loops.",
+    "Limit to one coherent deliverable per run: refactor the rollback flow string parsing."
   ],
-  "maestro_timestamp": "2026-09-28T23:04:18Z"
+  "maestro_timestamp": "2026-09-30T00:00:00Z"
 }

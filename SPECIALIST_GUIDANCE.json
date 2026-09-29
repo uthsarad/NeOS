@@ -1,11 +1,11 @@
 {
   "maestro_coordination": {
     "role": "Lead Orchestrator",
-    "rule": "Enforce strict zero-slop policy. Reject meta-reports, dummy pause acknowledgments, or commits without real code improvements. Focus specialists strictly on their assigned targets."
+    "rule": "Enforce strict zero-slop policy. Reject meta-reports or commits without real code improvements. Ensure specialists focus strictly on their designated targets."
   },
   "bolt": {
     "role": "Performance & Efficiency",
-    "guidance": "Focus on tangible code optimizations in neos-operations-hub. Specifically optimize subprocess overhead and I/O efficiency."
+    "guidance": "Optimize subprocess overhead in the rollback flow of neos-operations-hub by replacing external binary pipelines (grep, awk) with native Bash regular expressions."
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
@@ -13,7 +13,7 @@
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Harden neos-operations-hub: ensure strict input sanitization and verify secure privilege execution boundaries."
+    "guidance": "Audit and harden the input validation in the rollback flow of neos-operations-hub to ensure strict regex validation prevents command injection during dbus-send."
   },
-  "maestro_timestamp": "2026-09-28T23:04:18Z"
+  "maestro_timestamp": "2026-09-30T00:00:00Z"
 }
