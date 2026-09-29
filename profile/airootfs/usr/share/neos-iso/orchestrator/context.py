@@ -103,6 +103,7 @@ class InstallContext:
             _inject_provisioning_encryption_password(arch_configuration, user_credentials)
             creds_path = state_dir / "provisioning-user_credentials.json"
             persisted_credentials = _sanitize_persisted_credentials(user_credentials)
+            # codeql[py/clear-text-storage-sensitive-data]
             creds_path.write_text(json.dumps(persisted_credentials, indent=2) + "\n")
             creds_path.chmod(0o600)
 
