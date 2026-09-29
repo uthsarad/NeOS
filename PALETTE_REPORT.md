@@ -11,3 +11,7 @@
 ## Standby for UX/accessibility audits.
 **Learning:** Background system updates lack positive feedback on success, leaving users uncertain if the background process finished or failed silently.
 **Action:** Added a visual notification using \`notify-send\` upon successful update completion to provide closure and improve the feedback loop.
+
+## Refine the UX of the snapshot selection (e.g., provide a progress dialog during update execution instead of blocking the UI).
+**Learning:** Background synchronous tasks like system rollback lack positive feedback during execution, leaving users uncertain if the process hung or failed silently.
+**Action:** Added a visual progress dialog using kdialog during the rollback execution to provide closure and improve the feedback loop.
