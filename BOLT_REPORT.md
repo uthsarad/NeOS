@@ -29,3 +29,8 @@
 
 **Status:** Completed
 **Action:** Replaced the `yes ""` pipeline with standard input redirection `</dev/null` in `build.sh` for the `mkarchiso` invocation. This eliminates the unnecessary pipeline subshell fork and the external `yes` process fork. The functional behavior remains identical since `mkarchiso` runs package management with `--noconfirm` and does not actually require interactive line breaks. There are no remaining performance risks on this pipeline execution path.
+
+## Monitor system resources and subprocess overhead during update and rollback processes triggered via operations hub.
+
+**Status:** Completed
+**Action:** Replaced pipeline string validation and text extraction (`grep`, `awk`) with native Bash regex and `read` for parsing the DBUS_REF output in the system update flow of `neos-operations-hub`. This eliminates unnecessary subprocess fork/exec overhead without modifying functional behavior or breaking security protections against injection. There are no remaining performance risks on this script execution path.
