@@ -86,7 +86,7 @@ Snapshots are typically created automatically during system updates."
 
 Are you sure you want to proceed?"
                         if [ $? -eq 0 ]; then
-                            /usr/bin/pkexec /usr/bin/snapper rollback "$ROLLBACK_ID"
+                            /usr/bin/pkexec --disable-internal-agent /usr/bin/snapper rollback "$ROLLBACK_ID"
                             if [ $? -eq 0 ]; then
                                 /usr/bin/kdialog --icon dialog-information --title "Rollback Successful" --msgbox "System rollback initiated successfully. Please reboot your system."
                             else
@@ -148,9 +148,15 @@ LICENSE_EOF
 Proceed?"
         if [ $? -eq 0 ]; then
             DBUS_REF=$(/usr/bin/kdialog --progressbar "Executing system update..." 100)
-            /usr/bin/pkexec /usr/local/bin/neos-autoupdate.sh
+            /usr/bin/pkexec --disable-internal-agent /usr/local/bin/neos-autoupdate.sh
             UPDATE_STATUS=$?
-            dbus-send --print-reply --dest=$(echo "$DBUS_REF" | awk '{print $1}') $(echo "$DBUS_REF" | awk '{print $2}') org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1
+
+            # Sentinel: Explicitly parse kdialog progressbar output to prevent injection
+            if echo "$DBUS_REF" | grep -Eq '^[a-zA-Z0-9.-]+ [a-zA-Z0-9./-]+$'; then
+                DBUS_DEST=$(echo "$DBUS_REF" | awk '{print $1}')
+                DBUS_PATH=$(echo "$DBUS_REF" | awk '{print $2}')
+                dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1
+            fi
 
             if [ $UPDATE_STATUS -eq 0 ]; then
                 /usr/bin/kdialog --icon dialog-information --title "Update Complete" --msgbox "System update completed successfully."
