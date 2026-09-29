@@ -152,9 +152,8 @@ Proceed?"
             UPDATE_STATUS=$?
 
             # Sentinel: Explicitly parse kdialog progressbar output to prevent injection
-            if echo "$DBUS_REF" | grep -Eq '^[a-zA-Z0-9.-]+ [a-zA-Z0-9./-]+$'; then
-                DBUS_DEST=$(echo "$DBUS_REF" | awk '{print $1}')
-                DBUS_PATH=$(echo "$DBUS_REF" | awk '{print $2}')
+            if [[ "$DBUS_REF" =~ ^[a-zA-Z0-9.-]+[[:space:]][a-zA-Z0-9./-]+$ ]]; then
+                read -r DBUS_DEST DBUS_PATH <<< "$DBUS_REF"
                 dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1
             fi
 
