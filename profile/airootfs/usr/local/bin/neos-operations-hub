@@ -86,8 +86,15 @@ Snapshots are typically created automatically during system updates."
 
 Are you sure you want to proceed?"
                         if [ $? -eq 0 ]; then
+                            DBUS_REF=$(/usr/bin/kdialog --progressbar "Executing system rollback..." 100)
                             /usr/bin/pkexec --disable-internal-agent /usr/bin/snapper rollback "$ROLLBACK_ID"
-                            if [ $? -eq 0 ]; then
+                            ROLLBACK_STATUS=$?
+                            if echo "$DBUS_REF" | grep -Eq '^[a-zA-Z0-9.-]+ [a-zA-Z0-9./-]+$'; then
+                                DBUS_DEST=$(echo "$DBUS_REF" | awk '{print $1}')
+                                DBUS_PATH=$(echo "$DBUS_REF" | awk '{print $2}')
+                                dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1
+                            fi
+                            if [ $ROLLBACK_STATUS -eq 0 ]; then
                                 /usr/bin/kdialog --icon dialog-information --title "Rollback Successful" --msgbox "System rollback initiated successfully. Please reboot your system."
                             else
                                 /usr/bin/kdialog --icon dialog-error --title "Rollback Failed" --error "Failed to initiate system rollback. Please check snapper logs."
