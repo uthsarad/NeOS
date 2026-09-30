@@ -64,7 +64,8 @@
     {
       "description": "Audit the use of pkexec and input validation in the new Operations Hub update and rollback flows to ensure they cannot be bypassed or injected.",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "completed"
+      "status": "completed",
+      "resolution": "Replaced external grep/awk parsing with native Bash regex to prevent injection in DBUS_REF variables."
     },
     {
       "description": "Audit the crash reporting tool invocation for potential privilege escalation or data leakage risks.",
