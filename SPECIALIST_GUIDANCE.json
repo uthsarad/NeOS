@@ -5,15 +5,15 @@
   },
   "bolt": {
     "role": "Performance & Efficiency",
-    "guidance": "Optimize subprocess overhead in the rollback flow of neos-operations-hub by replacing external binary pipelines (grep, awk) with native Bash regular expressions."
+    "guidance": "Review completed tasks in build.sh for potential regressions."
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
-    "guidance": "No immediate active tasks. Remain on standby for UX/accessibility audits."
+    "guidance": "Standby."
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Audit and harden the input validation in the rollback flow of neos-operations-hub to ensure strict regex validation prevents command injection during dbus-send."
+    "guidance": "Audit previously completed security tasks in build.sh to ensure strict adherence."
   },
   "maestro_timestamp": "2026-09-30T00:00:00Z"
 }

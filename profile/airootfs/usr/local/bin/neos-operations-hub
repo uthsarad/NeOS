@@ -89,8 +89,7 @@ Are you sure you want to proceed?"
                             DBUS_REF=$(/usr/bin/kdialog --progressbar "Executing system rollback..." 100)
                             /usr/bin/pkexec --disable-internal-agent /usr/bin/snapper rollback "$ROLLBACK_ID"
                             ROLLBACK_STATUS=$?
-                            # Bolt: Optimized rollback flow string parsing by replacing grep/awk pipelines with native bash regex and string extraction
-                            if [[ "$DBUS_REF" =~ ^[a-zA-Z0-9.-]+\ [a-zA-Z0-9./-]+$ ]]; then
+                            if [[ "$DBUS_REF" =~ ^[a-zA-Z0-9.-]+[[:space:]][a-zA-Z0-9./-]+$ ]]; then
                                 read -r DBUS_DEST DBUS_PATH <<< "$DBUS_REF"
                                 dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1
                             fi
