@@ -1,15 +1,12 @@
 {
-  "allowed_files": [
-    "profile/airootfs/usr/local/bin/neos-operations-hub"
-  ],
+  "allowed_files": ["build.sh"],
   "strategic_pause": false,
   "constraints": [
     "Prevent feature creep.",
     "Favor incremental delivery.",
     "Protect long-term maintainability over speed.",
     "If requirements are ambiguous, choose the smallest viable interpretation.",
-    "Enforce zero-slop policy: no dummy commits, empty PRs, or endless pause loops.",
-    "Limit to one coherent deliverable per run: refactor the rollback flow string parsing."
+    "Enforce zero-slop policy."
   ],
   "maestro_timestamp": "2026-09-30T00:00:00Z"
 }
