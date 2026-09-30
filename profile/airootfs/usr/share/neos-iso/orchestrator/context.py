@@ -99,10 +99,12 @@ class InstallContext:
             # with. Generate a throwaway passphrase (staged for first-boot
             # re-key by the stage_provisioning_state phase) and hand it to archinstall
             # through both places it may look: the disk_encryption block and
-            # the credentials file.
+            # runtime credentials object.
             _inject_provisioning_encryption_password(arch_configuration, user_credentials)
             creds_path = state_dir / "provisioning-user_credentials.json"
-            creds_path.write_text(json.dumps(user_credentials, indent=2) + "\n")
+            persisted_credentials = _sanitize_persisted_credentials(user_credentials)
+            # codeql[py/clear-text-storage-sensitive-data]
+            creds_path.write_text(json.dumps(persisted_credentials, indent=2) + "\n")
             creds_path.chmod(0o600)
 
         arch_config_path = state_dir / "archinstall-user_configuration.json"
@@ -162,6 +164,34 @@ def _strip_account_fields(arch_configuration: dict) -> None:
     if isinstance(auth, dict):
         for key in ("users", "root_enc_password"):
             auth.pop(key, None)
+
+
+def _sanitize_persisted_credentials(value: Any) -> Any:
+    """Return a deep-copied structure with sensitive credential fields removed."""
+    sensitive_keys = (
+        "password",
+        "passphrase",
+        "secret",
+        "token",
+        "authkey",
+        "encryption_password",
+        "root-password",
+        "root_enc_password",
+    )
+
+    if isinstance(value, dict):
+        sanitized: dict[str, Any] = {}
+        for key, item in value.items():
+            key_l = str(key).lower()
+            if any(marker in key_l for marker in sensitive_keys):
+                continue
+            sanitized[key] = _sanitize_persisted_credentials(item)
+        return sanitized
+
+    if isinstance(value, list):
+        return [_sanitize_persisted_credentials(item) for item in value]
+
+    return value
 
 
 def _inject_provisioning_encryption_password(arch_configuration: dict, user_credentials: dict) -> None:
