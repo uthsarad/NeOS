@@ -34,3 +34,15 @@
 
 **Status:** Completed
 **Action:** Replaced pipeline string validation and text extraction (`grep`, `awk`) with native Bash regex and `read` for parsing the DBUS_REF output in the system update flow of `neos-operations-hub`. This eliminates unnecessary subprocess fork/exec overhead without modifying functional behavior or breaking security protections against injection. There are no remaining performance risks on this script execution path.
+
+## Monitor subprocess overhead from kdialog in neos-operations-hub.
+
+**Status:** Completed
+**Action:** Replaced the inefficient `echo | grep` and `echo | awk` subprocess pipelines in the rollback flow of `neos-operations-hub` with native bash features (regular expressions via `=~` and string extraction via `read -r`).
+
+**Before/after reasoning:**
+* **Before:** The script used external binaries (`grep` and `awk`) via shell pipelines, which incurred the overhead of forking multiple subprocesses (`echo`, `grep`, `awk`) just to validate and extract values from a single string variable.
+* **After:** By utilizing native bash regular expressions (`[[ "$DBUS_REF" =~ ^[a-zA-Z0-9.-]+\ [a-zA-Z0-9./-]+$ ]]`) and native variable parsing (`read -r DBUS_DEST DBUS_PATH <<< "$DBUS_REF"`), the overhead of forking processes is completely eliminated, reducing execution latency and memory usage without altering functional behavior.
+
+**Any remaining performance risks:**
+The optimization successfully eliminated the targeted subprocess overhead in this block. Future audits may check for similar pipeline-based string manipulation inefficiencies in other areas of the script, but no immediate risks remain in this flow.
