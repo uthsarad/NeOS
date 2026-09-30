@@ -65,7 +65,8 @@
     {
       "description": "Refine the UX of the snapshot selection (e.g., provide a progress dialog during update execution instead of blocking the UI).",
       "target_file": "profile/airootfs/usr/local/bin/neos-operations-hub",
-      "status": "completed"
+      "status": "completed",
+      "resolution": "Improved UX by maintaining the progress dialog and optimizing string parsing to reduce latency in the rollback workflow."
     },
     {
       "description": "Refine Phase 8 Operations Hub features, focusing on crash reporting opt-in UX and logic.",
