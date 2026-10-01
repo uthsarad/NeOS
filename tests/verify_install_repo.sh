@@ -53,7 +53,7 @@ cp "$PKG_LIST" "$WORK/profile/airootfs/etc/calamares/neos-packages.txt"
 # Plant one cached package (matches the first entry in the list) and one stale
 # package that must be cleaned up — both exercise an arithmetic increment that
 # used to kill the script when it started from zero.
-FIRST_PKG=$(grep -vE '^\s*(#|$)' "$PKG_LIST" | head -1)
+FIRST_PKG=$(awk '!/^[[:space:]]*(#|$)/ { print; exit }' "$PKG_LIST")
 REPO_DIR="$WORK/repo"
 mkdir -p "$REPO_DIR"
 : > "$REPO_DIR/${FIRST_PKG}-1.0-1-x86_64.pkg.tar.zst"
