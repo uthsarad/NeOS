@@ -25,3 +25,7 @@
 ## 2026-09-22 - Notify-send Markup Learning
 **Learning:** `notify-send` does not format markdown backticks (e.g. \`command\`), making shell variable errors look confusing. It exclusively supports Pango markup (like `<b>`, `<i>`, `<u>`).
 **Action:** Always use Pango markup like `<b>` for bolding paths and variables in UI notifications to ensure good visual clarity.
+
+## Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.
+**Learning:** Vague terminal errors stall developers.
+**Action:** Always provide explicit, copy-pasteable commands and clear actionable steps in terminal script errors.
