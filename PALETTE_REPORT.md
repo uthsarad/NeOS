@@ -15,3 +15,7 @@
 ## Refine the UX of the snapshot selection (e.g., provide a progress dialog during update execution instead of blocking the UI).
 **Learning:** Background synchronous tasks like system rollback lack positive feedback during execution, leaving users uncertain if the process hung or failed silently.
 **Action:** Added a visual progress dialog using kdialog during the rollback execution to provide closure and improve the feedback loop.
+
+## Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.
+**Learning:** Terminal errors need to provide clear, actionable steps such as checking disk space and network connectivity. Using emojis or special characters (like bullets) violates codebase style constraints.
+**Action:** Replaced special characters with standard hyphens in error handlers and augmented generic error messages with explicit troubleshooting steps to improve developer UX in `build.sh`.
