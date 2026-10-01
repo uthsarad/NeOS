@@ -513,15 +513,15 @@ jobs:
 
             if [[ -n "${SOURCEFORGE_PROJECT:-}" ]]; then
               SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
-              cat <<EOF >> "$GITHUB_WORKSPACE/release-body.md"
-
----
-
-### 💿 Downloads
-* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})
-* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)
-* **Release Directory:** [SourceForge Files](${SF_URL})
-EOF
+              {
+                echo ""
+                echo "---"
+                echo ""
+                echo "### 💿 Downloads"
+                echo "* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})"
+                echo "* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)"
+                echo "* **Release Directory:** [SourceForge Files](${SF_URL})"
+              } >> "$GITHUB_WORKSPACE/release-body.md"
             fi
           else
             echo "No ISO found, skipping torrent generation."
