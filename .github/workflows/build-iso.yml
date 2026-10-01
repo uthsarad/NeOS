@@ -481,50 +481,28 @@ jobs:
         if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
           SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
+          TAG_VAL: ${{ steps.tag.outputs.value }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
+          chmod +x tools/gen-torrent.sh
+          ./tools/gen-torrent.sh out
 
-          cd "$GITHUB_WORKSPACE/out"
-          
-          ISO_FILE=$(find . -maxdepth 1 -name '*.iso' | sort | head -1)
-          if [[ -n "$ISO_FILE" ]]; then
-            ISO_BASENAME="${ISO_FILE#./}"
-            TAG_VAL="${{ steps.tag.outputs.value }}"
-            REF_NAME="${{ github.ref_name }}"
-            
-            WEB_SEED_URL="https://downloads.sourceforge.net/project/${SOURCEFORGE_PROJECT}/${REF_NAME}/${TAG_VAL}/${ISO_BASENAME}"
+          ISO_FILE=$(find "$GITHUB_WORKSPACE/out" -maxdepth 1 -name '*.iso' | sort | head -1)
+          if [[ -n "$ISO_FILE" && -n "${SOURCEFORGE_PROJECT:-}" ]]; then
+            ISO_BASENAME="${ISO_FILE##*/}"
             TORRENT_FILE="${ISO_BASENAME}.torrent"
-            
-            echo "Generating $TORRENT_FILE for $ISO_BASENAME ..."
-            echo "Web seed URL: $WEB_SEED_URL"
-            
-            # Using -l 21 for 2MB piece size, public torrent (no -p since public trackers are used)
-            mktorrent -v -l 21 \
-              -a "udp://tracker.opentrackr.org:1337/announce" \
-              -a "udp://tracker.internetwarriors.net:1337/announce" \
-              -a "udp://exodus.desync.com:6969/announce" \
-              -c "NeOS Linux $TAG_VAL" \
-              -w "$WEB_SEED_URL" \
-              -o "$TORRENT_FILE" \
-              "$ISO_BASENAME"
-            
-            echo "Torrent file generated successfully."
-            ls -lh "$TORRENT_FILE"
-
-            if [[ -n "${SOURCEFORGE_PROJECT:-}" ]]; then
-              SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
-              {
-                echo ""
-                echo "---"
-                echo ""
-                echo "### 💿 Downloads"
-                echo "* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})"
-                echo "* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)"
-                echo "* **Release Directory:** [SourceForge Files](${SF_URL})"
-              } >> "$GITHUB_WORKSPACE/release-body.md"
-            fi
-          else
-            echo "No ISO found, skipping torrent generation."
+            WEB_SEED_URL="https://downloads.sourceforge.net/project/${SOURCEFORGE_PROJECT}/${REF_NAME}/${TAG_VAL}/${ISO_BASENAME}"
+            SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
+            {
+              echo ""
+              echo "---"
+              echo ""
+              echo "### 💿 Downloads"
+              echo "* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})"
+              echo "* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)"
+              echo "* **Release Directory:** [SourceForge Files](${SF_URL})"
+            } >> "$GITHUB_WORKSPACE/release-body.md"
           fi
 
       - name: Create GitHub Release (small assets)

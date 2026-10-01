@@ -306,7 +306,6 @@ libusbmuxd
 libutempter
 libuv
 libva-intel-driver
-libva-mesa-driver
 libverto
 libvorbis
 libwbclient
@@ -352,7 +351,6 @@ linux-firmware-realtek
 linux-firmware-whence
 linux-lts
 linux-lts-headers
-linux-t2
 livecd-sounds
 lmdb
 lrzip
@@ -408,8 +406,6 @@ ntfsprogs
 numactl
 nvme-cli
 oath-toolkit
-omarchy-keyring
-omarchy-settings
 oniguruma
 openbsd-netcat
 openconnect
@@ -563,9 +559,7 @@ tpm2-tools
 tpm2-tss
 ttf-dejavu
 ttf-liberation
-ttfx
 tzdata
-tzupdate
 udftools
 udisks2
 ufw
@@ -610,7 +604,6 @@ xf86-video-fbdev
 xf86-video-nouveau
 xf86-video-qxl
 xf86-video-vesa
-xf86-video-vmware
 xfsprogs
 xkeyboard-config
 xl2tpd
