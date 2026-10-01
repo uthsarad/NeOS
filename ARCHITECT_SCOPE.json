@@ -1,5 +1,7 @@
 {
-  "allowed_files": ["build.sh"],
+  "allowed_files": [
+    "build.sh"
+  ],
   "strategic_pause": false,
   "constraints": [
     "Prevent feature creep.",
