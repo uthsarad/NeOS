@@ -102,12 +102,14 @@ Comprehensive documentation is available in the `docs/` directory:
 
 ## Quick Start
 
-1.  **Download the ISO:** Head to the **[Releases](https://github.com/uthsarad/NeOS/releases)** section and download the latest `neos-*-x86_64.iso`.
+1.  **Download NeOS:** Head to the **[Releases](https://github.com/uthsarad/NeOS/releases)** section. You can choose between:
+    *   **Direct Download (ISO):** High-speed direct CDN download from SourceForge.
+    *   **BitTorrent (`.torrent`):** Download via BitTorrent with public trackers and automated web-seeding.
 2.  **Flash to USB:** Use Ventoy, Rufus, or BalenaEtcher.
 3.  **Boot & Try:** Boot the USB to explore the live KDE Plasma desktop.
 4.  **Install:** Launch **Install NeOS** and follow the curated Calamares installation wizard.
 
-*Note: The ISO is automatically built in the cloud upon every push to the `testing` branch, which is the branch releases are currently cut from. `main` is intentionally idle until the official public release.*
+*Note: The ISO, checksums, and `.torrent` files are automatically built in the cloud upon every push to the `testing` branch, which is the branch releases are currently cut from. `main` is intentionally idle until the official public release.*
 
 ---
 

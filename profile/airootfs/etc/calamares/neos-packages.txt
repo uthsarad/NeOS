@@ -539,6 +539,7 @@ tar
 tcl
 tcpdump
 terminus-font
+tesseract-data-eng
 testdisk
 thermald
 thin-provisioning-tools
@@ -563,7 +564,6 @@ util-linux-libs
 vim
 vim-runtime
 virtualbox-guest-utils
-virtualbox-guest-utils-nox
 vlc
 vpnc
 vulkan-intel
