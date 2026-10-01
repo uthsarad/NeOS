@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2094,SC2329
 # Foreground NeOS ISO install UI supervisor.
 #
 # This process is the only owner of the visible install UI. It launches the
@@ -485,7 +486,7 @@ install_duration() {
       line="$(grep "^$prefix:" "$path" 2>/dev/null | tail -n 1 || true)"
       [[ -n $line ]] || continue
       duration="${line#*:}"
-      duration="${duration#${duration%%[![:space:]]*}}"
+      duration="${duration#"${duration%%[![:space:]]*}"}"
       [[ -n $duration ]] && { printf '%s' "$duration"; return 0; }
     done
   done

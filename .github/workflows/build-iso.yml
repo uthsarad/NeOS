@@ -471,7 +471,7 @@ jobs:
 
           if [[ -n "${SOURCEFORGE_PROJECT:-}" ]]; then
             SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${{ github.ref_name }}/${TAG_VAL}/"
-            echo -e "\n---\n\n### 💿 Download ISO Assets\n\n**[➡️ Download ISOs and release assets from SourceForge]($SF_URL)**\n" >> release-body.md
+            echo "Release SF URL: $SF_URL"
           fi
 
           echo "Release body:"
@@ -510,6 +510,19 @@ jobs:
             
             echo "Torrent file generated successfully."
             ls -lh "$TORRENT_FILE"
+
+            if [[ -n "${SOURCEFORGE_PROJECT:-}" ]]; then
+              SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
+              cat <<EOF >> "$GITHUB_WORKSPACE/release-body.md"
+
+---
+
+### 💿 Downloads
+* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})
+* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)
+* **Release Directory:** [SourceForge Files](${SF_URL})
+EOF
+            fi
           else
             echo "No ISO found, skipping torrent generation."
           fi
