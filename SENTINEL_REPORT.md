@@ -28,4 +28,7 @@
 ## Sentinel: Ensure pkexec execution of neos-autoupdate.sh cannot be bypassed or injected.
 **Vulnerability:** The `pkexec` invocations in `neos-operations-hub` for `snapper rollback` and `neos-autoupdate.sh` did not explicitly disable the internal polkit agent, potentially allowing local attackers to bypass standard graphical authentication prompts by injecting CLI polkit agents. Additionally, `dbus-send` dynamically parsed DBUS_REF parameters from `kdialog` without validation, exposing command injection vectors if the output contained crafted strings with spaces or semicolons.
 **Learning:** `pkexec` must always be restricted in GUI scripts to prevent command-line agent hijacking. Complex strings parsed from graphical components must be strictly regex-validated before being interpolated into unquoted execution paths like `dbus-send`.
-**Prevention:** Always append `--disable-internal-agent` when invoking `pkexec` from UI wrappers. Use strict regex pattern matching (`grep -Eq`) and explicit quotes when decomposing external strings for DBUS commands.
+**Prevention:** Always append `--disable-internal-agent` when invoking `pkexec` from UI wrappers. Use strict regex pattern matching (`grep -Eq` or `[[ =~ ]]`) and explicit quotes when decomposing external strings for DBUS commands.
+
+## Audit the use of pkexec and input validation in the new Operations Hub update and rollback flows to ensure they cannot be bypassed or injected.
+- Replaced external grep/awk parsing with native Bash regex to prevent injection in DBUS_REF variables.

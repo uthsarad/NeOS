@@ -41,3 +41,8 @@
 **Vulnerability:** The neos-welcome script could be run as root directly, which could lead to accidental privileged desktop environment variables being misused.
 **Learning:** Shell scripts that act as user-level GUIs or wrappers to desktop applications often inherit high privileges if run via sudo, creating an unintentional privilege escalation path for the invoked applications or unintended execution environment (like capturing root's $HOME or $DISPLAY inadvertently).
 **Prevention:** Always explicitly block root execution (e.g., if (( EUID == 0 )); then ...) in user-level GUI scripts to enforce strict privilege boundaries and ensure they are only launched within a proper user session before they selectively elevate specific commands via sudo.
+
+## 2026-09-30 - Safe Regex Parsing in Bash
+**Vulnerability:** External string manipulation using `echo | grep` and `awk` within unquoted command arguments created a risk of command injection, where malicious strings could trigger shell execution when passing outputs directly to `dbus-send`.
+**Learning:** Bash subprocesses evaluating variables can be bypassed or hijacked if an attacker manages to embed a shell meta-character like `;` or a newline in the input when processing external binary outputs that are parsed loosely.
+**Prevention:** Always use Bash's native regular expression (`[[ =~ ]]`) to strictly validate variables against expected alphanumeric formats and safely extract values using `read -r` instead of shelling out to `grep`/`awk`.
