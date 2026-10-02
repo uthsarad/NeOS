@@ -46,3 +46,15 @@
 
 **Any remaining performance risks:**
 The optimization successfully eliminated the targeted subprocess overhead in this block. Future audits may check for similar pipeline-based string manipulation inefficiencies in other areas of the script, but no immediate risks remain in this flow.
+
+## Refine core script error handling to avoid subshell overhead. Do not introduce new features.
+
+**Status:** Completed
+**Action:** Replaced repeated invocations of the `pacman-key --list-keys` subprocess check in `build.sh` with a single cached execution.
+
+**Before/after reasoning:**
+* **Before:** The script invoked `pacman-key --list-keys` multiple times (for Chaotic-AUR, Garuda, and the maintainer key), which incurred unnecessary fork/exec overhead for a static local keyring.
+* **After:** The script captures the output of `pacman-key --list-keys` into the `$CURRENT_KEYS` variable once, and uses native bash string matching (`[[ "$CURRENT_KEYS" != *"<key>"* ]]`) for all subsequent checks, significantly reducing subprocess overhead and latency.
+
+**Any remaining performance risks:**
+No immediate risks. The optimization correctly caches the keyring for the duration of the key import checks without altering functional behavior.
