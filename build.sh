@@ -109,8 +109,11 @@ pacman -Sy --noconfirm -- archlinux-keyring
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
 
+# Bolt: [Performance] Cache keyring to avoid multiple pacman-key --list-keys subprocesses
+CURRENT_KEYS="$(pacman-key --list-keys 2>/dev/null || true)"
+
 # Check if key exists to avoid redundant imports and keyserver hits
-if ! pacman-key --list-keys 3056513887B78AEB >/dev/null 2>&1; then
+if [[ "$CURRENT_KEYS" != *"3056513887B78AEB"* ]]; then
     echo "Importing Chaotic-AUR key..."
     pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     pacman-key --lsign-key 3056513887B78AEB
@@ -119,7 +122,7 @@ else
 fi
 
 # Setup Garuda signing key (signs calamares-garuda in the [garuda] repo)
-if ! pacman-key --list-keys 349BC7808577C592 >/dev/null 2>&1; then
+if [[ "$CURRENT_KEYS" != *"349BC7808577C592"* ]]; then
     echo "Importing Garuda signing key..."
     pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
     pacman-key --lsign-key 349BC7808577C592
@@ -128,7 +131,7 @@ else
 fi
 
 # Sentinel: [Security] Import and locally sign the package maintainer key required to verify the keyring package signature
-if ! pacman-key --list-keys BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 >/dev/null 2>&1; then
+if [[ "$CURRENT_KEYS" != *"BFB13EA507EFDADB64A944813A40CB5E7E5CBC30"* ]]; then
     echo "Importing Chaotic-AUR package maintainer key..."
     pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver keyserver.ubuntu.com
     pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
