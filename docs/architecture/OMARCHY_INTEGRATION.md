@@ -19,7 +19,7 @@ Status as of 2026.10.02 (`reports/v2026.10.02/02-review-report.md`).
 | Live package set | `profile/packages.x86_64` | The Arch `releng` package set (rescue tools, file systems, firmware, `archinstall`, `gum`, `python-textual`, …) is installed on the live ISO **and**, through `tools/gen-manifests.sh`, on installed systems. |
 | Skeleton configs | `profile/airootfs/etc/skel/.config/` | Configs for terminals (alacritty, foot, ghostty, kitty), tmux, btop, git, starship, fcitx5, wireplumber (Bluetooth A2DP auto-connect) and more are copied into every new user's home. A config only matters once its application is installed: most of these programs are **not** in the package list. |
 | Web-app launchers and icons | `etc/skel/.local/share/applications/`, `usr/share/icons/hicolor/` | Menu entries for web apps (WhatsApp, YouTube, Zoom, …) and their icons. |
-| zsh baseline | `etc/skel/.zshrc` | grml's skeleton `.zshrc` (works with the shipped `grml-zsh-config`). |
+| zsh baseline | `grml-zsh-config` package | grml's skeleton `/etc/skel/.zshrc` comes from the package. The overlay copy was removed in 2026.10.02 because it made pacstrap abort with conflicting files. |
 | Branding | palette, Calamares SVG/QSS, SDDM, Plymouth, wallpaper | Accent colour `#38bdf8` and the starfield wallpaper (`tools/gen-wallpaper.py`). |
 | Live services kept | `hv_*`, `vmware-vmblock-fuse`, `pcscd.socket`, `systemd-timesyncd`, `systemd-resolved`, `systemd-userdbd.socket`, `iwd` (NetworkManager's Wi-Fi backend) | Ordinary releng services that do not conflict with NeOS. |
 

@@ -4,7 +4,7 @@ Plan: [`00-improvement-plan.md`](00-improvement-plan.md). Brief: [`01-architect-
 
 ```
 STATUS: APPROVED
-- 14 of 14 planned items implemented; 1 extra defect found and fixed while implementing (skel .bashrc)
+- 14 of 14 planned items implemented; 2 extra defects found and fixed while implementing (red ISO build, skel .bashrc)
 - all 54 tests/verify_*.sh pass locally (51 before + 3 new), each new or extended gate shown to FAIL on the pre-change tree
 - 4 items deferred as maintainer decisions (D1–D4), now documented in docs/architecture/OMARCHY_INTEGRATION.md
 report: reports/v2026.10.02/02-review-report.md
@@ -28,6 +28,14 @@ report: reports/v2026.10.02/02-review-report.md
 | **C6** Workflow gate | Done | `tests/verify_workflow_security.sh`: static check of every `run:` block, plus actionlint when installed. | See A3. |
 
 ## Found during implementation (not in the plan)
+
+- **The ISO build on `testing` is red** (uthsarad/NeOS#1068, `build` job, 2026-10-01): pacstrap
+  aborted with "conflicting files" on eight overlay files that packages also own (`hicolor`
+  `index.theme`, skel `.screenrc` and `.zshrc`, and the `lftp`/`ModemManager`/`gvim` icons). They
+  were captured from an installed system during the Omarchy import, and mkarchiso copies the
+  overlay before installing packages. Removed and guarded in `verify_airootfs_structure.sh`.
+  pacman reports all conflicts in one pass, so this is the complete list for that step; later
+  build steps are only proven by the next CI run.
 
 - **Every new user's interactive bash printed `/default/bash/rc: No such file or directory`.**
   The imported `/etc/skel/.bashrc` sourced `$NEOS_PATH/default/bash/rc`. `NEOS_PATH` comes

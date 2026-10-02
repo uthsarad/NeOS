@@ -149,6 +149,48 @@ else
     ALL_PASSED=false
 fi
 
+# mkarchiso copies the overlay into the root BEFORE pacstrap, so an overlay
+# file that a package also owns aborts the ISO build with "conflicting files".
+# These are the ones the Omarchy import captured from an installed system
+# (build failure on uthsarad/NeOS#1068). With pacman available, also ask the
+# files database about every overlay file.
+echo ""
+echo "Verifying the overlay does not ship package-owned files..."
+
+PACKAGE_OWNED=(
+    "usr/share/icons/hicolor/index.theme|hicolor-icon-theme"
+    "etc/skel/.screenrc|screen"
+    "etc/skel/.zshrc|grml-zsh-config"
+    "usr/share/icons/hicolor/48x48/apps/lftp-icon.png|lftp"
+    "usr/share/icons/hicolor/22x22/apps/ModemManager.png|modemmanager"
+    "usr/share/icons/hicolor/48x48/apps/gvim.png|vim"
+    "usr/share/icons/locolor/16x16/apps/gvim.png|vim"
+    "usr/share/icons/locolor/32x32/apps/gvim.png|vim"
+)
+OWNED_FOUND=0
+for entry in "${PACKAGE_OWNED[@]}"; do
+    path="${entry%%|*}"
+    if [[ -e "profile/airootfs/$path" ]]; then
+        echo "[FAIL] profile/airootfs/$path is owned by package '${entry#*|}' (mkarchiso: conflicting files)"
+        OWNED_FOUND=1
+    fi
+done
+if command -v pacman >/dev/null 2>&1 && pacman -F --help >/dev/null 2>&1 \
+    && [[ -n "$(find /var/lib/pacman/sync -name '*.files' -print -quit 2>/dev/null)" ]]; then
+    while IFS= read -r rel; do
+        owner="$(pacman -Fq "/$rel" 2>/dev/null | head -1 || true)"
+        if [[ -n "$owner" ]] && grep -qx "${owner##*/}" profile/packages.x86_64; then
+            echo "[FAIL] profile/airootfs/$rel is also shipped by package '${owner##*/}'"
+            OWNED_FOUND=1
+        fi
+    done < <(cd profile/airootfs && find . -type f -printf '%P\n')
+fi
+if (( OWNED_FOUND )); then
+    ALL_PASSED=false
+else
+    echo "  [PASS] no known package-owned files in the overlay"
+fi
+
 # A new user's first interactive bash must start cleanly. The Omarchy .bashrc
 # sourced "$NEOS_PATH/default/bash/rc" with NEOS_PATH unset on NeOS, so every
 # shell printed an error (reports/v2026.10.02/02-review-report.md).

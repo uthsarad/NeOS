@@ -75,8 +75,6 @@ etc/skel/.local/share/nautilus-python/extensions/localsend.py
 etc/skel/.local/share/nautilus-python/extensions/transcode.py
 etc/skel/.local/state/neos/toggles/hypr/flags.lua
 etc/skel/.local/state/tensaku/state.toml
-etc/skel/.screenrc
-etc/skel/.zshrc
 etc/skel/Desktop/neos-terminal.desktop
 etc/skel/Desktop/welcome-neos.desktop
 etc/snapper/configs/root
@@ -137,7 +135,6 @@ usr/share/applications/neos-doctor.desktop
 usr/share/applications/neos-operations-hub.desktop
 usr/share/backgrounds/neos-wallpaper.png
 usr/share/color-schemes/NeOS.colors
-usr/share/icons/hicolor/22x22/apps/ModemManager.png
 usr/share/icons/hicolor/256x256/apps/basecamp.png
 usr/share/icons/hicolor/256x256/apps/battle-net.png
 usr/share/icons/hicolor/256x256/apps/chatgpt.png
@@ -166,10 +163,8 @@ usr/share/icons/hicolor/48x48/apps/google-contacts.png
 usr/share/icons/hicolor/48x48/apps/google-maps.png
 usr/share/icons/hicolor/48x48/apps/google-messages.png
 usr/share/icons/hicolor/48x48/apps/google-photos.png
-usr/share/icons/hicolor/48x48/apps/gvim.png
 usr/share/icons/hicolor/48x48/apps/hey.png
 usr/share/icons/hicolor/48x48/apps/imv.png
-usr/share/icons/hicolor/48x48/apps/lftp-icon.png
 usr/share/icons/hicolor/48x48/apps/neos-discord.png
 usr/share/icons/hicolor/48x48/apps/retro-gaming.png
 usr/share/icons/hicolor/48x48/apps/whatsapp.png
@@ -177,9 +172,6 @@ usr/share/icons/hicolor/48x48/apps/windows.png
 usr/share/icons/hicolor/48x48/apps/x.png
 usr/share/icons/hicolor/48x48/apps/youtube.png
 usr/share/icons/hicolor/48x48/apps/zoom.png
-usr/share/icons/hicolor/index.theme
-usr/share/icons/locolor/16x16/apps/gvim.png
-usr/share/icons/locolor/32x32/apps/gvim.png
 usr/share/neos-iso/disk-partitioning.sh
 usr/share/neos-iso/expected-packages
 usr/share/neos-iso/neos-base.packages
