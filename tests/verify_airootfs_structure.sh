@@ -135,6 +135,38 @@ for HOOK in profile/airootfs/usr/share/neos/hooks/*.hook; do
     fi
 done
 
+# The Omarchy rebrand renamed omarchy/ trees to neos/ but left byte-identical
+# omarchy/ copies inside them, which landed in every new user's home
+# (reports/v2026.10.02/00-improvement-plan.md C2).
+echo ""
+echo "Verifying no leftover omarchy/ overlay paths..."
+
+LEFTOVER="$(find profile/airootfs -ipath '*omarchy*' -print -quit)"
+if [[ -z "$LEFTOVER" ]]; then
+    echo "  [PASS] no omarchy-named paths in the overlay"
+else
+    echo "[FAIL] leftover pre-rebrand path in the overlay: $LEFTOVER"
+    ALL_PASSED=false
+fi
+
+# A new user's first interactive bash must start cleanly. The Omarchy .bashrc
+# sourced "$NEOS_PATH/default/bash/rc" with NEOS_PATH unset on NeOS, so every
+# shell printed an error (reports/v2026.10.02/02-review-report.md).
+echo ""
+echo "Verifying /etc/skel/.bashrc starts cleanly..."
+
+SKEL_HOME="$(mktemp -d)"
+# Without a TTY, bash -i always reports missing job control; ignore just that.
+BASHRC_ERR="$(HOME="$SKEL_HOME" bash --noprofile --rcfile profile/airootfs/etc/skel/.bashrc -i -c true 2>&1 >/dev/null \
+    | grep -vE 'cannot set terminal process group|no job control in this shell' || true)"
+rm -rf "$SKEL_HOME"
+if [[ -z "$BASHRC_ERR" ]]; then
+    echo "  [PASS] interactive bash with the skel .bashrc prints no errors"
+else
+    echo "[FAIL] interactive bash with the skel .bashrc printed: $BASHRC_ERR"
+    ALL_PASSED=false
+fi
+
 if [[ "$ALL_PASSED" == true ]]; then
     echo ""
     echo "All airootfs structure checks passed!"

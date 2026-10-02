@@ -19,6 +19,7 @@
 | [Roadmap](architecture/ROADMAP.md) | Development phases and milestones. |
 | [Mission and identity](architecture/MISSION.md) | Who NeOS is for and what it deliberately is not. |
 | [Brand structure](architecture/BRAND_STRUCTURE.md) | Logo, wallpaper, Plymouth/SDDM assets and how they are generated. |
+| [Omarchy integration](architecture/OMARCHY_INTEGRATION.md) | What the 2026.09 Omarchy import made active, what was removed, and what ships dormant. |
 
 ## Architecture decisions (ADRs)
 
@@ -42,7 +43,8 @@ Reports are versioned per release under `reports/`:
 
 | Report | Notes |
 | :--- | :--- |
-| [2026.09.22 — What needs updating](../reports/v2026.09.22/UPDATES_NEEDED.md) | Current audit: release paperwork, URL drift, CI gates, open engineering items. |
+| [2026.10.02 — Improvement plan](../reports/v2026.10.02/00-improvement-plan.md) and [review report](../reports/v2026.10.02/02-review-report.md) | Current: review of the Omarchy/torrent commits; installer secrets, fork auto-merge, workflow injection, live services. |
+| [2026.09.22 — What needs updating](../reports/v2026.09.22/UPDATES_NEEDED.md) | Release paperwork, URL drift, CI gates, open engineering items (items still open are carried in the 2026.10.02 plan). |
 | [2026.09.18 — Deep audit](../reports/v2026.09.18/AUDIT_AND_RECOMMENDATIONS.md) | Whole-repository audit (partly superseded — see the banner in the file). |
 | [2026.09.11 — Agent reports](../reports/v2026.09.11/) | Architect, Sentinel, Bolt, Palette, risk and strategic-directive snapshots. |
 

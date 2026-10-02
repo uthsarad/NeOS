@@ -35,6 +35,10 @@ for arg in "$@"; do
     esac
 done
 
+# Every path below (profile/, work/, out/, tools/, tests/) is relative to the
+# repository root, so run from there whatever the caller's directory is.
+cd "$(dirname "$(readlink -f "$0")")"
+
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
 

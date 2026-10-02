@@ -80,7 +80,7 @@ Because NeOS is a curated distribution, every release is exercised before it rea
 
 *   **Boot validation** — the ISO is booted (BIOS and UEFI) to confirm it reaches the live desktop, including in virtual machines (VMware, VirtualBox, QEMU/KVM). Copy-to-RAM, Safe Graphics and Verbose entries are first-class boot options; `neos-doctor` reports whether `graphical.target` actually came up.
 *   **Installer validation** — the Calamares flow is run end-to-end so installs complete and reboot into a working system.
-*   **Automated build gates (CI)** — every push to `testing` runs ShellCheck, Trivy, the 40-odd `tests/verify_*.sh` gates with `REQUIRE_TOOLS=1` (the Ruby, Go, .NET and Rust toolchains are installed, so a gate can no longer quietly degrade into a grep), and a chroot verification that the installer's libraries resolve.
+*   **Automated build gates (CI)** — every push to `testing` runs ShellCheck, Trivy, the 50-odd `tests/verify_*.sh` gates with `REQUIRE_TOOLS=1` (the Ruby, Go, .NET and Rust toolchains are installed, so a gate can no longer quietly degrade into a grep), and a chroot verification that the installer's libraries resolve.
 *   **Boot verification** — the built ISO is booted in QEMU (BIOS and UEFI) and the build fails unless the guest reports an active `graphical.target` and renders a non-blank frame; a timeout is not a pass.
 
 > CI boots the live desktop and asserts it rendered, but it cannot click through an interactive install, so hardware/VM install testing by the QA team remains the final gate before a release is trusted.
@@ -95,6 +95,7 @@ Comprehensive documentation is available in the `docs/` directory:
 *   **[Deployment Handbook](docs/user-guide/HANDBOOK.md)** — Installation and initial setup.
 *   **[System Architecture](docs/architecture/ARCHITECTURE.md)** — In-depth look at the NeOS stability model.
 *   **[Development Roadmap](docs/architecture/ROADMAP.md)** — Feature milestones and release phases.
+*   **[Omarchy Integration](docs/architecture/OMARCHY_INTEGRATION.md)** — Which imported Omarchy components are active and which ship dormant.
 *   **[Hardware Support](docs/user-guide/VM_STARTUP.md)** — Driver management and virtualization notes.
 *   **[Troubleshooting](docs/user-guide/TROUBLESHOOTING.md)** — Recovery and common issue resolution.
 

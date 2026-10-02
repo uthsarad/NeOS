@@ -1,5 +1,7 @@
 #!/bin/bash
-# Guards the "any PR into testing merges automatically" policy.
+# Guards the auto-merge policy: non-draft PRs into testing from branches of this
+# repository merge automatically; PRs from forks never do, because testing
+# publishes releases (reports/v2026.10.02/00-improvement-plan.md A2).
 set -euo pipefail
 
 WF=".github/workflows/jules-auto-merge.yml"
@@ -18,7 +20,7 @@ CONTENT="$(<"$WF")"
 if [[ "$CONTENT" == *"pull_request_target"* ]]; then
     echo "  [PASS] triggered on pull_request_target (write token, no PR checkout)"
 else
-    echo "[FAIL] $WF must trigger on pull_request_target so same-repo and fork PRs can merge"
+    echo "[FAIL] $WF must trigger on pull_request_target (write token, PR code never checked out)"
     FAIL=1
 fi
 
@@ -40,6 +42,16 @@ if [[ "$CONTENT" == *"gh pr merge"* ]]; then
     echo "  [PASS] merges via gh pr merge"
 else
     echo "[FAIL] $WF never calls gh pr merge"
+    FAIL=1
+fi
+
+# Fork PRs must be refused on the automatic path. The check has to read
+# isCrossRepository and exit before any `gh pr merge`.
+if [[ "$CONTENT" == *"isCrossRepository"* ]] \
+    && awk '/"\$PR_FROM_FORK" != "false"/ && !fork {fork=NR} /gh pr merge/ && !merge {merge=NR} END {exit !(fork && merge && fork < merge)}' "$WF"; then
+    echo "  [PASS] fork PRs are refused before any merge attempt"
+else
+    echo "[FAIL] $WF must refuse PRs from forks (isCrossRepository) before calling gh pr merge"
     FAIL=1
 fi
 

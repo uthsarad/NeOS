@@ -55,8 +55,35 @@ from archinstall.lib.models.users import User
 from .ui import info
 
 
-def load_arch_config(config_path: Path, creds_path: Path) -> ArchConfigHandler:
-    """Build an ArchConfigHandler from on-disk JSON.
+class _InMemorySecretsConfigHandler(ArchConfigHandler):
+    """ArchConfigHandler whose merged config gains secrets that were never
+    written to disk.
+
+    ArchConfigHandler.__init__ parses --config/--creds through
+    _parse_config() and builds ArchConfig from the result in the same call, so
+    the secrets have to be in that dict: archinstall resolves the LUKS
+    passphrase only from its top-level `encryption_password` key and drops
+    disk encryption altogether when it is absent (archinstall 4.5
+    lib/args.py ArchConfig.from_config; lib/models/device.py
+    DiskEncryption.parse_arg). Applied last, which matches the precedence the
+    credentials file had: archinstall merges --creds over --config."""
+
+    def __init__(self, secrets: dict[str, str]) -> None:
+        self._neos_secrets = dict(secrets)
+        super().__init__()
+
+    def _parse_config(self) -> dict:
+        config = super()._parse_config()
+        config.update(self._neos_secrets)
+        return config
+
+
+def load_arch_config(
+    config_path: Path,
+    creds_path: Path,
+    secrets: dict[str, str] | None = None,
+) -> ArchConfigHandler:
+    """Build an ArchConfigHandler from on-disk JSON plus in-memory secrets.
 
     archinstall's ArchConfigHandler reads --config / --creds from sys.argv
     via argparse at construction time (lib/args.py:_parse_args). It does
@@ -64,6 +91,9 @@ def load_arch_config(config_path: Path, creds_path: Path) -> ArchConfigHandler:
     argv because the wrapper strips them before exec'ing Python (so other
     archinstall arg-parsing code doesn't choke on our flags), so we hand
     archinstall a synthetic argv just for this call.
+
+    `secrets` are top-level config keys (InstallContext.archinstall_secrets)
+    that the orchestrator keeps off disk; see _InMemorySecretsConfigHandler.
     """
     import sys
     saved_argv = sys.argv
@@ -73,7 +103,7 @@ def load_arch_config(config_path: Path, creds_path: Path) -> ArchConfigHandler:
         "--creds", str(creds_path),
     ]
     try:
-        return ArchConfigHandler()
+        return _InMemorySecretsConfigHandler(secrets or {})
     finally:
         sys.argv = saved_argv
 

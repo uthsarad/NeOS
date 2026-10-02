@@ -34,7 +34,7 @@ from pathlib import Path
 
 from . import archinstall_adapter as arch
 from .command import capture, capture_identifier, require_text
-from .context import InstallContext
+from .context import InstallContext, write_private
 from .keyboard import configure_keyboard
 from .ui import error, info
 
@@ -186,7 +186,7 @@ def prepare_live(ctx: InstallContext) -> None:
 
     info("› loading configurator output")
     ctx.state["arch_config_handler"] = arch.load_arch_config(
-        ctx.arch_config_path, ctx.creds_path
+        ctx.arch_config_path, ctx.creds_path, ctx.archinstall_secrets
     )
     ctx.state["mirror_handler"] = arch.make_mirror_handler(offline=True)
 
@@ -1251,14 +1251,15 @@ def _stage_provisioning_luks_unlock(ctx: InstallContext, provisioning_dir) -> No
     info("› staging LUKS auto-unlock for the provisioning window")
 
     # Byte-for-byte the slot passphrase: no trailing newline anywhere.
+    # Both are key files by design (first-boot re-key, initramfs auto-unlock),
+    # so they are created 0600 rather than written world-readable and
+    # chmod-ed afterwards.
     luks_key = provisioning_dir / "luks-key"
-    luks_key.write_text(password)
-    luks_key.chmod(0o600)
+    write_private(luks_key, password)
 
     keyfile = ctx.target / PROVISION_KEYFILE
     keyfile.parent.mkdir(parents=True, exist_ok=True)
-    keyfile.write_text(password)
-    keyfile.chmod(0o600)
+    write_private(keyfile, password)
 
     cmdline_dropin = ctx.target / "etc/limine-entry-tool.d/99-neos-provisioning-unlock.conf"
     cmdline_dropin.parent.mkdir(parents=True, exist_ok=True)
@@ -1588,8 +1589,7 @@ def configure_tailscale(ctx: InstallContext) -> None:
     ts_dir.mkdir(parents=True, exist_ok=True)
     ts_dir.chmod(0o700)
     authkey = ts_dir / "authkey"
-    authkey.write_text(f"{key}\n")
-    authkey.chmod(0o600)
+    write_private(authkey, f"{key}\n")
 
     info("› enabling tailscaled and the first-boot join")
     unit = ctx.target / "etc" / "systemd" / "system" / "neos-tailscale-join.service"

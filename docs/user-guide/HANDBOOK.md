@@ -149,7 +149,7 @@ When modifying key structure files:
 Edit `profile/packages.x86_64` and add the package name on a new line.
 
 ### Changing Default Settings
-Modify files under `profile/airootfs/etc/`. For example, the default wallpaper is `profile/airootfs/usr/share/backgrounds/neos-wallpaper.png` (referenced from the KDE and SDDM configuration).
+Modify files under `profile/airootfs/etc/`. For example, the default wallpaper is `profile/airootfs/usr/share/backgrounds/neos-wallpaper.png` (referenced from the KDE and SDDM configuration). It is rendered by `tools/gen-wallpaper.py`; `tools/wallpaper-reference.html` is the design it reproduces.
 
 ### Custom Scripts
 Place your scripts in `profile/airootfs/usr/local/bin/` and ensure they are executable. You can set permissions in `profile/profiledef.sh`.

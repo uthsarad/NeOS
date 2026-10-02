@@ -1,6 +1,13 @@
-
+# NeOS live ISO package list (mkarchiso reads one package per line).
+#
+# Kept in plain sorted order (LC_ALL=C sort): the 2026.09 Omarchy merge
+# re-sorted this list, which left the old section headings beside unrelated
+# packages, so they were removed (reports/v2026.10.02/00-improvement-plan.md
+# B1). Add new packages in sorted position.
+#
+# tools/gen-manifests.sh derives the installed-system list
+# (etc/calamares/neos-packages.txt) from this file, minus live-only packages.
 7zip
-# Accessibility (live session — supports accessibility=on boot entry)
 acl
 adwaita-fonts
 aic94xx-firmware
@@ -10,18 +17,15 @@ alsa-topology-conf
 alsa-ucm-conf
 alsa-utils
 amd-ucode
-archinstall
 arch-install-scripts
-# Architect Requirements
+archinstall
 archlinux-keyring
 ark
 at-spi2-core
 attr
-# Audio
 audit
 b43-fwcutter
 base
-# Base System
 bash
 bash-completion
 bc
@@ -29,13 +33,11 @@ bcachefs-tools
 bind
 binutils
 bluedevil
-# Bluetooth
 bluez
 bluez-libs
 bluez-utils
 bolt
 boost-libs
-# Bootloader
 breeze-gtk
 breeze-icons
 brltty
@@ -52,7 +54,6 @@ ccid
 chaotic-keyring
 cifs-utils
 clonezilla
-cloud-init
 coreutils
 cryptsetup
 cups
@@ -66,7 +67,6 @@ dbus-broker-units
 dbus-units
 dconf
 ddrescue
-# Desktop Environment - KDE Plasma 6
 device-mapper
 dhcpcd
 diffutils
@@ -80,7 +80,6 @@ dnssec-anchors
 dolphin
 dosfstools
 drbl
-# Drivers & Hardware Support
 drkonqi
 duktape
 e2fsprogs
@@ -109,14 +108,13 @@ flac
 flatpak
 flex
 fontconfig
-# Fonts
 foot-terminfo
 freetype2
 fribidi
 fsarchiver
+fuse-common
 fuse2
 fuse3
-fuse-common
 fwupd
 gawk
 gcc-libs
@@ -183,7 +181,6 @@ kbd
 kcalc
 kde-cli-tools
 kde-gtk-config
-# KDE Integration
 kdialog
 keyutils
 kinfocenter
@@ -387,12 +384,12 @@ nano
 nbd
 ncurses
 ndisc6
+net-tools
 nettle
 nettle3
-net-tools
 networkmanager
-nfsidmap
 nfs-utils
+nfsidmap
 nftables
 nilfs-utils
 nmap
@@ -407,14 +404,14 @@ numactl
 nvme-cli
 oath-toolkit
 oniguruma
-openbsd-netcat
-openconnect
 open-iscsi
 open-isns
+open-vm-tools
+openbsd-netcat
+openconnect
 openpgp-card-tools
 openssh
 openssl
-open-vm-tools
 openvpn
 opus
 orca
@@ -460,8 +457,8 @@ plymouth
 plymouth-kcm
 polkit
 popt
-powerdevil
 power-profiles-daemon
+powerdevil
 ppp
 pptpclient
 print-manager
@@ -502,8 +499,8 @@ python-requests
 python-rich
 python-rpds-py
 python-textual
-python-typing_extensions
 python-typing-inspection
+python-typing_extensions
 python-urllib3
 python-yaml
 qemu-guest-agent
@@ -530,7 +527,6 @@ slang
 smartmontools
 snapper
 sof-firmware
-# Software Management (Phase 7)
 spectacle
 speech-dispatcher
 spice-vdagent
@@ -571,7 +567,6 @@ uriparser
 usb_modeswitch
 usbmuxd
 usbutils
-# Utilities & Tools
 util-linux
 util-linux-libs
 vim
@@ -608,12 +603,12 @@ xfsprogs
 xkeyboard-config
 xl2tpd
 xmlsec
-xorgproto
 xorg-server
 xorg-xhost
 xorg-xinput
 xorg-xprop
 xorg-xrandr
+xorgproto
 xxhash
 xz
 zlib

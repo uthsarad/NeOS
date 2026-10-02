@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.10.02] - 2026-10-02
+
+Review-and-repair release. It documents the 18 commits that landed after the
+2026.09.23 metadata sync without a CHANGELOG entry, then fixes what a full-tree
+review found in them. The plan with evidence for every item is
+`reports/v2026.10.02/00-improvement-plan.md`; the outcome is
+`reports/v2026.10.02/02-review-report.md`.
+
+### Previously undocumented (2026-09-24 – 2026-10-01)
+- **Omarchy integration** (`d12ce33`, `92b9d29`, `823c3d0`): Omarchy's user configs (Hyprland, terminals, tmux, btop, starship, web-app launchers and icons), its defaults tree (`usr/share/neos/neos/`), its archinstall-based install orchestrator (`usr/share/neos-iso/`, `neos-iso-install`, `neos-install-dashboard`, `neos-cidata-load`, `neos-debug`), and the Arch `releng` live package set and boot services. All of it was rebranded to NeOS by find-and-replace. `profile/packages.x86_64` grew from ~210 to ~610 entries and was re-sorted. What is wired up and what is dormant is documented in `docs/architecture/OMARCHY_INTEGRATION.md`.
+- **BitTorrent publishing** (`30e6b4b`, `4445a71`, `e0ab00c`, `477ce39`): `tools/gen-torrent.sh` (public trackers + SourceForge web seed) and `tests/verify_torrent.sh`. Releases attach the `.torrent`, and the release notes gain direct-download and torrent links.
+- **Package fixes** (`4445a71`, `6a87be7`): Omarchy-only packages (`omarchy-keyring`, `omarchy-settings`, `linux-t2`, `ttfx`, `tzupdate`) removed, `libva-mesa-driver` (now part of `mesa`) and `xf86-video-vmware` removed, and `virtualbox-guest-utils-nox` dropped in favour of `virtualbox-guest-utils`, with which it conflicts.
+- **Branding** (`6abd77b`, `823c3d0`): the accent colour moved from `#1F6FD6` to `#38bdf8` (palette, welcome app, Calamares SVGs/QSS, SDDM, Plymouth), and there is a new starfield wallpaper.
+- **CI/test fixes**: workflow YAML repairs (`45dd228`, `477ce39`), ShellCheck findings in `neos-install-dashboard` (`e0ab00c`), and a SIGPIPE in `verify_install_repo.sh` under `pipefail` (`13e99b7`). `e9bcfdb` ("docs: palette notes") actually regenerated both Calamares manifests.
+- **CodeQL autofix on the installer** (`f8738a8`, `2273312`, `ad9936b`): see the first entry under Security below. It traded a clear-text finding for silently unencrypted installs.
+
+### Security
+- **Encrypted deferred-provisioning installs no longer silently lose encryption, and no passphrase is written to disk.** The autofix stripped `encryption_password` from the credentials file the orchestrator hands archinstall. archinstall reads the passphrase only from that top-level key and drops `DiskEncryption` when it is missing (archinstall 4.5 `args.py` / `device.py`), so those installs would have come out unencrypted. Meanwhile the passphrase was still written in clear text, mode 0644, to `archinstall-user_configuration.json`. Both state files are now secret-free and created `0600` inside a `0700` directory. The passphrase is carried in memory (`InstallContext.archinstall_secrets`, kept out of `repr()`) and injected into archinstall's parsed config by `archinstall_adapter`. The LUKS key files and the Tailscale auth key are created `0600` atomically instead of being written and then `chmod`-ed. Guarded by the new `tests/verify_installer_secrets.sh` (CodeQL alert 3).
+- **Fork pull requests are no longer auto-merged into `testing`.** Every push to `testing` publishes a release, so `jules-auto-merge.yml` had let anyone with a GitHub account ship code in a NeOS release. Same-repository PRs still auto-merge (with `--admin`). Fork PRs get a comment and wait for a maintainer, or for a deliberate manual run of the workflow.
+- **`build-iso.yml` script injection fixed**: `${{ github.head_ref }}`, a branch name an attacker controls on a fork PR, was expanded directly into a shell script. It now goes through `env:`. The duplicated branch-suffix block and the unused `VERSION` (SC2034) are gone, and the SourceForge key is written under `umask 077`. New `tests/verify_workflow_security.sh` rejects untrusted `${{ }}` expansions in any `run:` block and runs `actionlint` when it is installed.
+- **Live session: removed the releng units that conflicted with NeOS.** These were root autologin on tty1, `sshd`, and `systemd-networkd` with its socket and wait-online. NetworkManager owns networking, and networkd-wait-online held `network-online.target` until its timeout on every boot. Also removed: `cloud-init` (its NoCloud datasource reads the same `cidata` label as NeOS's autoinstall and would have applied that volume's `user-data`), and the `livecd-talk`/`livecd-alsa-unmuter`/`choose-mirror` units, which call binaries that do not exist. `livecd-talk` switched the accessibility boot entry to VT13 and then failed before switching back. New `tests/verify_live_services.sh` guards all of this and checks that every `/usr/local/bin` `Exec*` target of a shipped unit exists.
+
+### Changed
+- Release-codename step: `claude-opus-5` → `claude-opus-5-5`, `max_tokens` 300 → 1024 (Opus 5.5 always thinks, and thinking counts toward the limit), and server-side refusal fallback enabled. The static fish list still covers any failure. The torrent step now picks the newest ISO by mtime, like the upload step (M5).
+- `build.sh` now changes to the repository root itself, so `sudo /path/to/NeOS/build.sh` works from any directory.
+- `profile/packages.x86_64` is strictly sorted under a header that says so. Its 12 section headings no longer matched their packages after the merge's re-sort, so they were removed. `profile/pacman.conf` lost its false "Size optimization" comment (M11).
+- `tools/gen-wallpaper.py` is now the generator of the shipped starfield wallpaper (verified pixel-identical; formerly `gen_wp.py` at the repo root), with `tools/wallpaper-reference.html` as its design reference.
+
+### Removed
+- `rename_omarchy.sh` and `replace_text.sh`: one-shot migration scripts. Re-running `replace_text.sh` would `sed -i` the whole overlay again.
+- `etc/skel/.config/neos/omarchy/` and `etc/skel/.local/state/neos/omarchy/`: byte-identical copies left inside every new user's home by the rebrand. `verify_airootfs_structure.sh` now rejects omarchy-named overlay paths.
+
+### Tests
+- New: `verify_installer_secrets.sh`, `verify_live_services.sh`, `verify_workflow_security.sh`.
+- `verify_auto_merge.sh` requires the fork refusal to come before any merge attempt. `verify_version_stamp.sh` now also checks the Go/Ruby/.NET version constants and requires a CHANGELOG section for `VERSION`.
+- Version bumped to `2026.10.02` (`VERSION`, os-release, Go/Ruby/.NET literals).
+
 ## [2026.09.23] - 2026-09-23
 
 Live-ISO fine-tuning pass: every installer path, package list and boot-time
