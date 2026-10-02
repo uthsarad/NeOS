@@ -1,7 +1,7 @@
 {
   "maestro_coordination": {
     "role": "Lead Orchestrator",
-    "rule": "Enforce strict zero-slop policy. Reject meta-reports or commits without real code improvements. Ensure specialists focus strictly on their designated targets."
+    "rule": "Enforce strict zero-slop policy. Prevent feature creep. Protect maintainability over speed. Favor incremental delivery."
   },
   "bolt": {
     "role": "Performance & Efficiency",
@@ -9,11 +9,11 @@
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
-    "guidance": "Standby for UX/accessibility audits."
+    "guidance": "Standby."
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Audit build.sh to ensure strict adherence to security constraints, checking temp file umasks and input sanitization."
+    "guidance": "Audit build.sh to ensure strict adherence to security constraints, focusing on safe temporary file handling and privilege boundaries."
   },
-  "maestro_timestamp": "2026-09-30T00:00:00Z"
+  "maestro_timestamp": "2026-10-02T23:16:26Z"
 }
