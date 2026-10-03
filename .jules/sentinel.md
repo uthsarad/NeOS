@@ -46,3 +46,8 @@
 **Vulnerability:** External string manipulation using `echo | grep` and `awk` within unquoted command arguments created a risk of command injection, where malicious strings could trigger shell execution when passing outputs directly to `dbus-send`.
 **Learning:** Bash subprocesses evaluating variables can be bypassed or hijacked if an attacker manages to embed a shell meta-character like `;` or a newline in the input when processing external binary outputs that are parsed loosely.
 **Prevention:** Always use Bash's native regular expression (`[[ =~ ]]`) to strictly validate variables against expected alphanumeric formats and safely extract values using `read -r` instead of shelling out to `grep`/`awk`.
+
+## 2026-10-03 - Enforce HKPS for GPG Keyservers
+**Vulnerability:** Fetching GPG keys over unencrypted HTTP (HKP) from keyserver.ubuntu.com.
+**Learning:** Unencrypted keyserver communication allows MITM attackers to observe requested key IDs and potentially inject malicious keys or spoof responses before verification.
+**Prevention:** Always explicitly prefix keyserver URIs with hkps:// to enforce TLS encryption.
