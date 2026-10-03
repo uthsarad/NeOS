@@ -341,6 +341,27 @@ jobs:
             "$GITHUB_WORKSPACE/profile/profiledef.sh"
           grep '^iso_version=' "$GITHUB_WORKSPACE/profile/profiledef.sh"
 
+          # The build's codename also goes into /etc/os-release (live and
+          # installed), e.g. PRETTY_NAME="NeOS 2026.10 (Marlin Beta)", as the
+          # website shows it. VERSION/VERSION_ID keep the full date.
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          OS_RELEASE="$GITHUB_WORKSPACE/profile/airootfs/etc/os-release"
+          sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"NeOS ${VERSION:0:7} (${CODENAME} Beta)\"/" "$OS_RELEASE"
+          if grep -q '^VERSION_CODENAME=' "$OS_RELEASE"; then
+            sed -i "s/^VERSION_CODENAME=.*/VERSION_CODENAME=${CODENAME,,}/" "$OS_RELEASE"
+          else
+            echo "VERSION_CODENAME=${CODENAME,,}" >> "$OS_RELEASE"
+          fi
+          grep -E '^(PRETTY_NAME|VERSION_CODENAME)=' "$OS_RELEASE"
+
+          # Same name in the installer's window and welcome page.
+          BRANDING="$GITHUB_WORKSPACE/profile/airootfs/etc/calamares/branding/neos/branding.desc"
+          sed -i -E \
+            -e "s/^(    productVersion: +).*/\1${VERSION:0:7} (${CODENAME} Beta)/" \
+            -e "s/^(    versionedName: +).*/\1NeOS ${VERSION:0:7} (${CODENAME} Beta)/" \
+            "$BRANDING"
+          grep -E '^    (productVersion|versionedName):' "$BRANDING"
+
       # ONE build path. CI used to re-implement the build inline (generate the
       # build pacman.conf, regenerate the netinstall manifests, run mkarchiso,
       # validate), which meant the tested artefact and the developer artefact

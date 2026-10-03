@@ -242,6 +242,7 @@ cups.path=cups
 thermald=thermald
 snapper-timeline.timer=snapper
 snapper-cleanup.timer=snapper
+grub-btrfsd=grub-btrfs
 vboxservice=virtualbox-guest-utils
 vmtoolsd=open-vm-tools
 qemu-guest-agent=qemu-guest-agent

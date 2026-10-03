@@ -54,6 +54,16 @@ if (( FAIL )); then
     exit 1
 fi
 
+# PRETTY_NAME is what "About this System" and the website show:
+# "NeOS <YYYY.MM> (Beta)"; CI inserts the build codename before "Beta".
+PRETTY="$(grep -E '^PRETTY_NAME=' "$OS_RELEASE" | cut -d= -f2- | tr -d '"')"
+if [[ "$PRETTY" == "NeOS ${VER:0:7} (Beta)" ]]; then
+    echo "  [PASS] PRETTY_NAME is '$PRETTY'"
+else
+    echo "[FAIL] os-release PRETTY_NAME is '$PRETTY', expected 'NeOS ${VER:0:7} (Beta)'"
+    exit 1
+fi
+
 if grep -qE "^## \[$VER\]" CHANGELOG.md; then
     echo "  [PASS] CHANGELOG.md has a section for $VER (the release body source)"
 else

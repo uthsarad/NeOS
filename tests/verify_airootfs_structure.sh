@@ -231,6 +231,23 @@ else
     ALL_PASSED=false
 fi
 
+# Booting a snapshot from the GRUB menu needs all three pieces on the installed
+# system: grub-btrfs (menu entries), grub-btrfsd (keeps them current) and the
+# overlayfs initramfs hook (a read-only snapshot cannot reach the desktop).
+echo ""
+echo "Verifying snapshot boot support for installed systems..."
+
+SNAP_DROPIN="etc/mkinitcpio.conf.d/neos-snapshot-boot.conf"
+if grep -qx 'grub-btrfs' profile/airootfs/etc/calamares/neos-packages.txt \
+    && grep -q 'name: "grub-btrfsd"' "$SERVICES_FILE" \
+    && grep -q 'HOOKS+=(grub-btrfs-overlayfs)' "profile/airootfs/$SNAP_DROPIN" \
+    && grep -qx "$SNAP_DROPIN" profile/airootfs/etc/calamares/neos-overlay.txt; then
+    echo "  [PASS] grub-btrfs installed, grub-btrfsd enabled, overlayfs hook shipped"
+else
+    echo "[FAIL] snapshot boot is incomplete (need grub-btrfs in neos-packages.txt, grub-btrfsd in $SERVICES_FILE, $SNAP_DROPIN in the overlay)"
+    ALL_PASSED=false
+fi
+
 if [[ "$ALL_PASSED" == true ]]; then
     echo ""
     echo "All airootfs structure checks passed!"

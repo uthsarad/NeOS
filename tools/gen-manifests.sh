@@ -52,9 +52,13 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     # install from the live session. (print-manager used to live here; it moved
     # to the live list so the live session's full CUPS stack has a GUI.)
     echo "# --- heavy desktop applications and drivers (installed-system only) ---"
+    # grub-btrfs (+ inotify-tools for its grub-btrfsd watcher) puts snapper
+    # snapshots into the GRUB menu: the "boot a snapshot from GRUB" recovery
+    # path. Installed-system only: the live medium has no snapshots.
     printf '%s\n' \
         noto-fonts-cjk nvidia-open-lts \
-        networkmanager-openvpn sane sane-airscan
+        networkmanager-openvpn sane sane-airscan \
+        grub-btrfs inotify-tools
 } > "$NETINSTALL_PKGS"
 
 # Generate the NeOS overlay manifest that Calamares copies onto the target

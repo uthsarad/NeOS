@@ -15,10 +15,11 @@ navigation: widget
 strings:
     productName:         NeOS
     shortProductName:    NeOS
-    # These four are display-only and are stamped with the real build version by
-    # CI (build-iso.yml, "Generate codename and set ISO version"). The committed
-    # values are the fallback used by an unmodified local build — never a date,
-    # which is stale the day after it is written
+    # Display-only. CI (build-iso.yml, "Generate codename and set ISO version")
+    # stamps productVersion and versionedName with the same release name as
+    # os-release PRETTY_NAME, e.g. "NeOS 2026.10 (Marlin Beta)"; the short forms
+    # stay generic. The committed values are the fallback for an unmodified
+    # local build — never a date, which is stale the day after it is written
     # (reports/v2026.09.22/UPDATES_NEEDED.md, M10).
     productVersion:      Beta
     shortProductVersion: Beta
