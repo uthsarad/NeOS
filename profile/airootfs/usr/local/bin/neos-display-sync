@@ -230,6 +230,21 @@ Examples:
 EOF
 }
 
+# Everything below drives X11 (xrandr/xinput/Xft). On Wayland, KWin itself keeps
+# touch and tablet input mapped to rotated screens and handles scaling (System
+# Settings > Display & Monitor), so there is nothing to sync.
+if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
+    case "${1:-}" in
+        --help|-h) ;;
+        --daemon|-d|--watch) exit 0 ;;
+        *)
+            echo "neos-display-sync: this is a Wayland session; KWin handles rotation, input mapping and scaling." >&2
+            echo "Use System Settings > Display & Monitor (or kscreen-doctor) instead." >&2
+            exit 0
+            ;;
+    esac
+fi
+
 # Parse CLI arguments
 case "${1:-}" in
     --help|-h)

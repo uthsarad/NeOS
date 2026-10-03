@@ -20,7 +20,7 @@ The shipped `profile/packages.x86_64` does not use `plasma-meta`: it selects
 individual Plasma 6 packages (`plasma-desktop`, `plasma-pa`, `plasma-nm`,
 `plasma-systemmonitor`, `plasma-firewall`, `powerdevil`, `kscreen`,
 `systemsettings`, `kinfocenter`, `sddm`, `sddm-kcm`, `konsole`, `dolphin`,
-`spectacle`, plus `plasma-x11-session` for the default X11 session). This is
+`spectacle`, plus `plasma-x11-session` for the X11 fallback session). This is
 deliberate, not drift: the meta package's contents shift between Plasma
 releases, while the explicit list pins exactly what the live image and the
 derived install manifest contain, and is covered by the duplicate/required

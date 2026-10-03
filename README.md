@@ -37,8 +37,10 @@ deliberately leaves out:
 
 - **A finished KDE Plasma 6 desktop.** Start menu, taskbar and system tray where
   someone coming from Windows expects them, with Firefox, LibreOffice, VLC, Discover
-  and Flatpak ready to use. Plasma starts on X11 by default for the widest GPU and VM
-  compatibility; the Wayland session is one click away on the login screen.
+  and Flatpak ready to use. Plasma runs on Wayland on Intel, AMD and NVIDIA
+  graphics; virtual machines, Safe Graphics and other display drivers fall back to
+  X11 automatically so the desktop always comes up
+  ([choosing a session](docs/user-guide/TROUBLESHOOTING.md#choosing-wayland-or-x11)).
 - **Updates you can undo.** The root filesystem is Btrfs. Snapper takes a snapshot
   before and after every package transaction, and each snapshot appears in the GRUB
   menu, so a system that no longer reaches the desktop can be booted from its last
@@ -107,7 +109,7 @@ Unattended installs are covered in [Assisted install](docs/user-guide/AUTOINSTAL
 | `snapper -c root list` | Lists the rollback points; see [Troubleshooting](docs/user-guide/TROUBLESHOOTING.md) for restoring one. |
 | `neos-doctor` | Health report: graphical target, login manager, network, failed services, memory and disk. Attach its output (`--json`) to bug reports. |
 | `neos-driver-manager` | Detects GPU, network and CPU hardware and reports the driver in use or the package to install. |
-| `neos-display-sync` | Keeps touchscreen and tablet input aligned with screen rotation and applies display scaling (X11). |
+| `neos-display-sync` | On X11 sessions, keeps touchscreen and tablet input aligned with screen rotation and applies display scaling. (On Wayland, KWin does this itself.) |
 
 ## Documentation
 

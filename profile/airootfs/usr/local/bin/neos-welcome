@@ -1,9 +1,10 @@
 #!/bin/bash
 # Installer launcher for NeOS installation media.
 #
-# Launches Calamares as root on top of the live user's X11 Plasma session
-# (QT_QPA_PLATFORM=xcb). Any failure is surfaced to the user via kdialog
-# instead of failing silently.
+# Launches Calamares as root on top of the live user's Plasma session through
+# X11 (QT_QPA_PLATFORM=xcb): the X server itself, or XWayland in a Wayland
+# session, where root cannot reach the user's Wayland socket. Any failure is
+# surfaced to the user via kdialog instead of failing silently.
 #
 # NOTE: there is deliberately no unattended flag. Upstream Calamares has no
 # unattended CLI switch (its parser only knows -d/-D/-T/-c/-X), so a `-u` here

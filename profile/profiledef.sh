@@ -43,5 +43,6 @@ file_permissions=(
   ["/usr/local/bin/neos-autoinstall"]="0:0:755"
   ["/usr/local/bin/neos-doctor"]="0:0:755"
   ["/usr/local/bin/neos-rollback"]="0:0:755"
+  ["/usr/local/bin/neos-session-select"]="0:0:755"
   ["/usr/lib/calamares/modules/neospacstrap/main.py"]="0:0:755"
 )

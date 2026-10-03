@@ -46,8 +46,12 @@ The BIOS boot process is handled by Syslinux in `profile/syslinux/`:
 
 1. `mkinitcpio` hooks (`archiso`, `archiso_loop_mnt`, Plymouth) find the ISO
    (`archisolabel=NEOS_ISO`) and pivot onto the squashfs.
-2. systemd's default target is `graphical.target`; SDDM autologs in `liveuser`
-   to the X11 Plasma session (`plasmax11`).
+2. systemd's default target is `graphical.target`. Before SDDM starts,
+   `neos-session-select` picks the display session: Plasma on Wayland on Intel,
+   AMD and NVIDIA (proprietary) graphics, X11 (`plasmax11`) in VMs, with
+   `nomodeset` (Safe Graphics) and on other drivers. SDDM then autologs in
+   `liveuser` to that session. `neos.session=wayland|x11` on the kernel command
+   line overrides the choice.
 3. If a volume labelled `cidata` / `NEOSCIDATA` is present,
    `neos-autoinstall` may auto-launch Calamares with identity pre-filled
    (partitioning is still confirmed) — see

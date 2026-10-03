@@ -76,10 +76,24 @@ NeOS attempts to include common drivers. If your specific hardware is not suppor
 ## Display, Scaling & Input Issues
 
 ### Mouse pointer misaligned or staying at unrotated coordinates after screen rotation
-In X11 environments, rotating the screen (`xrandr` or KDE Display Settings) rotates the visual buffer, but absolute pointing devices (VirtualBox/VMware tablet pointers, touchscreens, stylus digitizers) do not automatically transform their input matrices.
+This applies to X11 sessions only; on Wayland, KWin keeps input aligned itself. In X11 environments, rotating the screen (`xrandr` or KDE Display Settings) rotates the visual buffer, but absolute pointing devices (VirtualBox/VMware tablet pointers, touchscreens, stylus digitizers) do not automatically transform their input matrices.
 - **Automatic Fix:** NeOS includes `neos-display-sync`, which runs as a daemon at login (`neos-display-sync --daemon`) and monitors display rotation events, automatically synchronizing pointer coordinates 1:1.
 - **Manual Sync:** Run `neos-display-sync` in a terminal or rotate directly via `neos-display-sync --rotate left|right|normal|inverted`.
 - **Virtual Machine Tip:** In VirtualBox or VMware, disabling host "Mouse Integration" forces the guest to use relative mouse input, which also eliminates coordinate misalignment on rotated screens.
+
+### Choosing Wayland or X11
+NeOS runs Plasma on **Wayland** on Intel, AMD and NVIDIA (proprietary driver)
+graphics. It uses **X11** in virtual machines (Wayland freezes there without 3D
+acceleration), with the Safe Graphics boot entry, and on other display drivers.
+The choice is made at every boot by `neos-session-select`; `journalctl -u
+neos-session-select` shows what it picked and why.
+
+- **For one login:** pick *Plasma (Wayland)* or *Plasma (X11)* from the session
+  menu on the login screen. SDDM remembers the choice.
+- **Permanently:** set `SESSION=wayland` or `SESSION=x11` in
+  `/etc/neos/session.conf` (default `auto`) and reboot.
+- **For one boot:** add `neos.session=wayland` or `neos.session=x11` to the
+  kernel command line (press `e` in the GRUB menu).
 
 ### Global display scaling not applying dynamically in KDE Plasma (X11)
 Under X11, KDE Plasma 6 does not support dynamic Wayland-style fractional surface scaling for running applications without session restarts.

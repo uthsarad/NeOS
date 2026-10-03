@@ -3,6 +3,7 @@ etc/default/grub
 etc/mkinitcpio.conf.d/neos-snapshot-boot.conf
 etc/modules-load.d/neos-networking.conf
 etc/modules-load.d/neos-vm.conf
+etc/neos/session.conf
 etc/os-release
 etc/plymouth/plymouthd.conf
 etc/polkit-1/rules.d/50-neos-packagekit.rules
@@ -34,6 +35,7 @@ etc/systemd/system/neos-accessibility.service
 etc/systemd/system/neos-autoupdate.service
 etc/systemd/system/neos-autoupdate.timer
 etc/systemd/system/neos-driver-manager.service
+etc/systemd/system/neos-session-select.service
 etc/systemd/system/neos-vm-graphics.service
 etc/systemd/system/plocate-updatedb.service.d/ac-only.conf
 etc/systemd/system/qemu-guest-agent.service.d/10-neos-vm-only.conf
@@ -60,6 +62,7 @@ usr/local/bin/neos-hardware-setup
 usr/local/bin/neos-operations-hub
 usr/local/bin/neos-rollback
 usr/local/bin/neos-secureboot-setup
+usr/local/bin/neos-session-select
 usr/local/bin/neos-vm-graphics
 usr/local/bin/neos-welcome
 usr/local/bin/neos-welcome-app

@@ -18,6 +18,7 @@ site styling were out of scope. Each claim landed in one of three outcomes:
 | Manual ch. 04 / FAQ: *"boot the previous snapshot from the GRUB menu"* | No GRUB snapshot entries existed: `grub-btrfs` was not installed. | `grub-btrfs` + `grub-btrfsd` on installed systems; a **NeOS snapshots** submenu; `grub-btrfs-overlayfs` initramfs hook so a read-only snapshot reaches the desktop. |
 | Index: *"Ready to roll back"*; manual: rollback from the desktop | The Operations Hub ran `snapper rollback`, which changes the Btrfs default subvolume. NeOS mounts root by name (`subvol=/@`), so rollback silently did nothing. | New `neos-rollback`: swaps `@` for a writable copy of the snapshot and keeps the old root. Hub uses it. Gate: `tests/verify_rollback.sh`. |
 | Manual: dual boot / GRUB menu recovery | Calamares regenerated `/etc/default/grub` (`grubcfg overwrite: true`), dropping os-prober (Windows missing on dual boot), the theme and NeOS kernel parameters. | `grubcfg` edits in place; `GRUB_DISABLE_OS_PROBER=false`; 3 s timeout. |
+| FAQ: *"Wayland, by default"* | The OS defaulted to X11 everywhere. | Wayland by default with automatic X11 fallback (`neos-session-select`). |
 | Hero terminal: `PRETTY_NAME="NeOS 2026.09 (Marlin Beta)"` | os-release said `NeOS Beta`; no codename anywhere. | `NeOS <YYYY.MM> (Beta)`; CI inserts the build codename and sets `VERSION_CODENAME`, also in the installer branding. |
 | Manual ch. 04: Hub reports *"Stable"*, channel handled by *"staged deployments"* | The OS repeated the same claim; there is no staging pipeline. | The Hub now says "Beta channel, updates from the Arch repositories, protected by snapshots". (The website text should follow; see 2.3.) |
 | README (linked from the site) | Credited ALCI, NeoCortex, "Sovereign Core", an AI persona; claimed Zen kernels and a named QA lead. | README rewritten around the website's positioning with only verifiable claims. |
@@ -79,15 +80,17 @@ none of these are fixed by editing the OS alone.
   no DKMS build).
 - **Proposed:** replace `nvidia-open-dkms` with `nvidia-open-lts`.
 
-### 2.7 Wayland vs. X11 (FAQ vs. manual)
-- **Site:** the FAQ says *"Wayland, by default"*; the manual (ch. 03) correctly says X11
-  is the default and Wayland is selectable in SDDM.
-- **Reality:** X11 is the default (`DisplayServer=x11`, `Session=plasmax11`) for VM and
-  older-GPU compatibility; the Wayland session is installed.
-- **Proposed FAQ answer:** *"X11 by default on NeOS, for the widest GPU and VM
-  compatibility. Plasma's Wayland session is installed; pick it from the session menu
-  on the login screen. Upstream Plasma defaults to Wayland and plans to drop the X11
-  session in 6.8, so NeOS will follow."*
+### 2.7 Wayland vs. X11 (manual ch. 03; FAQ now correct)
+- **Decision (2026-10-03):** Wayland is the default; the OS was changed to match the
+  FAQ. `neos-session-select` falls back to X11 automatically in VMs, with Safe Graphics
+  (`nomodeset`) and on display drivers other than Intel, AMD and proprietary NVIDIA.
+- **Site:** the manual (ch. 03) says *"An X11 session is the default; Wayland is
+  selectable from the SDDM session menu where your hardware supports it."*
+- **Proposed manual text:** *"Plasma runs on Wayland. In virtual machines, with Safe
+  Graphics and on uncommon display drivers NeOS switches to X11 automatically so the
+  desktop always starts; either session can be picked on the login screen, or fixed
+  in `/etc/neos/session.conf`."*
+- **FAQ:** keep *"Wayland, by default"*; add that VMs without 3D use X11.
 
 ### 2.8 `snapper rollback` (FAQ)
 - **Site:** *"roll back from the desktop with `snapper rollback`"*.
@@ -122,7 +125,7 @@ none of these are fixed by editing the OS alone.
 
 Calamares flow (location → keyboard → partition → users → summary); snapper hooks around
 every pacman transaction; timeline snapshots; the daily snapshot-protected
-`neos-autoupdate.timer`; X11 default (manual); `neos-display-sync` rotation and
+`neos-autoupdate.timer`; `neos-display-sync` rotation and
 `--scale` options; VM software-rendering fallback; ZRAM swap; UFW, hardened sysctl, the
 sshd settings and service sandboxing; Secure Boot tooling and "Secure Boot off" to boot;
 Copy-to-RAM / Safe Graphics boot entries; BIOS (Syslinux) and UEFI (GRUB) boot paths;
