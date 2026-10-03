@@ -26,6 +26,8 @@ REQUIRED_FILES=(
     "profile/profiledef.sh"
     "profile/packages.x86_64"
     "profile/airootfs/usr/local/bin/neos-display-sync"
+    "profile/airootfs/usr/local/bin/neos-autoinstall"
+    "profile/airootfs/usr/local/bin/neos-doctor"
 )
 
 ALL_PASSED=true
@@ -69,6 +71,8 @@ REQUIRED_PERMS=(
     "neos-liveuser-setup"
     "chcon"
     "neos-display-sync"
+    "neos-autoinstall"
+    "neos-doctor"
 )
 
 echo ""
@@ -130,6 +134,119 @@ for HOOK in profile/airootfs/usr/share/neos/hooks/*.hook; do
         ALL_PASSED=false
     fi
 done
+
+# The Omarchy rebrand renamed omarchy/ trees to neos/ but left byte-identical
+# omarchy/ copies inside them, which landed in every new user's home
+# (reports/v2026.10.02/00-improvement-plan.md C2).
+echo ""
+echo "Verifying no leftover omarchy/ overlay paths..."
+
+LEFTOVER="$(find profile/airootfs -ipath '*omarchy*' -print -quit)"
+if [[ -z "$LEFTOVER" ]]; then
+    echo "  [PASS] no omarchy-named paths in the overlay"
+else
+    echo "[FAIL] leftover pre-rebrand path in the overlay: $LEFTOVER"
+    ALL_PASSED=false
+fi
+
+# mkarchiso copies the overlay into the root BEFORE pacstrap, so an overlay
+# file that a package also owns aborts the ISO build with "conflicting files".
+# These are the ones the Omarchy import captured from an installed system
+# (build failure on uthsarad/NeOS#1068). With pacman available, also ask the
+# files database about every overlay file.
+echo ""
+echo "Verifying the overlay does not ship package-owned files..."
+
+PACKAGE_OWNED=(
+    "usr/share/icons/hicolor/index.theme|hicolor-icon-theme"
+    "etc/skel/.screenrc|screen"
+    "etc/skel/.zshrc|grml-zsh-config"
+    "usr/share/icons/hicolor/48x48/apps/lftp-icon.png|lftp"
+    "usr/share/icons/hicolor/22x22/apps/ModemManager.png|modemmanager"
+    "usr/share/icons/hicolor/48x48/apps/gvim.png|vim"
+    "usr/share/icons/locolor/16x16/apps/gvim.png|vim"
+    "usr/share/icons/locolor/32x32/apps/gvim.png|vim"
+)
+OWNED_FOUND=0
+for entry in "${PACKAGE_OWNED[@]}"; do
+    path="${entry%%|*}"
+    if [[ -e "profile/airootfs/$path" ]]; then
+        echo "[FAIL] profile/airootfs/$path is owned by package '${entry#*|}' (mkarchiso: conflicting files)"
+        OWNED_FOUND=1
+    fi
+done
+if command -v pacman >/dev/null 2>&1 && pacman -F --help >/dev/null 2>&1 \
+    && [[ -n "$(find /var/lib/pacman/sync -name '*.files' -print -quit 2>/dev/null)" ]]; then
+    while IFS= read -r rel; do
+        owner="$(pacman -Fq "/$rel" 2>/dev/null | head -1 || true)"
+        if [[ -n "$owner" ]] && grep -qx "${owner##*/}" profile/packages.x86_64; then
+            echo "[FAIL] profile/airootfs/$rel is also shipped by package '${owner##*/}'"
+            OWNED_FOUND=1
+        fi
+    done < <(cd profile/airootfs && find . -type f -printf '%P\n')
+fi
+if (( OWNED_FOUND )); then
+    ALL_PASSED=false
+else
+    echo "  [PASS] no known package-owned files in the overlay"
+fi
+
+# /etc/os-release LOGO= must name an icon the image ships (KDE's About page
+# and other tools look it up in the icon theme). It named `neos-logo` for
+# months while no such icon existed. The scalable copy must also stay the
+# brand source (tools/brand/neos-logo.svg, the website's mark).
+echo ""
+echo "Verifying the os-release logo icon..."
+
+LOGO_NAME="$(sed -n 's/^LOGO=//p' profile/airootfs/etc/os-release | tr -d '"')"
+LOGO_ICON_DIR="profile/airootfs/usr/share/icons/hicolor"
+if [[ -n "$LOGO_NAME" ]] && compgen -G "$LOGO_ICON_DIR/*/apps/$LOGO_NAME.*" >/dev/null; then
+    echo "  [PASS] LOGO=$LOGO_NAME is shipped in the hicolor icon theme"
+else
+    echo "[FAIL] os-release LOGO=${LOGO_NAME:-<unset>} has no icon under $LOGO_ICON_DIR"
+    ALL_PASSED=false
+fi
+if cmp -s tools/brand/neos-logo.svg "$LOGO_ICON_DIR/scalable/apps/neos-logo.svg"; then
+    echo "  [PASS] scalable neos-logo.svg matches tools/brand/neos-logo.svg"
+else
+    echo "[FAIL] $LOGO_ICON_DIR/scalable/apps/neos-logo.svg differs from tools/brand/neos-logo.svg (run tools/gen-logo.py --all)"
+    ALL_PASSED=false
+fi
+
+# A new user's first interactive bash must start cleanly. The Omarchy .bashrc
+# sourced "$NEOS_PATH/default/bash/rc" with NEOS_PATH unset on NeOS, so every
+# shell printed an error (reports/v2026.10.02/02-review-report.md).
+echo ""
+echo "Verifying /etc/skel/.bashrc starts cleanly..."
+
+SKEL_HOME="$(mktemp -d)"
+# Without a TTY, bash -i always reports missing job control; ignore just that.
+BASHRC_ERR="$(HOME="$SKEL_HOME" bash --noprofile --rcfile profile/airootfs/etc/skel/.bashrc -i -c true 2>&1 >/dev/null \
+    | grep -vE 'cannot set terminal process group|no job control in this shell' || true)"
+rm -rf "$SKEL_HOME"
+if [[ -z "$BASHRC_ERR" ]]; then
+    echo "  [PASS] interactive bash with the skel .bashrc prints no errors"
+else
+    echo "[FAIL] interactive bash with the skel .bashrc printed: $BASHRC_ERR"
+    ALL_PASSED=false
+fi
+
+# Booting a snapshot from the GRUB menu needs all three pieces on the installed
+# system: grub-btrfs (menu entries), grub-btrfsd (keeps them current) and the
+# overlayfs initramfs hook (a read-only snapshot cannot reach the desktop).
+echo ""
+echo "Verifying snapshot boot support for installed systems..."
+
+SNAP_DROPIN="etc/mkinitcpio.conf.d/neos-snapshot-boot.conf"
+if grep -qx 'grub-btrfs' profile/airootfs/etc/calamares/neos-packages.txt \
+    && grep -q 'name: "grub-btrfsd"' "$SERVICES_FILE" \
+    && grep -q 'HOOKS+=(grub-btrfs-overlayfs)' "profile/airootfs/$SNAP_DROPIN" \
+    && grep -qx "$SNAP_DROPIN" profile/airootfs/etc/calamares/neos-overlay.txt; then
+    echo "  [PASS] grub-btrfs installed, grub-btrfsd enabled, overlayfs hook shipped"
+else
+    echo "[FAIL] snapshot boot is incomplete (need grub-btrfs in neos-packages.txt, grub-btrfsd in $SERVICES_FILE, $SNAP_DROPIN in the overlay)"
+    ALL_PASSED=false
+fi
 
 if [[ "$ALL_PASSED" == true ]]; then
     echo ""
