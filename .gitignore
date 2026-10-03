@@ -91,11 +91,8 @@ tests/*.log
 # CodeGraph local index (machine-specific)
 .codegraph/
 
-# graphify knowledge-graph output — committed deliberately. graph.json,
-# graph.html, GRAPH_REPORT.md and the community labels document the project's
-# own structure, so they belong in the repo (see
-# reports/v2026.09.18/AUDIT_AND_RECOMMENDATIONS.md). Extraction scratch and
-# machine-specific interpreter/path state stay ignored.
-graphify-out/cache/
-graphify-out/.graphify_python
-graphify-out/.graphify_root
+# graphify knowledge-graph output. It was committed from 2026-09-18 to
+# 2026-10-03 and removed: nothing in the repo used it, it could not be
+# regenerated here, and it described a file tree that no longer existed. Run the
+# tool locally if you want a graph; keep its output out of the repository.
+graphify-out/

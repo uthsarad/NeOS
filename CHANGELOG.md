@@ -32,6 +32,7 @@ are in `reports/v2026.10.03/02-review-report.md` and `reports/v2026.10.03/screen
 
 ### Removed
 - **Dormant Omarchy runtime** (maintainer's decision): `usr/share/neos/neos/`, the archinstall-based installer (`usr/share/neos-iso/`, `neos-iso-install`, `neos-install-dashboard`, `neos-cidata-load`, `neos-iso-cleanup-disk`, `neos-install-diagnose-media`), `neos-debug*`, `neos-upload-log` and `profile/packages_omarchy.x86_64`. They could not run on NeOS and were copied onto every install. Restore steps are in `docs/architecture/OMARCHY_INTEGRATION.md`.
+- **`graphify-out/`** (a 600 KB generated knowledge graph, committed on 2026-09-18): nothing used it, it could not be regenerated here, and it described a file tree that no longer exists. Its `graph.html` was most of the repository's HTML, which is why GitHub's language bar showed so much of it. The directory is now ignored, and the remaining design-reference HTML is marked as documentation for GitHub's language statistics.
 - **Installer log upload:** Calamares sent the full installer log (hostname, user name, disk layout) to a public pastebin over plain HTTP. The log stays local; TROUBLESHOOTING says where it is.
 - **The "send anonymous usage data" checkbox** in the welcome app: nothing ever collected or sent data.
 
