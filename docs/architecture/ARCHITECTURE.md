@@ -19,6 +19,18 @@
 
 NeOS (Next Evolution Operating System) is an Arch Linux–based desktop OS targeting x86-64 hardware with a KDE Plasma desktop curated to be a drop-in replacement for Windows or other graphical OSes. The architecture prioritizes a polished, predictable end-user experience while preserving Arch’s rolling-release benefits through staged, curated updates.
 
+> **Current state vs. target.** This document describes where NeOS is headed as
+> well as what ships today. As of the 2026 beta builds:
+>
+> - **Shipping:** Arch official repositories plus Chaotic-AUR and the Garuda
+>   repository (installer only); `linux-lts`; Btrfs with snapper snapshots before
+>   and after every package transaction, timeline snapshots, snapshot entries in
+>   the GRUB menu (grub-btrfs) and a daily snapshot-protected `neos-autoupdate`.
+> - **Not built yet:** the NeOS curated, staging and stable repositories and the
+>   promotion pipeline described under [Repository Strategy](#repository-strategy).
+>   Until they exist, updates come directly from the Arch mirrors and the safety
+>   net is rollback, not pre-release gating.
+
 ## Architecture Goals
 
 - **Windows-familiar UX without sacrificing KDE idioms:** Clean defaults, modern Plasma features enabled, minimal visual clutter.
@@ -52,10 +64,10 @@ graph TD
 
 ### 1) Base Operating System (Arch Linux)
 
-- **Kernel & core system:** Upstream Arch kernel with optional `linux-lts` fallback, systemd, coreutils, and baseline Arch packages.
+- **Kernel & core system:** `linux-lts` (see [decision 0001](../decisions/0001-linux-lts.md)), systemd, coreutils, and baseline Arch packages.
 - **Package manager:** pacman for system-level package management.
 - **Boot stack:** GRUB for bootloader, mkinitcpio with systemd init, and early filesystem support for Btrfs/ZFS where used.
-- **Repository structure:**
+- **Repository structure (target; today only the Arch official repos, Chaotic-AUR and Garuda's installer build are used):**
   - **Arch official repos:** baseline system packages and non-desktop-critical updates.
   - **NeOS curated repos:** KDE Plasma, KDE Frameworks, Qt stack, graphics drivers, firmware, and desktop-critical utilities.
   - **NeOS staging repo:** pre-release validation channel for gated updates.
@@ -68,11 +80,11 @@ graph TD
 
 ### 3) Core Applications (User-Removable)
 
-- **Browser:** Brave
+- **Browser:** Firefox
 - **Media player:** VLC
-- **Media viewer:** nomacs
-- **Email client:** Thunderbird
+- **Image viewer:** Gwenview
 - **Office:** LibreOffice
+- **Software:** Discover with Flatpak support
 
 These applications are preinstalled but user-removable; NeOS does not claim redistribution ownership beyond upstream licenses.
 
@@ -93,7 +105,7 @@ These applications are preinstalled but user-removable; NeOS does not claim redi
 
 - **GUI app store:** KDE Discover as the primary UI, branded for NeOS.
 - **Backend recommendation:** Use PackageKit with libalpm backend for best Discover integration on Arch. Offer pamac only as an optional, advanced add-on if AUR access is a goal.
-- **Update safety:** Staged updates with automated smoke tests and manual QA for KDE/Qt/driver changes.
+- **Update safety:** Today, snapshots before and after every update with rollback from the GRUB menu or the Operations Hub. Target: staged updates with automated smoke tests and manual QA for KDE/Qt/driver changes.
 
 ## UX Architecture Considerations
 
@@ -111,6 +123,8 @@ These applications are preinstalled but user-removable; NeOS does not claim redi
 ## Maintenance & Operational Considerations
 
 ### Repository Strategy
+
+*Target design; not implemented yet (see the note under [Overview](#overview)).*
 
 - **Snapshot-based rolling model:** NeOS snapshots upstream Arch repos, tests them as a coherent set, and releases a validated snapshot rather than mixing frozen NeOS packages with live Arch feeds.
 - **No mixed feeds:** Avoid combining a frozen NeOS stack with live Arch core/extra; stability requires coherent snapshots.
@@ -162,7 +176,7 @@ graph TD
 ## Architecture Decisions (Initial Recommendations)
 
 - **Default backend:** PackageKit + KDE Discover for the most consistent GUI experience.
-- **Staged updates:** NeOS repos buffer KDE and driver updates before end-user rollout.
+- **Staged updates (planned):** NeOS repos buffer KDE and driver updates before end-user rollout.
 - **Windows-like UX:** Ship a curated Plasma layout with minimal post-install tweaks.
 
 ## Performance Strategy

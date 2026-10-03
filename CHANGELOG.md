@@ -9,6 +9,19 @@ Every user-visible surface was walked and checked against what the image actuall
 the plan is `reports/v2026.10.03/00-polish-plan.md`, the outcome and before/after renders
 are in `reports/v2026.10.03/02-review-report.md` and `reports/v2026.10.03/screenshots/`.
 
+### Website alignment
+The OS, README and docs were checked claim by claim against the project website
+(`uthsarad/NeOSweb`); the findings, including the claims the website should change,
+are in `reports/v2026.10.03/website-alignment.md`.
+
+- **Rollback now works.** The Operations Hub's rollback ran `snapper rollback`, which switches the Btrfs *default* subvolume — but NeOS mounts its root by name (`subvol=/@` in fstab and on the kernel command line), so the machine rebooted into the same system and nothing changed. The new `neos-rollback <number>` keeps the current root as `@.pre-rollback-<date>` and makes a writable copy of the snapshot the new `@`; the Hub uses it. `tests/verify_rollback.sh` exercises the restore, refusal and failure paths.
+- **Snapshots are bootable from the GRUB menu** on installed systems, as the manual promises: `grub-btrfs` is installed, `grub-btrfsd` keeps a **NeOS snapshots** submenu current, and a `grub-btrfs-overlayfs` initramfs hook gives a booted read-only snapshot a temporary writable layer so it reaches the desktop. TROUBLESHOOTING documents both recovery paths.
+- **Installed systems now get NeOS's GRUB settings.** Calamares' `grubcfg` ran with `overwrite: true` and no defaults, so it replaced the shipped `/etc/default/grub` with three lines: no boot-menu theme, no NeOS kernel parameters, and os-prober silently off (GRUB 2.06+ needs `GRUB_DISABLE_OS_PROBER=false`), so **Windows was missing from the boot menu on dual-boot installs**. It now edits the file in place; the timeout is 3 s so the menu and the snapshot submenu can be reached when recovering. Guarded by `verify_grub_config.sh`.
+- **Release naming matches the website.** `os-release` reads `PRETTY_NAME="NeOS 2026.10 (Beta)"`; CI inserts the build codename (e.g. `NeOS 2026.10 (Marlin Beta)`) and sets `VERSION_CODENAME`, and stamps the same name into the installer's window and welcome page.
+- **The Operations Hub no longer claims a "Stable" channel fed by staging deployments**; it says what is true: the Beta channel, straight from the Arch repositories, protected by snapshots.
+- **README rewritten for the public:** the website's positioning, an accurate feature list (X11 default session, network install for published ISOs, the real tools), requirements and verification steps. Removed: credits for projects and personas the OS does not use (ALCI, NeoCortex, "Sovereign Core", an AI persona), "Zen kernels" (NeOS ships `linux-lts`) and a named QA lead.
+- **ARCHITECTURE.md separates what ships from what is planned:** the NeOS curated/staging/stable repositories and the promotion pipeline do not exist yet and are now labelled as the target design; the core-app list matches the image (Firefox, not Brave; no Thunderbird or nomacs).
+
 ### Fixed
 - **The installer's progress bar stalled for the whole package download** (uthsarad/NeOS#980). Without a terminal, pacman 6/7 print `<file> downloading...`, but the Calamares pacstrap job only recognised the older `downloading <file>...` form, so it counted no downloads; the total-packages regex also missed pacman's `Packages (N)` summary and stayed at a hard-coded 178. Both parsers are fixed, database refreshes no longer count as packages, and the job's status text lost its emoji. The new `tests/verify_installer_progress.sh` feeds the real module pacman output in the CI log's format.
 - **The installer slideshow never left its first slide.** `showSlide()` mutated a QML `var` array in place, which does not notify bindings, so "Welcome to NeOS" stayed up for the whole install. It now assigns a new array; `tests/verify_ui_render.sh` renders every slide and fails if their content does not differ.
@@ -37,7 +50,7 @@ are in `reports/v2026.10.03/02-review-report.md` and `reports/v2026.10.03/screen
 - **The "send anonymous usage data" checkbox** in the welcome app: nothing ever collected or sent data.
 
 ### Tests and tooling
-- New: `verify_desktop_entries.sh`, `verify_package_hygiene.sh`, and `verify_ui_render.sh` (headless renders of the login theme, slideshow and welcome app; CI installs `python-pyqt6` + `qt6-declarative`).
+- New: `verify_rollback.sh`, `verify_desktop_entries.sh`, `verify_package_hygiene.sh`, and `verify_ui_render.sh` (headless renders of the login theme, slideshow and welcome app; CI installs `python-pyqt6` + `qt6-declarative`).
 - `verify_palette_consistency.sh` and `verify_boot_gui.sh` are extended. `verify_installer_secrets.sh` is retired along with the installer it covered.
 - New generators: `tools/gen-brand-images.py`, `tools/render-sddm-preview.py`, `tools/render-installer-slides.py`. `tools/gen-logo.py --all` renders every logo copy from `tools/brand/neos-logo.svg`.
 - Version bumped to `2026.10.03`.

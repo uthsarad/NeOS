@@ -41,7 +41,32 @@ it contains your hostname, user name and disk layout.
 ## Snapshot Rollback
 
 ### How to rollback to a previous snapshot
-NeOS uses Btrfs snapshots for system recovery. If your system fails to boot after an update, you can select a previous snapshot from the GRUB boot menu to boot into a known good state.
+NeOS takes a Btrfs snapshot before and after every package transaction (including
+automatic updates) and hourly timeline snapshots. Your home folder is a separate
+subvolume and is never rolled back.
+
+**If the system still starts:** open **NeOS Operations Hub → System Snapshot &
+Rollback**, note the number of the snapshot from before the problem, enter it and
+reboot. From a terminal, the same is:
+
+```bash
+sudo neos-rollback --list      # find the snapshot number
+sudo neos-rollback 42          # make snapshot 42 the system root
+sudo reboot
+```
+
+**If the system no longer reaches the desktop:** in the GRUB menu choose
+**NeOS snapshots**, pick a snapshot from before the update and boot it. The
+snapshot runs with a temporary writable layer, so it works normally but nothing
+you change is kept. Once you are sure it is good, make it permanent with
+`sudo neos-rollback <number>` and reboot.
+
+The system as it was before the rollback is kept as a subvolume named
+`@.pre-rollback-<date>`; `neos-rollback` prints how to delete it once you no
+longer need it.
+
+> Do not use `snapper rollback` on NeOS. It switches the Btrfs default
+> subvolume, but NeOS mounts the root subvolume by name, so it has no effect.
 
 ## Driver Issues
 
