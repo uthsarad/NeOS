@@ -25,6 +25,10 @@ site styling were out of scope. Each claim landed in one of three outcomes:
 
 ## 2. Website should change
 
+> **Applied (2026-10-03):** every item below was changed on the website in
+> `uthsarad/NeOSweb@8c5fdce`, together with a visual cleanup (anime artwork, boot
+> intro and pointer effects removed; background dots kept out of the text column).
+
 Each item gives the current website text, what the OS actually does, and the wording
 to use instead. Where the website describes something worth building, that is noted;
 none of these are fixed by editing the OS alone.
