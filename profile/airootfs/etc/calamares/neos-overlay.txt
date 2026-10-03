@@ -47,6 +47,7 @@ etc/systemd/system/vmtoolsd.service.d/10-neos-vm-only.conf
 etc/systemd/zram-generator.conf
 etc/ufw/ufw.conf
 etc/xdg/autostart/neos-display-sync.desktop
+etc/xdg/autostart/neos-screen-reader.desktop
 etc/xdg/autostart/neos-welcome-app.desktop
 etc/xdg/discoverrc
 etc/xdg/kdeglobals

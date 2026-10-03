@@ -96,8 +96,8 @@ online during installation. An ISO you build yourself with `sudo ./build.sh` emb
 offline package repository and installs without a connection.
 
 The boot menu also offers **Copy to RAM**, **Safe Graphics** (for GPUs that show a
-black screen) and **Screen Reader**, which turns on speech output (espeakup) from
-boot.
+black screen) and **Screen Reader**, which starts with speech on: espeakup on the
+text consoles and the Orca screen reader on the desktop.
 Unattended installs are covered in [Assisted install](docs/user-guide/AUTOINSTALL.md).
 
 ## After installing

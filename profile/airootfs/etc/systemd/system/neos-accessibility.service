@@ -1,5 +1,5 @@
 [Unit]
-Description=NeOS accessibility bootstrap (start espeakup when accessibility=on)
+Description=NeOS accessibility bootstrap (console speech when accessibility=on; Orca starts in the desktop session)
 # Must run before the display manager starts so speech is available during
 # the graphical login screen as well as on the virtual console.
 After=sysinit.target

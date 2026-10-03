@@ -1,17 +1,44 @@
 #!/bin/bash
-# neos-accessibility — activate screen-reader speech in the live session when
-# the user chose the Accessibility boot entry.
+# neos-accessibility — turn on speech when the user chose the Screen Reader
+# boot entry.
 #
-# The GRUB/syslinux accessibility menu entry passes `accessibility=on` on the
-# kernel command line.  When present, this script starts espeakup so blind
-# users hear speech output on the virtual console immediately after login.
-# On a normal (non-accessibility) boot the script exits 0 and does nothing.
+# The GRUB/syslinux "NeOS (Screen Reader)" entry passes `accessibility=on` on
+# the kernel command line. On any other boot both modes exit 0 and do nothing.
+#
+#   neos-accessibility            (root, neos-accessibility.service, before the
+#                                  display manager) starts espeakup, so the
+#                                  virtual consoles speak.
+#   neos-accessibility --session  (the user's desktop session, from
+#                                  /etc/xdg/autostart/neos-screen-reader.desktop)
+#                                  turns on Plasma's screen reader and starts
+#                                  Orca, so the desktop, the welcome window and
+#                                  the apps speak too. espeakup alone left a
+#                                  blind user in a silent desktop.
 set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-if ! grep -qw 'accessibility=on' /proc/cmdline 2>/dev/null; then
+CMDLINE_FILE="${NEOS_A11Y_CMDLINE:-/proc/cmdline}"   # overridable for tests
+
+if ! grep -qw 'accessibility=on' "$CMDLINE_FILE" 2>/dev/null; then
     exit 0   # standard boot: no speech needed
+fi
+
+if [[ "${1:-}" == "--session" ]]; then
+    if ! command -v orca >/dev/null 2>&1; then
+        logger -t neos-accessibility "accessibility=on but orca is not installed" || true
+        exit 0
+    fi
+    # Plasma's own switch (System Settings > Accessibility > Screen Reader), so
+    # the setting shows as on and kaccess keeps Orca running on later logins.
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file kaccessrc --group ScreenReader --key Enabled true || true
+    fi
+    if pgrep -u "$(id -u)" -f '(^|/)orca( |$)' >/dev/null 2>&1; then
+        exit 0   # already speaking (kaccess got there first)
+    fi
+    logger -t neos-accessibility "accessibility=on — starting Orca for $(id -un)" || true
+    exec orca --replace
 fi
 
 logger -t neos-accessibility "accessibility=on detected — starting espeakup"

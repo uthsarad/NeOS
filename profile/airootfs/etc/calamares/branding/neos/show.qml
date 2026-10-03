@@ -169,7 +169,7 @@ Presentation {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: qsTr("Snapshot-Gated Stability")
+                    text: qsTr("Updates You Can Undo")
                     font.pixelSize: 28; font.bold: true; color: presentation.cTitle
                     Accessible.role: Accessible.StaticText; Accessible.name: text
                 }
@@ -177,7 +177,7 @@ Presentation {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: qsTr("NeOS creates automatic Btrfs snapshots before every system update.\n\nIf anything goes wrong, roll back in seconds.\nNo more broken updates.")
+                    text: qsTr("NeOS takes a Btrfs snapshot before and after every update.\n\nIf an update causes trouble, start an earlier snapshot\nfrom the boot menu and roll back in a few clicks.")
                     font.pixelSize: 16; color: presentation.cBody; horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.6
                     Accessible.role: Accessible.StaticText; Accessible.name: text
@@ -220,7 +220,7 @@ Presentation {
                         model: [
                             qsTr("ZRAM swap compression keeps your system responsive"),
                             qsTr("BBR congestion control for faster networking"),
-                            qsTr("Optimized I/O scheduling reduces lag on any hardware")
+                            qsTr("Smaller, steadier disk writes avoid stalls on slow drives")
                         ]
                         Rectangle {
                             width: parent.width; height: 36; radius: 8
@@ -318,7 +318,7 @@ Presentation {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: qsTr("NeOS automatically detects your GPU, network, and peripherals.\nNVIDIA, AMD, and Intel drivers configured at first boot.\n\nWorks on real hardware and virtual machines alike.")
+                    text: qsTr("NeOS detects your GPU, network and peripherals.\nNVIDIA, AMD and Intel graphics drivers come preinstalled.\n\nWorks on real hardware and virtual machines alike.")
                     font.pixelSize: 16; color: presentation.cBody; horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.6
                     Accessible.role: Accessible.StaticText; Accessible.name: text

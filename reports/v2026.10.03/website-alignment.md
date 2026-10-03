@@ -118,6 +118,8 @@ none of these are fixed by editing the OS alone.
   entry is chosen, and does nothing otherwise.
 - **Proposed:** *"Choose **NeOS (Screen Reader)** in the boot menu to start with speech
   output enabled."*
+- **Update (2026-10-03):** the OS now also starts Orca in the desktop session on that
+  boot, so "accessibility defaults" is closer to true; the website says it explicitly.
 
 ### 2.11 Welcome app (manual ch. 03)
 - **Site:** *"walks you through appearance, privacy and update choices"*.
