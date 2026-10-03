@@ -104,7 +104,7 @@ BUILD_CONF="pacman-build.conf"
 # not want your host mutated.
 echo -e "${YELLOW}Note: build updates the host keyring and imports signing keys into it.${NC}"
 echo "Updating Arch Linux Keyring..."
-pacman -Sy --noconfirm -- archlinux-keyring
+pacman -Sy --noconfirm --needed -- archlinux-keyring # Bolt: [Performance] Use --needed to prevent redundant package reinstallations
 
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."

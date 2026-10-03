@@ -58,3 +58,15 @@ The optimization successfully eliminated the targeted subprocess overhead in thi
 
 **Any remaining performance risks:**
 No immediate risks. The optimization correctly caches the keyring for the duration of the key import checks without altering functional behavior.
+
+## Optimize pacman package installation in build.sh
+
+**Status:** Completed
+**Action:** Added the `--needed` flag to the `pacman -Sy` command for installing `archlinux-keyring` in `build.sh`.
+
+**Before/after reasoning:**
+* **Before:** The script invoked `pacman -Sy --noconfirm -- archlinux-keyring` without the `--needed` flag, causing pacman to download and reinstall the package even if it was already up-to-date, incurring unnecessary network I/O and disk write overhead.
+* **After:** By utilizing the `--needed` flag, pacman checks if the package is already at the latest version and skips the download and reinstallation if so, eliminating unnecessary overhead during repeated builds.
+
+**Any remaining performance risks:**
+No immediate risks. The optimization effectively reduces overhead during subsequent builds when the keyring is already up-to-date, without altering the requirement that the latest keyring is present.
