@@ -61,8 +61,35 @@ else
 fi
 if grep -q '^orca --replace' "$WORK/calls"; then pass "session: Orca is started"; else fail "session: Orca was not started"; fi
 
-run
+printf '<busconfig>\n  <auth>EXTERNAL</auth>\n</busconfig>\n' > "$WORK/accessibility.conf"
+NEOS_A11Y_BUSCONF="$WORK/accessibility.conf" run
 if grep -q '^systemctl start espeakup.service' "$WORK/calls"; then pass "boot service: espeakup is started"; else fail "boot service: espeakup was not started"; fi
+NEOS_A11Y_BUSCONF="$WORK/accessibility.conf" run
+if [[ "$(grep -c '<allow user="root"/>' "$WORK/accessibility.conf")" == 1 ]] && tail -n1 "$WORK/accessibility.conf" | grep -qx '</busconfig>'; then
+    pass "boot service: root may join the accessibility bus (installer speech), once"
+else
+    fail "boot service: accessibility bus policy not patched exactly once: $(tr '\n' ' ' < "$WORK/accessibility.conf")"
+fi
+echo "quiet splash" > "$WORK/cmdline"
+printf '<busconfig>\n</busconfig>\n' > "$WORK/accessibility.conf"
+NEOS_A11Y_BUSCONF="$WORK/accessibility.conf" run
+if ! grep -q 'allow user="root"' "$WORK/accessibility.conf"; then pass "normal boot: accessibility bus left alone"; else fail "normal boot patched the accessibility bus"; fi
+
+# The installer launcher hands the bus to the root Calamares, and an install
+# from a screen reader boot keeps speech on in the installed system.
+WELCOME="profile/airootfs/usr/local/bin/neos-welcome"
+# shellcheck disable=SC2016 # literal text to find in the script
+if grep -q 'AT_SPI_BUS_ADDRESS=' "$WELCOME" && grep -qF '"${A11Y_ENV[@]}"' "$WELCOME"; then
+    pass "installer: Calamares gets the accessibility bus on a screen reader boot"
+else
+    fail "installer: $WELCOME does not pass AT_SPI_BUS_ADDRESS to Calamares"
+fi
+PACSTRAP="profile/airootfs/usr/local/bin/neos-pacstrap"
+if grep -q 'accessibility=on' "$PACSTRAP" && grep -q 'etc/xdg/kaccessrc' "$PACSTRAP" && grep -q 'espeakup.service' "$PACSTRAP"; then
+    pass "installed system: screen reader and console speech stay on after a screen reader install"
+else
+    fail "installed system: $PACSTRAP does not carry the screen reader over"
+fi
 
 if (( FAIL )); then
     echo "[FAIL] Screen reader checks failed."

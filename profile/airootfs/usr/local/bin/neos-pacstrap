@@ -211,4 +211,29 @@ else
     echo "neos-pacstrap: ⚠️  WARNING — overlay manifest '$OVERLAY' missing; installed system will lack NeOS branding" >&2
 fi
 
+# ---- Keep the screen reader on for people who installed with it -----------
+# Installing from the "NeOS (Screen Reader)" boot entry (accessibility=on) means
+# the person may depend on speech, so the installed system must not come up
+# silent: Plasma's screen reader (Orca) defaults to on for every user via the
+# system-wide kaccessrc (a user can still turn it off in System Settings), and
+# console speech (espeakup) is enabled.
+NEOS_CMDLINE="${NEOS_CMDLINE:-/proc/cmdline}"   # overridable for tests
+if grep -qw 'accessibility=on' "$NEOS_CMDLINE" 2>/dev/null; then
+    log "screen reader boot: keeping speech on in the installed system"
+    mkdir -p "$ROOT/etc/xdg"
+    cat > "$ROOT/etc/xdg/kaccessrc" <<'EOF'
+# Written by the NeOS installer: this system was installed with the screen
+# reader on, so Orca starts for every user. Turn it off per user in System
+# Settings > Accessibility > Screen Reader, or delete this file.
+[ScreenReader]
+Enabled=true
+EOF
+    chmod 644 "$ROOT/etc/xdg/kaccessrc"
+    if [[ -f "$ROOT/usr/lib/systemd/system/espeakup.service" ]]; then
+        mkdir -p "$ROOT/etc/systemd/system/multi-user.target.wants"
+        ln -sf /usr/lib/systemd/system/espeakup.service \
+            "$ROOT/etc/systemd/system/multi-user.target.wants/espeakup.service"
+    fi
+fi
+
 log "🎉 base system installed into $ROOT"

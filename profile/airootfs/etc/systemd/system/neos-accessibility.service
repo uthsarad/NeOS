@@ -9,6 +9,9 @@ Before=display-manager.service sddm.service
 Type=oneshot
 Environment=LC_ALL=C
 ProtectSystem=strict
+# Only on a screen reader boot: lets the root installer onto the user's
+# accessibility bus (see the script).
+ReadWritePaths=-/usr/share/defaults/at-spi2
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes

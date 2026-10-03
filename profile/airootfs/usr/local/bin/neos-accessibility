@@ -7,7 +7,8 @@
 #
 #   neos-accessibility            (root, neos-accessibility.service, before the
 #                                  display manager) starts espeakup, so the
-#                                  virtual consoles speak.
+#                                  virtual consoles speak, and lets the root
+#                                  installer onto the accessibility bus.
 #   neos-accessibility --session  (the user's desktop session, from
 #                                  /etc/xdg/autostart/neos-screen-reader.desktop)
 #                                  turns on Plasma's screen reader and starts
@@ -44,3 +45,14 @@ fi
 logger -t neos-accessibility "accessibility=on detected — starting espeakup"
 systemctl start espeakup.service
 logger -t neos-accessibility "espeakup started successfully"
+
+# Let the installer be read aloud. Calamares runs as root, and Orca reads apps
+# over the live user's accessibility bus, which only admits its owner, so the
+# installer was silent. Allowing root onto that bus grants nothing root does
+# not already have; it is done only on a screen reader boot of the live image.
+# neos-welcome then hands Calamares the bus address (AT_SPI_BUS_ADDRESS).
+A11Y_CONF="${NEOS_A11Y_BUSCONF:-/usr/share/defaults/at-spi2/accessibility.conf}"
+if [[ -f "$A11Y_CONF" && ! -L "$A11Y_CONF" ]] && ! grep -q '<allow user="root"/>' "$A11Y_CONF"; then
+    sed -i 's#</busconfig>#  <!-- NeOS: the installer runs as root (neos-accessibility) -->\n  <policy context="default"><allow user="root"/></policy>\n</busconfig>#' "$A11Y_CONF"
+    logger -t neos-accessibility "root may join the accessibility bus (installer speech)"
+fi

@@ -97,7 +97,8 @@ offline package repository and installs without a connection.
 
 The boot menu also offers **Copy to RAM**, **Safe Graphics** (for GPUs that show a
 black screen) and **Screen Reader**, which starts with speech on: espeakup on the
-text consoles and the Orca screen reader on the desktop.
+text consoles and the Orca screen reader on the desktop and in the installer. A
+system installed from that entry keeps the screen reader on.
 Unattended installs are covered in [Assisted install](docs/user-guide/AUTOINSTALL.md).
 
 ## After installing

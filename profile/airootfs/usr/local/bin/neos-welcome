@@ -95,6 +95,21 @@ if systemd-detect-virt -q 2>/dev/null; then
     GL_ENV=(LIBGL_ALWAYS_SOFTWARE=1 QT_QUICK_BACKEND=software)
 fi
 
+# Screen reader boot: make the installer readable by Orca. Calamares runs as
+# root and would not find the user's accessibility bus, so look its address up
+# here (as the user) and hand it over; Qt's AT-SPI bridge uses
+# AT_SPI_BUS_ADDRESS when set. neos-accessibility.service has already allowed
+# root onto that bus for this boot. Best effort: no address, no change.
+A11Y_ENV=()
+if grep -qw 'accessibility=on' /proc/cmdline 2>/dev/null; then
+    A11Y_ADDR="$(busctl --user call org.a11y.Bus /org/a11y/bus org.a11y.Bus GetAddress 2>/dev/null \
+        | sed -n 's/^s "\(.*\)"$/\1/p')"
+    A11Y_ENV=(QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1 QT_ACCESSIBILITY=1)
+    if [[ -n "$A11Y_ADDR" ]]; then
+        A11Y_ENV+=(AT_SPI_BUS_ADDRESS="$A11Y_ADDR")
+    fi
+fi
+
 if command -v kdialog >/dev/null 2>&1; then
     kdialog --icon calamares --title "Install NeOS" \
         --passivepopup "🚀 Starting the NeOS installer..." 4 2>/dev/null || true
@@ -108,6 +123,7 @@ sudo --preserve-env=DISPLAY,XAUTHORITY \
         DISPLAY="$DISPLAY_TO_USE" \
         XAUTHORITY="$XAUTH_TO_USE" \
         "${GL_ENV[@]}" \
+        "${A11Y_ENV[@]}" \
         calamares "${CAL_ARGS[@]}" >"$LOG" 2>&1
 status=$?
 
