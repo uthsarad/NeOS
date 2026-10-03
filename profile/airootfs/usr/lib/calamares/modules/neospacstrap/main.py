@@ -48,20 +48,28 @@ _INSTALL_RE = re.compile(
     r"^\((\d+)/(\d+)\)\s+(installing|upgrading|reinstalling)\s+(\S+)"
 )
 
-# Pacman non-TTY download output prints "downloading <pkgname>..."
+# Without a TTY, pacman 6/7 announce each download as
+#   " linux-firmware-20260916-1-any downloading..."
+# (file name first; see pacman's callback.c). Older pacman printed
+# "downloading <file>..." instead; both forms are accepted. Matching only the
+# old form meant no download was ever counted, so the bar sat near the start
+# of this step for the whole download phase (uthsarad/NeOS#980).
 _DOWNLOAD_RE = re.compile(
-    r"^(?:downloading\s+(\S+?)(?:\.\.\.|\s|$)|::\s+(?:Retrieving packages|downloading\s+(\S+)))",
+    r"^\s*(?:(\S+)\s+downloading\.\.\.\s*$|downloading\s+(\S+?)(?:\.\.\.|\s|$))",
     re.IGNORECASE
 )
-_TOTAL_PKGS_RE = re.compile(r"downloading latest (\d+) packages|installing (\d+) packages")
+# The transaction summary pacman prints before downloading: "Packages (1042) ...".
+_TOTAL_PKGS_RE = re.compile(r"^Packages \((\d+)\)|installing (\d+) packages")
+# Database refreshes use the same "<name> downloading..." shape; not packages.
+_DB_NAMES = {"core", "extra", "multilib", "chaotic-aur", "garuda", "neos-local"}
 _OVERLAY_RE = re.compile(r"applying NeOS overlay", re.IGNORECASE)
 _RETRY_RE = re.compile(r"pacstrap attempt (\d+)/(\d+)", re.IGNORECASE)
 
-status = _("📦 Preparing to install packages…")
+status = _("Preparing to install packages…")
 
 
 def pretty_name():
-    return _("📦 Installing base system (pacstrap)")
+    return _("Installing the base system")
 
 
 def pretty_status_message():
@@ -79,7 +87,7 @@ def run():
                 _("neospacstrap must run after the mount job."))
 
     libcalamares.job.setprogress(0.0)
-    status = _("⬇️ Downloading packages…")
+    status = _("Downloading packages…")
 
     proc = subprocess.Popen(
         ["/usr/local/bin/neos-pacstrap", root],
@@ -124,7 +132,7 @@ def run():
             retry_match = _RETRY_RE.search(line)
             if retry_match:
                 cur_attempt, max_attempts = retry_match.groups()
-                status = _("🔁 Mirror retry ({cur}/{max})…").format(
+                status = _("Retrying with another mirror ({cur}/{max})…").format(
                     cur=cur_attempt, max=max_attempts)
 
             install_match = _INSTALL_RE.match(line)
@@ -132,7 +140,7 @@ def run():
                 n, total, _verb, pkg = install_match.groups()
                 n, total = int(n), int(total)
                 seen_install_phase = True
-                status = _("⚙️ Installing {pkg} ({n}/{total})…").format(
+                status = _("Installing {pkg} ({n}/{total})…").format(
                     pkg=pkg, n=n, total=total)
                 if total > 0:
                     # Allocate 0.45 to 0.95 for package unpacking/installation
@@ -140,22 +148,23 @@ def run():
                 continue
 
             if _OVERLAY_RE.search(line):
-                status = _("🎨 Applying NeOS desktop configuration & branding…")
+                status = _("Applying NeOS settings and branding…")
                 libcalamares.job.setprogress(0.97)
                 continue
 
             download_match = _DOWNLOAD_RE.match(line)
-            if download_match and not seen_install_phase:
+            if (download_match and not seen_install_phase
+                    and (download_match.group(1) or download_match.group(2) or "") not in _DB_NAMES):
                 download_count += 1
                 pkg_raw = download_match.group(1) or download_match.group(2) or ""
                 # Strip archive extension and architecture if present
                 pkg_clean = re.sub(r"-(?:\d.*|\.pkg\.tar\..*)$", "", pkg_raw)
                 pkg_clean = pkg_clean.strip()
                 if pkg_clean:
-                    status = _("⬇️ Downloading {pkg} ({cur}/{total})…").format(
+                    status = _("Downloading {pkg} ({cur}/{total})…").format(
                         pkg=pkg_clean, cur=download_count, total=estimated_total)
                 else:
-                    status = _("⬇️ Downloading packages ({cur}/{total})…").format(
+                    status = _("Downloading packages ({cur}/{total})…").format(
                         cur=download_count, total=estimated_total)
                 download_frac = min(1.0, download_count / max(estimated_total, 1))
                 # Allocate 0.05 to 0.45 for downloading packages
@@ -168,16 +177,16 @@ def run():
         watchdog.cancel()
 
     if timed_out.is_set():
-        return (_("⏱️ Installation timed out"),
+        return (_("Installation timed out"),
                 _("neos-pacstrap did not finish within {timeout} seconds.")
                 .format(timeout=TIMEOUT_SECONDS))
 
     if returncode != 0:
         tail = "\n".join(output_lines[-40:])
-        return (_("❌ Base system installation failed (exit {code})")
+        return (_("Base system installation failed (exit {code})")
                 .format(code=returncode), tail)
 
     libcalamares.job.setprogress(1.0)
-    status = _("✅ Base system installed.")
+    status = _("Base system installed.")
     return None
 
