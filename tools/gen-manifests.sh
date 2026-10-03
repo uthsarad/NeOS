@@ -29,19 +29,16 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     echo "# Packages pacstrapped onto the target by the Calamares 'pacstrap' step."
     grep -vE '^\s*(#|$)' "$PROFILE_DIR/packages.x86_64" \
         | grep -vxE 'mkinitcpio-archiso|calamares-garuda'
-    # Developer toolchains — INSTALLED-SYSTEM ONLY (deliberately NOT in the
-    # live ISO's packages.x86_64): modern languages so a fresh NeOS
-    # install is dev-ready out of the box. three.js is an npm library, not a
-    # system package — `npm install three` once nodejs/npm are present.
-    # kotlin/sbcl/clisp/ghc/fpc are intentionally absent: their only consumers
-    # (the tools/polyglot auditors) were removed in 2026.09.11, and ghc alone
-    # inflates the pacstrap transaction by over a GiB.
-    echo "# --- developer languages and frameworks (installed-system only) ---"
+    # Developer core — INSTALLED-SYSTEM ONLY (deliberately NOT in the live
+    # ISO's packages.x86_64): enough to build software and run the two most
+    # common scripting ecosystems. Every other toolchain (Rust, Go, Java, .NET,
+    # Ruby, PHP, Docker, Zig, Elixir, ...) is one `sudo pacman -S <name>` away
+    # (docs/user-guide/HANDBOOK.md). Until 2026.10.03 some 25 toolchains were
+    # installed on every system, several GiB that most desktop users never touch
+    # (reports/v2026.10.03/00-polish-plan.md Q3).
+    echo "# --- developer core (installed-system only) ---"
     printf '%s\n' \
-        nodejs npm python-pip rust go deno base-devel \
-        jdk-openjdk ruby php composer dotnet-sdk \
-        clang cmake ninja gdb docker docker-compose \
-        zig nim bun gleam elixir odin crystal
+        base-devel python-pip nodejs npm
 
     # Extras not in the live list. nvidia-open-lts is the PREBUILT module for
     # linux-lts (the only kernel NeOS ships). nvidia-open-dkms would compile the

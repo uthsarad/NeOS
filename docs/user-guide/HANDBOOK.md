@@ -77,6 +77,24 @@ For a hands-off install (second volume labelled `cidata` with
 ### 5. First Boot
 After installation, remove the USB drive and reboot. You will be greeted by the NeOS login screen.
 
+### 6. Installing More Software
+Desktop applications are easiest to find in **Discover** (the software centre in the
+app menu). From a terminal, any Arch package installs with `sudo pacman -S <name>`.
+
+A fresh install includes a lean developer core: `base-devel` (compilers and `make`), `git`,
+Python with `pip`, and Node.js with `npm`. Other toolchains are one command away:
+
+| Toolchain | Command |
+| :-- | :-- |
+| Rust | `sudo pacman -S rust` |
+| Go | `sudo pacman -S go` |
+| Java | `sudo pacman -S jdk-openjdk` |
+| .NET | `sudo pacman -S dotnet-sdk` |
+| Ruby | `sudo pacman -S ruby` |
+| PHP | `sudo pacman -S php composer` |
+| C/C++ tooling | `sudo pacman -S clang cmake ninja gdb` |
+| Docker | `sudo pacman -S docker docker-compose && sudo systemctl enable --now docker` |
+
 ## Getting Started (Developer Guide)
 
 If you want to modify NeOS or build your own ISO, follow these steps.
