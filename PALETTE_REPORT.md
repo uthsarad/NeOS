@@ -19,3 +19,7 @@
 ## Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.
 **Learning:** Terminal errors need to provide clear, actionable steps such as checking disk space and network connectivity. Using emojis or special characters (like bullets) violates codebase style constraints.
 **Action:** Replaced special characters with standard hyphens in error handlers and augmented generic error messages with explicit troubleshooting steps to improve developer UX in `build.sh`.
+
+## Standby for UX/accessibility audits.
+**Learning:** Vague terminal errors for missing dependencies stall developers during the build process.
+**Action:** Augmented missing dependency errors in `build.sh` with explicit, copy-pasteable installation commands (`sudo pacman -S <pkg>`) to improve actionable troubleshooting UX.
