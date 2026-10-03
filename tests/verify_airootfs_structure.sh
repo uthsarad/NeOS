@@ -191,6 +191,28 @@ else
     echo "  [PASS] no known package-owned files in the overlay"
 fi
 
+# /etc/os-release LOGO= must name an icon the image ships (KDE's About page
+# and other tools look it up in the icon theme). It named `neos-logo` for
+# months while no such icon existed. The scalable copy must also stay the
+# brand source (tools/brand/neos-logo.svg, the website's mark).
+echo ""
+echo "Verifying the os-release logo icon..."
+
+LOGO_NAME="$(sed -n 's/^LOGO=//p' profile/airootfs/etc/os-release | tr -d '"')"
+LOGO_ICON_DIR="profile/airootfs/usr/share/icons/hicolor"
+if [[ -n "$LOGO_NAME" ]] && compgen -G "$LOGO_ICON_DIR/*/apps/$LOGO_NAME.*" >/dev/null; then
+    echo "  [PASS] LOGO=$LOGO_NAME is shipped in the hicolor icon theme"
+else
+    echo "[FAIL] os-release LOGO=${LOGO_NAME:-<unset>} has no icon under $LOGO_ICON_DIR"
+    ALL_PASSED=false
+fi
+if cmp -s tools/brand/neos-logo.svg "$LOGO_ICON_DIR/scalable/apps/neos-logo.svg"; then
+    echo "  [PASS] scalable neos-logo.svg matches tools/brand/neos-logo.svg"
+else
+    echo "[FAIL] $LOGO_ICON_DIR/scalable/apps/neos-logo.svg differs from tools/brand/neos-logo.svg (run tools/gen-logo.py --all)"
+    ALL_PASSED=false
+fi
+
 # A new user's first interactive bash must start cleanly. The Omarchy .bashrc
 # sourced "$NEOS_PATH/default/bash/rc" with NEOS_PATH unset on NeOS, so every
 # shell printed an error (reports/v2026.10.02/02-review-report.md).

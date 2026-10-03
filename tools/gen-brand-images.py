@@ -9,7 +9,8 @@ Writes:
       the BIOS boot-menu background: the same sky, kept quiet because the
       menu is drawn on top of it.
   profile/airootfs/usr/share/plymouth/themes/neos/dot.png  (24x24)
-      the boot splash's progress dot (Plymouth scripts cannot draw shapes).
+      the boot splash's progress dot in the logo's blue (Plymouth scripts
+      cannot draw shapes).
 
 Both use the wallpaper's gradient and star colour (tools/gen-wallpaper.py) and
 the logo from tools/gen-logo.py, so every boot and install surface matches.
@@ -86,7 +87,7 @@ def splash():
 def plymouth_dot():
     ss = 8
     big = Image.new("RGBA", (24 * ss, 24 * ss), (0, 0, 0, 0))
-    ImageDraw.Draw(big).ellipse((2 * ss, 2 * ss, 22 * ss, 22 * ss), fill=(56, 189, 248, 255))
+    ImageDraw.Draw(big).ellipse((2 * ss, 2 * ss, 22 * ss, 22 * ss), fill=(122, 162, 247, 255))  # logo hexagon blue #7aa2f7
     out = ROOT / "profile/airootfs/usr/share/plymouth/themes/neos/dot.png"
     big.resize((24, 24), Image.LANCZOS).save(out, optimize=True)
     print(f"wrote {out.relative_to(ROOT)}")

@@ -1,8 +1,8 @@
 # NeOS Plymouth boot splash (script module).
 #
-# The NeOS logo centred on the navy background, with three accent dots below
-# it that pulse in sequence while the system starts. Disk-unlock prompts and
-# boot messages appear under the dots. Assets: logo.png (tools/gen-logo.py
+# The NeOS logo centred on the navy background, with three dots in the logo's
+# blue below it that pulse in sequence while the system starts. Disk-unlock
+# prompts and boot messages appear under the dots. Assets: logo.png (tools/gen-logo.py
 # --all) and dot.png (tools/gen-brand-images.py).
 
 # --- Background: the palette's navy (#0A0E1A at the top -> #16203A) ---------
@@ -67,7 +67,7 @@ fun display_password_callback(prompt, bullets) {
         bullet_text += "•";
     }
     place_centered(prompt_sprite, Image.Text(prompt, 0.902, 0.914, 0.949), text_y - 24);
-    place_centered(message_sprite, Image.Text(bullet_text + " ", 0.220, 0.741, 0.973), text_y + 4);
+    place_centered(message_sprite, Image.Text(bullet_text + " ", 0.478, 0.635, 0.969), text_y + 4);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
 
@@ -76,7 +76,7 @@ fun display_question_callback(prompt, entry) {
         dot[i].SetOpacity(0);
     }
     place_centered(prompt_sprite, Image.Text(prompt, 0.902, 0.914, 0.949), text_y - 24);
-    place_centered(message_sprite, Image.Text(entry + " ", 0.220, 0.741, 0.973), text_y + 4);
+    place_centered(message_sprite, Image.Text(entry + " ", 0.478, 0.635, 0.969), text_y + 4);
 }
 Plymouth.SetDisplayQuestionFunction(display_question_callback);
 

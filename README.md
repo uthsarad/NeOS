@@ -22,13 +22,15 @@ It ships as a full **live installer** — boot into a working desktop, try it, t
 
 ## Visual Overview
 
-| Desktop Environment & Wallpaper | Calamares Live Installer |
+| Welcome (live session) | Login screen |
 | :---: | :---: |
-| ![NeOS Desktop](docs/assets/neos-desktop-wallpaper.png) | ![NeOS Installer](docs/assets/neos-calamares-installer.png) |
+| ![NeOS welcome window with Try NeOS and Install NeOS buttons](docs/assets/neos-welcome.png) | ![NeOS login screen](docs/assets/neos-sddm-login.png) |
 
-| SDDM Login Display Manager |
-| :---: |
-| ![NeOS SDDM](docs/assets/neos-sddm-login.png) |
+| Installer slideshow | Desktop wallpaper |
+| :---: | :---: |
+| ![NeOS installer slideshow](docs/assets/neos-calamares-installer.png) | ![NeOS wallpaper](docs/assets/neos-desktop-wallpaper.png) |
+
+<sub>Rendered from the current sources by the tools in [`tools/`](tools/) (see [Visual identity](docs/architecture/BRAND_STRUCTURE.md#visual-identity)).</sub>
 
 ---
 

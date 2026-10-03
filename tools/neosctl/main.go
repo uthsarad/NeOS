@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	Version     = "2026.10.02"
+	Version     = "2026.10.03"
 	AppName     = "neosctl"
 	ColorCyan   = "\033[1;36m"
 	ColorGreen  = "\033[1;32m"

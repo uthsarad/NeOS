@@ -74,6 +74,7 @@ usr/share/icons/hicolor/32x32/apps/neos-logo.png
 usr/share/icons/hicolor/48x48/apps/neos-logo.png
 usr/share/icons/hicolor/512x512/apps/neos-logo.png
 usr/share/icons/hicolor/64x64/apps/neos-logo.png
+usr/share/icons/hicolor/scalable/apps/neos-logo.svg
 usr/share/neos/hooks/49-neos-snapshot-pre.hook
 usr/share/neos/hooks/99-neos-snapshot-post.hook
 usr/share/pixmaps/neos-logo.png

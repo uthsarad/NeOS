@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026.10.03] - 2026-10-03
+
+Polish release: a clean, professional image from the boot menu to the installed desktop.
+Every user-visible surface was walked and checked against what the image actually ships;
+the plan is `reports/v2026.10.03/00-polish-plan.md`, the outcome and before/after renders
+are in `reports/v2026.10.03/02-review-report.md` and `reports/v2026.10.03/screenshots/`.
+
+### Fixed
+- **The installer slideshow never left its first slide.** `showSlide()` mutated a QML `var` array in place, which does not notify bindings, so "Welcome to NeOS" stayed up for the whole install. It now assigns a new array; `tests/verify_ui_render.sh` renders every slide and fails if their content does not differ.
+- **The welcome app's feature cards rendered empty and its buttons overflowed the window** (the card's `QFrame` style cascaded onto its labels; three 220 px buttons did not fit 860 px). Layout rebuilt; focus starts on the primary action.
+- **Every user's app menu showed 16 dead launchers** (Basecamp, HEY, X, WhatsApp, Docker, Zoom, …): their commands (`neos-launch-webapp`, `xdg-terminal-exec`, `foot`, `imv`, `mpv`, `dua`) were never shipped. Removed with their 39 icons; `tests/verify_desktop_entries.sh` requires every `.desktop` command to resolve.
+- **KDE's About page showed a generic logo:** `os-release` named `LOGO=neos-logo`, but no such icon existed. The logo now ships as a full `neos-logo` icon set (PNG sizes plus a scalable SVG).
+- **Unreadable buttons:** white text on the `#38bdf8` accent is 2.1:1 (WCAG AA needs 4.5:1). It was used on the installer's Next button, current step, selected tab and menu item, the welcome app's primary button and the login button. All now use the dark `onAccent` text (9:1).
+
+### Changed
+- **Boot splash:** the NeOS logo with three pulsing accent dots and a clean disk-unlock prompt replaces the cartoon-cat loader (maintainer's decision). The cat frames and their generator are removed.
+- **One brand palette:** accent `#38bdf8`, hover `#7dd3fc`, pressed `#0ea5e9`, `onAccent` `#0A0E1A` (`tools/palette.json`). Three files had defined three different hover/pressed pairs, and the old `#1F6FD6` lingered as tints. The installer, slideshow, login screen, welcome app, KDE colour scheme and `os-release` now agree, and `verify_palette_consistency.sh` rejects retired shades and white-on-accent text.
+- **One logo, the website's:** the image now uses the NeOS website's mark (a hexagon around a dot, from `uthsarad/NeOSweb`), kept as `tools/brand/neos-logo.svg` and rendered to every size by `tools/gen-logo.py --all`. It replaces the generated "N" badge and the old blue/white swirl.
+- **Brand images regenerated:** new installer welcome banner (the old one was AI swirl clip-art still carrying an image generator's watermark); BIOS boot-menu background on the night-sky theme (it was a Gothic cathedral); the login theme preview is a real headless render (`tools/render-sddm-preview.py`). The README screenshots are real renders of the current image.
+- **No emoji in shipped UI:** slideshow and welcome-app icons are monochrome glyphs in the accent colour, and the login avatar is a drawn silhouette.
+- **Boot menus:** the default entry reads "Start NeOS" and accessibility reads "NeOS (Screen Reader)" in both menus. GRUB gains UEFI Firmware Settings, Reboot and Power Off.
+- **Cleaner new home directories:** `/etc/skel` keeps only NeOS's own autostart/ksplash settings and the Bluetooth A2DP rule. Gone: configs for 15 applications that are not installed, Omarchy branding and hook samples, GNOME Nautilus extensions, and a personal git/tmux setup that changed git's behaviour (`pull.rebase`, `rerere.autoupdate`).
+- **Leaner installs:** 39 rescue-ISO or dormant-installer packages are removed (`archinstall`, `gum`, `clonezilla`, `drbl`, `irssi`, `lynx`, `mc`, `wvdial`, `refind`, `memtest86+`, …). The installed-system developer block shrinks from ~25 toolchains to `base-devel`, `python-pip`, `nodejs` and `npm`; the HANDBOOK lists one-line installs for the rest (maintainer's decision).
+
+### Removed
+- **Dormant Omarchy runtime** (maintainer's decision): `usr/share/neos/neos/`, the archinstall-based installer (`usr/share/neos-iso/`, `neos-iso-install`, `neos-install-dashboard`, `neos-cidata-load`, `neos-iso-cleanup-disk`, `neos-install-diagnose-media`), `neos-debug*`, `neos-upload-log` and `profile/packages_omarchy.x86_64`. They could not run on NeOS and were copied onto every install. Restore steps are in `docs/architecture/OMARCHY_INTEGRATION.md`.
+- **Installer log upload:** Calamares sent the full installer log (hostname, user name, disk layout) to a public pastebin over plain HTTP. The log stays local; TROUBLESHOOTING says where it is.
+- **The "send anonymous usage data" checkbox** in the welcome app: nothing ever collected or sent data.
+
+### Tests and tooling
+- New: `verify_desktop_entries.sh`, `verify_package_hygiene.sh`, and `verify_ui_render.sh` (headless renders of the login theme, slideshow and welcome app; CI installs `python-pyqt6` + `qt6-declarative`).
+- `verify_palette_consistency.sh` and `verify_boot_gui.sh` are extended. `verify_installer_secrets.sh` is retired along with the installer it covered.
+- New generators: `tools/gen-brand-images.py`, `tools/render-sddm-preview.py`, `tools/render-installer-slides.py`. `tools/gen-logo.py --all` renders every logo copy from `tools/brand/neos-logo.svg`.
+- Version bumped to `2026.10.03`.
+
 ## [2026.10.02] - 2026-10-02
 
 Review-and-repair release. It documents the 18 commits that landed after the
