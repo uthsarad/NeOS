@@ -54,7 +54,7 @@ style:
    SidebarBackground:        "#0A0E1A"
    SidebarText:              "#AEB4C7"
    SidebarBackgroundCurrent: "#38bdf8"
-   SidebarTextCurrent:       "#FFFFFF"
+   SidebarTextCurrent:       "#0A0E1A"
 
 # Let users upload installer logs for support (calamares "Upload" button).
 uploadServer:

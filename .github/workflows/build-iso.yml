@@ -56,8 +56,10 @@ jobs:
         # REQUIRE_TOOLS=1 below turns a missing toolchain into a failure rather
         # than a silent skip.
         #   pacman-contrib -> repo-add, used by verify_install_repo.sh
+        #   python-pyqt6 + qt6-declarative (+ a font) -> verify_ui_render.sh
+        #     renders the login theme, installer slideshow and welcome app
         run: |
-          pacman -Sy --noconfirm git wget awk grep diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy
+          pacman -Sy --noconfirm git wget awk grep diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
 
       - name: Validate PyYAML Installation
         run: |

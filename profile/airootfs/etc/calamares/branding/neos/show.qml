@@ -22,9 +22,9 @@ Presentation {
     readonly property color cBody:          "#c0c4d8"
     readonly property color cSubtle:        "#7a8099"
     readonly property color cAccent:        "#38bdf8"
-    readonly property color cAccentHover:   "#3D82E0"
-    readonly property color cAccentPressed: "#17569F"
-    readonly property color cGreen:         "#22c55e"
+    readonly property color cAccentHover:   "#7dd3fc"
+    readonly property color cAccentPressed: "#0ea5e9"
+    readonly property color cOnAccent:      "#0A0E1A"  // text on accent fills (9:1)
 
     // Auto-advance timer
     Timer {
@@ -56,12 +56,18 @@ Presentation {
         border.width: presentation.activeFocus ? 2 : 0
 
         property var slideOpacity: [1, 0, 0, 0, 0, 0]
-        Behavior on slideOpacity { NumberAnimation { duration: 600; easing.type: Easing.InOutQuad } }
 
+        // Assign a NEW array: QML does not notify bindings when a `var`
+        // array is mutated in place, so the old element-by-element update
+        // left every slide's `opacity` binding at its first value and the
+        // installer showed slide 1 for the whole install. Each slide animates
+        // its own opacity (Behavior on opacity), which gives the crossfade.
         function showSlide(index) {
+            var next = [];
             for (var i = 0; i < slideOpacity.length; i++) {
-                slideOpacity[i] = (i === index) ? 1 : 0;
+                next.push(i === index ? 1 : 0);
             }
+            slideOpacity = next;
         }
 
         // ---- Shared background with subtle gradient overlay ----------------
@@ -79,7 +85,7 @@ Presentation {
             x: parent.width / 2 - 300; y: parent.height / 2 - 300
             width: 600; height: 600; radius: 300
             gradient: Gradient {
-                GradientStop { position: 0.0; color: Qt.rgba(0.122, 0.435, 0.839, 0.08) }
+                GradientStop { position: 0.0; color: Qt.rgba(0.220, 0.741, 0.973, 0.08) }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
@@ -152,7 +158,7 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.15)
                     border.color: presentation.cBorder; border.width: 1
                     Text {
                         anchors.centerIn: parent
@@ -191,11 +197,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.13, 0.77, 0.37, 0.12)
-                    border.color: Qt.rgba(0.13, 0.77, 0.37, 0.3); border.width: 1
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.12)
+                    border.color: Qt.rgba(0.220, 0.741, 0.973, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "⚡"; color: presentation.cGreen
+                        text: "»"; color: presentation.cAccent
                         font.pixelSize: 28
                     }
                 }
@@ -242,11 +248,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
-                    border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.12)
+                    border.color: Qt.rgba(0.220, 0.741, 0.973, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "🛡"; color: presentation.cAccent
+                        text: "✓"; color: presentation.cAccent
                         font.pixelSize: 28
                     }
                 }
@@ -293,11 +299,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.15)
                     border.color: presentation.cBorder; border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "💻"; color: presentation.cAccent
+                        text: "◆"; color: presentation.cAccent
                         font.pixelSize: 28
                     }
                 }
@@ -332,11 +338,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
-                    color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
-                    border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.12)
+                    border.color: Qt.rgba(0.220, 0.741, 0.973, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
-                        text: "🚀"; color: presentation.cAccent
+                        text: "→"; color: presentation.cAccent
                         font.pixelSize: 28
                     }
                 }
@@ -405,7 +411,7 @@ Presentation {
         height: 26; width: 80
         Text {
             anchors.centerIn: parent
-            text: "⏸ " + qsTr("Paused"); color: presentation.cSubtle
+            text: qsTr("Paused"); color: presentation.cSubtle
             font.pixelSize: 11
             Accessible.role: Accessible.StaticText; Accessible.name: text
         }
@@ -426,7 +432,7 @@ Presentation {
 
         Text {
             anchors.centerIn: parent
-            text: qsTr("Next Slide →"); color: "white"
+            text: qsTr("Next Slide →"); color: presentation.cOnAccent
             font.pixelSize: 13; font.bold: true
         }
 

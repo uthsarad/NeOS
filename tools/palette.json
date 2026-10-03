@@ -1,8 +1,10 @@
 {
   "_comment": "Single source of truth for NeOS's brand colors. Every consuming file (QML, QSS, SVG, Python, KDE .colors, os-release) keeps its own literal hex copy of these values — see tests/verify_palette_consistency.sh, which asserts they all still match this file and that the old borrowed 'NTB' palette (#0088CF/#0096D5/#EB008B) is gone. If you change a value here, update every file tests/verify_palette_consistency.sh lists.",
   "accent": "#38bdf8",
-  "accentHover": "#3D82E0",
-  "accentPressed": "#17569F",
+  "accentHover": "#7dd3fc",
+  "accentPressed": "#0ea5e9",
+  "accentDeep": "#0369a1",
+  "onAccent": "#0A0E1A",
   "bg": "#0A0E1A",
   "bgGradientBottom": "#16203A",
   "card": "#11172E",
@@ -12,5 +14,6 @@
   "textSecondary": "#9AA0B6",
   "textTertiary": "#7A8099",
   "success": "#22C55E",
-  "error": "#FF6B74"
+  "error": "#FF6B74",
+  "_contrast": "onAccent on accent 9.0:1, on accentHover 11.6:1, on accentPressed 7.0:1; accent on bg 9.0:1. Never put white text on accent fills (2.1:1). accentDeep is the logo gradient's dark stop."
 }

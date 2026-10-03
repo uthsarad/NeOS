@@ -53,15 +53,16 @@ else
     exit 1
 fi
 
-# Check for Pause Indicator (enhanced)
-if [[ "$QML_CONTENT" == *"text: \"⏸ \" + qsTr(\"Paused\")"* ]]; then
+# Check for the pause indicator. Plain text, no emoji glyph: U+23F8 renders as
+# colour emoji in many fonts (reports/v2026.10.03 Q5).
+if [[ "$QML_CONTENT" == *"text: qsTr(\"Paused\")"* ]]; then
     echo "  [PASS] Enhanced Pause indicator found."
 else
     echo "[FAIL] Enhanced Pause indicator missing!"
     echo ""
     echo "How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to clearly indicate the paused state."
+    echo "   - Add 'text: qsTr(\"Paused\")' to clearly indicate the paused state."
     exit 1
 fi
 

@@ -5,7 +5,7 @@ ID_LIKE=arch
 VERSION_ID="2026.10.02"
 VERSION="2026.10.02"
 BUILD_ID=rolling
-ANSI_COLOR="38;2;31;111;214"
+ANSI_COLOR="38;2;56;189;248"
 # Canonical project repository. This file ships inside the installed system, so
 # every URL here must resolve for users — do not point them at the development
 # fork, whose Issues are disabled (tests/verify_repo_urls.sh guards this).
