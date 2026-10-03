@@ -75,18 +75,18 @@ fi
 
 # Check for dependencies
 if ! command -v mkarchiso &> /dev/null; then
-    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso'.${NC}" >&2
+    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso' (sudo pacman -S archiso).${NC}" >&2
     exit 1
 fi
 
 if ! command -v mksquashfs &> /dev/null; then
-    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}" >&2
+    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools' (sudo pacman -S squashfs-tools).${NC}" >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure required compression dependencies are present for pipelines
 if ! command -v zstd &> /dev/null; then
-    echo -e "${RED}Error: zstd could not be found. Please install 'zstd'.${NC}" >&2
+    echo -e "${RED}Error: zstd could not be found. Please install 'zstd' (sudo pacman -S zstd).${NC}" >&2
     exit 1
 fi
 
@@ -126,7 +126,7 @@ BUILD_CONF="pacman-build.conf"
 # not want your host mutated.
 echo -e "${YELLOW}Note: build updates the host keyring and imports signing keys into it.${NC}"
 echo "Updating Arch Linux Keyring..."
-pacman -Sy --noconfirm -- archlinux-keyring
+pacman -Sy --noconfirm --needed -- archlinux-keyring
 
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
@@ -137,7 +137,7 @@ CURRENT_KEYS="$(pacman-key --list-keys 2>/dev/null || true)"
 # Check if key exists to avoid redundant imports and keyserver hits
 if [[ "$CURRENT_KEYS" != *"3056513887B78AEB"* ]]; then
     echo "Importing Chaotic-AUR key..."
-    pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+    pacman-key --recv-key 3056513887B78AEB --keyserver hkps://keyserver.ubuntu.com
     pacman-key --lsign-key 3056513887B78AEB
 else
     echo "Chaotic-AUR key already imported."
@@ -146,7 +146,7 @@ fi
 # Setup Garuda signing key (signs calamares-garuda in the [garuda] repo)
 if [[ "$CURRENT_KEYS" != *"349BC7808577C592"* ]]; then
     echo "Importing Garuda signing key..."
-    pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
+    pacman-key --recv-key 349BC7808577C592 --keyserver hkps://keyserver.ubuntu.com
     pacman-key --lsign-key 349BC7808577C592
 else
     echo "Garuda key already imported."
@@ -154,7 +154,7 @@ fi
 
 if [[ "$CURRENT_KEYS" != *"BFB13EA507EFDADB64A944813A40CB5E7E5CBC30"* ]]; then
     echo "Importing Chaotic-AUR package maintainer key..."
-    pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver keyserver.ubuntu.com
+    pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver hkps://keyserver.ubuntu.com
     pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
 fi
 
