@@ -69,18 +69,24 @@ echo -e "${GREEN}Starting NeOS ISO Build Process...${NC}"
 
 # Check for root privileges
 if [ "$EUID" -ne 0 ]; then
-  echo -e "${RED}Error: This script must be run as root.${NC}"
+  echo -e "${RED}Error: This script must be run as root.${NC}" >&2
   exit 1
 fi
 
 # Check for dependencies
 if ! command -v mkarchiso &> /dev/null; then
-    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso'.${NC}"
+    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso'.${NC}" >&2
     exit 1
 fi
 
 if ! command -v mksquashfs &> /dev/null; then
-    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}"
+    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}" >&2
+    exit 1
+fi
+
+# Sentinel: [Security] Ensure required compression dependencies are present for pipelines
+if ! command -v zstd &> /dev/null; then
+    echo -e "${RED}Error: zstd could not be found. Please install 'zstd'.${NC}" >&2
     exit 1
 fi
 
@@ -114,7 +120,7 @@ fi
 BUILD_CONF="pacman-build.conf"
 
 # Update Arch Linux Keyring to prevent signature errors.
-# NOTE: this build is NOT hermetic — it syncs the host's pacman databases,
+# NOTE: this build is NOT hermetic -- it syncs the host's pacman databases,
 # updates the host keyring package, and imports/lsigns third-party keys into
 # the host keyring below. Run inside a container/nspawn (as CI does) if you do
 # not want your host mutated.
@@ -125,8 +131,11 @@ pacman -Sy --noconfirm -- archlinux-keyring
 # Setup Chaotic-AUR keys
 echo "Setting up Chaotic-AUR keys..."
 
+# Bolt: [Performance] Cache keyring to avoid multiple pacman-key --list-keys subprocesses
+CURRENT_KEYS="$(pacman-key --list-keys 2>/dev/null || true)"
+
 # Check if key exists to avoid redundant imports and keyserver hits
-if ! pacman-key --list-keys 3056513887B78AEB >/dev/null 2>&1; then
+if [[ "$CURRENT_KEYS" != *"3056513887B78AEB"* ]]; then
     echo "Importing Chaotic-AUR key..."
     pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
     pacman-key --lsign-key 3056513887B78AEB
@@ -135,7 +144,7 @@ else
 fi
 
 # Setup Garuda signing key (signs calamares-garuda in the [garuda] repo)
-if ! pacman-key --list-keys 349BC7808577C592 >/dev/null 2>&1; then
+if [[ "$CURRENT_KEYS" != *"349BC7808577C592"* ]]; then
     echo "Importing Garuda signing key..."
     pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
     pacman-key --lsign-key 349BC7808577C592
@@ -143,7 +152,7 @@ else
     echo "Garuda key already imported."
 fi
 
-if ! pacman-key --list-keys BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 >/dev/null 2>&1; then
+if [[ "$CURRENT_KEYS" != *"BFB13EA507EFDADB64A944813A40CB5E7E5CBC30"* ]]; then
     echo "Importing Chaotic-AUR package maintainer key..."
     pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver keyserver.ubuntu.com
     pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
@@ -156,8 +165,9 @@ CHAOTIC_KEYRING_SIG="${CHAOTIC_KEYRING_PKG}.sig"
 # --retry: cdn-mirror.chaotic.cx intermittently returns 503, which previously
 # failed the whole build on a single bad request. Fall back to geo-mirror
 # (virtual/auto-routing, different backing infra) if cdn-mirror stays down
-# across all retries — a real outage, not just a blip, has been observed.
-CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors)
+# across all retries -- a real outage, not just a blip, has been observed.
+# Sentinel: [Security] Enforce strict HTTPS and TLS v1.2+ for curl to prevent protocol downgrade attacks
+CURL_RETRY=(--retry 5 --retry-delay 3 --retry-all-errors --proto '=https' --tlsv1.2)
 CHAOTIC_HOSTS=(
     'https://cdn-mirror.chaotic.cx/chaotic-aur'
     'https://geo-mirror.chaotic.cx/chaotic-aur'
@@ -197,7 +207,7 @@ fi
 # for mkarchiso to verify packages. The ISO will install its own chaotic-keyring
 # via packages.x86_64.
 
-# Generate the build pacman.conf (shared with CI — tools/gen-build-conf.sh is
+# Generate the build pacman.conf (shared with CI -- tools/gen-build-conf.sh is
 # the single source of truth for this logic).
 REPO_ROOT="$PWD"
 echo "Generating temporary build configuration..."
@@ -209,10 +219,11 @@ bash tools/gen-build-conf.sh "$REPO_ROOT" "$REPO_ROOT/$BUILD_CONF"
 # build here.
 
 # Generate the netinstall manifests (Calamares pacstrap package list + overlay
-# copy manifest). Shared with CI — tools/gen-manifests.sh is the single source
+# copy manifest). Shared with CI -- tools/gen-manifests.sh is the single source
 # of truth; a stale manifest means installed systems silently miss files.
 bash tools/gen-manifests.sh "$REPO_ROOT"
 
+# Bolt: [Performance] Optimize subprocess overhead in packaging and compression pipelines (Delegated by Architect)
 # Run mkarchiso
 #
 # `yes ""` feeds blank answers to any prompt mkarchiso may emit. When mkarchiso

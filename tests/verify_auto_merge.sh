@@ -24,10 +24,12 @@ else
     FAIL=1
 fi
 
-if [[ "$CONTENT" == *"branches: [testing]"* ]] || [[ "$CONTENT" == *"branches: [ testing ]"* ]]; then
-    echo "  [PASS] restricted to the testing branch"
+# testing is the merge target; main may be listed only so bot PRs aimed at it
+# can be retargeted (checked below: nothing is ever merged into main).
+if [[ "$CONTENT" == *"branches: [testing]"* ]] || [[ "$CONTENT" == *"branches: [testing, main]"* ]]; then
+    echo "  [PASS] triggered for PRs into testing (and main, for retargeting only)"
 else
-    echo "[FAIL] $WF must restrict pull_request_target to branches: [testing]"
+    echo "[FAIL] $WF must trigger on pull_request_target branches: [testing] or [testing, main]"
     FAIL=1
 fi
 
@@ -55,13 +57,15 @@ else
     FAIL=1
 fi
 
-# main must not be an auto-merge target. A naive 'branches: [testing, main]'
-# would ship the firehose onto the release branch.
-if grep -A20 '^  pull_request_target:' "$WF" | grep -q 'main'; then
-    echo "[FAIL] pull_request_target must not list main (main stays manual)"
-    FAIL=1
+# main must never be an auto-merge target: a strict "base must be testing"
+# guard has to sit before the first `gh pr merge`, and any PR into main that is
+# not retargeted must exit before reaching it.
+if awk '/"\$PR_BASE" != "testing"/ && !guard {guard=NR} /gh pr merge/ && !merge {merge=NR} END {exit !(guard && merge && guard < merge)}' "$WF" \
+    && grep -q 'left for a maintainer' "$WF"; then
+    echo "  [PASS] main is never an auto-merge target (strict testing-only guard before any merge)"
 else
-    echo "  [PASS] main is not an auto-merge target"
+    echo "[FAIL] $WF must refuse to merge anything whose base is not testing, before any gh pr merge"
+    FAIL=1
 fi
 
 if [[ "$CONTENT" == *"checkout"* && "$CONTENT" == *"actions/checkout"* ]]; then

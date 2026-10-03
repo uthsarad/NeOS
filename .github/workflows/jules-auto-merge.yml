@@ -12,6 +12,10 @@ name: Auto-merge into testing
 # run this workflow manually (workflow_dispatch) with its URL — that is an
 # explicit human decision, so the manual path accepts forks.
 #
+# Bot PRs that target `main` (Jules and the persona agents open them there) are
+# retargeted to `testing` instead of merged: `main` only moves by a maintainer
+# merging `testing`. A PR whose head IS `testing` (the release PR) is left alone.
+#
 # This workflow never checks out PR code. It only calls `gh` against the
 # pull request URL from the event payload, which is why pull_request_target
 # is safe to use here (write token + secrets, untrusted code is not run).
@@ -19,7 +23,9 @@ name: Auto-merge into testing
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches: [testing]
+    # main is listed only so bot PRs aimed at it can be retargeted to testing;
+    # nothing is ever merged into main by this workflow (see the guard below).
+    branches: [testing, main]
   workflow_dispatch:
     inputs:
       pr_url:
@@ -41,7 +47,8 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.draft == false &&
-       github.event.pull_request.base.ref == 'testing')
+       (github.event.pull_request.base.ref == 'testing' ||
+        github.event.pull_request.head.ref != 'testing'))
     steps:
       - name: Approve and merge
         env:
@@ -59,17 +66,38 @@ jobs:
 
           echo "Inspecting PR: $PR_URL"
 
-          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,isDraft,isCrossRepository,url)"
+          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,headRefName,isDraft,isCrossRepository,author,url)"
           PR_STATE="$(printf '%s' "$PR_JSON" | jq -r '.state')"
           PR_BASE="$(printf '%s' "$PR_JSON" | jq -r '.baseRefName')"
           PR_DRAFT="$(printf '%s' "$PR_JSON" | jq -r '.isDraft')"
           PR_FROM_FORK="$(printf '%s' "$PR_JSON" | jq -r '.isCrossRepository')"
+          PR_HEAD="$(printf '%s' "$PR_JSON" | jq -r '.headRefName')"
+          PR_AUTHOR="$(printf '%s' "$PR_JSON" | jq -r '.author.login')"
 
           if [[ "$PR_STATE" != "OPEN" ]]; then
             echo "PR is in state $PR_STATE. Nothing to merge."
             exit 0
           fi
 
+          # Bot PRs aimed at main go to testing instead. Only the automation
+          # accounts' own branches are retargeted; a human's PR to main, a fork
+          # PR, and the testing -> main release PR are left for a maintainer.
+          if [[ "$PR_BASE" == "main" ]]; then
+            if [[ "$PR_HEAD" != "testing" && "$PR_FROM_FORK" == "false" ]] \
+                && [[ "$PR_AUTHOR" =~ ^(app/)?google-labs-jules(\[bot\])?$|^RaidenShogun-AI$|^MikoYae-AI$ ]]; then
+              echo "Bot PR from $PR_AUTHOR targets main; retargeting it to testing."
+              if ! gh pr edit "$PR_URL" --base testing; then
+                gh pr comment "$PR_URL" --body "This automated PR targets \`main\`, which only moves by a maintainer merging \`testing\`, and it could not be retargeted automatically. Please retarget it to \`testing\`." || true
+                exit 1
+              fi
+              PR_BASE="testing"
+            else
+              echo "PR into main ($PR_AUTHOR, head $PR_HEAD): left for a maintainer."
+              exit 0
+            fi
+          fi
+
+          # Strict guard: nothing is ever merged automatically except into testing.
           if [[ "$PR_BASE" != "testing" ]]; then
             echo "Refusing to auto-merge a PR targeting '$PR_BASE' (only testing is automatic)." >&2
             exit 1

@@ -9,7 +9,15 @@ if (( EUID == 0 )); then
     exit 1
 fi
 
-
+# Close a `kdialog --progressbar` dialog. Its reference is "<bus name> <object
+# path>"; it is validated before use so nothing else reaches dbus-send.
+close_progress() {
+    local ref="$1" dest path
+    if [[ "$ref" =~ ^[A-Za-z0-9_.:-]+[[:space:]]/[A-Za-z0-9_/]+$ ]]; then
+        read -r dest path <<< "$ref"
+        dbus-send --print-reply --dest="$dest" "$path" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1 || true
+    fi
+}
 
 # Assign inside the condition so the exit status is tested directly; testing
 # $? after a separate command substitution is fragile (SC2181).
@@ -31,25 +39,33 @@ fi
 
 case "$ACTION" in
     "1")
-        exec xdg-open "https://github.com/uthsarad/NeOS/discussions" >/dev/null 2>&1
+        exec /usr/bin/xdg-open "https://github.com/uthsarad/NeOS/discussions" >/dev/null 2>&1
         ;;
     "2")
-        exec xdg-open "https://github.com/uthsarad/NeOS/issues" >/dev/null 2>&1
+        exec /usr/bin/xdg-open "https://github.com/uthsarad/NeOS/issues" >/dev/null 2>&1
         ;;
     "3")
         # Architecture strictly requires gated snapshots.
-        exec kdialog --icon dialog-information --title "Release Channel" --msgbox "Channel switching is currently managed via automated staging deployments to maintain system stability. The current channel is Stable."
+        exec /usr/bin/kdialog --icon dialog-information --title "Release Channel" --msgbox "Channel switching is currently managed via automated staging deployments to maintain system stability. The current channel is Stable."
         ;;
     "4")
         if command -v drkonqi >/dev/null 2>&1; then
-            exec drkonqi >/dev/null 2>&1
+            if kdialog --icon dialog-information --title "Configure Crash Reporting" \
+                --yesno "NeOS is telemetry-free by default. Crash reporting sends a report only when a program crashes, and only after you confirm it.
+
+Would you like to configure crash reporting now?"; then
+                exec drkonqi >/dev/null 2>&1
+            fi
         else
-            exec kdialog --icon dialog-error --title "Crash Reporting" --error "Crash reporting tool (drkonqi) is not currently installed or available in this session."
+            exec /usr/bin/kdialog --icon dialog-information --title "Crash Reporting Unavailable" \
+                --msgbox "The automated crash reporting tool (drkonqi) is not currently installed or is unavailable in this session.
+
+System stability remains unaffected."
         fi
         ;;
     "5")
         if command -v snapper >/dev/null 2>&1; then
-            TEMP_FILE=$(mktemp "/tmp/snaps.XXXXXX")
+            TEMP_FILE=$(mktemp "${TMPDIR:-/tmp}/snaps.XXXXXX")
             # Single quotes: the trap must expand $TEMP_FILE when it fires, not
             # when the trap is installed (SC2064).
             trap 'rm -f "$TEMP_FILE"' EXIT INT TERM
@@ -57,11 +73,11 @@ case "$ACTION" in
             mapfile -t SNAP_LINES < "$TEMP_FILE"
             if [ ${#SNAP_LINES[@]} -le 2 ]; then
                 rm -f "$TEMP_FILE"
-                exec kdialog --icon dialog-information --title "System Snapshots" --msgbox "No system snapshots found.
+                exec /usr/bin/kdialog --icon dialog-information --title "System Snapshots" --msgbox "No system snapshots found.
 
 Snapshots are typically created automatically during system updates."
             else
-                kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
+                /usr/bin/kdialog --icon dialog-information --title "System Snapshots (Read-Only)" --textbox "$TEMP_FILE" 600 400
 
                 # Rollback flow
                 if ROLLBACK_ID=$(kdialog --icon dialog-warning --title "System Rollback" --inputbox "Enter the numeric ID of the snapshot to rollback to (or cancel to exit):") \
@@ -70,24 +86,28 @@ Snapshots are typically created automatically during system updates."
                         if kdialog --icon dialog-warning --title "Confirm Rollback" --yesno "WARNING: Rolling back to snapshot $ROLLBACK_ID will reboot your system and overwrite current system state.
 
 Are you sure you want to proceed?"; then
-                            if /usr/bin/pkexec /usr/bin/snapper rollback "$ROLLBACK_ID"; then
+                            PROGRESS=$(kdialog --progressbar "Executing system rollback..." 100)
+                            ROLLBACK_STATUS=0
+                            /usr/bin/pkexec --disable-internal-agent /usr/bin/snapper rollback "$ROLLBACK_ID" || ROLLBACK_STATUS=$?
+                            close_progress "$PROGRESS"
+                            if (( ROLLBACK_STATUS == 0 )); then
                                 kdialog --icon dialog-information --title "Rollback Successful" --msgbox "System rollback initiated successfully. Please reboot your system."
                             else
-                                kdialog --icon dialog-error --title "Rollback Failed" --error "Failed to initiate system rollback. Please check snapper logs."
+                                /usr/bin/kdialog --icon dialog-error --title "Rollback Failed" --error "Failed to initiate system rollback. Please check snapper logs."
                             fi
                         fi
                     else
-                        kdialog --icon dialog-error --title "Invalid Input" --error "Please enter a valid numeric snapshot ID."
+                        /usr/bin/kdialog --icon dialog-error --title "Invalid Input" --error "Please enter a valid numeric snapshot ID."
                     fi
                 fi
             fi
             rm -f "$TEMP_FILE"
         else
-            exec kdialog --icon dialog-error --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
+            exec /usr/bin/kdialog --icon dialog-error --title "Snapshot Error" --error "Snapshot management tool (snapper) is not installed."
         fi
         ;;
     "6")
-        TEMP_FILE=$(mktemp "/tmp/license.XXXXXX")
+        TEMP_FILE=$(mktemp "${TMPDIR:-/tmp}/license.XXXXXX")
         trap 'rm -f "$TEMP_FILE"' EXIT INT TERM
         cat << 'LICENSE_EOF' | fold -s -w 90 > "$TEMP_FILE"
 MIT License
@@ -116,26 +136,22 @@ SOFTWARE.
 NeOS utilizes components from Arch Linux.
 Arch Linux and its packages are governed by their respective upstream licenses.
 LICENSE_EOF
-        kdialog --icon dialog-information --title "About NeOS - System Licensing" --textbox "$TEMP_FILE" 600 400
+        /usr/bin/kdialog --icon dialog-information --title "About NeOS - System Licensing" --textbox "$TEMP_FILE" 600 400
         rm -f "$TEMP_FILE"
         ;;
     "7")
         if kdialog --icon dialog-information --title "System Update" --yesno "This will check for and install available system updates.
 
 Proceed?"; then
-            DBUS_REF=$(kdialog --progressbar "Executing system update..." 100)
-            /usr/bin/pkexec /usr/local/bin/neos-autoupdate.sh
-            UPDATE_STATUS=$?
-            # Quote each awk result into its own variable: unquoted command
-            # substitution word-splits on IFS (SC2046/SC2086).
-            DBUS_DEST=$(echo "$DBUS_REF" | awk '{print $1}')
-            DBUS_PATH=$(echo "$DBUS_REF" | awk '{print $2}')
-            dbus-send --print-reply --dest="$DBUS_DEST" "$DBUS_PATH" org.kde.kdialog.ProgressDialog.close >/dev/null 2>&1
+            PROGRESS=$(kdialog --progressbar "Executing system update..." 100)
+            UPDATE_STATUS=0
+            /usr/bin/pkexec --disable-internal-agent /usr/local/bin/neos-autoupdate.sh || UPDATE_STATUS=$?
+            close_progress "$PROGRESS"
 
-            if [ $UPDATE_STATUS -eq 0 ]; then
-                kdialog --icon dialog-information --title "Update Complete" --msgbox "System update completed successfully."
+            if (( UPDATE_STATUS == 0 )); then
+                /usr/bin/kdialog --icon dialog-information --title "Update Complete" --msgbox "System update completed successfully."
             else
-                kdialog --icon dialog-error --title "Update Failed" --error "System update failed. Please check the update logs in /var/log/neos-autoupdate.log."
+                /usr/bin/kdialog --icon dialog-error --title "Update Failed" --error "System update failed. Please check the update logs in /var/log/neos-autoupdate.log."
             fi
         fi
         ;;

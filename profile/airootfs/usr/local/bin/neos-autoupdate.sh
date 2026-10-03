@@ -6,7 +6,11 @@
 
 set -euo pipefail
 
+# Restrictive umask: the log and lock files below rely on it (root-only).
+umask 077
+
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+export TMPDIR="/var/tmp" # Enforce secure temporary file handling defaults
 
 
 SCRIPT_NAME="${0##*/}"
@@ -16,7 +20,7 @@ _error_handler() {
     local err=$1
     local line=$2
     local cmd="${BASH_COMMAND//[^[:print:]]/}"
-    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m🚨 [%s] CRITICAL SCRIPT FAILURE\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m💡 DIAGNOSTICS:\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\e[1m\e[36m🔧 ACTIONABLE STEPS:\e[0m\n  1. Inspect the system journal for detailed logs:\n     \e[1mjournalctl -t neos-%s -n 50 --no-pager\e[0m\n  2. Verify system state, permissions, and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
+    printf -- "\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[31m[CRITICAL] [%s] SCRIPT FAILURE\e[0m\n\e[1m\e[31m================================================================================\e[0m\n\e[1m\e[36m[DIAGNOSTICS]:\e[0m\n  • Failed Command: \"%s\"\n  • File / Line:    %s:%s\n  • Exit Status:    %s\n\n\e[1m\e[36m[ACTIONABLE STEPS]:\e[0m\n  1. Inspect the system journal for detailed logs:\n     \e[1mjournalctl -t neos-%s -n 50 --no-pager\e[0m\n  2. Verify system state, permissions, and script configuration.\n\e[1m\e[31m================================================================================\e[0m\n\n" "$SCRIPT_NAME" "$cmd" "$SCRIPT_NAME" "$line" "$err" "$SCRIPT_NAME" >&2 || true
     logger -t "neos-$SCRIPT_NAME" "CRITICAL: Script failed at line $line (Exit Code $err). Command: \"$cmd\". Please review the system journal." || true
     exit "$err"
 }
@@ -34,12 +38,12 @@ fi
 
 # Ensure log file exists with secure permissions
 if [[ ! -f "$LOG_FILE" ]]; then
-    (umask 077; set -C; true > "$LOG_FILE") 2>/dev/null || true
+    (set -C; true > "$LOG_FILE") 2>/dev/null || true
 fi
 
-# SECURITY: Enforce ownership and permissions
-chown root:root "$LOG_FILE"
-chmod 600 "$LOG_FILE"
+# umask 077 covers files created above; tighten one left by an older version.
+# (The symlink check above, and root-only /var/log and /run, rule out a swap.)
+chmod 600 -- "$LOG_FILE" 2>/dev/null || true
 
 # SECURITY: Prevent symlink attacks on lock file
 if [[ -L "$LOCK_FILE" ]]; then
@@ -49,12 +53,10 @@ fi
 
 # Ensure lock file exists with secure permissions
 if [[ ! -f "$LOCK_FILE" ]]; then
-    (umask 077; set -C; true > "$LOCK_FILE") 2>/dev/null || true
+    (set -C; true > "$LOCK_FILE") 2>/dev/null || true
 fi
 
-# SECURITY: Enforce ownership and permissions
-chown root:root "$LOCK_FILE"
-chmod 600 "$LOCK_FILE"
+chmod 600 -- "$LOCK_FILE" 2>/dev/null || true
 
 # Apply flock
 exec 9> "$LOCK_FILE"
@@ -93,8 +95,13 @@ notify_users() {
     fi
 
     while read -r uid user_name _; do
-        sudo -u "$user_name" \
-            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        # Sentinel: Sanitize inputs to prevent argument injection
+        uid="${uid//[^0-9]/}"
+        user_name="${user_name//[^a-zA-Z0-9_.-]/}"
+        if [[ -z "$uid" || -z "$user_name" ]]; then continue; fi
+
+        # Sentinel: Enforce safe execution boundary using -- and env
+        sudo -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
             notify-send -- "$title" "$err_msg" --icon="$icon" --urgency="$urgency" || true
     done < <(loginctl list-users --no-legend)
 }
@@ -109,8 +116,15 @@ check_root() {
 check_dependencies() {
     hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
-        local err_msg="INFO: \`snapper\` utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install \`snapper\` and configure a root configuration."
-        log "$err_msg"
+        local err_msg="Automatic updates are paused because <b>snapper</b> is missing.
+
+Without it, NeOS cannot create safety snapshots to protect your system.
+
+<b>How to fix:</b>
+1. Install the snapper package.
+2. Configure a root snapshot profile."
+        local log_msg="INFO: 'snapper' utility is not installed. Automatic Btrfs pre/post snapshots are disabled, so the system update will be skipped to prevent unsafe upgrades without rollback protection. To enable automatic updates, please install 'snapper' and configure a root configuration."
+        log "$log_msg"
         notify_users "$err_msg" "System Update Skipped" "dialog-information" "normal"
         exit 0
     fi
@@ -118,10 +132,11 @@ check_dependencies() {
     local dependencies=("pacman" "df")
     for cmd in "${dependencies[@]}"; do
         if ! hash "$cmd" 2>/dev/null; then
-            local err_msg="Required command \`$cmd\` not found.
+            local err_msg="The system update requires <b>$cmd</b>, which is missing.
 
-Please install the package containing \`$cmd\` to enable automatic system updates."
-            log "Error: Required command \`$cmd\` not found."
+<b>How to fix:</b>
+Please install the package containing <b>$cmd</b> to resume automatic updates."
+            log "Error: Required command '$cmd' not found."
             notify_users "$err_msg" "Update Failed: Missing Dependency" "dialog-error" "critical"
             exit 1
         fi
@@ -146,12 +161,13 @@ check_disk_space() {
     { read -r _; read -r _ _ _ available_space _ _; } < <(df -Pk /)
 
     if (( available_space < min_space )); then
-        local err_msg="Insufficient disk space for update.
+        local err_msg="The system update requires more disk space.
 
-Available: $((available_space / 1024)) MB
-Required: $((min_space / 1024)) MB
+<b>Available:</b> $((available_space / 1024)) MB
+<b>Required:</b> $((min_space / 1024)) MB
 
-Please free up some space and try again."
+<b>How to fix:</b>
+Please free up some disk space to continue."
         log "Error: Insufficient disk space. Available: $((available_space / 1024))MB. Required: $((min_space / 1024))MB."
         notify_users "$err_msg" "Update Failed: Disk Full" "drive-harddisk" "critical"
 
@@ -166,20 +182,27 @@ perform_update() {
     local desc="Pre-update snapshot"
     local snap_id
     snap_id=$("$SNAPPER_BIN" create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
+    # Sentinel: Sanitize snap_id to prevent injection on subsequent calls
+    snap_id="${snap_id//[^0-9]/}"
+    if [[ -z "$snap_id" ]]; then
+        log "Error: Invalid or missing snapshot ID."
+        exit 1
+    fi
 
     log "Created pre-update snapshot: $snap_id"
 
     # Perform update
     if "$PACMAN_BIN" -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
         log "System update completed successfully."
+        notify_users "Your system has been successfully updated to the latest version." "System Update Complete" "system-software-update" "normal"
         # Create post-update snapshot
         "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
-        local err_msg="The system update failed during execution.
+        local err_msg="The system update encountered an error.
 
-Please review the update logs for more details:
-<b>/var/log/neos-autoupdate.log</b>"
+<b>How to investigate:</b>
+Please review the logs at <b>/var/log/neos-autoupdate.log</b> for more details."
         log "System update failed. Check pacman logs."
         notify_users "$err_msg" "System Update Failed" "dialog-error" "critical"
         # Still create post snapshot to close the pair, but mark as failed
