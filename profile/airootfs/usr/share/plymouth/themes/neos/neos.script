@@ -1,50 +1,92 @@
-# NeOS Plymouth boot splash (script module) — a single still cat centered on
-# a dark background. No wordmark, no tagline, no dots, no status text, no
-# animation — just the cat.
+# NeOS Plymouth boot splash (script module).
 #
-# Frame source images (cat-NN.png) are generated from tools/loader-cat.gif by
-# tools/gen-bootlogo-frames.py and committed; only cat-00.png is used here.
+# The NeOS logo centred on the navy background, with three accent dots below
+# it that pulse in sequence while the system starts. Disk-unlock prompts and
+# boot messages appear under the dots. Assets: logo.png (tools/gen-logo.py
+# --all) and dot.png (tools/gen-brand-images.py).
 
-# --- Background: deep navy gradient (#0A0E1A -> #16203A) ---
-Window.SetBackgroundTopColor(0.024, 0.039, 0.071);
-Window.SetBackgroundBottomColor(0.039, 0.059, 0.102);
-
-# --- Load the still cat image ---
-cat_image = Image("cat-00.png");
-cat.width  = cat_image.GetWidth();
-cat.height = cat_image.GetHeight();
+# --- Background: the palette's navy (#0A0E1A at the top -> #16203A) ---------
+Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
+Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
 
 center_x = Window.GetX() + Window.GetWidth() / 2;
 center_y = Window.GetY() + Window.GetHeight() / 2;
 
-cat_x = center_x - cat.width / 2;
-cat_y = center_y - cat.height / 2;
+# --- Logo, slightly above the vertical centre --------------------------------
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetX(center_x - logo.image.GetWidth() / 2);
+logo.sprite.SetY(center_y - logo.image.GetHeight() / 2 - 40);
+logo.sprite.SetZ(10);
 
-# --- Cat sprite (static, no refresh callback) ---
-cat.sprite = Sprite();
-cat.sprite.SetImage(cat_image);
-cat.sprite.SetX(cat_x);
-cat.sprite.SetY(cat_y);
-cat.sprite.SetZ(10);
+# --- Progress dots -----------------------------------------------------------
+dot_image = Image("dot.png").Scale(10, 10);
+dot_gap = 22;
+dots_y = logo.sprite.GetY() + logo.image.GetHeight() + 48;
+for (i = 0; i < 3; i++) {
+    dot[i] = Sprite(dot_image);
+    dot[i].SetX(center_x - dot_image.GetWidth() / 2 + (i - 1) * dot_gap);
+    dot[i].SetY(dots_y);
+    dot[i].SetZ(10);
+    dot[i].SetOpacity(0.25);
+}
 
-# --- Password prompt for encrypted disks ---
-prompt_sprite = Sprite();
-fun display_password_callback(prompt, bullets) {
-    bullet_text = "";
-    i = 0;
-    while (i < bullets) {
-        bullet_text += "*";
-        i++;
+tick = 0;
+fun refresh_callback() {
+    tick++;
+    for (i = 0; i < 3; i++) {
+        # Each dot brightens in turn: a ~1.5 s cycle at Plymouth's 50 Hz.
+        phase = (tick / 12.0) - i * 1.1;
+        dot[i].SetOpacity(0.25 + 0.75 * Math.Max(0, Math.Sin(phase)));
     }
-    txt = Image.Text(prompt + "   " + bullet_text, 0.90, 0.91, 0.95);
-    prompt_sprite.SetImage(txt);
-    prompt_sprite.SetX(Window.GetX() + Window.GetWidth() / 2 - txt.GetWidth() / 2);
-    prompt_sprite.SetY(cat_y + cat.height + 24);
-    prompt_sprite.SetZ(20);
+}
+Plymouth.SetRefreshFunction(refresh_callback);
+
+# --- Text under the dots (unlock prompt, boot messages) -----------------------
+text_y = dots_y + 40;
+prompt_sprite = Sprite();
+prompt_sprite.SetZ(20);
+message_sprite = Sprite();
+message_sprite.SetZ(20);
+
+fun place_centered(sprite, image, y) {
+    sprite.SetImage(image);
+    sprite.SetX(center_x - image.GetWidth() / 2);
+    sprite.SetY(y);
+}
+
+fun display_password_callback(prompt, bullets) {
+    for (i = 0; i < 3; i++) {
+        dot[i].SetOpacity(0);
+    }
+    if (prompt == "") {
+        prompt = "Enter the passphrase to unlock the disk";
+    }
+    bullet_text = "";
+    for (i = 0; i < bullets; i++) {
+        bullet_text += "•";
+    }
+    place_centered(prompt_sprite, Image.Text(prompt, 0.902, 0.914, 0.949), text_y - 24);
+    place_centered(message_sprite, Image.Text(bullet_text + " ", 0.220, 0.741, 0.973), text_y + 4);
 }
 Plymouth.SetDisplayPasswordFunction(display_password_callback);
 
+fun display_question_callback(prompt, entry) {
+    for (i = 0; i < 3; i++) {
+        dot[i].SetOpacity(0);
+    }
+    place_centered(prompt_sprite, Image.Text(prompt, 0.902, 0.914, 0.949), text_y - 24);
+    place_centered(message_sprite, Image.Text(entry + " ", 0.220, 0.741, 0.973), text_y + 4);
+}
+Plymouth.SetDisplayQuestionFunction(display_question_callback);
+
 fun display_normal_callback() {
     prompt_sprite.SetImage(Image.Text(""));
+    message_sprite.SetImage(Image.Text(""));
 }
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
+
+fun message_callback(text) {
+    place_centered(message_sprite, Image.Text(text, 0.604, 0.627, 0.714), text_y);
+}
+Plymouth.SetMessageFunction(message_callback);

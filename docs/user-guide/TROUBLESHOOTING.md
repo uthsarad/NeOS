@@ -19,6 +19,19 @@ Building the ISO requires root privileges. Ensure you are running `mkarchiso` wi
 - Try a different USB port or write the ISO to a different USB drive.
 - Verify the ISO checksum.
 
+## Installer Problems
+
+### Finding the installer log
+The installer keeps its log on the machine; nothing is uploaded anywhere.
+
+- **Live session:** `~/.cache/neos-installer.log` (also `/var/log/Calamares.log`
+  if the installer ran as root).
+- **Summary for a bug report:** run `neos-doctor` in a terminal (or `neos-doctor --json`).
+  It reports the boot state, failed services and the installer log's path.
+
+Attach the log to an issue at https://github.com/uthsarad/NeOS/issues. Check it first:
+it contains your hostname, user name and disk layout.
+
 ## Network Problems
 
 ### No Internet connection in the live environment

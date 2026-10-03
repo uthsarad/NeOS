@@ -22,11 +22,13 @@ Entries (BIOS and UEFI share the same set):
 
 | Entry | What it does |
 | :--- | :--- |
-| **NeOS (LTS Kernel)** | Default. Quiet splash, overlay on the boot media (`copytoram=n`). |
+| **Start NeOS** | Default. Quiet splash, overlay on the boot media (`copytoram=n`). |
 | **NeOS (Copy to RAM)** | `copytoram=y` — the live image is copied into RAM and the USB stick can be removed. Needs enough RAM for the squashfs plus a 4G overlay. |
 | **NeOS (Safe Graphics)** | `nomodeset`. Use when the desktop does not appear. |
 | **NeOS (Verbose)** | No `quiet`/`splash`, `loglevel=7`. Use with `neos-doctor` when a boot hangs. |
-| **NeOS (Accessibility - Speech)** | `accessibility=on` starts the live screen-reader stack. |
+| **NeOS (Screen Reader)** | `accessibility=on` starts the live screen-reader stack (`neos-accessibility.service`). |
+| **UEFI Firmware Settings** | UEFI only: reboots into the firmware setup (`fwsetup`). |
+| **Reboot** / **Power Off** | Leave the boot menu without booting. (BIOS also offers **Boot existing OS**.) |
 
 Every live entry passes `console=tty0 console=ttyS0,115200` so CI's QEMU smoke
 test can read the `NEOS-BOOT-OK` marker from `neos-boot-probe.service`.

@@ -46,3 +46,40 @@ Before major product or release decisions, ask:
 - If a better evolution path exists, are we willing to pivot?
 
 If the answer is "no" to most of these, the decision likely does not fit the NeOS brand structure.
+
+## Visual Identity
+
+One restrained accent on deep navy. The single source of truth is
+[`tools/palette.json`](../../tools/palette.json); every themed file keeps its own literal
+copy, and `tests/verify_palette_consistency.sh` keeps them in step.
+
+| Token | Value | Use |
+| :-- | :-- | :-- |
+| `accent` | `#38bdf8` | Primary buttons, selection, focus, links, glyphs on navy |
+| `accentHover` / `accentPressed` | `#7dd3fc` / `#0ea5e9` | Button hover and pressed states |
+| `onAccent` | `#0A0E1A` | **Text on any accent fill** (9:1). Never white: white on the accent is 2.1:1 |
+| `accentDeep` | `#0369a1` | Bottom stop of the logo gradient |
+| `bg` → `bgGradientBottom` | `#0A0E1A` → `#16203A` | Backgrounds (boot splash, installer, welcome app, login) |
+
+Rules: no emoji in shipped UI (use monochrome text glyphs in the accent colour, or
+drawn shapes); one accent family only; secondary text uses `textSecondary`/`textTertiary`.
+
+### Assets and how they are made
+
+Every raster asset is generated, so changing the palette means re-running the generators,
+not hand-editing images. Run all of them from the repository root (needs Pillow; the two
+renderers need PyQt6):
+
+| Asset | Shipped at | Generator |
+| :-- | :-- | :-- |
+| Logo (installer, docs, boot splash, `neos-logo` icon set for `os-release LOGO=`) | `etc/calamares/branding/neos/logo.png`, `docs/assets/neos-logo.png`, `usr/share/plymouth/themes/neos/logo.png`, `usr/share/icons/hicolor/*/apps/neos-logo.png`, `usr/share/pixmaps/neos-logo.png` | `tools/gen-logo.py --all` |
+| Wallpaper (desktop, login background) | `usr/share/backgrounds/neos-wallpaper.png` | `tools/gen-wallpaper.py` (design reference: `tools/wallpaper-reference.html`) |
+| Installer welcome banner, BIOS boot-menu background, boot-splash dot | `etc/calamares/branding/neos/welcome.png`, `profile/syslinux/splash.png`, `usr/share/plymouth/themes/neos/dot.png` | `tools/gen-brand-images.py` |
+| Login theme preview (System Settings → Login Screen) | `usr/share/sddm/themes/neos/preview.png` | `tools/render-sddm-preview.py` (a real headless render of `Main.qml`) |
+| Installer slideshow review images (not shipped) | — | `tools/render-installer-slides.py <dir>` |
+
+The boot splash (`usr/share/plymouth/themes/neos/neos.script`) shows the logo with three
+pulsing accent dots and handles the disk-unlock prompt. The KDE splash after login is
+disabled (`etc/skel/.config/ksplashrc`), so Plymouth is the only boot screen.
+`tests/verify_ui_render.sh` renders the login theme, slideshow and welcome app on every CI
+run.

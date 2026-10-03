@@ -69,7 +69,7 @@ NeOS uses a focused tooling ecosystem for build automation, validation, and deve
 | **Go** | [`tools/neosctl/`](tools/neosctl/) | High-speed CLI for concurrent mirror benchmarking. |
 | **C# (.NET 8)** | [`tools/NeosDiagnostics/`](tools/NeosDiagnostics/) | Enterprise compliance inspector for kernel sysctl and Btrfs security rules. |
 | **Ruby** | [`tools/neos_tasks.rb`](tools/neos_tasks.rb) / [`Rakefile`](Rakefile) | Task runner for manifest generation and CI pipeline orchestration. |
-| **Python** | [`tools/gen-bootlogo-frames.py`](tools/gen-bootlogo-frames.py) | Asset pipeline and visual branding frame synthesis. |
+| **Python** | [`tools/gen-logo.py`](tools/gen-logo.py), [`tools/gen-brand-images.py`](tools/gen-brand-images.py), [`tools/render-sddm-preview.py`](tools/render-sddm-preview.py) | Brand asset pipeline: logo, banners and splash images generated from [`tools/palette.json`](tools/palette.json), plus headless renders of the login screen and installer slideshow ([Visual identity](docs/architecture/BRAND_STRUCTURE.md#visual-identity)). |
 | **Shell / Bash** | [`build.sh`](build.sh) & `profile/airootfs/` | Low-level POSIX runtime hooks, installer execution, and system initialization. |
 
 ---
