@@ -1,17 +1,15 @@
-# Risk & Priority Report
+# Risk and Priority Report
 
 ## Current System Posture
 The system is stable and all core verification tests are passing. The current posture emphasizes operational efficiency, infrastructure hardening, and security over new feature development.
 
 ## Identified Risks
-- **Over-engineering:** Engaging in unprompted refactoring without actionable goals increases the risk of instability and unnecessary code churn.
-- **Supply Chain Risks:** Ensure that external keys and packages fetched during ISO generation are rigorously verified.
+- Over-engineering: Engaging in unprompted refactoring without actionable goals increases the risk of instability and unnecessary code churn.
+- Supply Chain Risks: External keys and packages fetched during ISO generation must be rigorously verified to avoid compromise.
+- Performance: Subprocess overhead in build.sh increases build times unnecessarily.
 
 ## Priority Action Plan
-- **Stabilization / hardening:** Ensure code compliance, robust error handling, and performance optimizations in build.sh.
-- **Architect:** Target stabilization in build.sh.
-- **Bolt:** Review and eliminate remaining subprocess overhead in build.sh.
-- **Sentinel:** Target security review in build.sh.
+- Stabilization / hardening: Ensure code compliance, robust error handling, and performance optimizations in build.sh.
 
 ## Scope Limits
 Execution must be strictly confined to build.sh.
