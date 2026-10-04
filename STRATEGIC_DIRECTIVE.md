@@ -1,28 +1,30 @@
 # Strategic Directive
 
-## Maestro Strategic Assessment (5-Phase Thinking Process)
+## PHASE 1 - Product Alignment Check
+- What is the product trying to become: A stable, curated Arch Linux-based desktop OS targeting x86-64 hardware with a polished KDE Plasma environment.
+- Are we building toward that: Yes, the focus remains on reliability and curated updates without sacrificing Arch's rolling-release benefits.
+- Are we solving the highest leverage problem: Yes, optimizing the build pipeline (build.sh) ensures efficient snapshot generation and reduces build times.
 
-**PHASE 1 - Product Alignment Check**
-- **What is the product trying to become?** NeOS aims to be a highly performant and secure Arch Linux distribution targeting a polished KDE Plasma 6 experience.
-- **Are we building toward that?** Yes, by continually refining our core operational scripts and eliminating inefficiencies.
-- **Are we solving the highest leverage problem?** Yes, hardening and improving infrastructure scripts like build.sh ensures the ISO generation is robust.
+## PHASE 2 - Technical Posture Review
+- Is the system stable: Yes, all 41 verification tests pass successfully.
+- Is tech debt increasing: There is known technical debt in build.sh regarding subprocess overhead and temporary file handling that requires attention.
+- Are we overbuilding: No, we are currently focused on foundational stability and performance tuning.
 
-**PHASE 2 - Technical Posture Review**
-- **Is the system stable?** Yes. All tests pass flawlessly.
-- **Is tech debt increasing?** No.
-- **Are we overbuilding?** No, we are focusing on hardening and refining existing operational components without feature creep.
+## PHASE 3 - Priority Selection
+- Stabilization / hardening
 
-**PHASE 3 - Priority Selection**
-- **Selected Priority:** Stabilization / hardening
-- **Rationale:** All current functional capabilities and code performance metrics align with our goals. We choose to focus on ensuring code compliance and robust error handling in the build pipeline.
+## PHASE 4 - Controlled Scope Definition
+- Exact files likely impacted: build.sh
+- Maximum allowed surface area: Refactoring of build.sh to eliminate subprocess overhead and enforce security compliance for temporary files. No new features.
+- Constraints Architect must obey:
+  - Target stabilization in build.sh.
+  - Prevent feature creep.
+  - Favor incremental delivery.
+  - Protect long-term maintainability over speed.
+  - If requirements are ambiguous, choose the smallest viable interpretation.
 
-**PHASE 4 - Controlled Scope Definition**
-- **Exact files likely impacted:** build.sh
-- **Maximum allowed surface area:** build.sh
-- **Constraints Architect must obey:** Enforce zero-slop policy. Prevent feature creep. Limit to one coherent deliverable per run.
-
-**PHASE 5 - Delegation Strategy**
-- **Architect:** Refine error handling and stability in build.sh.
-- **Bolt:** Optimize script pipelines to remove unnecessary subprocess overhead in build.sh.
-- **Palette:** Standby for UX/accessibility audits.
-- **Sentinel:** Audit build.sh to ensure strict adherence to security constraints, checking temp file umasks and input sanitization.
+## PHASE 5 - Delegation Strategy
+- Architect builds: Stabilization improvements in build.sh.
+- Bolt optimizes: Elimination of unnecessary subprocess overhead in build.sh.
+- Palette enhances: Standby for UX and accessibility audits.
+- Sentinel audits: Security review of build.sh to ensure strict adherence to temporary file umasks and input sanitization.
