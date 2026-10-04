@@ -1,9 +1,11 @@
 # Sentinel Report
 
 ## Risks Found
+- **MITM Risk:** GPG keys were being fetched over unencrypted HTTP (default behavior without protocol prefix), exposing the connection to Man-in-the-Middle (MITM) attacks where attackers could intercept and modify key data.
 - **Missing Global Umask:** `neos-autoupdate.sh` lacked a global restrictive `umask`, potentially allowing permissive file creation if temporary files were not explicitly managed with isolated `umask` configurations.
 
 ## Fixes Applied
+- Prefixed keyserver domains with `hkps://` in `build.sh` to enforce TLS encryption during network transit.
 - Added `umask 077` at the top of `neos-autoupdate.sh` to enforce restrictive defaults for the entire script's lifecycle.
 - Removed redundant localized `umask 077` calls within subshells for `$LOG_FILE` and `$LOCK_FILE` creation.
 
