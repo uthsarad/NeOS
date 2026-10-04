@@ -31,4 +31,11 @@ if [[ ! -f "profile/airootfs/etc/calamares/branding/neos/stylesheet.qss" ]]; the
     echo "FAIL: branding stylesheet.qss missing"
     exit 1
 fi
+
+WELCOME="profile/airootfs/etc/calamares/modules/welcome.conf"
+# Internet is a check, not a requirement: local ISOs can install offline.
+if grep -A20 '^    required:' "$WELCOME" | grep -q 'internet'; then
+    echo "FAIL: welcome.conf must not require internet (offline ISO installs)"
+    exit 1
+fi
 echo "PASS: Calamares defaults are present."

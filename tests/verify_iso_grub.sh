@@ -25,6 +25,9 @@ REQUIRED_STRINGS=(
     "cow_spacesize=4G"
     "quiet splash"
     "nomodeset"
+    "NeOS (Copy to RAM)"
+    "copytoram=y"
+    "NeOS (Verbose)"
 )
 
 FORBIDDEN_STRINGS=(

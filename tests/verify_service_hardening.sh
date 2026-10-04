@@ -9,7 +9,7 @@ verify_service() {
 
     # Skip symlinks
     if [ -L "$SERVICE_FILE" ]; then
-        echo "⏭️ Skipping symlink $SERVICE_FILE"
+        echo "[INFO] Skipping symlink $SERVICE_FILE"
         return 0
     fi
 
@@ -30,7 +30,7 @@ verify_service() {
                     return 1
                 fi
             done
-            echo "⏭️ $SERVICE_FILE verified unsandboxed (account-setup unit, must not be sandboxed)"
+            echo "[PASS] $SERVICE_FILE verified unsandboxed (account-setup unit, must not be sandboxed)"
             return 0
             ;;
     esac
