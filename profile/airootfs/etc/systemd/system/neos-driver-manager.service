@@ -7,7 +7,10 @@ Type=oneshot
 # Set LC_ALL=C to eliminate locale-aware string parsing overhead in bash scripts
 Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-driver-manager
+<<<<<<< HEAD
+=======
 # Sentinel: Hardened systemd sandboxing
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes

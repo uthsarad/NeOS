@@ -17,4 +17,8 @@ jobs:
       pull-requests: write
 
     steps:
+<<<<<<< HEAD
+    - uses: actions/labeler@b8dd2d9be0f68b860e7dae5dae7d772984eacd6d # v6
+=======
     - uses: actions/labeler@v6
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)

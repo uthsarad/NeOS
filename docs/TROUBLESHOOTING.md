@@ -2,7 +2,11 @@
 
 ## Build Failures
 - Ensure you have the `archiso` and `squashfs-tools` packages installed.
+<<<<<<< HEAD
+- Check the build `pacman.conf` (generated into `pacman-build.conf` by `tools/gen-build-conf.sh`) for incorrect signature settings. Note the shipped profile deliberately uses `DatabaseOptional`, not `DatabaseRequired`.
+=======
 - Check the `pacman.conf` used for building (e.g., `pacman.conf` in the profile directory) for incorrect settings like `SigLevel = Required DatabaseRequired` which might block the build.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 - Review the `mkarchiso` output for missing dependencies or profile errors.
 
 ## Boot Issues

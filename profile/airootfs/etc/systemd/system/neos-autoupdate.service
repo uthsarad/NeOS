@@ -2,12 +2,18 @@
 Description=NeOS Autoupdate Service
 
 [Service]
+<<<<<<< HEAD
+Type=oneshot
+Environment=LC_ALL=C
+ExecStart=/usr/local/bin/neos-autoupdate.sh
+=======
 # Bolt: Monitor startup time overhead
 # Palette: Ensure journal logs are clear
 Type=oneshot
 Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-autoupdate.sh
 # Sentinel: Hardened systemd sandboxing
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 ProtectSystem=strict
 ReadWritePaths=/usr /boot /etc /var /opt /run
 NoNewPrivileges=yes

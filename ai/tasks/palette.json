@@ -1,4 +1,10 @@
 {
+<<<<<<< HEAD
+  "task": "Focus strictly on profile/airootfs/usr/local/bin/neos-welcome-app UX and accessibility.",
+  "target_files": [
+    "profile/airootfs/usr/local/bin/neos-welcome-app"
+  ]
+=======
   "tasks": [
     {
       "description": "Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.",
@@ -93,4 +99,5 @@
     }
   ],
   "architect_timestamp": "2026-09-25T00:00:00Z"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 }

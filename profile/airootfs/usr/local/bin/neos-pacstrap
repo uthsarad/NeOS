@@ -9,6 +9,13 @@
 #   OFFLINE: Install from the local ISO package repo at /run/archiso/bootmnt/neos/pkg/
 #            so the install completes without any network.
 #
+<<<<<<< HEAD
+# The local repo is an OFFLINE-ONLY input. It is never added to the online path:
+# it is unsigned, and pacman takes a package from the first repo that provides
+# it, so including it there would outrank the signed mirror packages.
+#
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # The local repo is built by tools/gen-install-repo.sh during ISO creation and
 # embedded directly on the ISO at /neos/pkg/. It is accessible at
 # /run/archiso/bootmnt/neos/pkg/ when booted from the live ISO.
@@ -51,6 +58,19 @@ if [[ ! -s /etc/pacman.d/gnupg/trustdb.gpg ]]; then
 fi
 pacman-key --populate archlinux chaotic 2>/dev/null || true
 
+<<<<<<< HEAD
+# Pre-seed the target root's keyring from the live host so pacman inside $ROOT
+# has both archlinux and chaotic keyrings pre-trusted and ready without waiting
+# on /dev/random for fresh GPG key generation inside the target container.
+mkdir -p "$ROOT/etc/pacman.d"
+if [[ -d /etc/pacman.d/gnupg ]] && [[ ! -d "$ROOT/etc/pacman.d/gnupg" ]]; then
+    log "🔑 pre-seeding target pacman keyring from live host..."
+    cp -a /etc/pacman.d/gnupg "$ROOT/etc/pacman.d/"
+    pacman-key --gpgdir "$ROOT/etc/pacman.d/gnupg" --populate archlinux chaotic 2>/dev/null || true
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # ---- Detect the local ISO package repo (embedded by build.sh) --------------
 LOCAL_REPO=""
 ISO_MOUNT="/run/archiso/bootmnt"
@@ -76,6 +96,18 @@ fi
 # "pacstrap -K" call fails even though most packages downloaded fine.
 # Retrying is cheap — packages already fetched are cached under
 # $ROOT/var/cache/pacman/pkg, so a retry only re-fetches what actually failed.
+<<<<<<< HEAD
+#
+# pacstrap's interface is `pacstrap [options] root [packages...]` with
+# getopts-style SHORT options only (see arch-install-scripts' pacstrap.in:
+# `getopts ':C:cDGiKMNPU'`). Option parsing stops at the first operand, and
+# there is no long `--config` — so the config MUST be passed as `-C` BEFORE
+# the root. A trailing `--config` would be treated as a package name and the
+# install would fail (it only ever appeared to work online because pacstrap
+# then fell back to the identical host config; the offline repo was silently
+# ignored and offline installs could never resolve their packages).
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 PACSTRAP_RETRIES=3
 run_pacstrap_with_retry() {
     local conf="$1"
@@ -86,7 +118,11 @@ run_pacstrap_with_retry() {
             pacman -Sy --noconfirm --config "$conf" 2>/dev/null || true
             sleep 5
         fi
+<<<<<<< HEAD
+        if pacstrap -K -C "$conf" "$ROOT" "${PKGS[@]}"; then
+=======
         if pacstrap -K "$ROOT" "${PKGS[@]}" --config "$conf"; then
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
             return 0
         fi
     done
@@ -145,6 +181,17 @@ fi
 if [[ "$net_ok" -eq 1 ]]; then
     # ---- ONLINE: download fresh packages ----------------------------------
     log "⬇️  online install — downloading latest ${#PKGS[@]} packages from internet..."
+<<<<<<< HEAD
+    # Use ONLY the signed repositories from /etc/pacman.conf. The local ISO repo
+    # is intentionally NOT prepended here: it is unsigned (TrustAll, see
+    # do_offline_install) and pacman resolves a package from the first repo that
+    # provides it, so a prepended local repo would let an unverified — and
+    # potentially stale — copy from the boot medium win over the signed current
+    # package from the mirrors. The local repo is the offline fallback only.
+    TMP_PACMAN_CONF=$(mktemp /tmp/neos-pacman-conf-XXXXXX)
+    trap 'rm -f "$TMP_PACMAN_CONF"' EXIT
+    cp /etc/pacman.conf "$TMP_PACMAN_CONF"
+=======
     # Build a combined pacman.conf: local repo first (highest priority) when available
     TMP_PACMAN_CONF=$(mktemp /tmp/neos-pacman-conf-XXXXXX)
     trap 'rm -f "$TMP_PACMAN_CONF"' EXIT
@@ -158,6 +205,7 @@ if [[ "$net_ok" -eq 1 ]]; then
     else
         cp /etc/pacman.conf "$TMP_PACMAN_CONF"
     fi
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     pacman -Sy --noconfirm --config "$TMP_PACMAN_CONF" 2>/dev/null || true
     if ! run_pacstrap_with_retry "$TMP_PACMAN_CONF"; then
         echo "neos-pacstrap: online install failed after $PACSTRAP_RETRIES attempts — check internet connection and retry" >&2
@@ -192,4 +240,32 @@ else
     echo "neos-pacstrap: ⚠️  WARNING — overlay manifest '$OVERLAY' missing; installed system will lack NeOS branding" >&2
 fi
 
+<<<<<<< HEAD
+# ---- Keep the screen reader on for people who installed with it -----------
+# Installing from the "NeOS (Screen Reader)" boot entry (accessibility=on) means
+# the person may depend on speech, so the installed system must not come up
+# silent: Plasma's screen reader (Orca) defaults to on for every user via the
+# system-wide kaccessrc (a user can still turn it off in System Settings), and
+# console speech (espeakup) is enabled.
+NEOS_CMDLINE="${NEOS_CMDLINE:-/proc/cmdline}"   # overridable for tests
+if grep -qw 'accessibility=on' "$NEOS_CMDLINE" 2>/dev/null; then
+    log "screen reader boot: keeping speech on in the installed system"
+    mkdir -p "$ROOT/etc/xdg"
+    cat > "$ROOT/etc/xdg/kaccessrc" <<'EOF'
+# Written by the NeOS installer: this system was installed with the screen
+# reader on, so Orca starts for every user. Turn it off per user in System
+# Settings > Accessibility > Screen Reader, or delete this file.
+[ScreenReader]
+Enabled=true
+EOF
+    chmod 644 "$ROOT/etc/xdg/kaccessrc"
+    if [[ -f "$ROOT/usr/lib/systemd/system/espeakup.service" ]]; then
+        mkdir -p "$ROOT/etc/systemd/system/multi-user.target.wants"
+        ln -sf /usr/lib/systemd/system/espeakup.service \
+            "$ROOT/etc/systemd/system/multi-user.target.wants/espeakup.service"
+    fi
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 log "🎉 base system installed into $ROOT"

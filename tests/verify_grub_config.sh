@@ -37,6 +37,34 @@ for PARAM in "${FORBIDDEN_PARAMS[@]}"; do
     fi
 done
 
+<<<<<<< HEAD
+# This file only reaches installed systems if Calamares edits it in place;
+# grubcfg's `overwrite: true` regenerated it and dropped everything below.
+GRUBCFG="profile/airootfs/etc/calamares/modules/grubcfg.conf"
+if grep -qE '^overwrite:[[:space:]]*false' "$GRUBCFG"; then
+    echo "  [PASS] $GRUBCFG edits /etc/default/grub in place"
+else
+    echo "[FAIL] $GRUBCFG must set 'overwrite: false' or the installed system loses $CONFIG_FILE"
+    ALL_PASSED=false
+fi
+
+TIMEOUT=$(sed -n 's/^GRUB_TIMEOUT=//p' "$CONFIG_FILE" | tr -d '"')
+if [[ "$TIMEOUT" =~ ^[0-9]+$ ]] && (( TIMEOUT >= 3 )); then
+    echo "  [PASS] GRUB_TIMEOUT=$TIMEOUT leaves time to reach the snapshot submenu"
+else
+    echo "[FAIL] GRUB_TIMEOUT='$TIMEOUT' is too short to reach the menu when recovering (need >= 3)"
+    ALL_PASSED=false
+fi
+
+if grep -qx 'GRUB_DISABLE_OS_PROBER=false' "$CONFIG_FILE"; then
+    echo "  [PASS] os-prober enabled (dual-boot systems appear in the menu)"
+else
+    echo "[FAIL] GRUB_DISABLE_OS_PROBER=false missing: GRUB 2.06+ would hide Windows on dual-boot installs"
+    ALL_PASSED=false
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if [ "$ALL_PASSED" = true ]; then
     echo "GRUB release configuration checks passed!"
     exit 0

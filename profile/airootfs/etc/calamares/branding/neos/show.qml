@@ -21,10 +21,17 @@ Presentation {
     readonly property color cTitle:         "#ffffff"
     readonly property color cBody:          "#c0c4d8"
     readonly property color cSubtle:        "#7a8099"
+<<<<<<< HEAD
+    readonly property color cAccent:        "#38bdf8"
+    readonly property color cAccentHover:   "#7dd3fc"
+    readonly property color cAccentPressed: "#0ea5e9"
+    readonly property color cOnAccent:      "#0A0E1A"  // text on accent fills (9:1)
+=======
     readonly property color cAccent:        "#1F6FD6"
     readonly property color cAccentHover:   "#3D82E0"
     readonly property color cAccentPressed: "#17569F"
     readonly property color cGreen:         "#22c55e"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
     // Auto-advance timer
     Timer {
@@ -56,12 +63,27 @@ Presentation {
         border.width: presentation.activeFocus ? 2 : 0
 
         property var slideOpacity: [1, 0, 0, 0, 0, 0]
+<<<<<<< HEAD
+
+        // Assign a NEW array: QML does not notify bindings when a `var`
+        // array is mutated in place, so the old element-by-element update
+        // left every slide's `opacity` binding at its first value and the
+        // installer showed slide 1 for the whole install. Each slide animates
+        // its own opacity (Behavior on opacity), which gives the crossfade.
+        function showSlide(index) {
+            var next = [];
+            for (var i = 0; i < slideOpacity.length; i++) {
+                next.push(i === index ? 1 : 0);
+            }
+            slideOpacity = next;
+=======
         Behavior on slideOpacity { NumberAnimation { duration: 600; easing.type: Easing.InOutQuad } }
 
         function showSlide(index) {
             for (var i = 0; i < slideOpacity.length; i++) {
                 slideOpacity[i] = (i === index) ? 1 : 0;
             }
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
         }
 
         // ---- Shared background with subtle gradient overlay ----------------
@@ -79,7 +101,11 @@ Presentation {
             x: parent.width / 2 - 300; y: parent.height / 2 - 300
             width: 600; height: 600; radius: 300
             gradient: Gradient {
+<<<<<<< HEAD
+                GradientStop { position: 0.0; color: Qt.rgba(0.220, 0.741, 0.973, 0.08) }
+=======
                 GradientStop { position: 0.0; color: Qt.rgba(0.122, 0.435, 0.839, 0.08) }
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
@@ -152,7 +178,11 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
+<<<<<<< HEAD
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.15)
+=======
                     color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                     border.color: presentation.cBorder; border.width: 1
                     Text {
                         anchors.centerIn: parent
@@ -163,7 +193,11 @@ Presentation {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
+<<<<<<< HEAD
+                    text: qsTr("Updates You Can Undo")
+=======
                     text: qsTr("Snapshot-Gated Stability")
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                     font.pixelSize: 28; font.bold: true; color: presentation.cTitle
                     Accessible.role: Accessible.StaticText; Accessible.name: text
                 }
@@ -171,7 +205,11 @@ Presentation {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
+<<<<<<< HEAD
+                    text: qsTr("NeOS takes a Btrfs snapshot before and after every update.\n\nIf an update causes trouble, start an earlier snapshot\nfrom the boot menu and roll back in a few clicks.")
+=======
                     text: qsTr("NeOS creates automatic Btrfs snapshots before every system update.\n\nIf anything goes wrong, roll back in seconds.\nNo more broken updates.")
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                     font.pixelSize: 16; color: presentation.cBody; horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.6
                     Accessible.role: Accessible.StaticText; Accessible.name: text
@@ -191,11 +229,19 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
+<<<<<<< HEAD
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.12)
+                    border.color: Qt.rgba(0.220, 0.741, 0.973, 0.3); border.width: 1
+                    Text {
+                        anchors.centerIn: parent
+                        text: "»"; color: presentation.cAccent
+=======
                     color: Qt.rgba(0.13, 0.77, 0.37, 0.12)
                     border.color: Qt.rgba(0.13, 0.77, 0.37, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
                         text: "⚡"; color: presentation.cGreen
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                         font.pixelSize: 28
                     }
                 }
@@ -214,7 +260,11 @@ Presentation {
                         model: [
                             qsTr("ZRAM swap compression keeps your system responsive"),
                             qsTr("BBR congestion control for faster networking"),
+<<<<<<< HEAD
+                            qsTr("Smaller, steadier disk writes avoid stalls on slow drives")
+=======
                             qsTr("Optimized I/O scheduling reduces lag on any hardware")
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                         ]
                         Rectangle {
                             width: parent.width; height: 36; radius: 8
@@ -242,11 +292,19 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
+<<<<<<< HEAD
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.12)
+                    border.color: Qt.rgba(0.220, 0.741, 0.973, 0.3); border.width: 1
+                    Text {
+                        anchors.centerIn: parent
+                        text: "✓"; color: presentation.cAccent
+=======
                     color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
                     border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
                         text: "🛡"; color: presentation.cAccent
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                         font.pixelSize: 28
                     }
                 }
@@ -293,11 +351,19 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
+<<<<<<< HEAD
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.15)
+                    border.color: presentation.cBorder; border.width: 1
+                    Text {
+                        anchors.centerIn: parent
+                        text: "◆"; color: presentation.cAccent
+=======
                     color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
                     border.color: presentation.cBorder; border.width: 1
                     Text {
                         anchors.centerIn: parent
                         text: "💻"; color: presentation.cAccent
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                         font.pixelSize: 28
                     }
                 }
@@ -312,7 +378,11 @@ Presentation {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
+<<<<<<< HEAD
+                    text: qsTr("NeOS detects your GPU, network and peripherals.\nNVIDIA, AMD and Intel graphics drivers come preinstalled.\n\nWorks on real hardware and virtual machines alike.")
+=======
                     text: qsTr("NeOS automatically detects your GPU, network, and peripherals.\nNVIDIA, AMD, and Intel drivers configured at first boot.\n\nWorks on real hardware and virtual machines alike.")
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                     font.pixelSize: 16; color: presentation.cBody; horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.WordWrap; width: parent.width; lineHeight: 1.6
                     Accessible.role: Accessible.StaticText; Accessible.name: text
@@ -332,11 +402,19 @@ Presentation {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 64; height: 64; radius: 32
+<<<<<<< HEAD
+                    color: Qt.rgba(0.220, 0.741, 0.973, 0.12)
+                    border.color: Qt.rgba(0.220, 0.741, 0.973, 0.3); border.width: 1
+                    Text {
+                        anchors.centerIn: parent
+                        text: "→"; color: presentation.cAccent
+=======
                     color: Qt.rgba(0.122, 0.435, 0.839, 0.12)
                     border.color: Qt.rgba(0.122, 0.435, 0.839, 0.3); border.width: 1
                     Text {
                         anchors.centerIn: parent
                         text: "🚀"; color: presentation.cAccent
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                         font.pixelSize: 28
                     }
                 }
@@ -405,7 +483,11 @@ Presentation {
         height: 26; width: 80
         Text {
             anchors.centerIn: parent
+<<<<<<< HEAD
+            text: qsTr("Paused"); color: presentation.cSubtle
+=======
             text: "⏸ " + qsTr("Paused"); color: presentation.cSubtle
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
             font.pixelSize: 11
             Accessible.role: Accessible.StaticText; Accessible.name: text
         }
@@ -426,7 +508,11 @@ Presentation {
 
         Text {
             anchors.centerIn: parent
+<<<<<<< HEAD
+            text: qsTr("Next Slide →"); color: presentation.cOnAccent
+=======
             text: qsTr("Next Slide →"); color: "white"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
             font.pixelSize: 13; font.bold: true
         }
 

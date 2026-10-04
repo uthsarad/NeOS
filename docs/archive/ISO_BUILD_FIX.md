@@ -1,5 +1,16 @@
 # ISO Build Fix - VM Recognition Issue
 
+<<<<<<< HEAD
+> **SUPERSEDED — historical record (2026-02-17).** The two-configuration model
+> described below is still accurate, but the sig-level values are not: the
+> installed system
+> (`profile/airootfs/etc/pacman.conf`) now uses `Required DatabaseOptional`, the
+> same policy as the build config, because Arch's official repos do not sign
+> their databases. `tools/neos-profile-audit` enforces that policy. The
+> `DatabaseRequired` values quoted throughout this document are historical.
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 **Issue:** VM cannot recognize/load the NeOS ISO  
 **Root Cause:** ISO build was failing, preventing ISO creation  
 **Status:** FIXED
@@ -344,11 +355,19 @@ The installed system uses `DatabaseRequired` to enforce strict security for end 
 
 ## Additional Resources
 
+<<<<<<< HEAD
+- [NeOS Handbook](../user-guide/HANDBOOK.md) - Complete installation guide
+- [Architecture Documentation](../architecture/ARCHITECTURE.md) - System design
+- [Deep Audit Report](DEEP_AUDIT.md) - Comprehensive analysis
+- [Archiso Wiki](https://wiki.archlinux.org/title/Archiso) - Official documentation
+- [GRUB Configuration](../architecture/BOOTLOADER.md) - Boot loader details
+=======
 - [NeOS Handbook](HANDBOOK.md) - Complete installation guide
 - [Architecture Documentation](ARCHITECTURE.md) - System design
 - [Deep Audit Report](DEEP_AUDIT.md) - Comprehensive analysis
 - [Archiso Wiki](https://wiki.archlinux.org/title/Archiso) - Official documentation
 - [GRUB Configuration](BOOTLOADER.md) - Boot loader details
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 ---
 

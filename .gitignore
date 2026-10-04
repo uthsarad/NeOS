@@ -24,6 +24,11 @@ tools/NeosDiagnostics/bin/
 tools/NeosDiagnostics/obj/
 *.user
 !profile/airootfs/usr/local/bin/**
+<<<<<<< HEAD
+profile/airootfs/usr/local/bin/**/__pycache__/
+profile/airootfs/usr/local/bin/**/*.py[co]
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 # Logs and temp files
 *.log
@@ -78,11 +83,26 @@ work/
 out/
 pacman-build.conf
 
+<<<<<<< HEAD
+# Offline install package repo assembled by tools/gen-install-repo.sh during a
+# local build (embedded into the ISO, then removed). Never commit it — it is
+# ~hundreds of MB and is rebuilt every time.
+profile/install-repo/
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # Architect: CI/CD test hardening specific
 tests/*.log
 
 # CodeGraph local index (machine-specific)
 .codegraph/
 
+<<<<<<< HEAD
+# graphify knowledge-graph output. It was committed from 2026-09-18 to
+# 2026-10-03 and removed: nothing in the repo used it, it could not be
+# regenerated here, and it described a file tree that no longer existed. Run the
+# tool locally if you want a graph; keep its output out of the repository.
+=======
 # graphify local knowledge-graph output (per-user, not part of the OS)
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 graphify-out/

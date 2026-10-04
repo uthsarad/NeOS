@@ -1,6 +1,10 @@
 [Plymouth Theme]
 Name=NeOS
+<<<<<<< HEAD
+Description=NeOS boot splash: logo with a pulsing progress indicator
+=======
 Description=NeOS boot splash — animated loader cat on a dark background
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 ModuleName=script
 
 [script]

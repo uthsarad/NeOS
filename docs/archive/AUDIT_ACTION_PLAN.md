@@ -187,7 +187,10 @@ Add to all scripts:
 set -euo pipefail
 
 # Error handler
+<<<<<<< HEAD
+=======
 # Bolt: [Performance] Replaced $(basename "$0") with native bash parameter expansion ${0##*/} to eliminate subprocess overhead in the error trap.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 trap 'logger -t "${0##*/}" "ERROR at line $LINENO"' ERR
 ```
 

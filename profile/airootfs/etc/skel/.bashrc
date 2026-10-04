@@ -9,3 +9,9 @@ alias grep='grep --color=auto'
 alias ll='ls -lah'
 
 PS1='\[\e[1;34m\][\u@\h \W]\$\[\e[0m\] '
+<<<<<<< HEAD
+
+
+# Add your own exports, aliases, and functions here.
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)

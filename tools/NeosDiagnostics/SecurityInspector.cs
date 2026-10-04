@@ -9,7 +9,11 @@ public record DiagnosticCheck(string Category, string Name, bool Passed, string 
 public class DiagnosticReport
 {
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+<<<<<<< HEAD
+    public string PlatformVersion { get; set; } = "2026.10.03";
+=======
     public string PlatformVersion { get; set; } = "2026.08.18";
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     public List<DiagnosticCheck> Checks { get; set; } = new();
 }
 

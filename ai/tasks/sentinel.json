@@ -1,4 +1,10 @@
 {
+<<<<<<< HEAD
+  "task": "Focus strictly on profile/airootfs/usr/local/bin/neos-autoupdate.sh security hardening.",
+  "target_files": [
+    "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+  ]
+=======
   "tasks": [
     {
       "description": "Validate that improved error handling constructs do not introduce command injection risks or mask original exit codes.",
@@ -92,4 +98,5 @@
     }
   ],
   "architect_timestamp": "2026-09-25T00:00:00Z"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 }

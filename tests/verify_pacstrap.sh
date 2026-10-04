@@ -10,8 +10,16 @@ set -euo pipefail
 SETTINGS="profile/airootfs/etc/calamares/settings.conf"
 NEOSPACSTRAP_DESC="profile/airootfs/etc/calamares/modules/neospacstrap/module.desc"
 NEOSPACSTRAP_MAIN="profile/airootfs/etc/calamares/modules/neospacstrap/main.py"
+<<<<<<< HEAD
+NEOSPACSTRAP_LIB_DESC="profile/airootfs/usr/lib/calamares/modules/neospacstrap/module.desc"
+NEOSPACSTRAP_LIB_MAIN="profile/airootfs/usr/lib/calamares/modules/neospacstrap/main.py"
 PACSTRAP_BIN="profile/airootfs/usr/local/bin/neos-pacstrap"
 PKGLIST="profile/airootfs/etc/calamares/neos-packages.txt"
+LIVE_PKGLIST="profile/packages.x86_64"
+=======
+PACSTRAP_BIN="profile/airootfs/usr/local/bin/neos-pacstrap"
+PKGLIST="profile/airootfs/etc/calamares/neos-packages.txt"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 OVERLAY="profile/airootfs/etc/calamares/neos-overlay.txt"
 SERVICES="profile/airootfs/etc/calamares/modules/services-systemd.conf"
 FAIL=0
@@ -30,11 +38,55 @@ else
     echo "  [PASS] no unpackfs (live clone) in sequence"
 fi
 
+<<<<<<< HEAD
+# Ensure modules-search includes system module path and etc module path
+if grep -q "/usr/lib/calamares/modules" "$SETTINGS" && grep -q "/etc/calamares/modules" "$SETTINGS"; then
+    echo "  [PASS] settings.conf includes explicit module search paths (/usr/lib and /etc)"
+else
+    echo "[FAIL] settings.conf missing explicit module search paths"; FAIL=1
+fi
+
+# 2. The neospacstrap Python job module is declared in usr/lib and etc, and points at the backend.
+if [[ -f "$NEOSPACSTRAP_LIB_DESC" && -f "$NEOSPACSTRAP_DESC" ]] && grep -q 'interface:.*"python"' "$NEOSPACSTRAP_LIB_DESC"; then
+    echo "  [PASS] neospacstrap/module.desc declares a python job in /usr/lib and /etc"
+else
+    echo "[FAIL] neospacstrap/module.desc missing from /usr/lib or not a python job"; FAIL=1
+fi
+# The job code lives in exactly one place: /usr/lib/calamares/modules (first
+# entry in settings.conf's modules-search, and the copy profiledef.sh grants
+# 0:0:755). /etc/calamares/modules is the *second* search path, so its copy is
+# a relative symlink rather than a hand-maintained duplicate — two copies of an
+# installer job is how a fix silently fails to take effect depending on search
+# order (reports/v2026.09.18 M1 / UPDATES_NEEDED §4.5).
+if [[ -f "$NEOSPACSTRAP_LIB_MAIN" && -f "$NEOSPACSTRAP_LIB_DESC" ]]; then
+    for pair in "main.py" "module.desc"; do
+        etc_copy="$(dirname "$NEOSPACSTRAP_MAIN")/$pair"
+        lib_copy="$(dirname "$NEOSPACSTRAP_LIB_MAIN")/$pair"
+        if [[ ! -e "$etc_copy" ]]; then
+            echo "[FAIL] /etc/calamares/modules/neospacstrap/$pair is missing"; FAIL=1
+        elif [[ -L "$etc_copy" ]]; then
+            if [[ "$(readlink -f "$etc_copy")" == "$(readlink -f "$lib_copy")" ]]; then
+                echo "  [PASS] /etc copy of $pair is a symlink to the single canonical /usr/lib copy"
+            else
+                echo "[FAIL] /etc/calamares/modules/neospacstrap/$pair points at $(readlink "$etc_copy"), not the canonical /usr/lib copy"; FAIL=1
+            fi
+        elif cmp -s "$etc_copy" "$lib_copy"; then
+            echo "  [PASS] /etc and /usr/lib copies of $pair are byte-identical (unsymlinked copy)"
+        else
+            echo "[FAIL] the /etc and /usr/lib neospacstrap copies of $pair have diverged"
+            diff -u "$lib_copy" "$etc_copy" | head -20 || true
+            FAIL=1
+        fi
+    done
+else
+    echo "[FAIL] neospacstrap main.py/module.desc missing from /usr/lib"; FAIL=1
+=======
 # 2. The neospacstrap Python job module is declared and points at the backend.
 if [[ -f "$NEOSPACSTRAP_DESC" ]] && grep -q 'interface:.*"python"' "$NEOSPACSTRAP_DESC"; then
     echo "  [PASS] neospacstrap/module.desc declares a python job"
 else
     echo "[FAIL] neospacstrap/module.desc missing or not a python job"; FAIL=1
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 fi
 if [[ -f "$NEOSPACSTRAP_MAIN" ]] && grep -q '/usr/local/bin/neos-pacstrap' "$NEOSPACSTRAP_MAIN"; then
     echo "  [PASS] neospacstrap/main.py invokes neos-pacstrap"
@@ -59,6 +111,22 @@ else
     echo "[FAIL] neos-pacstrap missing or does not run pacstrap"; FAIL=1
 fi
 
+<<<<<<< HEAD
+# 3b. The config reaches pacstrap in the only form it understands: short
+# options BEFORE the root (`pacstrap [options] root [packages...]`, getopts
+# style, no long options). A trailing `--config` would be treated as a
+# package name — failing the install while silently ignoring the offline
+# repo, which is exactly how offline installs broke.
+if grep -qE 'pacstrap[[:space:]]+.*--config' "$PACSTRAP_BIN"; then
+    echo "[FAIL] neos-pacstrap passes '--config' to pacstrap, which only understands '-C' before the root"; FAIL=1
+elif grep -qE 'pacstrap +-K +-C ' "$PACSTRAP_BIN"; then
+    echo "  [PASS] neos-pacstrap passes its config as '-C' before the root"
+else
+    echo "[FAIL] neos-pacstrap does not pass '-C <conf>' to pacstrap"; FAIL=1
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # 4. Generated package list exists, is non-trivial, and excludes live-only pkgs.
 if [[ -f "$PKGLIST" ]]; then
     count=$(grep -vcE '^\s*(#|$)' "$PKGLIST")
@@ -67,6 +135,26 @@ if [[ -f "$PKGLIST" ]]; then
     else
         echo "[FAIL] neos-packages.txt looks too small ($count packages)"; FAIL=1
     fi
+<<<<<<< HEAD
+    # The manifest is derived from profile/packages.x86_64, so the same package
+    # legitimately appears in both files — but a repeated entry *inside* either
+    # list would make pacstrap/auditing see a package twice (reports/v2026.09.18
+    # M1). Nothing checked that until now.
+    DUPES=$(grep -vE '^\s*(#|$)' "$PKGLIST" | LC_ALL=C sort | uniq -d)
+    if [[ -z "$DUPES" ]]; then
+        echo "  [PASS] neos-packages.txt has no duplicate entries"
+    else
+        echo "[FAIL] neos-packages.txt contains duplicate entries:"; while IFS= read -r d; do printf '       %s\n' "$d"; done <<<"$DUPES"; FAIL=1
+    fi
+    DUPES_LIVE=$(grep -vE '^\s*(#|$)' "$LIVE_PKGLIST" | LC_ALL=C sort | uniq -d)
+    if [[ -z "$DUPES_LIVE" ]]; then
+        echo "  [PASS] $LIVE_PKGLIST has no duplicate entries"
+    else
+        echo "[FAIL] $LIVE_PKGLIST contains duplicate entries:"; while IFS= read -r d; do printf '       %s\n' "$d"; done <<<"$DUPES_LIVE"; FAIL=1
+    fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     PKGLIST_CONTENT=$(<"$PKGLIST")
     for must in base linux-lts grub sddm plasma-desktop; do
         if [[ "$PKGLIST_CONTENT" =~ (^|$'
@@ -146,6 +234,44 @@ if [[ -f "$SERVICES" && -f "$OVERLAY" ]]; then
     done < <(grep -oE 'name: *"neos-[^"]+"' "$SERVICES" | sed -E 's/.*"(neos-[^"]+)".*/\1/')
 fi
 
+<<<<<<< HEAD
+# 8. Every vendor unit the installer enables must have its package in the
+# install manifest, otherwise the enable fails on a unit that was never
+# installed (this caught ModemManager being enabled while modemmanager was
+# in neither package list). neos-* units are covered by section 7 above;
+# fstrim.timer ships with util-linux via `base`, and graphical.target is a
+# target, not a unit — neither needs a manifest entry.
+if [[ -f "$SERVICES" && -f "$PKGLIST" ]]; then
+    while IFS='=' read -r unit pkg; do
+        [[ -z "$unit" ]] && continue
+        if grep -qE "name: *\"$unit\"" "$SERVICES"; then
+            if grep -qxF "$pkg" <(grep -vE '^\s*(#|$)' "$PKGLIST"); then
+                echo "  [PASS] enabled unit '$unit' has package '$pkg' in the manifest"
+            else
+                echo "[FAIL] installer enables '$unit' but '$pkg' is not in neos-packages.txt"; FAIL=1
+            fi
+        fi
+    done <<'UNITMAP'
+NetworkManager=networkmanager
+bluetooth=bluez
+sddm=sddm
+ModemManager=modemmanager
+ufw=ufw
+cups.socket=cups
+cups.path=cups
+thermald=thermald
+snapper-timeline.timer=snapper
+snapper-cleanup.timer=snapper
+grub-btrfsd=grub-btrfs
+vboxservice=virtualbox-guest-utils
+vmtoolsd=open-vm-tools
+qemu-guest-agent=qemu-guest-agent
+spice-vdagentd=spice-vdagent
+UNITMAP
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if [[ "$FAIL" -ne 0 ]]; then
     echo "Netinstall verification FAILED."
     exit 1

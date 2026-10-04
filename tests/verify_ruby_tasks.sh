@@ -9,6 +9,13 @@ if [ ! -f "tools/neos_tasks.rb" ] || [ ! -f "Rakefile" ]; then
 fi
 
 if ! command -v ruby &> /dev/null; then
+<<<<<<< HEAD
+    if [[ "${REQUIRE_TOOLS:-0}" == "1" ]]; then
+        echo "[FAIL] ruby is required (REQUIRE_TOOLS=1) but not installed — the task runner cannot be skipped here."
+        exit 1
+    fi
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     echo "[WARN] ruby not installed, validating Ruby tasks structure statically."
     grep -q 'module Neos' tools/neos_tasks.rb
     grep -q 'def audit_ownership_guard' tools/neos_tasks.rb

@@ -1,3 +1,97 @@
+<<<<<<< HEAD
+# NeOS Plymouth boot splash (script module).
+#
+# The NeOS logo centred on the navy background, with three dots in the logo's
+# blue below it that pulse in sequence while the system starts. Disk-unlock
+# prompts and boot messages appear under the dots. Assets: logo.png (tools/gen-logo.py
+# --all) and dot.png (tools/gen-brand-images.py).
+
+# --- Background: the palette's navy (#0A0E1A at the top -> #16203A) ---------
+Window.SetBackgroundTopColor(0.039, 0.055, 0.102);
+Window.SetBackgroundBottomColor(0.086, 0.125, 0.227);
+
+center_x = Window.GetX() + Window.GetWidth() / 2;
+center_y = Window.GetY() + Window.GetHeight() / 2;
+
+# --- Logo, slightly above the vertical centre --------------------------------
+logo.image = Image("logo.png");
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetX(center_x - logo.image.GetWidth() / 2);
+logo.sprite.SetY(center_y - logo.image.GetHeight() / 2 - 40);
+logo.sprite.SetZ(10);
+
+# --- Progress dots -----------------------------------------------------------
+dot_image = Image("dot.png").Scale(10, 10);
+dot_gap = 22;
+dots_y = logo.sprite.GetY() + logo.image.GetHeight() + 48;
+for (i = 0; i < 3; i++) {
+    dot[i] = Sprite(dot_image);
+    dot[i].SetX(center_x - dot_image.GetWidth() / 2 + (i - 1) * dot_gap);
+    dot[i].SetY(dots_y);
+    dot[i].SetZ(10);
+    dot[i].SetOpacity(0.25);
+}
+
+tick = 0;
+fun refresh_callback() {
+    tick++;
+    for (i = 0; i < 3; i++) {
+        # Each dot brightens in turn: a ~1.5 s cycle at Plymouth's 50 Hz.
+        phase = (tick / 12.0) - i * 1.1;
+        dot[i].SetOpacity(0.25 + 0.75 * Math.Max(0, Math.Sin(phase)));
+    }
+}
+Plymouth.SetRefreshFunction(refresh_callback);
+
+# --- Text under the dots (unlock prompt, boot messages) -----------------------
+text_y = dots_y + 40;
+prompt_sprite = Sprite();
+prompt_sprite.SetZ(20);
+message_sprite = Sprite();
+message_sprite.SetZ(20);
+
+fun place_centered(sprite, image, y) {
+    sprite.SetImage(image);
+    sprite.SetX(center_x - image.GetWidth() / 2);
+    sprite.SetY(y);
+}
+
+fun display_password_callback(prompt, bullets) {
+    for (i = 0; i < 3; i++) {
+        dot[i].SetOpacity(0);
+    }
+    if (prompt == "") {
+        prompt = "Enter the passphrase to unlock the disk";
+    }
+    bullet_text = "";
+    for (i = 0; i < bullets; i++) {
+        bullet_text += "•";
+    }
+    place_centered(prompt_sprite, Image.Text(prompt, 0.902, 0.914, 0.949), text_y - 24);
+    place_centered(message_sprite, Image.Text(bullet_text + " ", 0.478, 0.635, 0.969), text_y + 4);
+}
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+fun display_question_callback(prompt, entry) {
+    for (i = 0; i < 3; i++) {
+        dot[i].SetOpacity(0);
+    }
+    place_centered(prompt_sprite, Image.Text(prompt, 0.902, 0.914, 0.949), text_y - 24);
+    place_centered(message_sprite, Image.Text(entry + " ", 0.478, 0.635, 0.969), text_y + 4);
+}
+Plymouth.SetDisplayQuestionFunction(display_question_callback);
+
+fun display_normal_callback() {
+    prompt_sprite.SetImage(Image.Text(""));
+    message_sprite.SetImage(Image.Text(""));
+}
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+
+fun message_callback(text) {
+    place_centered(message_sprite, Image.Text(text, 0.604, 0.627, 0.714), text_y);
+}
+Plymouth.SetMessageFunction(message_callback);
+=======
 # NeOS Plymouth boot splash (script module) — a single still cat centered on
 # a dark background. No wordmark, no tagline, no dots, no status text, no
 # animation — just the cat.
@@ -48,3 +142,4 @@ fun display_normal_callback() {
     prompt_sprite.SetImage(Image.Text(""));
 }
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)

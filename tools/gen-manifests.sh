@@ -12,7 +12,10 @@
 
 set -euo pipefail
 
+<<<<<<< HEAD
+=======
 # Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 REPO_ROOT="${1:-$PWD}"
@@ -30,6 +33,38 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
     echo "# Packages pacstrapped onto the target by the Calamares 'pacstrap' step."
     grep -vE '^\s*(#|$)' "$PROFILE_DIR/packages.x86_64" \
         | grep -vxE 'mkinitcpio-archiso|calamares-garuda'
+<<<<<<< HEAD
+    # Developer core — INSTALLED-SYSTEM ONLY (deliberately NOT in the live
+    # ISO's packages.x86_64): enough to build software and run the two most
+    # common scripting ecosystems. Every other toolchain (Rust, Go, Java, .NET,
+    # Ruby, PHP, Docker, Zig, Elixir, ...) is one `sudo pacman -S <name>` away
+    # (docs/user-guide/HANDBOOK.md). Until 2026.10.03 some 25 toolchains were
+    # installed on every system, several GiB that most desktop users never touch
+    # (reports/v2026.10.03/00-polish-plan.md Q3).
+    echo "# --- developer core (installed-system only) ---"
+    printf '%s\n' \
+        base-devel python-pip nodejs npm
+
+    # Extras not in the live list. nvidia-open-lts is the PREBUILT module for
+    # linux-lts (the only kernel NeOS ships). nvidia-open-dkms would compile the
+    # kernel module inside the live session during pacstrap — a multi-GiB RAM
+    # and CPU spike inside the RAM-backed installer, wasted on machines with no
+    # NVIDIA GPU. dkms/linux-lts-headers stay in the live list for
+    # broadcom-wl-dkms, which is tiny to build.
+    # networkmanager-openvpn, sane and sane-airscan fulfil the Ubuntu-parity
+    # promise of docs/decisions/0006 (VPN + scanner support). They are
+    # installed-system only: neither VPN tunnels nor scanning are needed to
+    # install from the live session. (print-manager used to live here; it moved
+    # to the live list so the live session's full CUPS stack has a GUI.)
+    echo "# --- heavy desktop applications and drivers (installed-system only) ---"
+    # grub-btrfs (+ inotify-tools for its grub-btrfsd watcher) puts snapper
+    # snapshots into the GRUB menu: the "boot a snapshot from GRUB" recovery
+    # path. Installed-system only: the live medium has no snapshots.
+    printf '%s\n' \
+        noto-fonts-cjk nvidia-open-lts \
+        networkmanager-openvpn sane sane-airscan \
+        grub-btrfs inotify-tools
+=======
     # Developer toolchains — INSTALLED-SYSTEM ONLY (deliberately NOT in the
     # size-gated live ISO's packages.x86_64): modern languages so a fresh NeOS
     # install is dev-ready out of the box. three.js is an npm library, not a
@@ -47,6 +82,7 @@ echo "Generating netinstall package list -> $NETINSTALL_PKGS"
         firefox discover packagekit-qt6 cups print-manager \
         fwupd flatpak noto-fonts-cjk nvidia-open-dkms dkms \
         linux-lts-headers broadcom-wl-dkms
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 } > "$NETINSTALL_PKGS"
 
 # Generate the NeOS overlay manifest that Calamares copies onto the target
@@ -61,6 +97,10 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     cd "$PROFILE_DIR/airootfs" && find . \( -type f -o -type l \) -printf '%P\n'
 ) | grep -vE \
     -e '^etc/calamares/' \
+<<<<<<< HEAD
+    -e '^usr/lib/calamares/' \
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     -e '^etc/pacman\.conf$' \
     -e '^etc/pacman\.d/' \
     -e '^etc/polkit-1/rules\.d/49-nopasswd_calamares\.rules$' \
@@ -75,6 +115,12 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^etc/systemd/system/etc-pacman\.d-gnupg\.mount$' \
     -e '^etc/sudoers\.d/zz-live-wheel$' \
     -e '^etc/systemd/system/[^/]+\.target\.wants/' \
+<<<<<<< HEAD
+    -e '^etc/systemd/system/neos-boot-probe\.service$' \
+    -e '^usr/local/bin/neos-autoinstall$' \
+    -e '^etc/xdg/autostart/neos-autoinstall\.desktop$' \
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     -e '^etc/systemd/system/getty@tty1\.service\.d/' \
     -e '^etc/systemd/system/display-manager\.service$' \
     -e '^etc/systemd/system/neos-liveuser-setup\.service$' \
@@ -82,6 +128,13 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^etc/sddm\.conf\.d/autologin\.conf$' \
     -e '^etc/sddm\.conf\.d/00-allow-empty-password\.conf$' \
     -e '^usr/local/bin/neos-liveuser-setup$' \
+<<<<<<< HEAD
+    -e '^usr/local/bin/neos-pacstrap$' \
+    -e '^usr/local/bin/chcon$' \
+    -e '__pycache__' \
+    -e '\.py[co]$' \
+    | LC_ALL=C sort > "$NETINSTALL_OVERLAY"
+=======
     -e '^usr/local/bin/neos-welcome$' \
     -e '^usr/local/bin/neos-welcome-app$' \
     -e '^usr/local/bin/neos-pacstrap$' \
@@ -89,5 +142,6 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^etc/xdg/autostart/neos-welcome-app\.desktop$' \
     -e '^etc/skel/\.config/autostart/neos-desktop-setup\.desktop$' \
     | sort > "$NETINSTALL_OVERLAY"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 echo "Generated $(wc -l < "$NETINSTALL_OVERLAY") overlay entries"

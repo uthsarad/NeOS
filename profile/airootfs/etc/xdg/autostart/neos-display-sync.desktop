@@ -1,7 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=NeOS Display & Input Sync
+<<<<<<< HEAD
+Comment=Synchronizes X11 display rotation with input coordinates and scaling (no-op on Wayland)
+=======
 Comment=Synchronizes X11 display rotation with input coordinates and scaling
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 Exec=/usr/local/bin/neos-display-sync --daemon
 Terminal=false
 Hidden=false

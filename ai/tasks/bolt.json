@@ -1,4 +1,11 @@
 {
+<<<<<<< HEAD
+  "task": "Focus strictly on build.sh and package caching optimization.",
+  "target_files": [
+    "build.sh"
+  ]
+}
+=======
   "tasks": [
     {
       "description": "Refine core script error handling to avoid subshell overhead. Do not introduce new features.",
@@ -89,3 +96,4 @@
   ],
   "architect_timestamp": "2026-09-25T00:00:00Z"
 }
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)

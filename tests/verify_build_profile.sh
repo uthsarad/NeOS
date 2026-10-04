@@ -9,7 +9,10 @@ echo "Verifying mkarchiso build profile configuration..."
 # Verify workflow YAML is valid (prevents broken CI from heredoc/YAML conflicts)
 if [[ -f "$WORKFLOW_FILE" ]]; then
     if python3 -c "import yaml" 2>/dev/null; then
+<<<<<<< HEAD
+=======
         # Palette: Verify developers find YAML parsing errors readable and formatting of these errors is clean.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
         # Capture the error output to display it clearly
         if ERR_MSG=$(python3 -c "
 import yaml, sys
@@ -88,8 +91,11 @@ echo "Build profile configuration checks passed."
 
 # Verify pacman.conf configuration for build environment
 if [[ -f "profile/pacman.conf" ]]; then
+<<<<<<< HEAD
+=======
     # Bolt: Replace subprocess grep with native bash logic or read file lines if performance overhead becomes a concern during parallel validation.
     # Sentinel: The root pacman.conf requires 'DatabaseOptional' to unblock the build process for unsigned repos. Ensure this does not inadvertently leak to the installed system.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     CONTENT=$(<"profile/pacman.conf")
     regex=$'(^|\n)[[:space:]]*SigLevel[[:space:]]*=[^\n]*DatabaseRequired'
     if [[ "$CONTENT" =~ $regex ]]; then

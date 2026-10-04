@@ -1,6 +1,50 @@
 #!/bin/bash
 # Installer launcher for NeOS installation media.
 #
+<<<<<<< HEAD
+# Launches Calamares as root on top of the live user's Plasma session through
+# X11 (QT_QPA_PLATFORM=xcb): the X server itself, or XWayland in a Wayland
+# session, where root cannot reach the user's Wayland socket. Any failure is
+# surfaced to the user via kdialog instead of failing silently.
+#
+# NOTE: there is deliberately no unattended flag. Upstream Calamares has no
+# unattended CLI switch (its parser only knows -d/-D/-T/-c/-X), so a `-u` here
+# would be silently ignored and fake an automation contract. Automation
+# (neos-autoinstall) instead auto-launches this wrapper with a pre-filled
+# --config directory; the user still reviews partitioning, which is a safety
+# feature, not a limitation.
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+CONFIG_DIR=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --config|-c)
+            CONFIG_DIR="${2:-}"
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: neos-welcome [--config DIR]"
+            exit 0
+            ;;
+        *)
+            echo "neos-welcome: unknown option: $1" >&2
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+CAL_ARGS=()
+if [[ -n "$CONFIG_DIR" ]]; then
+    if [[ ! -d "$CONFIG_DIR" ]]; then
+        echo "neos-welcome: --config directory does not exist: $CONFIG_DIR" >&2
+        exit 1
+    fi
+    CAL_ARGS+=(-c "$CONFIG_DIR")
+fi
+
+=======
 # Launches Calamares as root on top of the live user's (X)Wayland session.
 # The live session is KDE Plasma on Wayland, so Calamares runs through
 # XWayland (QT_QPA_PLATFORM=xcb). Any failure is surfaced to the user via
@@ -8,6 +52,7 @@
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if (( EUID == 0 )); then
     echo "Error: This script is a user-level GUI wrapper and must not be run as root." >&2
     exit 1
@@ -60,6 +105,24 @@ if systemd-detect-virt -q 2>/dev/null; then
     GL_ENV=(LIBGL_ALWAYS_SOFTWARE=1 QT_QUICK_BACKEND=software)
 fi
 
+<<<<<<< HEAD
+# Screen reader boot: make the installer readable by Orca. Calamares runs as
+# root and would not find the user's accessibility bus, so look its address up
+# here (as the user) and hand it over; Qt's AT-SPI bridge uses
+# AT_SPI_BUS_ADDRESS when set. neos-accessibility.service has already allowed
+# root onto that bus for this boot. Best effort: no address, no change.
+A11Y_ENV=()
+if grep -qw 'accessibility=on' /proc/cmdline 2>/dev/null; then
+    A11Y_ADDR="$(busctl --user call org.a11y.Bus /org/a11y/bus org.a11y.Bus GetAddress 2>/dev/null \
+        | sed -n 's/^s "\(.*\)"$/\1/p')"
+    A11Y_ENV=(QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1 QT_ACCESSIBILITY=1)
+    if [[ -n "$A11Y_ADDR" ]]; then
+        A11Y_ENV+=(AT_SPI_BUS_ADDRESS="$A11Y_ADDR")
+    fi
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if command -v kdialog >/dev/null 2>&1; then
     kdialog --icon calamares --title "Install NeOS" \
         --passivepopup "🚀 Starting the NeOS installer..." 4 2>/dev/null || true
@@ -73,7 +136,12 @@ sudo --preserve-env=DISPLAY,XAUTHORITY \
         DISPLAY="$DISPLAY_TO_USE" \
         XAUTHORITY="$XAUTH_TO_USE" \
         "${GL_ENV[@]}" \
+<<<<<<< HEAD
+        "${A11Y_ENV[@]}" \
+        calamares "${CAL_ARGS[@]}" >"$LOG" 2>&1
+=======
         calamares >"$LOG" 2>&1
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 status=$?
 
 if [ "$status" -ne 0 ]; then

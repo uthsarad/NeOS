@@ -6,7 +6,11 @@ require 'set'
 
 module Neos
   module Tasks
+<<<<<<< HEAD
+    VERSION = '2026.10.03'
+=======
     VERSION = '2026.09.11'
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
     class << self
       # Profile auditing was consolidated into tools/neos-profile-audit (Rust).

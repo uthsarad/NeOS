@@ -87,7 +87,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for fs.suid_dumpable (0 = disabled, most secure)
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if [[ "$CONFIG_CONTENT" =~ fs\.suid_dumpable\ =\ [0-2] ]]; then
     echo "  [PASS] fs.suid_dumpable found"
 else
@@ -95,7 +98,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for dev.tty.ldisc_autoload
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if [[ "$CONFIG_CONTENT" == *"dev.tty.ldisc_autoload = 0"* ]]; then
     echo "  [PASS] dev.tty.ldisc_autoload found"
 else
@@ -103,7 +109,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for vm.unprivileged_userfaultfd
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if [[ "$CONFIG_CONTENT" == *"vm.unprivileged_userfaultfd = 0"* ]]; then
     echo "  [PASS] vm.unprivileged_userfaultfd found"
 else
@@ -111,7 +120,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for kernel.perf_event_paranoid
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 if [[ "$CONFIG_CONTENT" == *"kernel.perf_event_paranoid = 3"* ]]; then
     echo "  [PASS] kernel.perf_event_paranoid found"
 else
@@ -136,7 +148,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for SigLevel = Required DatabaseOptional in root pacman.conf (build-time config)
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 ROOT_PACMAN_CONF="profile/pacman.conf"
 echo "Verifying security configuration in $ROOT_PACMAN_CONF..."
 
@@ -148,7 +163,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for unsafe TrustAll directive in root pacman.conf
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # We use grep -v "^#" to ignore comments
 if grep -v "^#" "$ROOT_PACMAN_CONF" | grep -q "TrustAll"; then
     echo "[FAIL] TrustAll found in active configuration of $ROOT_PACMAN_CONF - This is insecure!"
@@ -157,7 +175,10 @@ else
     echo "  [PASS] TrustAll NOT found in active configuration of $ROOT_PACMAN_CONF (secure)"
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check the build path uses the repo pacman.conf as its base.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # The generation logic lives in tools/gen-build-conf.sh (shared by build.sh
 # and CI); build.sh must call it.
 BUILD_SCRIPT="build.sh"
@@ -172,7 +193,10 @@ else
     exit 1
 fi
 
+<<<<<<< HEAD
+=======
 # Sentinel: Check for unsafe user groups in Calamares configuration
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 USERS_CONF="profile/airootfs/etc/calamares/modules/users.conf"
 echo "Verifying user groups in $USERS_CONF..."
 
@@ -204,4 +228,18 @@ else
     echo "[WARN] $USERS_CONF not found, skipping check."
 fi
 
+<<<<<<< HEAD
+# neos-secureboot-setup must only sign PE binaries (GRUB EFI + kernel). The
+# initramfs is a cpio archive: sbsign rejects it, which aborts the script
+# under `set -e` on what would otherwise be the success path.
+SB_SETUP="profile/airootfs/usr/local/bin/neos-secureboot-setup"
+if grep -qE 'sbctl sign.*initramfs|sbctl sign.*initrd' "$SB_SETUP"; then
+    echo "[FAIL] neos-secureboot-setup must not sign the initramfs (not a PE binary)"
+    exit 1
+else
+    echo "  [PASS] neos-secureboot-setup signs only PE binaries"
+fi
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 echo "All security checks passed!"

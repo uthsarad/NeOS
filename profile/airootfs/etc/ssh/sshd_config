@@ -1,4 +1,7 @@
+<<<<<<< HEAD
+=======
 # Sentinel: Hardened SSH Configuration for NeOS
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # Prevent empty password login (mitigates liveuser risk)
 PermitEmptyPasswords no
 # Disable root login

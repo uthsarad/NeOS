@@ -1,5 +1,17 @@
 {
   "bolt": {
+<<<<<<< HEAD
+    "guidance": "Focus strictly on build.sh and package caching optimization."
+  },
+  "palette": {
+    "guidance": "Focus strictly on profile/airootfs/usr/local/bin/neos-welcome-app UX and accessibility."
+  },
+  "sentinel": {
+    "guidance": "Focus strictly on profile/airootfs/usr/local/bin/neos-autoupdate.sh security hardening."
+  },
+  "maestro_timestamp": "2026-10-03T02:48:45Z"
+}
+=======
     "guidance": "Clear pending task queue: Acknowledge the continued Phase 8 Validation Strategic Pause."
   },
   "palette": {
@@ -10,3 +22,4 @@
   },
   "maestro_timestamp": "2026-09-11 (Continued Phase 8 Validation)"
 }
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)

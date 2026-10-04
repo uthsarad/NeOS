@@ -1,4 +1,17 @@
+<<<<<<< HEAD
+/* Require admin authentication for PackageKit system modifications to prevent unprivileged users from installing/removing packages.
+ *
+ * Live-session exception: the live user has passwordless sudo but NO password
+ * (passwd -d), so AUTH_ADMIN can never be satisfied and Discover installs
+ * would fail with an unauthenticatable prompt. The live session is a RAM
+ * overlay anyway, so passwordless PackageKit there matches the live sudoers
+ * rule and changes nothing security-wise. Installed systems have no
+ * `liveuser` account, so this branch is inert there and the strict path
+ * below applies to everyone.
+ */
+=======
 /* Require admin authentication for PackageKit system modifications to prevent unprivileged users from installing/removing packages */
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 polkit.addRule(function(action, subject) {
     if (action.id.indexOf("org.freedesktop.packagekit.") == 0) {
         if (action.id == "org.freedesktop.packagekit.package-install" ||
@@ -8,7 +21,13 @@ polkit.addRule(function(action, subject) {
             action.id == "org.freedesktop.packagekit.system-sources-configure" ||
             action.id == "org.freedesktop.packagekit.offline-update") {
 
+<<<<<<< HEAD
+            if (subject.user == "liveuser") {
+                return polkit.Result.YES;
+            } else if (subject.isInGroup("wheel")) {
+=======
             if (subject.isInGroup("wheel")) {
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
                 return polkit.Result.AUTH_ADMIN;
             } else {
                 return polkit.Result.NO;

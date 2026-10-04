@@ -9,7 +9,11 @@ verify_service() {
 
     # Skip symlinks
     if [ -L "$SERVICE_FILE" ]; then
+<<<<<<< HEAD
+        echo "[INFO] Skipping symlink $SERVICE_FILE"
+=======
         echo "⏭️ Skipping symlink $SERVICE_FILE"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
         return 0
     fi
 
@@ -30,7 +34,11 @@ verify_service() {
                     return 1
                 fi
             done
+<<<<<<< HEAD
+            echo "[PASS] $SERVICE_FILE verified unsandboxed (account-setup unit, must not be sandboxed)"
+=======
             echo "⏭️ $SERVICE_FILE verified unsandboxed (account-setup unit, must not be sandboxed)"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
             return 0
             ;;
     esac

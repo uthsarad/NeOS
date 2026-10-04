@@ -25,6 +25,12 @@ REQUIRED_STRINGS=(
     "cow_spacesize=4G"
     "quiet splash"
     "nomodeset"
+<<<<<<< HEAD
+    "NeOS (Copy to RAM)"
+    "copytoram=y"
+    "NeOS (Verbose)"
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 )
 
 FORBIDDEN_STRINGS=(

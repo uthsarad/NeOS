@@ -38,11 +38,19 @@ security
 ci-security-guardian | docs-dx | quality-operations | runtime-platform | workflow-design | workspace-governance
 ```
 
+<<<<<<< HEAD
+Full agent registry and handoff matrix live in the orchestrator runtime (`~/.claude/agents/`), not in this repository. Only the parts that affect the repository are stated here; `docs/README.md` indexes what the repo itself documents.
+
+## Routing
+
+**Default: Smart Routing** — risk-based, minimal-agent paths.
+=======
 Full agent registry and handoff matrix: `docs/orchestrator/AGENTS.md`
 
 ## Routing
 
 **Default: Smart Routing** — risk-based, minimal-agent paths (uses `skills/cost-efficiency/`).
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 **Escalate to Full-Gates** when any of these risk signals are present:
 - API/schema/type paths touched (`src/api/`, `backend/routes/`, `shared/types/`, `*.d.ts`, `openapi.yaml`)
@@ -52,7 +60,11 @@ Full agent registry and handoff matrix: `docs/orchestrator/AGENTS.md`
 - New modules or cross-domain designs
 - Breaking changes
 
+<<<<<<< HEAD
+Full-Gates path — @architect + @api-guardian (if contract) + @validator ∥ @tester + @scribe. The workflow definitions themselves are provided by the orchestrator runtime's skills, not by files in this repository.
+=======
 Full-Gates path: `skills/workflows/` — @architect + @api-guardian (if contract) + @validator ∥ @tester + @scribe.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 ## Workflows
 
@@ -65,6 +77,22 @@ Full-Gates path: `skills/workflows/` — @architect + @api-guardian (if contract
 | "Process Issue #X" | @github-manager loads -> analyze -> workflow -> PR |
 | "Prepare Release" | @scribe -> @github-manager |
 
+<<<<<<< HEAD
+Full workflow details: orchestrator runtime (`~/.claude/skills/`). Repository-specific expectations are in `CONTRIBUTING.md`.
+
+## Modes
+
+| Mode | Use it for |
+|------|------------|
+| **Smart Routing (default)** | risk-based routing, minimal-agent paths, inline arch brief |
+| Full-Gates | high-risk work, new modules, API/breaking changes |
+| Prototype | local throwaway spikes with `PROTOTYPE ONLY` watermarks |
+| Departments | large cross-domain work with frozen write scopes |
+| Agent Teams | explicit teammate-style parallelism only |
+
+Each mode's skill is loaded by the orchestrator runtime; this repository keeps no
+copy of them (see Skills below).
+=======
 Full workflow details: `docs/orchestrator/WORKFLOWS.md`
 
 ## Modes
@@ -78,6 +106,7 @@ Full workflow details: `docs/orchestrator/WORKFLOWS.md`
 | Agent Teams | `skills/agent-teams/` | explicit teammate-style parallelism only |
 
 Mode details: `docs/orchestrator/MODES.md`
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 ## Quality Gates
 
@@ -94,7 +123,11 @@ STATUS: APPROVED | BLOCKED | DONE
 report: <absolute path>
 ```
 
+<<<<<<< HEAD
+Full decision matrix: orchestrator runtime. The repository enforces the same gates objectively through `tests/verify_*.sh` and CI.
+=======
 Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 ## Fable 5 Orchestrator
 
@@ -110,6 +143,17 @@ Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
 
 ## Skills (On-Demand Knowledge)
 
+<<<<<<< HEAD
+Skills are supplied by the orchestrator runtime (`~/.claude/skills/`), not by this
+repository — an earlier revision of this file pointed at a `skills/` tree that was
+never committed, together with `docs/orchestrator/*` and `docs/policies/*`
+(reports/v2026.09.22/UPDATES_NEEDED.md, section 2.2).
+
+Everything the repository itself needs to define is already here or in the files
+listed under References below. Load a skill when you need process detail beyond
+this file; `tests/verify_docs_links.sh` will fail if a future revision starts
+pointing at files that do not exist again.
+=======
 | Skill | What It Contains |
 |-------|------------------|
 | `skills/cost-efficiency/` | Smart Routing default policy, inline arch brief, risk signals |
@@ -126,6 +170,7 @@ Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
 | `skills/greenfield-bootstrap/` | Bootstrap governance for empty/undocumented workspaces before workflows run |
 
 **Load a skill when you need details beyond what's in this file.**
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 
 ## Start
 
@@ -138,6 +183,19 @@ Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
 7. **Select workflow** and activate agents
 8. **Complete** — @scribe updates VERSION + CHANGELOG
 
+<<<<<<< HEAD
+## References (in-repository)
+
+- Contribution rules and PR expectations: `CONTRIBUTING.md`
+- Documentation index: `docs/README.md`
+- Version convention: `VERSION` + the newest section of `CHANGELOG.md` (the release
+  tag and release body are both derived from them)
+- Latest repository audit: `reports/v2026.09.22/UPDATES_NEEDED.md`
+- Build entrypoint and flags: `./build.sh --help`
+- Test suite: `tests/verify_*.sh` (run all of them before opening a PR)
+
+**Current Version:** v7.1.2 — References corrected to files that exist in this repository
+=======
 ## References
 
 - Versioning & pre-push rules: `docs/orchestrator/VERSIONING.md`
@@ -148,3 +206,4 @@ Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
 - Agent model/effort matrix: `docs/AGENT_MODEL_SELECTION.md`
 
 **Current Version:** v7.1.1 — Docs Polish
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)

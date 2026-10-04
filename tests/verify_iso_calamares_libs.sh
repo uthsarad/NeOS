@@ -17,7 +17,11 @@ skip_or_fail() {
         echo "[FAIL] $msg"
         exit 1
     fi
+<<<<<<< HEAD
+    echo "[INFO] SKIPPED: $msg"
+=======
     echo "⏭️  SKIPPED: $msg"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
     exit 0
 }
 

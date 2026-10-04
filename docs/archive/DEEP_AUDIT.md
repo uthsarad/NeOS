@@ -1,5 +1,16 @@
 # NeOS Deep Audit Report
 
+<<<<<<< HEAD
+> **SUPERSEDED — historical record (2026-04-01).** One finding below is no longer
+> accurate: this report states the installed system keeps
+> `SigLevel = Required DatabaseRequired`. The shipped configuration
+> (`profile/airootfs/etc/pacman.conf`) now uses `Required DatabaseOptional`, and
+> `tools/neos-profile-audit` enforces `DatabaseOptional` for the build config. Do
+> not treat the DatabaseRequired claim in this document as current. For the
+> current state see `reports/v2026.09.18/`.
+
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 **Generated:** 2026-04-01  
 **Repository:** `/workspace/NeOS`  
 **Audit Type:** Static configuration and verification-script audit (no ISO build performed)

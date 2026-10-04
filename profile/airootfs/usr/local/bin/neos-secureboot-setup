@@ -21,7 +21,10 @@ set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+<<<<<<< HEAD
+=======
 # Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
 
@@ -35,7 +38,10 @@ _error_handler() {
     exit "$err"
 }
 
+<<<<<<< HEAD
+=======
 # Sentinel: Verify that trap commands safely handle variable expansion without
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 # introducing command injection risks.
 trap '_error_handler $? $LINENO' ERR
 
@@ -188,6 +194,14 @@ sign_binaries() {
         warn "  sbctl sign -s /boot/vmlinuz-linux-lts"
     fi
 
+<<<<<<< HEAD
+    # NOTE: the initramfs images are deliberately NOT signed. They are cpio
+    # archives, not PE binaries, so sbsign rejects them ("Invalid DOS header
+    # magic") — attempting it aborts this script under `set -e` on what would
+    # otherwise be the success path. In the sbctl/GRUB model only the bootloader
+    # and the kernel carry signatures; GRUB loads the initrd unverified unless
+    # you switch to unified kernel images (which is out of scope here).
+=======
     # Also sign a fallback initramfs if present (some GRUB configs reference it).
     local fallback_initrd="/boot/initramfs-linux-lts-fallback.img"
     if [[ -f "$fallback_initrd" ]]; then
@@ -195,6 +209,7 @@ sign_binaries() {
         sbctl sign -s "$fallback_initrd"
         ok "Signed: ${fallback_initrd}"
     fi
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 }
 
 # ---------------------------------------------------------------------------

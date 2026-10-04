@@ -10,7 +10,10 @@
 
 set -euo pipefail
 
+<<<<<<< HEAD
+=======
 # Sentinel: [Security] Enforce strict PATH to prevent path hijacking
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 REPO_ROOT="${1:-$PWD}"

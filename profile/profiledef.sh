@@ -4,7 +4,11 @@
 
 iso_name="neos"
 iso_label="NEOS_ISO"
+<<<<<<< HEAD
+iso_publisher="NeOS Team <https://github.com/uthsarad/NeOS>"
+=======
 iso_publisher="NeOS Team <https://github.com/NimuthuGanegoda/NeOS>"
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 iso_application="NeOS Installation Media"
 iso_version="$(date +%Y.%m.%d)"
 install_dir="neos"
@@ -19,7 +23,12 @@ airootfs_image_type="squashfs"
 # every binary launch in the live session paid a CPU cost — painful in a VM on
 # software rendering. zstd decompresses several times faster (snappier live
 # desktop) at the same speed regardless of level, so we use the max level (22)
+<<<<<<< HEAD
+# to keep the image as small as possible (there is no ISO size gate; releases go to
+# SourceForge, which has no per-asset limit).
+=======
 # to keep the image as small as possible and stay under the 2048 MiB release gate.
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '22' '-b' '1M')
 
 file_permissions=(
@@ -39,4 +48,12 @@ file_permissions=(
   ["/usr/local/bin/neos-operations-hub"]="0:0:755"
   ["/usr/local/bin/neos-hardware-setup"]="0:0:755"
   ["/usr/local/bin/neos-display-sync"]="0:0:755"
+<<<<<<< HEAD
+  ["/usr/local/bin/neos-autoinstall"]="0:0:755"
+  ["/usr/local/bin/neos-doctor"]="0:0:755"
+  ["/usr/local/bin/neos-rollback"]="0:0:755"
+  ["/usr/local/bin/neos-session-select"]="0:0:755"
+  ["/usr/lib/calamares/modules/neospacstrap/main.py"]="0:0:755"
+=======
+>>>>>>> 5772ff2 (Redirect Jules PRs to testing branch and prevent merges to main)
 )
