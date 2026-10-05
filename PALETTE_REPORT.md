@@ -19,3 +19,6 @@
 ## Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.
 **Learning:** Terminal errors need to provide clear, actionable steps such as checking disk space and network connectivity. Using emojis or special characters (like bullets) violates codebase style constraints.
 **Action:** Replaced special characters with standard hyphens in error handlers and augmented generic error messages with explicit troubleshooting steps to improve developer UX in `build.sh`.
+
+## Improve log output clarity in core scripts and refine error handling messages for better troubleshooting UX.
+- Improved developer UX in `build.sh` by appending copy-pasteable pacman installation commands to dependency missing errors.
