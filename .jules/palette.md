@@ -14,3 +14,6 @@
 ## 2024-05-24 - Semantic dialogs for Assistive Technologies
 **Learning:** Using generic `--msgbox` flags in `kdialog` for error states prevents screen readers (like Orca) from announcing the dialog's severity or nature. Native semantic flags like `--error` are required to trigger appropriate accessibility cues.
 **Action:** Always map UI dialog states (error, warning, info) to their precise semantic `kdialog` flag equivalents instead of relying solely on visual text content in generic message boxes.
+## 2026-10-05 - Actionable Error UX
+**Learning:** Vague missing dependency errors create friction in the developer experience.
+**Action:** Replaced generic "please install X" errors with explicit, copy-pasteable package manager commands (e.g., sudo pacman -S X) to make troubleshooting immediately actionable.
