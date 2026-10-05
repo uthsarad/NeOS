@@ -1,3 +1,15 @@
+## Add --needed flag to archlinux-keyring update
+
+**Status:** Completed
+**Action:** Added the `--needed` flag to the `pacman -Sy --noconfirm -- archlinux-keyring` command in `build.sh`.
+
+**Before/after reasoning:**
+* **Before:** The script unconditionally downloaded and reinstalled the `archlinux-keyring` package during every build, causing unnecessary network I/O and disk write overhead if the package was already fully up-to-date.
+* **After:** By adding the `--needed` flag, `pacman` will only download and install the package if a newer version is available in the remote repositories, eliminating redundant operations.
+
+**Any remaining performance risks:**
+No remaining performance risks. The optimization correctly skips unnecessary installations without altering the functional requirement of ensuring an up-to-date keyring.
+
 ## Validate Phase 8 Operations Hub update mechanism performance.
 
 **Status:** Completed (Strategic Pause Acknowledgment)
