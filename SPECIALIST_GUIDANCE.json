@@ -5,15 +5,15 @@
   },
   "bolt": {
     "role": "Performance & Efficiency",
-    "guidance": "Optimize script pipelines to remove unnecessary subprocess overhead in build.sh."
+    "guidance": "Standby."
   },
   "palette": {
     "role": "UX, Theming & Accessibility",
-    "guidance": "Standby for UX/accessibility audits."
+    "guidance": "Standby."
   },
   "sentinel": {
     "role": "Security & Hardening",
-    "guidance": "Audit build.sh to ensure strict adherence to security constraints, checking temp file umasks and input sanitization."
+    "guidance": "Standby."
   },
-  "maestro_timestamp": "2026-09-30T00:00:00Z"
+  "maestro_timestamp": "2026-10-05T23:26:05Z"
 }

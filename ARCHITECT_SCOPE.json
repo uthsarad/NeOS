@@ -1,8 +1,8 @@
 {
   "allowed_files": [
-    "build.sh"
+    "none"
   ],
-  "strategic_pause": false,
+  "strategic_pause": true,
   "constraints": [
     "Prevent feature creep.",
     "Favor incremental delivery.",
@@ -10,5 +10,5 @@
     "If requirements are ambiguous, choose the smallest viable interpretation.",
     "Enforce zero-slop policy."
   ],
-  "maestro_timestamp": "2026-09-30T00:00:00Z"
+  "maestro_timestamp": "2026-10-05T23:25:30Z"
 }
