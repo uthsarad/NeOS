@@ -46,3 +46,8 @@
 **Vulnerability:** External string manipulation using `echo | grep` and `awk` within unquoted command arguments created a risk of command injection, where malicious strings could trigger shell execution when passing outputs directly to `dbus-send`.
 **Learning:** Bash subprocesses evaluating variables can be bypassed or hijacked if an attacker manages to embed a shell meta-character like `;` or a newline in the input when processing external binary outputs that are parsed loosely.
 **Prevention:** Always use Bash's native regular expression (`[[ =~ ]]`) to strictly validate variables against expected alphanumeric formats and safely extract values using `read -r` instead of shelling out to `grep`/`awk`.
+
+## 2026-10-04 - Enforce standard umask in build scripts
+**Vulnerability:** The `build.sh` script lacked a global `umask`, increasing the risk of permissive temporary file creation depending on environment inheritance.
+**Learning:** Core build scripts running with root privileges must establish a secure-by-default environment by enforcing standard file creation masks without breaking artifact readability. Setting umask 077 breaks artifact readability.
+**Prevention:** Always apply standard `umask 022` globally at the start of privileged build scripts.

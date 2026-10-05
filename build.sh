@@ -4,6 +4,9 @@ set -euo pipefail
 # Sentinel: [Security] Enforce strict PATH to prevent path hijacking
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
+# Sentinel: [Security] Enforce standard umask defaults globally to prevent permissive temp files
+umask 022
+
 # Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
