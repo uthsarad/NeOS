@@ -75,6 +75,7 @@ jobs:
             if gh pr edit "$PR_URL" --base testing; then
               echo "Successfully redirected PR base to 'testing'."
               PR_BASE="testing"
+              sleep 5
             else
               echo "ERROR: Failed to redirect PR to 'testing'. Blocking merge to protect 'main'." >&2
               gh pr comment "$PR_URL" --body "Auto-merge blocked: Target branch was \`main\`. Jules automated changes are restricted to \`testing\` and could not be automatically retargeted." || true
