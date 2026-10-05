@@ -32,3 +32,8 @@
 
 ## Audit the use of pkexec and input validation in the new Operations Hub update and rollback flows to ensure they cannot be bypassed or injected.
 - Replaced external grep/awk parsing with native Bash regex to prevent injection in DBUS_REF variables.
+
+## Audit build.sh to ensure strict adherence to security constraints, checking temp file umasks and input sanitization.
+**Vulnerability:** The `build.sh` script did not enforce a strict global umask increasing the risk of permissive file creation depending on execution environment.
+**Learning:** Core build scripts handling extensive file operations must define standard-by-default file creation masks (`umask 022`) to prevent inadvertent permissive file creation without breaking artifact accessibility.
+**Prevention:** Always apply `umask 022` globally at the start of root-level build scripts.
