@@ -1,0 +1,84 @@
+#!/bin/bash
+# neos-rollback — make a snapper snapshot the running system again.
+#
+# Usage: neos-rollback <snapshot-number>      (as root; reboot afterwards)
+#        neos-rollback --list
+#
+# `snapper rollback` cannot be used on NeOS: it works by changing the btrfs
+# default subvolume, but NeOS (like most Arch installs) mounts the root by path
+# — subvol=/@ in /etc/fstab and rootflags=subvol=@ on the kernel command line —
+# so the default subvolume is never consulted and the machine would reboot into
+# the same broken system. Instead, this follows the Arch wiki procedure for the
+# @ / @.snapshots layout the installer creates:
+#
+#   1. mount the top level of the btrfs filesystem (subvolid=5);
+#   2. rename the current root subvolume @ to @.pre-rollback-<timestamp>
+#      (kept, so the rollback itself can be undone);
+#   3. create a new writable @ from @.snapshots/<N>/snapshot.
+#
+# /home, /var/cache, /var/log and the snapshots live in their own subvolumes and
+# are untouched. It also works when booted into a read-only snapshot from the
+# GRUB menu (grub-btrfs), which is how a broken system is normally recovered.
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+ROOT_SUBVOL="@"
+SNAP_SUBVOL="@.snapshots"
+
+die() { printf 'neos-rollback: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+    sed -n '4,5p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+case "${1:-}" in
+    -h|--help) usage; exit 0 ;;
+    --list) exec snapper --config=root list ;;
+    "") usage >&2; exit 2 ;;
+esac
+
+SNAP_ID="$1"
+[[ "$SNAP_ID" =~ ^[1-9][0-9]*$ ]] || die "'$SNAP_ID' is not a snapshot number (see: neos-rollback --list)"
+(( EUID == 0 )) || die "must be run as root"
+
+# The snapshots subvolume is mounted from the same filesystem as the root, by
+# both a normal boot and a grub-btrfs snapshot boot; -v drops the [/subvol] part.
+DEVICE="$(findmnt -nvo SOURCE /.snapshots 2>/dev/null || true)"
+[[ -n "$DEVICE" ]] || die "/.snapshots is not mounted; is this a NeOS Btrfs install?"
+[[ "$(findmnt -no FSTYPE /.snapshots)" == "btrfs" ]] || die "/.snapshots is not on Btrfs"
+
+TOP="$(mktemp -d /run/neos-rollback.XXXXXX)"
+cleanup() {
+    if mountpoint -q "$TOP"; then umount "$TOP" || true; fi
+    rmdir "$TOP" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+mount -o subvolid=5 -- "$DEVICE" "$TOP"
+
+SOURCE="$TOP/$SNAP_SUBVOL/$SNAP_ID/snapshot"
+[[ -d "$TOP/$ROOT_SUBVOL" ]] || die "no '$ROOT_SUBVOL' subvolume at the top of $DEVICE; unsupported layout"
+[[ -d "$SOURCE" ]] || die "snapshot $SNAP_ID does not exist (see: neos-rollback --list)"
+btrfs subvolume show -- "$SOURCE" >/dev/null 2>&1 || die "$SOURCE is not a Btrfs subvolume"
+
+STAMP="$(date +%Y%m%d-%H%M%S)"
+SAVED="$ROOT_SUBVOL.pre-rollback-$STAMP"
+
+# Renaming a mounted subvolume is safe: the running system keeps it by ID.
+mv -- "$TOP/$ROOT_SUBVOL" "$TOP/$SAVED"
+if ! btrfs subvolume snapshot -- "$SOURCE" "$TOP/$ROOT_SUBVOL" >/dev/null; then
+    mv -- "$TOP/$SAVED" "$TOP/$ROOT_SUBVOL"
+    die "could not create the new root from snapshot $SNAP_ID; nothing was changed"
+fi
+
+logger -t neos-rollback "root restored from snapshot $SNAP_ID; previous root kept as $SAVED" || true
+cat <<EOF
+Snapshot $SNAP_ID is now the system root. Reboot to start it.
+
+The previous root was kept as the subvolume '$SAVED'. Once the restored
+system works, it can be removed to free space:
+  sudo mount -o subvolid=5 $DEVICE /mnt
+  sudo btrfs subvolume delete -R /mnt/$SAVED
+  sudo umount /mnt
+EOF

@@ -17,7 +17,7 @@ skip_or_fail() {
         echo "[FAIL] $msg"
         exit 1
     fi
-    echo "⏭️  SKIPPED: $msg"
+    echo "[INFO] SKIPPED: $msg"
     exit 0
 }
 

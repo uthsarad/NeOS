@@ -2,7 +2,18 @@ name: Build NeOS ISO
 
 on:
   push:
-    branches: [main, testing]
+    # main is reserved for the official public release, which isn't ready
+    # yet — only testing builds/releases for now. Add main back here when
+    # it's time to resume shipping from it.
+    branches: [testing]
+  # Pull requests run the gate suite (`test`) and the ISO build (`build`), so a
+  # change proves it builds before it lands. Nothing is published from a PR:
+  # every release/upload step in `build` is gated on github.ref being
+  # refs/heads/{main,testing}, which a pull_request ref never is. Without this
+  # trigger the gates only ran after a merge, i.e. they could not gate anything
+  # (reports/v2026.09.18 H3/O3).
+  pull_request:
+    branches: [testing, main]
   workflow_dispatch:
 
 env:
@@ -12,12 +23,17 @@ concurrency:
   group: build-iso-${{ github.ref }}
   cancel-in-progress: true
 
+# Least privilege at workflow level; the release steps that actually need to
+# write (create the GitHub Release) opt in at job level below. The `test` job
+# only runs ShellCheck/Trivy over the repo, so it stays read-only.
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     container:
       image: archlinux:latest
@@ -28,11 +44,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Install dependencies
+        # Toolchains are installed so the language gates actually execute
+        # instead of degrading to static greps (reports/v2026.09.18 H3/O3):
+        #   ruby       -> verify_ruby_tasks.sh
+        #   go         -> verify_go_neosctl.sh (compiles the CLI)
+        #   dotnet-sdk -> verify_csharp_diagnostics.sh
+        #   rust       -> verify_rust_profile_audit.sh (cargo run + cargo test)
+        # REQUIRE_TOOLS=1 below turns a missing toolchain into a failure rather
+        # than a silent skip.
+        #   pacman-contrib -> repo-add, used by verify_install_repo.sh
+        #   python-pyqt6 + qt6-declarative (+ a font) -> verify_ui_render.sh
+        #     renders the login theme, installer slideshow and welcome app
         run: |
-          pacman -Sy --noconfirm git wget awk grep syslinux python rust python-yaml shellcheck trivy
+          pacman -Sy --noconfirm git wget awk grep diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
 
       - name: Validate PyYAML Installation
         run: |
@@ -42,6 +69,14 @@ jobs:
           echo "::endgroup::"
 
       - name: Run pre-build validations
+        env:
+          # Every language toolchain this repo's gates need is installed above,
+          # so a test that finds its tool missing must fail the build instead
+          # of degrading to a static source check.
+          REQUIRE_TOOLS: "1"
+          # Verify the .NET project against a newer major runtime (Arch ships
+          # dotnet-sdk 9.x; the project targets net8.0).
+          DOTNET_ROLL_FORWARD: Major
         run: |
           set -euo pipefail
           cd "$GITHUB_WORKSPACE"
@@ -50,15 +85,22 @@ jobs:
           FAILED=0
 
           for script in tests/verify_*.sh; do
-            # *iso* tests need a built image; they run in the build job
-            # ("Validate ISO" step) after mkarchiso produces one.
+            # *iso* tests need a built image; they run inside build.sh in the
+            # build job, after mkarchiso produces one.
             if [[ "$script" == *iso* ]]; then
               continue
             fi
 
+            # Toolchain tests compile/restore a project, which does not fit in
+            # the 120s budget the static checks use.
+            TEST_TIMEOUT=120s
+            if [[ "$script" == *rust* || "$script" == *go_* || "$script" == *ruby* || "$script" == *csharp* ]]; then
+              TEST_TIMEOUT=420s
+            fi
+
             echo "::group::Running $script..."
 
-            if ! timeout 120s bash "$script"; then
+            if ! timeout "$TEST_TIMEOUT" bash "$script"; then
               echo "::error::Test failed: $script"
               FAILED=1
             fi
@@ -79,7 +121,23 @@ jobs:
           echo ""
 
           echo "Running ShellCheck..."
-          find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
+          # Lint every shell script, not just *.sh. The privileged scripts in
+          # profile/airootfs/usr/local/bin/ (neos-pacstrap, neos-driver-manager,
+          # neos-secureboot-setup, ...) have no extension and were never linted.
+          # Select by shebang so the Python script (neos-welcome-app) is skipped
+          # and note that *.hook files are pacman/alpm INI config, not shell.
+          mapfile -t SHELL_SCRIPTS < <(
+            {
+              find . -type f -name '*.sh'
+              grep -rlE '^#!.*(bash|/bin/sh|dash|ksh)' profile/airootfs/usr/local/bin 2>/dev/null
+            } | sort -u
+          )
+          if (( ${#SHELL_SCRIPTS[@]} == 0 )); then
+            echo "::error::No shell scripts discovered to lint"
+            exit 1
+          fi
+          echo "ShellCheck: linting ${#SHELL_SCRIPTS[@]} script(s)"
+          shellcheck "${SHELL_SCRIPTS[@]}"
           echo "ShellCheck completed successfully."
           echo ""
 
@@ -94,6 +152,17 @@ jobs:
 
   build:
     needs: test
+    # Runs on pull requests too, so the ISO *build* is verified before merge.
+    # Publishing stays impossible from a PR: every release step below is gated
+    # on github.ref being refs/heads/{main,testing}, and on a pull_request event
+    # github.ref is refs/pull/<n>/merge. That gating — rather than skipping the
+    # job — is what lets a PR prove the image builds: the first CI run that
+    # executed build.sh failed here with the `yes | mkarchiso` SIGPIPE, and a
+    # merge into testing was the first thing to find out (see CHANGELOG).
+    # Cost: ~20-35 minutes of runner time per PR. To opt out, restore
+    # `if: github.event_name != 'pull_request'`.
+    permissions:
+      contents: write
 
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -108,20 +177,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Install dependencies
+        # edk2-ovmf is for tests/verify_iso_smoketest.sh: without it the UEFI
+        # half of the boot gate is skipped with an [INFO] notice, so the
+        # GRUB/EFI entries — the ones that carry the serial console — were
+        # never exercised in CI.
         run: |
           set -euo pipefail
 
           pacman-key --init
           pacman-key --populate archlinux
 
-          pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+          pacman-key --recv-key 3056513887B78AEB --keyserver hkps://keyserver.ubuntu.com
           pacman-key --lsign-key 3056513887B78AEB
 
           # Garuda signing key (signs calamares-garuda in the [garuda] repo)
-          pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
+          pacman-key --recv-key 349BC7808577C592 --keyserver hkps://keyserver.ubuntu.com
           pacman-key --lsign-key 349BC7808577C592
 
           # Download to a local file first (with retries + a fallback mirror)
@@ -164,67 +237,54 @@ jobs:
             grub \
             syslinux \
             rust \
+            python \
             qemu-system-x86 \
+            edk2-ovmf \
             qemu-img \
             util-linux \
-            github-cli
-
-      - name: Prepare Build Config
-        run: |
-          set -euo pipefail
-
-          cd "$GITHUB_WORKSPACE"
-
-          # Shared with build.sh — tools/gen-build-conf.sh is the single
-          # source of truth for the build pacman.conf logic.
-          bash tools/gen-build-conf.sh "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/pacman-build.conf"
-
-          echo "Generated pacman-build.conf:"
-          cat "$GITHUB_WORKSPACE/pacman-build.conf"
-
-      - name: Generate netinstall manifests
-        run: |
-          set -euo pipefail
-
-          cd "$GITHUB_WORKSPACE"
-
-          # CRITICAL: without this the ISO ships the stale committed
-          # neos-packages.txt / neos-overlay.txt, and systems installed from a
-          # CI ISO silently miss newer overlay files and packages.
-          bash tools/gen-manifests.sh "$GITHUB_WORKSPACE"
+            github-cli \
+            rsync \
+            openssh \
+            mktorrent
 
       - name: Generate codename and set ISO version
         id: codename
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ github.token }}
+          # Branch names are attacker-controlled on a fork PR. Pass them through
+          # the environment, never by expanding ${{ }} inside the script, where
+          # a crafted name would be executed as shell (actionlint: expression).
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
 
           cd "$GITHUB_WORKSPACE"
 
-          # At most one release per calendar day: the tag (computed the same
-          # way in the "Generate release tag and notes" step below) is
-          # date-based, not run-number-based, so every push today updates
-          # the same release instead of creating a new one. If today's
-          # release already exists, reuse ITS codename rather than rolling a
-          # new one — otherwise the ISO filename (which embeds the codename)
-          # would change on every same-day rebuild and `--clobber` in the
-          # "Upload ISO to Release" step wouldn't actually replace the old
-          # ISO asset, just add a second one alongside it.
-          VERSION="$(tr -d '[:space:]' < VERSION)"
-          TODAY_TAG="v${VERSION}-$(date +%Y%m%d)"
-          CODENAME=""
-          EXISTING_NAME=$(gh release view "$TODAY_TAG" --json name --jq '.name' 2>/dev/null || true)
-          if [[ -n "$EXISTING_NAME" ]]; then
-            # Title looks like: NeOS "Perch Beta"
-            CODENAME=$(echo "$EXISTING_NAME" | sed -E 's/^NeOS "([A-Za-z0-9]+) Beta"$/\1/')
-            if [[ -n "$CODENAME" && "$CODENAME" != "$EXISTING_NAME" ]]; then
-              echo "Reusing today's existing release codename: $CODENAME"
-            else
-              CODENAME=""
-            fi
+          # Use run_number to allow multiple releases per day.
+          # Branch suffix keeps releases entirely separate per branch: main
+          # builds get the plain tag/filename, any other branch (e.g.
+          # testing) gets its own "-<branch>" suffixed tag/filename.
+          #
+          # The suffix must be safe in a filename, a tag and a sed replacement.
+          # On a pull_request event github.ref_name is "<n>/merge" — not a
+          # branch, and the slash terminated the `sed s/…/…/` below (the job
+          # died here in ~0s). Use the PR's head branch instead, and sanitise
+          # either source to [A-Za-z0-9._-].
+          SUFFIX_SOURCE="$REF_NAME"
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            SUFFIX_SOURCE="$HEAD_REF"
           fi
+          REF_SAFE="$(printf '%s' "$SUFFIX_SOURCE" | tr -c 'A-Za-z0-9._-' '-' | sed -E 's/-+/-/g; s/^-+//; s/-+$//')"
+          BRANCH_SUFFIX=""
+          if [[ "$REF_SAFE" != "main" && -n "$REF_SAFE" ]]; then
+            BRANCH_SUFFIX="-${REF_SAFE}"
+          fi
+          echo "branch_suffix=$BRANCH_SUFFIX" >> "$GITHUB_OUTPUT"
+          CODENAME=""
 
           # Fish-species codename per build, generated by Claude for variety.
           # Falls back to a static list (deterministic on run number) if
@@ -238,15 +298,23 @@ jobs:
             Anchovy Halibut Flounder Salmon Trout
           )
 
+          # Claude Opus 5.5 always thinks, and thinking counts toward
+          # max_tokens, so leave headroom beyond the few tokens of the answer;
+          # effort "low" keeps that thinking short. `fallbacks: "default"`
+          # retries a (rare) policy decline on a fallback model inside the same
+          # call; anything else that yields no text falls through to the static
+          # list below.
           if [[ -z "$CODENAME" && -n "${ANTHROPIC_API_KEY:-}" ]]; then
-            RESPONSE=$(curl -s --max-time 20 https://api.anthropic.com/v1/messages \
+            RESPONSE=$(curl -s --max-time 30 https://api.anthropic.com/v1/messages \
               -H "Content-Type: application/json" \
               -H "x-api-key: $ANTHROPIC_API_KEY" \
               -H "anthropic-version: 2023-06-01" \
+              -H "anthropic-beta: server-side-fallback-2026-07-01" \
               -d '{
-                "model": "claude-opus-5",
-                "max_tokens": 300,
+                "model": "claude-opus-5-5",
+                "max_tokens": 1024,
                 "output_config": {"effort": "low"},
+                "fallbacks": "default",
                 "messages": [{"role": "user", "content": "Invent ONE short, evocative release codename (1-3 words) for a Linux distro build, in the theme of fish species/breeds (real or a plausible-sounding invented one). Respond with ONLY the codename text — no quotes, no punctuation, no explanation."}]
               }' 2>/dev/null || true)
             CODENAME=$(echo "$RESPONSE" | jq -r '.content[] | select(.type=="text") | .text' 2>/dev/null \
@@ -258,59 +326,57 @@ jobs:
 
           if [[ -z "$CODENAME" ]]; then
             echo "::warning::Claude codename generation unavailable (no ANTHROPIC_API_KEY secret, or API call failed) — using fallback list"
-            CODENAME="${FALLBACK_CODENAMES[$(( ${{ github.run_number }} % ${#FALLBACK_CODENAMES[@]} ))]}"
+            CODENAME="${FALLBACK_CODENAMES[$(( RUN_NUMBER % ${#FALLBACK_CODENAMES[@]} ))]}"
           fi
 
           echo "Release codename: $CODENAME"
           echo "value=$CODENAME" >> "$GITHUB_OUTPUT"
 
           # ISO output filename is "${iso_name}-${iso_version}-${arch}.iso" —
-          # swap the date-based version for "<Codename>-Beta" so the shipped
-          # file reads e.g. neos-Marlin-Beta-x86_64.iso, no date/time.
-          sed -i "s/^iso_version=.*/iso_version=\"${CODENAME}-Beta\"/" \
+          # swap the date-based version for "<Codename>-Beta[-branch]" so the
+          # shipped file reads e.g. neos-Marlin-Beta-x86_64.iso (main) or
+          # neos-Marlin-Beta-testing-x86_64.iso (testing), no date/time, and
+          # never collides between branches.
+          sed -i "s/^iso_version=.*/iso_version=\"${CODENAME}-Beta${BRANCH_SUFFIX}\"/" \
             "$GITHUB_WORKSPACE/profile/profiledef.sh"
           grep '^iso_version=' "$GITHUB_WORKSPACE/profile/profiledef.sh"
 
-      - name: Build ISO
+          # The build's codename also goes into /etc/os-release (live and
+          # installed), e.g. PRETTY_NAME="NeOS 2026.10 (Marlin Beta)", as the
+          # website shows it. VERSION/VERSION_ID keep the full date.
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          OS_RELEASE="$GITHUB_WORKSPACE/profile/airootfs/etc/os-release"
+          sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"NeOS ${VERSION:0:7} (${CODENAME} Beta)\"/" "$OS_RELEASE"
+          if grep -q '^VERSION_CODENAME=' "$OS_RELEASE"; then
+            sed -i "s/^VERSION_CODENAME=.*/VERSION_CODENAME=${CODENAME,,}/" "$OS_RELEASE"
+          else
+            echo "VERSION_CODENAME=${CODENAME,,}" >> "$OS_RELEASE"
+          fi
+          grep -E '^(PRETTY_NAME|VERSION_CODENAME)=' "$OS_RELEASE"
+
+          # Same name in the installer's window and welcome page.
+          BRANDING="$GITHUB_WORKSPACE/profile/airootfs/etc/calamares/branding/neos/branding.desc"
+          sed -i -E \
+            -e "s/^(    productVersion: +).*/\1${VERSION:0:7} (${CODENAME} Beta)/" \
+            -e "s/^(    versionedName: +).*/\1NeOS ${VERSION:0:7} (${CODENAME} Beta)/" \
+            "$BRANDING"
+          grep -E '^    (productVersion|versionedName):' "$BRANDING"
+
+      # ONE build path. CI used to re-implement the build inline (generate the
+      # build pacman.conf, regenerate the netinstall manifests, run mkarchiso,
+      # validate), which meant the tested artefact and the developer artefact
+      # could silently diverge (reports/v2026.09.18 C2). It now calls the same
+      # entrypoint a developer runs, with the offline install repo explicitly
+      # disabled: published ISOs install from the network, and embedding ~200
+      # packages (~hundreds of MiB plus a long download) has no place in the
+      # release job. build.sh also runs the ISO validation gates itself.
+      - name: "Build ISO (shared entrypoint: build.sh)"
         run: |
           set -euo pipefail
 
-          PROFILE_DIR="$GITHUB_WORKSPACE/profile"
-          PACMAN_CONF="$GITHUB_WORKSPACE/pacman-build.conf"
-          WORK_DIR="$GITHUB_WORKSPACE/work"
-          OUT_DIR="$GITHUB_WORKSPACE/out"
+          cd "$GITHUB_WORKSPACE"
 
-          echo "PROFILE_DIR=$PROFILE_DIR"
-          echo "PACMAN_CONF=$PACMAN_CONF"
-
-          if [[ -z "$PROFILE_DIR" ]]; then
-            echo "PROFILE_DIR is empty" >&2
-            exit 1
-          fi
-
-          if [[ ! -f "$PACMAN_CONF" ]]; then
-            echo "Missing pacman config at $PACMAN_CONF" >&2
-            exit 1
-          fi
-
-          if [[ ! -f "$PROFILE_DIR/profiledef.sh" ]]; then
-            echo "Missing profiledef.sh in $PROFILE_DIR" >&2
-            exit 1
-          fi
-
-          set +e +o pipefail
-          yes "" | mkarchiso -v \
-            -C "$PACMAN_CONF" \
-            -w "$WORK_DIR" \
-            -o "$OUT_DIR" \
-            "$PROFILE_DIR"
-          MKARCHISO_EXIT=${PIPESTATUS[1]:-$?}
-          set -e -o pipefail
-
-          if [[ "$MKARCHISO_EXIT" -ne 0 ]]; then
-            echo "::error::mkarchiso failed with exit code $MKARCHISO_EXIT"
-            exit "$MKARCHISO_EXIT"
-          fi
+          bash build.sh --ci --no-offline-repo
 
       - name: Combine ISO parts if split
         run: |
@@ -342,79 +408,29 @@ jobs:
 
           ls -lh
 
-      - name: Validate ISO
-        run: |
-          cd "$GITHUB_WORKSPACE"
-
-          bash tests/verify_iso_grub.sh
-          bash tests/verify_iso_size.sh
-          REQUIRE_ISO=1 bash tests/verify_iso_calamares_libs.sh
-          bash tests/verify_iso_smoketest.sh
-
-      - name: Validate ISO Size
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
-        run: |
-          set -euo pipefail
-
-          cd "$GITHUB_WORKSPACE"
-
-          shopt -s nullglob
-
-          files=(out/*.iso)
-          ISO_FILE="${files[0]:-}"
-
-          if [[ -z "$ISO_FILE" ]]; then
-            echo "[FAIL] No ISO file found to validate"
-            exit 1
-          fi
-
-          ISO_SIZE=$(stat -c%s "$ISO_FILE")
-          MAX_SIZE=$((2 * 1024 * 1024 * 1024))
-
-          printf -v ISO_SIZE_MB "%d.%02d" \
-            "$((ISO_SIZE / 1048576))" \
-            "$(((ISO_SIZE % 1048576) * 100 / 1048576))"
-
-          printf -v MAX_SIZE_MB "%d.%02d" \
-            "$((MAX_SIZE / 1048576))" \
-            "$(((MAX_SIZE % 1048576) * 100 / 1048576))"
-
-          echo "ISO File: $ISO_FILE"
-          echo "ISO Size: $ISO_SIZE bytes (${ISO_SIZE_MB} MiB)"
-          echo "Max Size: $MAX_SIZE bytes (${MAX_SIZE_MB} MiB)"
-
-          if (( ISO_SIZE >= MAX_SIZE )); then
-            EXCESS_SIZE=$((ISO_SIZE - MAX_SIZE))
-
-            printf -v EXCESS_SIZE_MB "%d.%02d" \
-              "$((EXCESS_SIZE / 1048576))" \
-              "$(((EXCESS_SIZE % 1048576) * 100 / 1048576))"
-
-            echo "[FAIL] ISO exceeds GitHub release limit by ${EXCESS_SIZE_MB} MiB!"
-            echo ""
-            echo "How to fix:"
-            echo "   - Review 'packages.x86_64' and remove unnecessary dependencies."
-            echo "   - Utilize 'NoExtract' rules in 'pacman.conf'."
-            echo "   - Check for large unintended assets in 'airootfs/'."
-            echo "   - Consult DEEP_AUDIT.md for more size reduction strategies."
-
-            exit 1
-          else
-            echo "ISO size is within limits."
-          fi
+      # NOTE: ISO validation (verify_iso_grub.sh, verify_iso_calamares_libs.sh,
+      # verify_iso_smoketest.sh) runs inside build.sh, so it is no longer
+      # duplicated here — one entrypoint, one validation pass.
 
       - name: Prepare ISO for upload
         id: iso
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
 
           cd "$GITHUB_WORKSPACE"
 
-          shopt -s nullglob
+          # Pick the NEWEST image by mtime instead of the first glob match: a
+          # leftover temporary (build.sh writes "${iso}-with-repo.iso" while
+          # embedding the offline repo, and '-' sorts before '.') would
+          # otherwise be selected over the real image (reports/v2026.09.18 M5).
+          ISO_FILE=$(find out -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
 
-          files=(out/*.iso)
-          ISO_FILE="${files[0]:-}"
+          if [[ -z "$ISO_FILE" ]]; then
+            echo "::error::No ISO found in out/ to upload"
+            exit 1
+          fi
+          echo "Selected ISO for upload: $ISO_FILE"
 
           ISO_SIZE=$(stat -c%s "$ISO_FILE")
 
@@ -427,80 +443,43 @@ jobs:
           ls -lh out/
 
       - name: Generate VM Appliance Templates
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
           chmod +x tools/gen-vm-appliance.sh
           ./tools/gen-vm-appliance.sh
 
       - name: Generate checksums
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         run: |
           set -euo pipefail
 
           cd "$GITHUB_WORKSPACE/out"
           sha256sum -- *.iso > SHA256SUMS
           cat SHA256SUMS
+          sha512sum -- *.iso > SHA512SUMS
+          cat SHA512SUMS
 
       - name: Generate release tag and notes
         id: tag
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        if: github.ref == 'refs/heads/main'
+          SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
         run: |
           set -euo pipefail
 
           cd "$GITHUB_WORKSPACE"
 
           # Tag from the repo VERSION file so releases map to CHANGELOG
-          # entries. Date-suffixed, not run-number-suffixed: at most one
-          # release per calendar day, so repeated same-day pushes update
-          # the same release/tag instead of piling up a new one each time
-          # (matches the codename-reuse logic in the earlier "Generate
-          # codename and set ISO version" step, which computes this exact
-          # same tag to check for an existing same-day release).
+          # entries. Suffix with date and run_number to allow multiple releases
+          # per day.
           VERSION="$(tr -d '[:space:]' < VERSION)"
-          if [[ "${{ github.ref }}" == "refs/heads/testing" ]]; then
-            echo "value=v${VERSION}-testing-b${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-            echo "is_prerelease=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "value=v${VERSION}-b${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
-          fi
-
-          # Fish-species codename per build, generated by Claude for variety.
-          # Falls back to a static list (deterministic on run number) if
-          # ANTHROPIC_API_KEY isn't configured or the API call fails, so a
-          # release never breaks over this purely cosmetic feature.
-          FALLBACK_CODENAMES=(
-            Marlin Barracuda Mackerel Snapper Grouper Pompano Bonito
-            Wahoo Dorado Tarpon Bluegill Perch Catfish Herring Sardine
-            Anchovy Halibut Flounder Salmon Trout
-          )
-
-          CODENAME=""
-          if [[ -n "${ANTHROPIC_API_KEY:-}" ]]; then
-            RESPONSE=$(curl -s --max-time 20 https://api.anthropic.com/v1/messages \
-              -H "Content-Type: application/json" \
-              -H "x-api-key: $ANTHROPIC_API_KEY" \
-              -H "anthropic-version: 2023-06-01" \
-              -d '{
-                "model": "claude-opus-5",
-                "max_tokens": 300,
-                "output_config": {"effort": "low"},
-                "messages": [{"role": "user", "content": "Invent ONE short, evocative release codename (1-3 words) for a Linux distro build, in the theme of fish species/breeds (real or a plausible-sounding invented one). Respond with ONLY the codename text — no quotes, no punctuation, no explanation."}]
-              }' 2>/dev/null || true)
-            CODENAME=$(echo "$RESPONSE" | jq -r '.content[] | select(.type=="text") | .text' 2>/dev/null \
-              | tr -d '\n' | xargs 2>/dev/null | cut -c1-40 || true)
-          fi
-
-          if [[ -z "$CODENAME" ]]; then
-            echo "::warning::Claude codename generation unavailable (no ANTHROPIC_API_KEY secret, or API call failed) — using fallback list"
-            CODENAME="${FALLBACK_CODENAMES[$(( ${{ github.run_number }} % ${#FALLBACK_CODENAMES[@]} ))]}"
-          fi
-          echo "codename=$CODENAME" >> "$GITHUB_OUTPUT"
-          echo "value=v${VERSION}-$(date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          # Branch suffix is computed in the codename step so PR refs cannot
+          # inject a slash into the tag either.
+          BRANCH_SUFFIX="${{ steps.codename.outputs.branch_suffix }}"
+          # Inject codename into tag to make it readable in the UI and SourceForge URLs (without date/version prefix)
+          TAG_VAL="${{ steps.codename.outputs.value }}-b${{ github.run_number }}${BRANCH_SUFFIX}"
+          echo "value=$TAG_VAL" >> "$GITHUB_OUTPUT"
 
           # Release body = the CHANGELOG section for this VERSION (empty file
           # if the section is missing; generate_release_notes still fills in
@@ -511,54 +490,123 @@ jobs:
             flag { print }
           ' CHANGELOG.md > release-body.md
 
+          if [[ -n "${SOURCEFORGE_PROJECT:-}" ]]; then
+            SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${{ github.ref_name }}/${TAG_VAL}/"
+            echo "Release SF URL: $SF_URL"
+          fi
+
           echo "Release body:"
           cat release-body.md
 
+      - name: Generate Torrent File
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
+        env:
+          SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
+          TAG_VAL: ${{ steps.tag.outputs.value }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          chmod +x tools/gen-torrent.sh
+          ./tools/gen-torrent.sh out
+
+          # Newest image by mtime, the same rule as "Prepare ISO for upload"
+          # (a first-glob match can pick a stale or temporary image; M5).
+          ISO_FILE=$(find "$GITHUB_WORKSPACE/out" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)
+          if [[ -n "$ISO_FILE" && -n "${SOURCEFORGE_PROJECT:-}" ]]; then
+            ISO_BASENAME="${ISO_FILE##*/}"
+            TORRENT_FILE="${ISO_BASENAME}.torrent"
+            WEB_SEED_URL="https://downloads.sourceforge.net/project/${SOURCEFORGE_PROJECT}/${REF_NAME}/${TAG_VAL}/${ISO_BASENAME}"
+            SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
+            {
+              echo ""
+              echo "---"
+              echo ""
+              echo "### 💿 Downloads"
+              echo "* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})"
+              echo "* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)"
+              echo "* **Release Directory:** [SourceForge Files](${SF_URL})"
+            } >> "$GITHUB_WORKSPACE/release-body.md"
+          fi
+
       - name: Create GitHub Release (small assets)
-        uses: softprops/action-gh-release@v3
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         with:
           tag_name: ${{ steps.tag.outputs.value }}
-          name: NeOS "${{ steps.tag.outputs.codename }}" (${{ steps.tag.outputs.value }})
-          prerelease: ${{ steps.tag.outputs.is_prerelease == 'true' }}
-          name: NeOS "${{ steps.codename.outputs.value }} Beta"
+          name: NeOS "${{ steps.codename.outputs.value }} Beta"${{ github.ref_name != 'main' && format(' ({0})', github.ref_name) || '' }}
+          prerelease: ${{ github.ref_name != 'main' }}
           generate_release_notes: true
           body_path: release-body.md
           files: |
             out/SHA256SUMS
+            out/SHA512SUMS
             out/vm/*
+            out/*.torrent
 
-      - name: Upload ISO to Release
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing'
+      - name: Upload Release Assets to SourceForge
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
-          GH_TOKEN: ${{ github.token }}
+          SOURCEFORGE_PRIVATE_KEY: ${{ secrets.SOURCEFORGE_PRIVATE_KEY }}
+          SOURCEFORGE_USERNAME: ${{ secrets.SOURCEFORGE_USERNAME }}
+          SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
+          RELEASE_VERSION: ${{ steps.tag.outputs.value }}
         run: |
           set -euo pipefail
 
+          if [[ -z "${SOURCEFORGE_PRIVATE_KEY:-}" || -z "${SOURCEFORGE_USERNAME:-}" || -z "${SOURCEFORGE_PROJECT:-}" ]]; then
+            echo "::warning::SourceForge secrets are not fully configured. Skipping upload."
+            exit 0
+          fi
+
           cd "$GITHUB_WORKSPACE"
-          TAG="${{ steps.tag.outputs.value }}"
 
-          # Robust ISO detection with nullglob
+          echo "Preparing release assets..."
+          LOCAL_TARGET="sf_release/${{ github.ref_name }}/${RELEASE_VERSION}"
+          mkdir -p "$LOCAL_TARGET"
+
+          # Gather all artifacts
           shopt -s nullglob
-          files=(out/*.iso)
-          ISO_FILE="${files[0]:-}"
+          cp out/*.iso "$LOCAL_TARGET"/ || true
+          cp out/*.torrent "$LOCAL_TARGET"/ || true
+          cp out/SHA256SUMS "$LOCAL_TARGET"/ || true
+          cp out/SHA512SUMS "$LOCAL_TARGET"/ || true
+          if [ -d "out/vm" ]; then
+            cp -r out/vm "$LOCAL_TARGET"/
+          fi
+          # Copy release notes to act as the directory index on SourceForge FRS
+          cp release-body.md "$LOCAL_TARGET"/README.md || true
 
-          if [[ -z "$ISO_FILE" ]]; then
-            echo "[FAIL] No ISO file found to upload"
+          if [ -z "$(ls -A "$LOCAL_TARGET")" ]; then
+            echo "[FAIL] No release assets found to upload"
             exit 1
           fi
 
-          echo "Uploading $ISO_FILE to release $TAG..."
+          echo "Setting up SSH key for SourceForge..."
+          # umask first: the key file must never exist with group/world bits,
+          # not even between the write and a later chmod.
+          (
+            umask 077
+            mkdir -p "$HOME/.ssh"
+            printf '%s\n' "$SOURCEFORGE_PRIVATE_KEY" > "$HOME/.ssh/id_rsa"
+          )
+
+          # Add SourceForge to known hosts
+          ssh-keyscan -t rsa,ed25519 frs.sourceforge.net >> "$HOME/.ssh/known_hosts" 2>/dev/null
+
+          # We sync sf_release/ which CONTAINS the testing/version/ dirs
+          TARGET_DIR="/home/frs/project/${SOURCEFORGE_PROJECT}"
+
+          echo "Uploading release assets to $TARGET_DIR (with full path mapping)..."
 
           # Retry up to 3 times with exponential backoff
           for attempt in 1 2 3; do
             echo "Attempt $attempt/3..."
-            if gh release upload "$TAG" "$ISO_FILE" --clobber -R "$GITHUB_REPOSITORY" 2>&1; then
-              echo "ISO uploaded successfully."
+            if rsync -avP -e "ssh -q -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" sf_release/ "${SOURCEFORGE_USERNAME}@frs.sourceforge.net:${TARGET_DIR}/" 2> >(grep -v "Could not chdir to home directory" >&2); then
+              echo "Assets uploaded successfully to SourceForge."
               break
             fi
             if [[ $attempt -eq 3 ]]; then
-              echo "[FAIL] Failed to upload ISO after 3 attempts"
+              echo "[FAIL] Failed to upload assets after 3 attempts"
               exit 1
             fi
             DELAY=$((30 * attempt))

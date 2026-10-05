@@ -1,7 +1,9 @@
 # NeOS GRUB defaults for boot reliability on common storage and VM targets.
 
 GRUB_DEFAULT=0
-GRUB_TIMEOUT=1
+# Long enough to reach the menu (and the snapshot submenu) when recovering.
+GRUB_TIMEOUT=3
+GRUB_TIMEOUT_STYLE=menu
 GRUB_DISTRIBUTOR="NeOS"
 # Performance Optimizations
 # - nowatchdog: Disable watchdog timer to reduce CPU interrupts
@@ -24,3 +26,12 @@ GRUB_DISABLE_SUBMENU=true
 GRUB_THEME="/usr/share/grub/themes/starfield/theme.txt"
 GRUB_GFXMODE="auto"
 GRUB_TERMINAL_OUTPUT="gfxterm"
+
+# Name of the snapshot submenu that grub-btrfs adds (docs/user-guide/TROUBLESHOOTING.md).
+# Exported because grub-mkconfig only passes its own GRUB_* variables to the
+# /etc/grub.d scripts.
+export GRUB_BTRFS_SUBMENUNAME="NeOS snapshots"
+
+# List Windows and other installed systems in the menu (dual boot). GRUB 2.06+
+# skips os-prober unless this is set explicitly.
+GRUB_DISABLE_OS_PROBER=false

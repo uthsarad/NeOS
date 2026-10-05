@@ -12,3 +12,7 @@ profile/airootfs/etc/calamares/neos-packages.txt linguist-generated=true
 profile/airootfs/etc/calamares/neos-overlay.txt linguist-generated=true
 profile/airootfs/etc/pacman.d/neos-mirrorlist linguist-generated=true
 profile/airootfs/etc/pacman.d/chaotic-mirrorlist linguist-generated=true
+
+# Design references are documentation, not source (keeps the language bar honest)
+tools/*.html linguist-documentation=true
+reports/** linguist-documentation=true

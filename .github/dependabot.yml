@@ -1,0 +1,44 @@
+# Dependabot configuration.
+#
+# Why this exists: every third-party action is now pinned to a commit SHA (with
+# the upstream tag in a trailing `# vN` comment), because the release workflow
+# runs with `contents: write` and pushes to SourceForge — a compromised or
+# retagged action is a direct path to a tampered release. Dependabot is what
+# keeps those pins current (it understands `uses: owner/repo@<sha> # vN` and
+# raises a PR when a newer release exists), so the pins never rot into
+# unpatched versions.
+#
+# SHAs were resolved from the upstream tags through the GitHub API rather than
+# transcribed by hand: actions/checkout v5, softprops/action-gh-release v3,
+# actions/labeler v6, actions/ai-inference v2.
+# Previously this file deferred the pinning; reports/v2026.09.18 recommended it
+# and reports/v2026.09.22/UPDATES_NEEDED.md tracked it as open item M4.
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+
+  # Rust profile auditor (tools/neos-profile-audit) — the canonical profile
+  # validator that CI executes.
+  - package-ecosystem: "cargo"
+    directory: "/tools/neos-profile-audit"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+
+  # Go mirror-ranking CLI (tools/neosctl).
+  - package-ecosystem: "gomod"
+    directory: "/tools/neosctl"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
