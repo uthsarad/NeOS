@@ -109,11 +109,17 @@ jobs:
           if gh pr merge "$PR_URL" --squash --delete-branch --admin; then
             echo "Merged (squash, admin)."
             merged=1
+          elif gh pr merge "$PR_URL" --squash --delete-branch --auto; then
+            echo "Merged (squash, auto)."
+            merged=1
           elif gh pr merge "$PR_URL" --squash --delete-branch; then
             echo "Merged (squash)."
             merged=1
           elif gh pr merge "$PR_URL" --merge --delete-branch --admin; then
             echo "Merged (merge commit, admin)."
+            merged=1
+          elif gh pr merge "$PR_URL" --merge --delete-branch --auto; then
+            echo "Merged (merge commit, auto)."
             merged=1
           elif gh pr merge "$PR_URL" --merge --delete-branch; then
             echo "Merged (merge commit)."
