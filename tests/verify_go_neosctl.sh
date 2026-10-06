@@ -9,6 +9,10 @@ if [ ! -f "tools/neosctl/main.go" ] || [ ! -f "tools/neosctl/go.mod" ]; then
 fi
 
 if ! command -v go &> /dev/null; then
+    if [[ "${REQUIRE_TOOLS:-0}" == "1" ]]; then
+        echo "[FAIL] go is required (REQUIRE_TOOLS=1) but not installed — neosctl would never be compiled."
+        exit 1
+    fi
     echo "[WARN] go not installed, validating Go source structure statically."
     grep -q 'package main' tools/neosctl/main.go
     grep -q 'func runRankMirrors' tools/neosctl/main.go

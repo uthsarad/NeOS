@@ -6,16 +6,13 @@
 
 set -euo pipefail
 
-# Sentinel: [Security] Enforce restrictive umask defaults globally to prevent permissive temp files
+# Restrictive umask: the log and lock files below rely on it (root-only).
 umask 077
 
-# Sentinel: [Security] Enforce strict PATH to prevent path hijacking
-# Sentinel: [Security] Audit neos-autoupdate.sh for input sanitization and secure temporary file handling. (Delegated by Architect)
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 export TMPDIR="/var/tmp" # Enforce secure temporary file handling defaults
 
 
-# Sentinel: [Security] Sanitize script name for safe logging to prevent log injection
 SCRIPT_NAME="${0##*/}"
 SCRIPT_NAME="${SCRIPT_NAME//[^a-zA-Z0-9_.-]/}"
 
@@ -28,7 +25,6 @@ _error_handler() {
     exit "$err"
 }
 
-# Sentinel: Verify that trap commands safely handle variable expansion without introducing command injection risks. Ensure TOCTOU vulnerabilities are not introduced during file creation or logging.
 trap '_error_handler $? $LINENO' ERR
 
 LOG_FILE="/var/log/neos-autoupdate.log"
@@ -45,8 +41,9 @@ if [[ ! -f "$LOG_FILE" ]]; then
     (set -C; true > "$LOG_FILE") 2>/dev/null || true
 fi
 
-# SECURITY: Ownership and permissions handled securely by umask 077.
-# Avoided chown/chmod to eliminate TOCTOU risks.
+# umask 077 covers files created above; tighten one left by an older version.
+# (The symlink check above, and root-only /var/log and /run, rule out a swap.)
+chmod 600 -- "$LOG_FILE" 2>/dev/null || true
 
 # SECURITY: Prevent symlink attacks on lock file
 if [[ -L "$LOCK_FILE" ]]; then
@@ -59,8 +56,7 @@ if [[ ! -f "$LOCK_FILE" ]]; then
     (set -C; true > "$LOCK_FILE") 2>/dev/null || true
 fi
 
-# SECURITY: Ownership and permissions handled securely by umask 077.
-# Avoided chown/chmod to eliminate TOCTOU risks.
+chmod 600 -- "$LOCK_FILE" 2>/dev/null || true
 
 # Apply flock
 exec 9> "$LOCK_FILE"
@@ -70,23 +66,18 @@ if ! flock -n 9; then
 fi
 
 # Validate dependencies
-# Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
-# Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
-# Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
 if ! command -v snapper >/dev/null 2>&1; then
     logger -t neos-autoupdate "INFO: 'snapper' utility is missing. System update skipped to prevent unsafe upgrades without rollback protection. Action: Install 'snapper' and configure a root profile."
     exit 0
 fi
 
 # Check for Btrfs root
-# Bolt: Optimized Btrfs check using stat instead of findmnt | grep to eliminate subprocess overhead
 if [[ "$(stat -f -c %T / 2>/dev/null)" != "btrfs" ]]; then
     logger -t neos-autoupdate "INFO: Auto-update skipped: Root filesystem is not Btrfs. Btrfs is required for safe rollback snapshots."
     exit 0
 fi
 
 log() {
-    # Bolt: Use native bash printf for date formatting to eliminate fork/exec overhead
     local msg
     printf -v msg '%(%Y-%m-%d %H:%M:%S)T - %s\n' -1 "$1"
     printf "%s" "$msg"
@@ -123,9 +114,6 @@ check_root() {
 }
 
 check_dependencies() {
-    # Bolt: Ensure the dependency validation for snapper relies on lightweight native bash capabilities to eliminate fork/exec overhead.
-    # Palette: Ensure the error message logged when snapper is missing is clear, informative, and provides actionable context.
-    # Sentinel: Verify that the early exit upon missing snapper does not bypass the flock-based locking mechanisms or introduce TOCTOU race conditions.
     hash snapper 2>/dev/null && SNAPPER_BIN="${BASH_CMDS[snapper]}" || SNAPPER_BIN=""
     if [[ -z "$SNAPPER_BIN" || ! -x "$SNAPPER_BIN" ]]; then
         local err_msg="Automatic updates are paused because <b>snapper</b> is missing.
@@ -157,9 +145,6 @@ Please install the package containing <b>$cmd</b> to resume automatic updates."
 }
 
 check_btrfs() {
-    # Bolt: Verify root is Btrfs using stat instead of findmnt to avoid parsing mount files
-    # Palette: If not Btrfs, we exit 0 gracefully without user warnings since this is an expected environment variation.
-    # Sentinel: Ensure the fallback to exit 0 gracefully on non-Btrfs systems does not introduce logic bypass vulnerabilities or mask actual system errors.
     local fstype
     fstype=$(stat -f -c %T / || true)
     if [[ "$fstype" != "btrfs" ]]; then
@@ -169,17 +154,13 @@ check_btrfs() {
 }
 
 check_disk_space() {
-    # Bolt: Using lightweight 'df' instead of 'btrfs fi usage' to minimize performance overhead during update initialization.
     # Minimum required space: 5GB (5242880 KB)
-    # Bolt: Consider native bash integer math for disk space comparisons to avoid external binary overhead if calculations become complex.
     local min_space=5242880
     local available_space
     # Use -Pk to ensure POSIX output format, preventing line wrapping on long filesystem names.
-    # Bolt: Avoid spawning awk to parse df output. Bash built-in read is ~20% faster.
     { read -r _; read -r _ _ _ available_space _ _; } < <(df -Pk /)
 
     if (( available_space < min_space )); then
-        # Palette: Surface this log error in any graphical update notifier, as users need clear instructions to free space.
         local err_msg="The system update requires more disk space.
 
 <b>Available:</b> $((available_space / 1024)) MB

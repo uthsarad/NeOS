@@ -1,7 +1,1 @@
-# Module metadata file for the NeOS pacstrap progress job.
-# Syntax is YAML 1.2
----
-type:       "job"
-name:       "neospacstrap"
-interface:  "python"
-script:     "main.py"
+../../../../usr/lib/calamares/modules/neospacstrap/module.desc

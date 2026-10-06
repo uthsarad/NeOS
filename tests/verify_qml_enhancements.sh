@@ -7,7 +7,6 @@ if [[ "$1" != "--wrapped" ]]; then
         exit_code=$?
         echo "[FAIL] $0 failed or timed out"
         echo ""
-        # Palette: Multi-line actionable formatting with bulleted list
         echo "How to fix:"
         echo "   - Check the test script logic for infinite loops."
         echo "   - Ensure required resources are available and responding."
@@ -31,13 +30,11 @@ fi
 QML_CONTENT=$(<"$QML_FILE")
 
 # Check for Space key binding
-# Bolt: Replaced grep with native bash reading for faster match
 if [[ "$QML_CONTENT" == *"Keys.onSpacePressed: presentation.advance()"* ]]; then
     echo "  [PASS] Space key binding found."
 else
     echo "[FAIL] Space key binding missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Keys.onSpacePressed: presentation.advance()' to enable keyboard navigation via the Space key."
@@ -50,23 +47,22 @@ if [[ "$QML_CONTENT" == *"border.width: presentation.activeFocus"* ]]; then
 else
     echo "[FAIL] Focus border logic missing (Slide Background)!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'border.width: presentation.activeFocus' to provide visual feedback for keyboard focus."
     exit 1
 fi
 
-# Check for Pause Indicator (enhanced)
-if [[ "$QML_CONTENT" == *"text: \"⏸ \" + qsTr(\"Paused\")"* ]]; then
+# Check for the pause indicator. Plain text, no emoji glyph: U+23F8 renders as
+# colour emoji in many fonts (reports/v2026.10.03 Q5).
+if [[ "$QML_CONTENT" == *"text: qsTr(\"Paused\")"* ]]; then
     echo "  [PASS] Enhanced Pause indicator found."
 else
     echo "[FAIL] Enhanced Pause indicator missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to clearly indicate the paused state."
+    echo "   - Add 'text: qsTr(\"Paused\")' to clearly indicate the paused state."
     exit 1
 fi
 
@@ -76,7 +72,6 @@ if [[ "$QML_CONTENT" == *"cursorShape: Qt.PointingHandCursor"* ]]; then
 else
     echo "[FAIL] Cursor shape enhancement missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'cursorShape: Qt.PointingHandCursor' to signal interactivity on hover."
@@ -89,7 +84,6 @@ if [[ "$QML_CONTENT" == *"Accessible.role: Accessible.StaticText"* ]]; then
 else
     echo "[FAIL] Accessible roles missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Accessible.role: Accessible.StaticText' to improve screen reader compatibility."
@@ -102,7 +96,6 @@ if [[ "$QML_CONTENT" == *"Accessible.role: Accessible.Button"* ]]; then
 else
     echo "[FAIL] Next Button accessibility role missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Accessible.role: Accessible.Button' to ensure the element is recognized as a button by assistive technologies."
@@ -114,7 +107,6 @@ if [[ "$QML_CONTENT" == *"Accessible.name: qsTr(\"Next Slide\")"* ]]; then
 else
     echo "[FAIL] Next Button accessible name missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Accessible.name: qsTr(\"Next Slide\")' to provide a descriptive name for screen readers."
@@ -127,7 +119,6 @@ if [[ "$QML_CONTENT" == *"Behavior on scale"* ]]; then
 else
     echo "[FAIL] Scale animation missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Behavior on scale' to create smooth visual transitions."
@@ -142,7 +133,6 @@ if [[ "$QML_CONTENT" == *"property int pauseLocks: 0"* ]]; then
 else
     echo "[FAIL] Pause Locks property missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'property int pauseLocks: 0' to initialize the pause state management logic."
@@ -154,7 +144,6 @@ if [[ "$QML_CONTENT" == *"presentation.pauseLocks++"* ]]; then
 else
     echo "[FAIL] Pause Locks increment logic missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'presentation.pauseLocks++' to increment the pause lock counter."
@@ -167,7 +156,6 @@ if [[ "$QML_CONTENT" == *"activeFocusOnTab: true"* ]]; then
 else
     echo "[FAIL] Keyboard focus enabled (activeFocusOnTab) missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'activeFocusOnTab: true' to allow keyboard users to focus the element via the Tab key."
@@ -180,7 +168,6 @@ if [[ "$QML_CONTENT" == *"border.color: presentation.cAccent"* ]]; then
 else
     echo "[FAIL] Visual focus indicator (accent border) missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'border.color: presentation.cAccent' to provide a clear visual indicator when the element has focus."
@@ -193,7 +180,6 @@ if [[ "$QML_CONTENT" == *"Keys.onReturnPressed: presentation.advance()"* ]]; the
 else
     echo "[FAIL] Return key activation missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Keys.onReturnPressed: presentation.advance()' to allow activation via the Return key."
@@ -206,7 +192,6 @@ if [[ "$QML_CONTENT" == *"style: Text.Outline"* ]]; then
 else
     echo "[FAIL] Text Outline style missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'style: Text.Outline' to improve text readability against varying backgrounds."
@@ -219,7 +204,6 @@ if [[ "$QML_CONTENT" == *"Keys.onLeftPressed: presentation.advance()"* ]]; then
 else
     echo "[FAIL] Left Arrow navigation binding missing!"
     echo ""
-    # Palette: Multi-line actionable formatting with bulleted list
     echo "How to fix:"
     echo "   - Open $QML_FILE."
     echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to enable backwards navigation."

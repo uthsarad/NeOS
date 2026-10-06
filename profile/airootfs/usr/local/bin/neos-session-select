@@ -1,0 +1,145 @@
+#!/bin/bash
+# neos-session-select — choose Wayland or X11 for the login screen and the
+# default Plasma session, once per boot, before SDDM starts.
+#
+# NeOS defaults to Plasma on Wayland. It falls back to X11 where Wayland is
+# known to fail on this image:
+#   - virtual machines: without 3D acceleration KWin on Wayland composites
+#     through llvmpipe and stops servicing input (frozen cursor, dead buttons);
+#     X11 KWin can run uncomposited instead;
+#   - `nomodeset` (the Safe Graphics boot entry): no KMS device, so the Wayland
+#     compositor cannot start at all;
+#   - display drivers outside the known-good set below (nouveau, simpledrm,
+#     efifb, unknown hardware): the live session previously hung at "Terminate
+#     Plymouth Boot Screen" on these.
+#
+# Override, highest priority first:
+#   kernel command line   neos.session=wayland|x11
+#   /etc/neos/session.conf  SESSION=wayland|x11|auto
+#
+# Output: /etc/sddm.conf.d/zz-neos-session.conf (sorted last, so it wins over
+# the other drop-ins), the autologin session in /etc/sddm.conf if Calamares
+# wrote one, and on first boot SDDM's preselected session.
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Roots are overridable for tests only.
+ROOT="${NEOS_SESSION_ROOT:-}"
+CMDLINE_FILE="${NEOS_SESSION_CMDLINE:-/proc/cmdline}"
+DRM_DIR="${NEOS_SESSION_DRM:-/sys/class/drm}"
+DETECT_VIRT="${NEOS_SESSION_VIRT:-systemd-detect-virt}"
+
+CONF="$ROOT/etc/neos/session.conf"
+OUT="$ROOT/etc/sddm.conf.d/zz-neos-session.conf"
+MAIN_CONF="$ROOT/etc/sddm.conf"
+STATE="$ROOT/var/lib/sddm/state.conf"
+
+# KMS drivers Plasma's Wayland session is known to run well on.
+WAYLAND_DRIVERS=" i915 xe amdgpu radeon nvidia "
+
+log() { printf 'neos-session-select: %s\n' "$*"; }
+
+cmdline="$(cat "$CMDLINE_FILE" 2>/dev/null || true)"
+
+choice="auto"
+reason="default"
+if [[ " $cmdline " =~ [[:space:]]neos\.session=(wayland|x11)[[:space:]] ]]; then
+    choice="${BASH_REMATCH[1]}"; reason="neos.session= on the kernel command line"
+elif [[ -f "$CONF" ]]; then
+    conf_value="$(sed -n 's/^[[:space:]]*SESSION[[:space:]]*=[[:space:]]*"\{0,1\}\([a-z0-9]*\)"\{0,1\}[[:space:]]*$/\1/p' "$CONF" | tail -n 1)"
+    case "$conf_value" in
+        wayland|x11) choice="$conf_value"; reason="$CONF" ;;
+    esac
+fi
+
+# Names of the drivers bound to real KMS outputs (card0, card1, ...).
+gpu_drivers() {
+    local card drv
+    for card in "$DRM_DIR"/card[0-9]*; do
+        [[ "$card" =~ /card[0-9]+$ ]] || continue
+        drv="$(readlink "$card/device/driver" 2>/dev/null || true)"
+        [[ -n "$drv" ]] && printf '%s\n' "${drv##*/}"
+    done
+}
+
+if [[ "$choice" == "auto" ]]; then
+    if [[ " $cmdline " == *" nomodeset "* ]]; then
+        choice="x11"; reason="nomodeset (Safe Graphics)"
+    elif "$DETECT_VIRT" --vm -q 2>/dev/null; then
+        choice="x11"; reason="virtual machine"
+    else
+        # GPU drivers in an initramfs with the kms hook are bound well before
+        # this runs; wait briefly for a late-loading one anyway.
+        drivers=""
+        for _ in 1 2 3 4 5 6 7 8 9 10; do
+            drivers="$(gpu_drivers | sort -u | tr '\n' ' ')"
+            [[ -n "$drivers" ]] && break
+            [[ -n "${NEOS_SESSION_NO_WAIT:-}" ]] && break
+            sleep 0.5
+        done
+        choice="x11"; reason="no known Wayland-capable GPU driver (${drivers:-none})"
+        for drv in $drivers; do
+            if [[ "$WAYLAND_DRIVERS" == *" $drv "* ]]; then
+                choice="wayland"; reason="GPU driver $drv"
+                break
+            fi
+        done
+    fi
+fi
+
+for path in "$OUT" "$MAIN_CONF" "$STATE"; do
+    [[ -L "$path" ]] && { log "refusing to write through symlink $path" >&2; exit 1; }
+done
+mkdir -p "$(dirname "$OUT")"
+
+if [[ "$choice" == "wayland" ]]; then
+    session="plasma"
+    session_file="/usr/share/wayland-sessions/plasma.desktop"
+    cat > "$OUT" <<EOF
+# Generated at boot by neos-session-select ($reason). Do not edit; see
+# /etc/neos/session.conf to choose Wayland or X11.
+[General]
+DisplayServer=wayland
+GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
+
+[Wayland]
+CompositorCommand=kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1
+
+[Autologin]
+Session=$session
+EOF
+else
+    session="plasmax11"
+    session_file="/usr/share/xsessions/plasmax11.desktop"
+    cat > "$OUT" <<EOF
+# Generated at boot by neos-session-select ($reason). Do not edit; see
+# /etc/neos/session.conf to choose Wayland or X11.
+[General]
+DisplayServer=x11
+
+[Autologin]
+Session=$session
+EOF
+fi
+
+# /etc/sddm.conf overrides every drop-in. Calamares writes the installed
+# system's autologin session there; keep it in step with the choice.
+if [[ -f "$MAIN_CONF" ]] && grep -qE '^Session=(plasma|plasmax11)(\.desktop)?$' "$MAIN_CONF"; then
+    sed -i -E "s/^Session=(plasma|plasmax11)(\\.desktop)?$/Session=$session/" "$MAIN_CONF"
+fi
+
+# The greeter preselects the session last used. Before anyone has logged in it
+# would offer Wayland first, so seed it with the choice on the first boot only;
+# after that the user's own pick wins.
+if [[ -d "$(dirname "$STATE")" ]] && ! grep -q '^Session=' "$STATE" 2>/dev/null; then
+    if grep -q '^\[Last\]' "$STATE" 2>/dev/null; then
+        sed -i "/^\[Last\]/a Session=$session_file" "$STATE"
+    else
+        printf '[Last]\nSession=%s\n' "$session_file" >> "$STATE"
+    fi
+    # SDDM rewrites this file as its own user.
+    chown --reference="$(dirname "$STATE")" -- "$STATE" 2>/dev/null || true
+fi
+
+log "$choice ($reason)"
