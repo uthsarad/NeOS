@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=NeOS Screen Reader
+Comment=Starts the Orca screen reader when NeOS was booted with the Screen Reader entry
+Exec=/usr/local/bin/neos-accessibility --session
+Terminal=false
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=1
+X-GNOME-Autostart-enabled=true

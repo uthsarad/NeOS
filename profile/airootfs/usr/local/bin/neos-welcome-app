@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-import sys
+import os
+import pathlib
 import subprocess
-import math
-from PyQt6.QtWidgets import (QCheckBox, QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+import sys
+from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QGraphicsDropShadowEffect,
-                             QGraphicsOpacityEffect, QSpacerItem, QSizePolicy,
                              QFrame)
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QColor, QFont, QScreen
+from PyQt6.QtGui import QColor
 
 
 class NeosWelcome(QWidget):
@@ -17,259 +17,210 @@ class NeosWelcome(QWidget):
 
     def initUI(self):
         self.setWindowTitle('Welcome to NeOS')
-        self.setFixedSize(860, 580)
-        self.setWindowFlags(
-            Qt.WindowType.Window |
-            Qt.WindowType.WindowStaysOnTopHint
-        )
+        self.setFixedSize(860, 560)
         self.setObjectName('main')
 
-        # ---- Main stylesheet ----
+        # Palette: tools/palette.json. Text on accent fills uses the dark
+        # onAccent colour (#0a0e1a, 9:1); white on #38bdf8 is only 2.1:1.
         self.setStyleSheet("""
             QWidget#main {
                 background: qlineargradient(x1:0, y1:0, x2:0.5, y2:1,
                     stop:0 #0a0e1a, stop:0.4 #0d1224, stop:1 #16203a);
-                border: 1px solid #1c2444;
             }
             QLabel#title {
-                font-size: 42px;
-                font-weight: 900;
+                font-size: 40px;
+                font-weight: 800;
                 color: #ffffff;
-                letter-spacing: 2px;
+                letter-spacing: 1px;
             }
             QLabel#subtitle {
-                font-size: 18px;
-                color: #9498b0;
-                font-weight: 300;
+                font-size: 17px;
+                color: #9aa0b6;
             }
-            QLabel#tagline {
-                font-size: 14px;
-                color: #7a7e96;
+            QLabel#version {
+                font-size: 12px;
+                color: #7a8099;
             }
             QFrame#divider {
-                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #17569F, stop:0.5 #1F6FD6, stop:1 #3D82E0);
-                max-height: 2px;
-                min-height: 2px;
+                background-color: #38bdf8;
                 border: none;
                 border-radius: 1px;
             }
-            QLabel#features {
-                font-size: 13px;
-                color: #7a7e96;
-                line-height: 1.8;
+            QFrame#card {
+                background-color: rgba(17, 23, 46, 0.85);
+                border: 1px solid #1c2444;
+                border-radius: 12px;
             }
-            QLabel#feature_icon {
-                font-size: 16px;
-                color: #1F6FD6;
+            QFrame#card QLabel {
+                background: transparent;
+                border: none;
+                padding: 0;
             }
-            QLabel#feature_text {
+            QLabel#cardIcon {
+                font-size: 20px;
+                font-weight: bold;
+                color: #38bdf8;
+            }
+            QLabel#cardTitle {
                 font-size: 13px;
-                color: #b0b4c8;
-                padding-left: 4px;
+                font-weight: bold;
+                color: #e6e9f2;
+            }
+            QLabel#cardText {
+                font-size: 11px;
+                color: #9aa0b6;
             }
             QPushButton {
-                border-radius: 12px;
-                padding: 16px 44px;
-                font-size: 17px;
-                font-weight: bold;
-                min-width: 220px;
-                min-height: 24px;
+                border-radius: 10px;
+                padding: 12px 28px;
+                font-size: 15px;
+                font-weight: 600;
+                min-width: 150px;
             }
-            QPushButton#try_btn {
+            QPushButton#secondary {
                 background-color: transparent;
                 border: 2px solid #2a3354;
-                color: #b0b4c8;
-                border-radius: 12px;
+                color: #c0c4d8;
             }
-            QPushButton#try_btn:hover {
-                background-color: rgba(42, 51, 84, 0.4);
+            QPushButton#secondary:hover {
+                background-color: rgba(42, 51, 84, 0.45);
                 border-color: #4a5a8a;
                 color: #ffffff;
             }
-            QPushButton#try_btn:focus {
-                border-color: #1F6FD6;
+            QPushButton#secondary:focus {
+                border-color: #7dd3fc;
                 color: #ffffff;
-                background-color: rgba(42, 51, 84, 0.2);
             }
-            QPushButton#install_btn {
-                background-color: #1F6FD6;
-                border: 2px solid transparent;
-                color: #ffffff;
-                border-radius: 12px;
+            QPushButton#primary {
+                background-color: #38bdf8;
+                border: 2px solid #38bdf8;
+                color: #0a0e1a;
             }
-            QPushButton#install_btn:hover {
-                background-color: #3D82E0;
+            QPushButton#primary:hover {
+                background-color: #7dd3fc;
+                border-color: #7dd3fc;
             }
-            QPushButton#install_btn:pressed {
-                background-color: #17569F;
+            QPushButton#primary:pressed {
+                background-color: #0ea5e9;
+                border-color: #0ea5e9;
             }
-            QPushButton#install_btn:focus {
-                border-color: #ffffff;
-                background-color: #3D82E0;
+            QPushButton#primary:focus {
+                border-color: #e6e9f2;
             }
         """)
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(60, 40, 60, 40)
+        layout.setContentsMargins(56, 40, 56, 32)
         layout.setSpacing(0)
+        layout.addStretch(2)
 
-        # ---- NeOS wordmark ----
+        # ---- Wordmark and tagline ----
         title = QLabel('NeOS')
         title.setObjectName('title')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        layout.addStretch(2)
         layout.addWidget(title)
-        layout.addSpacing(6)
+        layout.addSpacing(4)
 
-        # ---- Subtitle ----
         subtitle = QLabel('Arch Linux, refined for everyone.')
         subtitle.setObjectName('subtitle')
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)
-        layout.addSpacing(20)
+        layout.addSpacing(18)
 
-        # ---- Gradient divider ----
         divider = QFrame()
         divider.setObjectName('divider')
-        divider.setFixedWidth(120)
-        divider.setFixedHeight(2)
+        divider.setFixedSize(48, 3)
         div_layout = QHBoxLayout()
         div_layout.addStretch()
         div_layout.addWidget(divider)
         div_layout.addStretch()
         layout.addLayout(div_layout)
+        layout.addSpacing(28)
 
-        layout.addSpacing(20)
-
-        # ---- Feature grid ----
-        features_layout = QHBoxLayout()
-        features_layout.setSpacing(16)
-
+        # ---- Feature cards ----
+        # Monochrome text glyphs, not emoji: they render in the accent colour
+        # with any font and match the installer slideshow.
         features_data = [
-            ("🛡", "Security", "Firewall enabled\nKernel hardened"),
-            ("⚡", "Performance", "ZRAM compression\nBBR networking"),
-            ("↺", "Snapshots", "Btrfs auto-snapshots\nRollback support"),
-            ("💻", "Compatibility", "NVIDIA/AMD/Intel\nVM-ready"),
+            ("\u2713", "Secure by default", "Firewall on, kernel hardened"),
+            ("\u00bb", "Fast", "ZRAM swap, BBR networking"),
+            ("\u21ba", "Snapshots", "Btrfs snapshot before every update"),
+            ("\u25c6", "Your hardware", "NVIDIA, AMD, Intel and VMs"),
         ]
-
+        features_layout = QHBoxLayout()
+        features_layout.setSpacing(14)
+        features_layout.addStretch()
         for icon, title_text, desc in features_data:
             card = QFrame()
-            card.setStyleSheet("""
-                QFrame {
-                    background-color: rgba(17, 23, 46, 0.8);
-                    border: 1px solid #1c2444;
-                    border-radius: 10px;
-                    padding: 12px;
-                }
-            """)
+            card.setObjectName('card')
+            card.setFixedSize(172, 116)
             card_layout = QVBoxLayout()
-            card_layout.setSpacing(6)
-            card_layout.setContentsMargins(10, 10, 10, 10)
-
-            icon_lbl = QLabel(icon)
-            icon_lbl.setObjectName('feature_icon')
-            icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            card_layout.addWidget(icon_lbl)
-
-            name_lbl = QLabel(title_text)
-            name_lbl.setStyleSheet("font-size: 12px; font-weight: bold; color: #e6e9f2;")
-            name_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            card_layout.addWidget(name_lbl)
-
-            desc_lbl = QLabel(desc)
-            desc_lbl.setStyleSheet("font-size: 10px; color: #7a7e96;")
-            desc_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            card_layout.addWidget(desc_lbl)
-
+            card_layout.setSpacing(4)
+            card_layout.setContentsMargins(14, 14, 14, 14)
+            for text, name in ((icon, 'cardIcon'), (title_text, 'cardTitle'), (desc, 'cardText')):
+                lbl = QLabel(text)
+                lbl.setObjectName(name)
+                lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+                lbl.setWordWrap(True)
+                card_layout.addWidget(lbl)
             card.setLayout(card_layout)
-            card.setFixedSize(160, 100)
             features_layout.addWidget(card)
-
         features_layout.addStretch()
-        features_layout.insertStretch(0)
         layout.addLayout(features_layout)
-
         layout.addStretch(2)
 
-
-        # ---- Telemetry / Privacy Opt-in ----
-        # [PALETTE] Verify accessibility, tab order, and color contrast of this new control.
-        # [SENTINEL] Audit local storage method for this boolean to avoid temp file vulnerabilities.
-        # [BOLT] Ensure no UI lag or startup degradation occurs.
-        optin_layout = QHBoxLayout()
-        optin_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.telemetry_checkbox = QCheckBox("Help improve NeOS by sending anonymous usage data")
-        self.telemetry_checkbox.setStyleSheet("""
-            QCheckBox {
-                color: #e6e9f2;
-                font-size: 13px;
-                spacing: 8px;
-                padding: 4px;
-                border: 1px solid transparent;
-                border-radius: 4px;
-            }
-            QCheckBox:focus {
-                border: 1px solid #1F6FD6;
-                border-radius: 4px;
-                background-color: rgba(31, 111, 214, 0.1);
-            }
-        """)
-        self.telemetry_checkbox.setAccessibleName("Telemetry Data Opt-in")
-        self.telemetry_checkbox.setAccessibleDescription("Check to help improve NeOS by sending anonymous usage data")
-        self.telemetry_checkbox.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.telemetry_checkbox.setChecked(False)  # Privacy-first default
-        optin_layout.addWidget(self.telemetry_checkbox)
-        layout.addLayout(optin_layout)
-        layout.addSpacing(15)
-
-        # ---- Buttons ----
+        # ---- Actions ----
         btn_layout = QHBoxLayout()
-        btn_layout.setSpacing(24)
+        btn_layout.setSpacing(12)
+        btn_layout.addStretch()
 
-        try_btn = QPushButton('Try NeOS')
-        try_btn.setObjectName('try_btn')
-        try_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        try_btn.clicked.connect(self.close)
-        try_btn.setToolTip('Explore NeOS without installing (Esc)')
-        try_btn.setShortcut('Esc')
+        def make_button(text, role, tooltip, handler):
+            btn = QPushButton(text)
+            btn.setObjectName(role)
+            btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            btn.setToolTip(tooltip)
+            btn.clicked.connect(handler)
+            btn_layout.addWidget(btn)
+            return btn
 
-        install_btn = QPushButton('Install NeOS')
-        install_btn.setObjectName('install_btn')
-        install_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        install_btn.clicked.connect(self.run_installer)
-        install_btn.setToolTip('Install NeOS to your computer (Enter)')
-        install_btn.setShortcut('Return')
+        if is_live_mode():
+            buttons = [
+                make_button('Try NeOS', 'secondary', 'Keep exploring the live desktop', self.close),
+                make_button('Install NeOS', 'primary', 'Install NeOS on this computer', self.run_installer),
+            ]
+        else:
+            buttons = [
+                make_button('Drivers', 'secondary', 'Check graphics and hardware drivers', self.launch_drivers),
+                make_button('Discover Apps', 'secondary', 'Browse and install applications', self.launch_discover),
+                make_button('Get Started', 'primary', 'Close and start using NeOS', self.close),
+            ]
+        buttons[-1].setDefault(True)
+        self.primary_button = buttons[-1]
 
-        # Glow shadow on install button
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(30)
-        shadow.setColor(QColor(31, 111, 214, 100))
-        shadow.setOffset(0, 6)
-        install_btn.setGraphicsEffect(shadow)
+        glow = QGraphicsDropShadowEffect()
+        glow.setBlurRadius(28)
+        glow.setColor(QColor(56, 189, 248, 90))
+        glow.setOffset(0, 4)
+        buttons[-1].setGraphicsEffect(glow)
 
-        btn_layout.addWidget(try_btn)
-        btn_layout.addWidget(install_btn)
-        btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
+        btn_layout.addStretch()
         layout.addLayout(btn_layout)
-        layout.addSpacing(10)
+        layout.addSpacing(16)
 
-        # ---- Version info ----
-        version_lbl = QLabel('v2026.07')
-        version_lbl.setObjectName('tagline')
+        version_lbl = QLabel(get_os_version())
+        version_lbl.setObjectName('version')
         version_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version_lbl)
 
-        layout.addStretch(1)
-
-        # Set explicit tab order
-        self.setTabOrder(self.telemetry_checkbox, try_btn)
-        self.setTabOrder(try_btn, install_btn)
-
         self.setLayout(layout)
+        for first, second in zip(buttons, buttons[1:]):
+            self.setTabOrder(first, second)
         self.center_on_screen()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        # Focus the primary action once the window exists, so Enter takes the
+        # expected path and the focus ring is not on a secondary button.
+        self.primary_button.setFocus()
 
     def center_on_screen(self):
         screen = QApplication.primaryScreen()
@@ -278,45 +229,87 @@ class NeosWelcome(QWidget):
             x = (geo.width() - self.width()) // 2
             y = (geo.height() - self.height()) // 2
             self.move(x, y)
+
     def closeEvent(self, event):
-        # Securely save telemetry state to user config and /tmp
-        try:
-            state = "1" if self.telemetry_checkbox.isChecked() else "0"
-            import tempfile, os, pathlib
-
-            # 1. Save to persistent user config space
-            config_dir = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
-            neos_dir = os.path.join(config_dir, "neos")
-            os.makedirs(neos_dir, exist_ok=True)
-            user_optin = os.path.join(neos_dir, "telemetry-optin")
-            if not os.path.islink(user_optin):
-                fd, tmp_file = tempfile.mkstemp(prefix='.telemetry.', dir=neos_dir)
-                with os.fdopen(fd, 'w') as f:
-                    f.write(state + "\n")
-                os.chmod(tmp_file, 0o600)
-                os.replace(tmp_file, user_optin)
-
-            # 2. Save to /tmp/neos-telemetry-optin safely
-            tmp_target = "/tmp/neos-telemetry-optin"
-            if not os.path.islink(tmp_target):
-                fd, tmp_file = tempfile.mkstemp(prefix='neos-telemetry.', dir='/tmp')
-                with os.fdopen(fd, 'w') as f:
-                    f.write(state + "\n")
-                os.chmod(tmp_file, 0o644)
-                os.replace(tmp_file, tmp_target)
-        except Exception as e:
-            import sys
-            print(f"Error saving telemetry state: {e}", file=sys.stderr)
+        # On an installed system, closing the window completes first-boot
+        # onboarding so it does not open again at the next login.
+        if not is_live_mode():
+            try:
+                config_dir = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
+                neos_dir = os.path.join(config_dir, "neos")
+                os.makedirs(neos_dir, exist_ok=True)
+                pathlib.Path(os.path.join(neos_dir, "firstboot-done")).touch()
+            except OSError as e:
+                print(f"Error saving onboarding state: {e}", file=sys.stderr)
         super().closeEvent(event)
-
-
 
     def run_installer(self):
         subprocess.Popen(['/usr/local/bin/neos-welcome'])
         self.close()
 
+    def launch_drivers(self):
+        try:
+            subprocess.Popen(['/usr/local/bin/neos-driver-manager'])
+        except Exception as e:
+            print(f"Error launching driver manager: {e}", file=sys.stderr)
+
+    def launch_discover(self):
+        try:
+            subprocess.Popen(['plasma-discover'])
+        except Exception:
+            try:
+                subprocess.Popen(['discover'])
+            except Exception as e:
+                print(f"Error launching app center: {e}", file=sys.stderr)
+
+
+def is_live_mode():
+    return (
+        os.path.exists('/run/archiso/bootmnt') or
+        os.path.exists('/run/archiso') or
+        os.environ.get('USER') == 'liveuser'
+    )
+
+
+def get_os_version():
+    # Always derived from the running system's /etc/os-release — never a
+    # hardcoded date. There is deliberately no built-in version literal here:
+    # a stale one shipped in the live image and drifted from VERSION
+    # (reports/v2026.09.22/UPDATES_NEEDED.md, item 5/M10).
+    version_id = ''
+    pretty_name = ''
+    try:
+        if os.path.exists('/etc/os-release'):
+            with open('/etc/os-release') as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('VERSION_ID='):
+                        version_id = line.split('=', 1)[1].strip('"\'')
+                    elif line.startswith('PRETTY_NAME='):
+                        pretty_name = line.split('=', 1)[1].strip('"\'')
+    except Exception:
+        pass
+    if version_id:
+        return 'v' + version_id
+    return pretty_name or 'NeOS'
+
 
 if __name__ == '__main__':
+    if not is_live_mode() and os.path.exists(os.path.expanduser('~/.config/neos/firstboot-done')) and '--force' not in sys.argv:
+        sys.exit(0)
+    # cidata autoinstall: if an unattended config is already visible, hand off
+    # and do not open the welcome window on top of Calamares.
+    if is_live_mode() and os.path.isfile('/usr/local/bin/neos-autoinstall'):
+        try:
+            probe = subprocess.run(
+                ['/usr/local/bin/neos-autoinstall', 'probe'],
+                capture_output=True, text=True, timeout=8, check=False,
+            )
+            if 'MODE=UNATTENDED' in (probe.stdout or ''):
+                subprocess.Popen(['/usr/local/bin/neos-autoinstall', 'apply'])
+                sys.exit(0)
+        except Exception:
+            pass
     app = QApplication(sys.argv)
     app.setApplicationName('NeOS')
     app.setDesktopFileName('neos-welcome')

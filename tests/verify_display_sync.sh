@@ -43,6 +43,15 @@ else
     exit 1
 fi
 
+# 4b. On Wayland (the NeOS default) KWin handles rotation and scaling; the
+# autostarted daemon must exit cleanly instead of driving xrandr/xinput.
+if XDG_SESSION_TYPE=wayland DISPLAY=":99" timeout 5 "$SCRIPT" --daemon >/dev/null 2>&1; then
+    echo "  [PASS] $SCRIPT --daemon is a clean no-op in a Wayland session"
+else
+    echo "[FAIL] $SCRIPT --daemon does not exit cleanly in a Wayland session"
+    exit 1
+fi
+
 # 5. Verify autostart desktop entry
 if [ -f "$AUTOSTART" ] && grep -q "Exec=/usr/local/bin/neos-display-sync --daemon" "$AUTOSTART"; then
     echo "  [PASS] $AUTOSTART properly launches neos-display-sync --daemon"
