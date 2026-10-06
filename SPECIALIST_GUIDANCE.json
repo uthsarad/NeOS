@@ -1,0 +1,14 @@
+{
+  "bolt": {
+    "task": "Review iso size optimizations and performance metrics",
+    "constraints": ["No destructive changes"]
+  },
+  "palette": {
+    "task": "Review newly introduced visual elements and ensure no emoji creep",
+    "constraints": ["Maintain current contrast ratios"]
+  },
+  "sentinel": {
+    "task": "Audit secure boot processes for potential vulnerabilities",
+    "constraints": ["Keep default deny stance"]
+  }
+}

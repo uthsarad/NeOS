@@ -1,0 +1,10 @@
+{
+  "target_branch": "testing",
+  "allowed_files": [],
+  "constraints": [
+    "No code modifications authorized",
+    "Maintain 100% test pass rate",
+    "Do not introduce new features"
+  ],
+  "objective": "Standby and review strategic directive"
+}
