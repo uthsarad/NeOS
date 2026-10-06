@@ -58,18 +58,18 @@ fi
 
 # Check for dependencies
 if ! command -v mkarchiso &> /dev/null; then
-    echo -e "${RED}Error: mkarchiso could not be found. Please install 'archiso'.${NC}" >&2
+    echo -e "${RED}Error: mkarchiso could not be found. Please install it using: sudo pacman -S archiso${NC}" >&2
     exit 1
 fi
 
 if ! command -v mksquashfs &> /dev/null; then
-    echo -e "${RED}Error: mksquashfs could not be found. Please install 'squashfs-tools'.${NC}" >&2
+    echo -e "${RED}Error: mksquashfs could not be found. Please install it using: sudo pacman -S squashfs-tools${NC}" >&2
     exit 1
 fi
 
 # Sentinel: [Security] Ensure required compression dependencies are present for pipelines
 if ! command -v zstd &> /dev/null; then
-    echo -e "${RED}Error: zstd could not be found. Please install 'zstd'.${NC}" >&2
+    echo -e "${RED}Error: zstd could not be found. Please install it using: sudo pacman -S zstd${NC}" >&2
     exit 1
 fi
 
