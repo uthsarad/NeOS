@@ -1,9 +1,11 @@
 # Sentinel Report
 
 ## Risks Found
+- **Missing Global Umask in build script:** `build.sh` lacked a global restrictive `umask`, potentially allowing permissive file creation.
 - **Missing Global Umask:** `neos-autoupdate.sh` lacked a global restrictive `umask`, potentially allowing permissive file creation if temporary files were not explicitly managed with isolated `umask` configurations.
 
 ## Fixes Applied
+- Added `umask 022` at the top of `build.sh` to enforce secure default permissions for generated artifacts without breaking readability.
 - Added `umask 077` at the top of `neos-autoupdate.sh` to enforce restrictive defaults for the entire script's lifecycle.
 - Removed redundant localized `umask 077` calls within subshells for `$LOG_FILE` and `$LOCK_FILE` creation.
 
