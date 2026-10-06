@@ -46,3 +46,8 @@
 **Vulnerability:** External string manipulation using `echo | grep` and `awk` within unquoted command arguments created a risk of command injection, where malicious strings could trigger shell execution when passing outputs directly to `dbus-send`.
 **Learning:** Bash subprocesses evaluating variables can be bypassed or hijacked if an attacker manages to embed a shell meta-character like `;` or a newline in the input when processing external binary outputs that are parsed loosely.
 **Prevention:** Always use Bash's native regular expression (`[[ =~ ]]`) to strictly validate variables against expected alphanumeric formats and safely extract values using `read -r` instead of shelling out to `grep`/`awk`.
+
+## 2026-10-06 - Enforce global umask in build scripts generating artifacts
+**Vulnerability:** Missing global `umask` in build scripts that generate system artifacts (like ISOs) could result in permissive file creation if localized `umask` handling fails or is missed by child processes.
+**Learning:** A restrictive `umask` is necessary at the start of a build script. However, when generating downstream user-accessible artifacts (like an ISO), `umask 077` can break standard artifact readability (resulting in `600` instead of `644`). Therefore, `umask 022` is the correct default for secure but functional artifact generation.
+**Prevention:** Always define a global `umask 022` at the beginning of build scripts that generate shared or final release artifacts to ensure secure defaults without breaking accessibility.
