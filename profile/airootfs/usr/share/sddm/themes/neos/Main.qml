@@ -10,18 +10,19 @@ Rectangle {
     color: "#0b0e1a"
 
     // ---- NeOS brand palette (tools/palette.json) ----------------------------
-    readonly property color cAccent:        "#1F6FD6"
-    readonly property color cAccentHover:   "#3D82E0"
-    readonly property color cAccentPressed: "#17569F"
-    readonly property color cText:          "#e6e9f2"
-    readonly property color cMuted:         "#9aa0b6"
-    readonly property color cDimmed:        "#6b7080"
-    readonly property color cField:         "#0f1428"
-    readonly property color cBorder:        "#2a3354"
-    readonly property color cCard:          "#0e1326"
-    readonly property color cError:         "#ff6b74"
-    readonly property color cBgTop:         "#0a0e1a"
-    readonly property color cBgBot:         "#16203a"
+    readonly property color cAccent:        "#38bdf8"
+    readonly property color cAccentHover:   "#7dd3fc"
+    readonly property color cAccentPressed: "#0ea5e9"
+    readonly property color cOnAccent:      "#0A0E1A"  // text on accent fills (9:1)
+    readonly property color cText:          "#e6f1ff"
+    readonly property color cMuted:         "#9db2cc"
+    readonly property color cDimmed:        "#5a6f8d"
+    readonly property color cField:         "#0a0f1a"
+    readonly property color cBorder:        "#1a263d"
+    readonly property color cCard:          "#0d1420"
+    readonly property color cError:         "#fb7185"
+    readonly property color cBgTop:         "#060a12"
+    readonly property color cBgBot:         "#0a0f1a"
 
     // ---- Session list (extracted from sessionModel via a hidden Repeater) --
     property var sessionNames: []
@@ -128,11 +129,23 @@ Rectangle {
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: 56; height: 56; radius: 28
-                color: Qt.rgba(0.122, 0.435, 0.839, 0.15)
+                color: Qt.rgba(0.220, 0.741, 0.973, 0.15)
                 border.color: root.cBorder; border.width: 1
-                Text {
+                // Person silhouette drawn from two shapes (head + shoulders) so it
+                // does not depend on an emoji font being installed.
+                Item {
                     anchors.centerIn: parent
-                    text: "👤"; font.pixelSize: 24
+                    width: 24; height: 24
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        y: 1; width: 10; height: 10; radius: 5
+                        color: root.cAccent
+                    }
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        y: 13; width: 20; height: 10; radius: 5
+                        color: root.cAccent
+                    }
                 }
             }
 
@@ -210,7 +223,7 @@ Rectangle {
                 Behavior on color { ColorAnimation { duration: 150 } }
                 Text {
                     anchors.centerIn: parent
-                    text: "Log In"; color: "white"
+                    text: "Log In"; color: root.cOnAccent
                     font.pixelSize: 16; font.bold: true
                 }
                 MouseArea {

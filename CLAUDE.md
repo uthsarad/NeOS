@@ -38,11 +38,11 @@ security
 ci-security-guardian | docs-dx | quality-operations | runtime-platform | workflow-design | workspace-governance
 ```
 
-Full agent registry and handoff matrix: `docs/orchestrator/AGENTS.md`
+Full agent registry and handoff matrix live in the orchestrator runtime (`~/.claude/agents/`), not in this repository. Only the parts that affect the repository are stated here; `docs/README.md` indexes what the repo itself documents.
 
 ## Routing
 
-**Default: Smart Routing** — risk-based, minimal-agent paths (uses `skills/cost-efficiency/`).
+**Default: Smart Routing** — risk-based, minimal-agent paths.
 
 **Escalate to Full-Gates** when any of these risk signals are present:
 - API/schema/type paths touched (`src/api/`, `backend/routes/`, `shared/types/`, `*.d.ts`, `openapi.yaml`)
@@ -52,7 +52,7 @@ Full agent registry and handoff matrix: `docs/orchestrator/AGENTS.md`
 - New modules or cross-domain designs
 - Breaking changes
 
-Full-Gates path: `skills/workflows/` — @architect + @api-guardian (if contract) + @validator ∥ @tester + @scribe.
+Full-Gates path — @architect + @api-guardian (if contract) + @validator ∥ @tester + @scribe. The workflow definitions themselves are provided by the orchestrator runtime's skills, not by files in this repository.
 
 ## Workflows
 
@@ -65,19 +65,20 @@ Full-Gates path: `skills/workflows/` — @architect + @api-guardian (if contract
 | "Process Issue #X" | @github-manager loads -> analyze -> workflow -> PR |
 | "Prepare Release" | @scribe -> @github-manager |
 
-Full workflow details: `docs/orchestrator/WORKFLOWS.md`
+Full workflow details: orchestrator runtime (`~/.claude/skills/`). Repository-specific expectations are in `CONTRIBUTING.md`.
 
 ## Modes
 
-| Mode | Skill | Use it for |
-|------|-------|------------|
-| **Smart Routing (default)** | `skills/cost-efficiency/` | risk-based routing, minimal-agent paths, inline arch brief |
-| Full-Gates | `skills/workflows/` | high-risk work, new modules, API/breaking changes |
-| Prototype | `skills/prototype-mode/` | local throwaway spikes with `PROTOTYPE ONLY` watermarks |
-| Departments | `skills/departments/` | large cross-domain work with frozen write scopes |
-| Agent Teams | `skills/agent-teams/` | explicit teammate-style parallelism only |
+| Mode | Use it for |
+|------|------------|
+| **Smart Routing (default)** | risk-based routing, minimal-agent paths, inline arch brief |
+| Full-Gates | high-risk work, new modules, API/breaking changes |
+| Prototype | local throwaway spikes with `PROTOTYPE ONLY` watermarks |
+| Departments | large cross-domain work with frozen write scopes |
+| Agent Teams | explicit teammate-style parallelism only |
 
-Mode details: `docs/orchestrator/MODES.md`
+Each mode's skill is loaded by the orchestrator runtime; this repository keeps no
+copy of them (see Skills below).
 
 ## Quality Gates
 
@@ -94,7 +95,7 @@ STATUS: APPROVED | BLOCKED | DONE
 report: <absolute path>
 ```
 
-Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
+Full decision matrix: orchestrator runtime. The repository enforces the same gates objectively through `tests/verify_*.sh` and CI.
 
 ## Fable 5 Orchestrator
 
@@ -110,22 +111,15 @@ Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
 
 ## Skills (On-Demand Knowledge)
 
-| Skill | What It Contains |
-|-------|------------------|
-| `skills/cost-efficiency/` | Smart Routing default policy, inline arch brief, risk signals |
-| `skills/workflows/` | Full-Gates workflow definitions (high-risk) |
-| `skills/quality-gates/` | Parallel gate execution, decision matrix, verdict contract |
-| `skills/release/` | Version-first workflow, pre-push checklist, CHANGELOG format |
-| `skills/api-change/` | Critical paths, @api-guardian rules, breaking change protocol |
-| `skills/issue-processing/` | GitHub issue → workflow mapping, PR requirements |
-| `skills/research/` | @researcher workflow, timeouts, memory guidelines |
-| `skills/meta-decisions/` | 5 meta-rules, ADR format, RARE matrix, escalation |
-| `skills/agent-teams/` | Experimental Agent Teams with SharedTaskList |
-| `skills/prototype-mode/` | Local-only fast lane with watermarks and migration checklist |
-| `skills/departments/` | Expanded department routing, ownership, and write-scope freeze |
-| `skills/greenfield-bootstrap/` | Bootstrap governance for empty/undocumented workspaces before workflows run |
+Skills are supplied by the orchestrator runtime (`~/.claude/skills/`), not by this
+repository — an earlier revision of this file pointed at a `skills/` tree that was
+never committed, together with `docs/orchestrator/*` and `docs/policies/*`
+(reports/v2026.09.22/UPDATES_NEEDED.md, section 2.2).
 
-**Load a skill when you need details beyond what's in this file.**
+Everything the repository itself needs to define is already here or in the files
+listed under References below. Load a skill when you need process detail beyond
+this file; `tests/verify_docs_links.sh` will fail if a future revision starts
+pointing at files that do not exist again.
 
 ## Start
 
@@ -138,13 +132,14 @@ Full decision matrix: `docs/orchestrator/QUALITY-GATES.md`
 7. **Select workflow** and activate agents
 8. **Complete** — @scribe updates VERSION + CHANGELOG
 
-## References
+## References (in-repository)
 
-- Versioning & pre-push rules: `docs/orchestrator/VERSIONING.md`
-- Workflow modes: `docs/orchestrator/MODES.md`
-- Meta-decision logic & escalation: `docs/orchestrator/META-DECISIONS.md`
-- Domain packs: `docs/policies/DOMAIN_PACK_SPEC.md`
-- API critical paths: `docs/orchestrator/WORKFLOWS.md`
-- Agent model/effort matrix: `docs/AGENT_MODEL_SELECTION.md`
+- Contribution rules and PR expectations: `CONTRIBUTING.md`
+- Documentation index: `docs/README.md`
+- Version convention: `VERSION` + the newest section of `CHANGELOG.md` (the release
+  tag and release body are both derived from them)
+- Latest repository audit: `reports/v2026.09.22/UPDATES_NEEDED.md`
+- Build entrypoint and flags: `./build.sh --help`
+- Test suite: `tests/verify_*.sh` (run all of them before opening a PR)
 
-**Current Version:** v7.1.1 — Docs Polish
+**Current Version:** v7.1.2 — References corrected to files that exist in this repository
