@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- **Empty pull requests are closed instead of merged into `testing`.** Jules opened a daily "Acknowledge Architect persona directives" PR that changed no files; each was auto-merged and set off a full ISO build and release. The auto-merge workflow now closes any PR into `testing` with no changed files, with a one-line note (`tests/verify_auto_merge.sh` checks this happens before any merge).
+
 ## [2026.10.03] - 2026-10-03
 
 Polish release: a clean, professional image from the boot menu to the installed desktop.
