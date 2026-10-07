@@ -75,6 +75,18 @@ else
     echo "  [PASS] no actions/checkout (gh is API-only)"
 fi
 
+# PRs that change no files are closed, never merged: an empty commit on testing
+# still builds and publishes a release. The check must come before any merge.
+EMPTY_LINE="$(grep -n 'PR_FILES" == "0"' "$WF" | head -1 | cut -d: -f1)"
+MERGE_LINE="$(grep -n 'gh pr merge' "$WF" | head -1 | cut -d: -f1)"
+if [[ "$CONTENT" == *"changedFiles"* && -n "$EMPTY_LINE" && -n "$MERGE_LINE" ]] && (( EMPTY_LINE < MERGE_LINE )) \
+    && grep -qF 'gh pr close "' "$WF"; then
+    echo "  [PASS] PRs that change no files are closed before any merge"
+else
+    echo "[FAIL] $WF must close PRs with changedFiles == 0 before merging"
+    FAIL=1
+fi
+
 if (( FAIL )); then
     echo "[FAIL] Auto-merge workflow does not match the testing-branch policy."
     exit 1

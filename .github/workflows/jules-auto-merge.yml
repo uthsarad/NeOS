@@ -16,6 +16,10 @@ name: Auto-merge into testing
 # retargeted to `testing` instead of merged: `main` only moves by a maintainer
 # merging `testing`. A PR whose head IS `testing` (the release PR) is left alone.
 #
+# PRs that change no files (Jules opens "Acknowledge … directives" PRs daily
+# with nothing in them) are closed with a short note instead of merged: an
+# empty commit on testing still triggers a full ISO build and release.
+#
 # This workflow never checks out PR code. It only calls `gh` against the
 # pull request URL from the event payload, which is why pull_request_target
 # is safe to use here (write token + secrets, untrusted code is not run).
@@ -66,13 +70,14 @@ jobs:
 
           echo "Inspecting PR: $PR_URL"
 
-          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,headRefName,isDraft,isCrossRepository,author,url)"
+          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,headRefName,isDraft,isCrossRepository,author,url,changedFiles)"
           PR_STATE="$(printf '%s' "$PR_JSON" | jq -r '.state')"
           PR_BASE="$(printf '%s' "$PR_JSON" | jq -r '.baseRefName')"
           PR_DRAFT="$(printf '%s' "$PR_JSON" | jq -r '.isDraft')"
           PR_FROM_FORK="$(printf '%s' "$PR_JSON" | jq -r '.isCrossRepository')"
           PR_HEAD="$(printf '%s' "$PR_JSON" | jq -r '.headRefName')"
           PR_AUTHOR="$(printf '%s' "$PR_JSON" | jq -r '.author.login')"
+          PR_FILES="$(printf '%s' "$PR_JSON" | jq -r '.changedFiles')"
 
           if [[ "$PR_STATE" != "OPEN" ]]; then
             echo "PR is in state $PR_STATE. Nothing to merge."
@@ -115,6 +120,16 @@ jobs:
             if [[ "$EVENT_ACTION" == "opened" || "$EVENT_ACTION" == "reopened" ]]; then
               gh pr comment "$PR_URL" --body "Thanks! Pull requests from forks are not merged into \`testing\` automatically, because \`testing\` publishes releases. A maintainer will review and merge this." || true
             fi
+            exit 0
+          fi
+
+          # Nothing to merge: close it rather than land an empty commit (which
+          # would still build and publish a release).
+          if [[ "$PR_FILES" == "0" ]]; then
+            echo "PR changes no files; closing it instead of merging."
+            gh pr close "$PR_URL" --delete-branch \
+              --comment "Closed automatically: this pull request changes no files, so there is nothing to merge into \`testing\`." \
+              || gh pr close "$PR_URL" || true
             exit 0
           fi
 
