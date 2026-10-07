@@ -1,0 +1,14 @@
+{
+  "bolt": {
+    "task": "Optimize package caching in build.sh",
+    "constraints": "Do not break existing build pipeline or change output artifacts."
+  },
+  "palette": {
+    "task": "Improve UX and accessibility in neos-welcome-app",
+    "constraints": "Maintain Windows-familiar layout and ensure accessibility standards."
+  },
+  "sentinel": {
+    "task": "Harden security in neos-autoupdate.sh",
+    "constraints": "Ensure updates are verifiable and do not introduce regressions."
+  }
+}
