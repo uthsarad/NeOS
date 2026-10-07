@@ -1,0 +1,9 @@
+{
+  "allowed_files": [],
+  "constraints": [
+    "No new dependencies allowed.",
+    "No new features. Focus only on stabilization.",
+    "Ensure all tests continue to pass."
+  ],
+  "directive": "Stabilize current configuration without adding new functionality."
+}
