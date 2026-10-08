@@ -232,15 +232,14 @@ bash tools/gen-manifests.sh "$REPO_ROOT"
 # would turn into a failed build moments after a successful one (observed as
 # "Process completed with exit code 141" in the first CI run that executed this
 # script). errexit/pipefail are therefore suspended around the pipeline and only
-# mkarchiso's own status (PIPESTATUS[1]) is judged. The pre-unification CI build
-# did exactly this; build.sh never had it, so the developer path aborted at the
-# end of every successful build and nobody noticed because CI was not running
-# this script at all (reports/v2026.09.22/UPDATES_NEEDED.md C2).
+# Using `< /dev/null` provides EOF to any prompt mkarchiso may emit without
+# the overhead of a pipeline and infinite stream generation. This avoids the
+# SIGPIPE/141 exit status issue entirely.
 echo -e "${GREEN}Building ISO...${NC}"
-set +e +o pipefail
-yes "" | mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR"
-MKARCHISO_EXIT=${PIPESTATUS[1]:-$?}
-set -e -o pipefail
+set +e
+mkarchiso -v -w "$WORK_DIR" -o "$OUT_DIR" -C "$BUILD_CONF" "$PROFILE_DIR" < /dev/null
+MKARCHISO_EXIT=$?
+set -e
 if [[ "$MKARCHISO_EXIT" -ne 0 ]]; then
     echo -e "${RED}Error: mkarchiso failed with exit code $MKARCHISO_EXIT${NC}" >&2
     exit "$MKARCHISO_EXIT"
@@ -273,7 +272,14 @@ if [[ "$OFFLINE_REPO" == "true" ]]; then
     trap 'rm -f "${TMP_ISO:-}"' EXIT
     if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
         echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
-        ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+        ISO_PATH=""
+        iso_files=("$REPO_ROOT/$OUT_DIR"/*.iso)
+        for iso_file in "${iso_files[@]}"; do
+            [[ -f "$iso_file" ]] || continue
+            if [[ -z "$ISO_PATH" || "$iso_file" -nt "$ISO_PATH" ]]; then
+                ISO_PATH="$iso_file"
+            fi
+        done
         if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
             # Create a temporary ISO with the repo added
             TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
