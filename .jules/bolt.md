@@ -1,0 +1,3 @@
+## 2024-10-08 - [Bash Pipeline Subshells and SIGPIPE in mkarchiso]
+**Learning:** Using `yes ""` to feed empty inputs to commands like `mkarchiso` creates a persistent subshell pipeline that can crash with SIGPIPE (Exit Code 141) if the consuming process completes before reading the stream. This forces messy pipefail toggles and unnecessary process overhead.
+**Action:** Replace `yes ""` interactive bypasses with standard input redirection `< /dev/null` for commands that only need to avoid blocking on empty TTY reads. This completely eliminates the subprocess and pipeline overhead while maintaining safety.
