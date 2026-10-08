@@ -1,0 +1,24 @@
+{
+  "bolt": {
+    "focus": "build.sh",
+    "directives": [
+      "Optimize package caching",
+      "Improve pipeline execution speed"
+    ]
+  },
+  "palette": {
+    "focus": "profile/airootfs/usr/local/bin/neos-welcome-app",
+    "directives": [
+      "Enhance UX accessibility",
+      "Improve UI readability"
+    ]
+  },
+  "sentinel": {
+    "focus": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+    "directives": [
+      "Audit secure file handling",
+      "Identify privilege escalation risks"
+    ]
+  },
+  "timestamp": "2026-10-08T23:12:48Z"
+}

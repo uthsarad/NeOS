@@ -1,0 +1,16 @@
+{
+  "target_tasks": [
+    "Stabilize core shell scripts",
+    "Refine first-boot experience"
+  ],
+  "allowed_files": [
+    "build.sh",
+    "profile/airootfs/usr/local/bin/neos-welcome-app",
+    "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+  ],
+  "constraints": [
+    "Do not introduce new features.",
+    "Ensure all modifications strictly improve security, accessibility, or performance."
+  ],
+  "timestamp": "2026-10-08T23:12:37Z"
+}
