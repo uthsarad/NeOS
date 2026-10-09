@@ -1,0 +1,16 @@
+{
+  "bolt": {
+    "focus": "None",
+    "tasks": []
+  },
+  "palette": {
+    "focus": "None",
+    "tasks": []
+  },
+  "sentinel": {
+    "focus": "Documentation accuracy",
+    "tasks": [
+      "Verify that release documentation accurately reflects the system state without introducing misleading information."
+    ]
+  }
+}
