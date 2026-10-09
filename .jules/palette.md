@@ -1,0 +1,3 @@
+## 2024-10-09 - Accessible PyQt Buttons
+**Learning:** PyQt `QPushButton` widgets do not automatically inherit `setAccessibleName` or `setAccessibleDescription` from their text labels or tooltips, requiring explicit assignment to ensure proper screen reader context. Also, in PyQt stylesheets (QSS), the `outline` CSS property is not supported or reliably rendered for focus indicators on widgets like `QPushButton` or `QCheckBox`. Always use the `border` property (e.g., `border: 2px solid <color>;`) to define visible focus states.
+**Action:** Always assign `setAccessibleName(text)` and `setAccessibleDescription(tooltip)` when generating dynamic buttons in PyQt, and use `border` instead of `outline` for focus indicators in QSS.

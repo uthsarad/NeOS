@@ -88,7 +88,7 @@ class NeosWelcome(QWidget):
                 color: #ffffff;
             }
             QPushButton#secondary:focus {
-                border-color: #7dd3fc;
+                border: 2px solid #7dd3fc;
                 color: #ffffff;
             }
             QPushButton#primary {
@@ -105,7 +105,7 @@ class NeosWelcome(QWidget):
                 border-color: #0ea5e9;
             }
             QPushButton#primary:focus {
-                border-color: #e6e9f2;
+                border: 2px solid #e6e9f2;
             }
         """)
 
@@ -178,6 +178,8 @@ class NeosWelcome(QWidget):
             btn.setObjectName(role)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.setToolTip(tooltip)
+            btn.setAccessibleName(text)
+            btn.setAccessibleDescription(tooltip)
             btn.clicked.connect(handler)
             btn_layout.addWidget(btn)
             return btn
