@@ -1,0 +1,13 @@
+{
+  "focus": "Resolve 2026.09.22 audit release paperwork items",
+  "tasks": [
+    "Bump VERSION to reflect recent undocumented commits.",
+    "Update CHANGELOG.md to cover commits 523a269 and 4fab136, specifically noting the removed size gate."
+  ],
+  "constraints": [
+    "No system code changes.",
+    "Target testing branch.",
+    "Maintain existing documentation structure."
+  ],
+  "architect_timestamp": "2026-10-09T23:35:19Z"
+}
