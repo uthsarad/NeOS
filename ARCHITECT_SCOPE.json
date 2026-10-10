@@ -1,0 +1,10 @@
+{
+  "tasks": [
+    {
+      "description": "Fix documentation drift identified in 2026.09.22 UPDATES_NEEDED.md (Section 4). Correct paths in HANDBOOK.md and BOOTSTRAP.md, update TROUBLESHOOTING.md warning about SigLevel, fix relative links in docs/README.md and remove stale CLAUDE.md references.",
+      "target_file": "docs/user-guide/HANDBOOK.md",
+      "status": "pending"
+    }
+  ],
+  "architect_timestamp": "2026-10-10T23:23:47Z"
+}
