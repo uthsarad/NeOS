@@ -271,9 +271,20 @@ if [[ "$OFFLINE_REPO" == "true" ]]; then
     # before the real image and used to be picked up by the first-glob ISO
     # consumers (reports/v2026.09.18 M5).
     trap 'rm -f "${TMP_ISO:-}"' EXIT
-    if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+    shopt -s nullglob
+    offline_pkgs=("$INSTALL_REPO"/*.pkg.tar.zst)
+    shopt -u nullglob
+    if [[ -d "$INSTALL_REPO" ]] && (( ${#offline_pkgs[@]} > 0 )); then
         echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
-        ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+        shopt -s nullglob
+        iso_files=("$REPO_ROOT/$OUT_DIR"/*.iso)
+        shopt -u nullglob
+        ISO_PATH=""
+        for iso in "${iso_files[@]}"; do
+            if [[ -z "$ISO_PATH" ]] || [[ "$iso" -nt "$ISO_PATH" ]]; then
+                ISO_PATH="$iso"
+            fi
+        done
         if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
             # Create a temporary ISO with the repo added
             TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
