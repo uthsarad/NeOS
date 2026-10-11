@@ -178,6 +178,8 @@ class NeosWelcome(QWidget):
             btn.setObjectName(role)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.setToolTip(tooltip)
+            btn.setAccessibleName(text)
+            btn.setAccessibleDescription(tooltip)
             btn.clicked.connect(handler)
             btn_layout.addWidget(btn)
             return btn
