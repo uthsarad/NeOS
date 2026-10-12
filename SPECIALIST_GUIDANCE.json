@@ -1,0 +1,14 @@
+{
+  "Bolt": {
+    "focus": "build.sh",
+    "directive": "Optimize package caching."
+  },
+  "Palette": {
+    "focus": "profile/airootfs/usr/local/bin/neos-welcome-app",
+    "directive": "Enhance UX and accessibility."
+  },
+  "Sentinel": {
+    "focus": "profile/airootfs/usr/local/bin/neos-autoupdate.sh",
+    "directive": "Harden security."
+  }
+}

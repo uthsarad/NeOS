@@ -1,0 +1,11 @@
+{
+  "target_files": [
+    "docs/architecture/ARCHITECTURE.md",
+    "docs/architecture/BOOTLOADER.md",
+    "docs/architecture/PERFORMANCE.md",
+    "docs/architecture/ROADMAP.md",
+    "docs/user-guide/VM_STARTUP.md"
+  ],
+  "maximum_surface_area": 5,
+  "constraints": "Only fix the relative links pointing to docs/README.md which no longer exists."
+}
