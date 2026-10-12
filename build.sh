@@ -271,9 +271,22 @@ if [[ "$OFFLINE_REPO" == "true" ]]; then
     # before the real image and used to be picked up by the first-glob ISO
     # consumers (reports/v2026.09.18 M5).
     trap 'rm -f "${TMP_ISO:-}"' EXIT
-    if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+    # Bolt: [Performance] Replaced subprocess pipelines (ls -A) with native bash array expansion to avoid fork/exec overhead.
+    shopt -s nullglob
+    INSTALL_REPO_PKGS=("$INSTALL_REPO"/*.pkg.tar.zst)
+    shopt -u nullglob
+    if [[ -d "$INSTALL_REPO" ]] && (( ${#INSTALL_REPO_PKGS[@]} > 0 )); then
         echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
-        ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+        # Bolt: [Performance] Replaced find | sort | head pipeline with native bash iteration and -nt operator to find the newest ISO file without spawning subprocesses.
+        shopt -s nullglob
+        ISO_FILES=("$REPO_ROOT/$OUT_DIR"/*.iso)
+        shopt -u nullglob
+        ISO_PATH=""
+        for f in "${ISO_FILES[@]}"; do
+            if [[ -z "$ISO_PATH" || "$f" -nt "$ISO_PATH" ]]; then
+                ISO_PATH="$f"
+            fi
+        done
         if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
             # Create a temporary ISO with the repo added
             TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
