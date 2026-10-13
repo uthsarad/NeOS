@@ -101,7 +101,8 @@ notify_users() {
         if [[ -z "$uid" || -z "$user_name" ]]; then continue; fi
 
         # Sentinel: Enforce safe execution boundary using -- and env
-        sudo -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+        # Added timeout to prevent frozen user sessions from hanging the root process (Local DoS)
+        timeout 10s sudo -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
             notify-send -- "$title" "$err_msg" --icon="$icon" --urgency="$urgency" || true
     done < <(loginctl list-users --no-legend)
 }
