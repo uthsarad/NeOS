@@ -1,0 +1,20 @@
+{
+  "bolt": {
+    "focus": "Passive review",
+    "directives": [
+      "Monitor I/O and telemetry passively. No active optimization required."
+    ]
+  },
+  "palette": {
+    "focus": "Passive review",
+    "directives": [
+      "Observe current UX/UI stability. No changes required."
+    ]
+  },
+  "sentinel": {
+    "focus": "Passive review",
+    "directives": [
+      "Conduct passive security audits of dependencies."
+    ]
+  }
+}

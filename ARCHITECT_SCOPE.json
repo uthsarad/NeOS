@@ -1,0 +1,8 @@
+{
+  "focus": "Acknowledge Architect persona directives",
+  "target_files": [],
+  "constraints": [
+    "Do not write production code.",
+    "Acknowledge the strategic pause."
+  ]
+}
