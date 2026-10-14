@@ -1,0 +1,11 @@
+{
+  "task": "Apply umask 022 in build.sh to secure default permissions for downstream user-accessible artifacts",
+  "target_files": [
+    "build.sh"
+  ],
+  "constraints": [
+    "Do not add new features",
+    "Preserve standard artifact readability"
+  ],
+  "timestamp": "2026-10-14T23:12:46Z"
+}
