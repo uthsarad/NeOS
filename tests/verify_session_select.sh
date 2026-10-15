@@ -58,14 +58,14 @@ expect() {
 expect "Intel graphics"            wayland intel  "quiet splash" 0 i915
 expect "AMD graphics"              wayland amd    "quiet splash" 0 amdgpu
 expect "NVIDIA proprietary driver" wayland nvidia "quiet splash" 0 nvidia
-expect "nouveau"                   x11     nouv   "quiet splash" 0 nouveau
-expect "firmware framebuffer only" x11     sdrm   "quiet splash" 0 simpledrm
-expect "no GPU device"             x11     none   "quiet splash" 0 ""
-expect "virtual machine"           x11     vm     "quiet splash" 1 virtio_gpu
-expect "Safe Graphics (nomodeset)" x11     nomod  "quiet nomodeset" 0 i915
+expect "nouveau"                   wayland nouv   "quiet splash" 0 nouveau
+expect "firmware framebuffer only" wayland sdrm   "quiet splash" 0 simpledrm
+expect "no GPU device"             wayland none   "quiet splash" 0 ""
+expect "virtual machine"           wayland vm     "quiet splash" 1 virtio_gpu
+expect "Safe Graphics (nomodeset)" wayland nomod  "quiet nomodeset" 0 i915
 expect "neos.session=wayland in a VM" wayland cmdw "quiet neos.session=wayland" 1 virtio_gpu
-expect "neos.session=x11 on Intel"    x11     cmdx "quiet neos.session=x11" 0 i915
-expect "session.conf x11 on Intel"    x11     confx "quiet" 0 i915 x11
+expect "neos.session=x11 on Intel"    wayland cmdx "quiet neos.session=x11" 0 i915
+expect "session.conf x11 on Intel"    wayland confx "quiet" 0 i915 x11
 expect "session.conf wayland in a VM" wayland confw "quiet" 1 virtio_gpu wayland
 expect "cmdline beats session.conf"   wayland both  "neos.session=wayland" 0 i915 x11
 
@@ -81,15 +81,15 @@ else
 fi
 
 # A user's later pick in the greeter must survive the next boot.
-printf '[Last]\nSession=/usr/share/xsessions/plasmax11.desktop\n' > "$root/var/lib/sddm/state.conf"
+printf '[Last]\nSession=/usr/share/wayland-sessions/plasma.desktop\n' > "$root/var/lib/sddm/state.conf"
 NEOS_SESSION_ROOT="$root" NEOS_SESSION_CMDLINE="$root/cmdline" NEOS_SESSION_DRM="$root/drm" \
     NEOS_SESSION_VIRT="$WORK/virt" NEOS_SESSION_NO_WAIT=1 FAKE_VM=0 bash "$SCRIPT" >/dev/null
-if grep -qx 'Session=/usr/share/xsessions/plasmax11.desktop' "$root/var/lib/sddm/state.conf"; then pass "keeps the session the user last chose"; else fail "overwrote the user's last session"; fi
+if grep -qx 'Session=/usr/share/wayland-sessions/plasma.desktop' "$root/var/lib/sddm/state.conf"; then pass "keeps the session the user last chose"; else fail "overwrote the user's last session"; fi
 
-if grep -qx 'Session=plasmax11' "$WORK/vm/etc/sddm.conf"; then pass "X11 fallback keeps the autologin session on plasmax11"; else fail "X11 fallback changed the autologin session"; fi
+if grep -qx 'Session=plasma' "$WORK/vm/etc/sddm.conf"; then pass "Wayland fallback keeps the autologin session on plasma"; else fail "Wayland fallback changed the autologin session"; fi
 
 # Static configs must stay the safe floor if the service never runs.
-if grep -qx 'DisplayServer=x11' profile/airootfs/etc/sddm.conf.d/10-displayserver.conf && grep -qx 'Session=plasmax11' profile/airootfs/etc/sddm.conf.d/autologin.conf; then pass "static SDDM config stays on X11 as the fallback"; else fail "static SDDM config must stay X11 (neos-session-select upgrades it)"; fi
+if grep -qx 'DisplayServer=wayland' profile/airootfs/etc/sddm.conf.d/10-displayserver.conf && grep -qx 'Session=plasma' profile/airootfs/etc/sddm.conf.d/autologin.conf; then pass "static SDDM config stays on Wayland as the fallback"; else fail "static SDDM config must stay Wayland (neos-session-select upgrades it)"; fi
 
 if (( FAIL )); then
     echo "[FAIL] Display session selection checks failed."

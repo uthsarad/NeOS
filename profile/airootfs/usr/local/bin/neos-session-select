@@ -110,13 +110,14 @@ CompositorCommand=kwin_wayland --drm --no-lockscreen --no-global-shortcuts --loc
 Session=$session
 EOF
 else
-    session="plasmax11"
-    session_file="/usr/share/xsessions/plasmax11.desktop"
+    # X11 is not supported since plasma 6. So fallback to wayland anyway.
+    session="plasma"
+    session_file="/usr/share/wayland-sessions/plasma.desktop"
     cat > "$OUT" <<EOF
 # Generated at boot by neos-session-select ($reason). Do not edit; see
 # /etc/neos/session.conf to choose Wayland or X11.
 [General]
-DisplayServer=x11
+DisplayServer=wayland
 
 [Autologin]
 Session=$session
