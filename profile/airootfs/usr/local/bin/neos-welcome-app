@@ -118,12 +118,14 @@ class NeosWelcome(QWidget):
         title = QLabel('NeOS')
         title.setObjectName('title')
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setWordWrap(True)
         layout.addWidget(title)
         layout.addSpacing(4)
 
         subtitle = QLabel('Arch Linux, refined for everyone.')
         subtitle.setObjectName('subtitle')
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setWordWrap(True)
         layout.addWidget(subtitle)
         layout.addSpacing(18)
 
@@ -178,6 +180,8 @@ class NeosWelcome(QWidget):
             btn.setObjectName(role)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.setToolTip(tooltip)
+            btn.setAccessibleName(text)
+            btn.setAccessibleDescription(tooltip)
             btn.clicked.connect(handler)
             btn_layout.addWidget(btn)
             return btn
@@ -209,6 +213,7 @@ class NeosWelcome(QWidget):
         version_lbl = QLabel(get_os_version())
         version_lbl.setObjectName('version')
         version_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        version_lbl.setWordWrap(True)
         layout.addWidget(version_lbl)
 
         self.setLayout(layout)
