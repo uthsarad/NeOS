@@ -1,0 +1,8 @@
+{
+  "task": "No-build day (strategic pause)",
+  "target_files": [],
+  "constraints": [
+    "Do not write production code",
+    "Focus on system stabilization review only"
+  ]
+}

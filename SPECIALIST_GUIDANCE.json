@@ -1,0 +1,20 @@
+{
+  "bolt": {
+    "focus": "Optimize build.sh and package caching.",
+    "target_files": [
+      "build.sh"
+    ]
+  },
+  "palette": {
+    "focus": "Enhance neos-welcome-app UX and accessibility.",
+    "target_files": [
+      "profile/airootfs/usr/local/bin/neos-welcome-app"
+    ]
+  },
+  "sentinel": {
+    "focus": "Audit and harden neos-autoupdate.sh security.",
+    "target_files": [
+      "profile/airootfs/usr/local/bin/neos-autoupdate.sh"
+    ]
+  }
+}
