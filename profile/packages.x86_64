@@ -431,7 +431,7 @@ plasma-firewall
 plasma-nm
 plasma-pa
 plasma-systemmonitor
-plasma-x11-session
+plasma-workspace-x11
 plymouth
 plymouth-kcm
 polkit

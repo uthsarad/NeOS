@@ -353,7 +353,7 @@ was found; the items below are what changed. Open items are listed at the end.
 ## [2026.06.24] - 2026-06-24
 
 ### Fixed
-- **Critical**: Live ISO no longer hangs at "Terminate Plymouth Boot Screen". The image shipped only the Wayland Plasma session (`plasma-desktop`) with no X11 session installed at all, and autologged straight into Wayland. On GPUs/VMs where the Wayland session cannot start (notably NVIDIA/nouveau), autologin failed silently and boot stalled at the Plymouth handoff. Now ship `plasma-x11-session` + `xorg-server`, force SDDM onto X11 (`DisplayServer=x11`), and autologin into the `plasmax11` session — the portable path a live installer needs. Wayland remains selectable from SDDM where supported.
+- **Critical**: Live ISO no longer hangs at "Terminate Plymouth Boot Screen". The image shipped only the Wayland Plasma session (`plasma-desktop`) with no X11 session installed at all, and autologged straight into Wayland. On GPUs/VMs where the Wayland session cannot start (notably NVIDIA/nouveau), autologin failed silently and boot stalled at the Plymouth handoff. Now ship `plasma-workspace-x11` + `xorg-server`, force SDDM onto X11 (`DisplayServer=x11`), and autologin into the `plasmax11` session — the portable path a live installer needs. Wayland remains selectable from SDDM where supported.
 - The installed system now also defaults to the X11 Plasma session, so a machine whose GPU could not start Wayland in the live environment does not hit the same hang after installation.
 
 ## [2026.06.23] - 2026-06-23
