@@ -178,6 +178,8 @@ Please free up some disk space to continue."
 perform_update() {
     log "Starting system update..."
 
+    # Sentinel: [Security-Sensitive Area] Ensure the snapshot and update process is hardened against race conditions or incomplete states. (Delegated by Architect)
+
     # Create pre-update snapshot
     local desc="Pre-update snapshot"
     local snap_id

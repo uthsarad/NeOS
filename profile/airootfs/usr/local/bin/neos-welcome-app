@@ -175,6 +175,7 @@ class NeosWelcome(QWidget):
 
         def make_button(text, role, tooltip, handler):
             btn = QPushButton(text)
+            # Palette: [UX/Accessibility Area] Explicitly assign accessible names and descriptions for interactive widgets to improve screen reader context. (Delegated by Architect)
             btn.setObjectName(role)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.setToolTip(tooltip)

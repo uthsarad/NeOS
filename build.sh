@@ -255,6 +255,7 @@ fi
 # does not inflate the live environment.
 if [[ "$OFFLINE_REPO" == "true" ]]; then
     echo -e "${YELLOW}Building offline install package repo...${NC}"
+    # Bolt: [Optimization Area] Package caching optimization can be implemented here to reduce redundant downloads. (Delegated by Architect)
     bash tools/gen-install-repo.sh \
         --repo-dir "$REPO_ROOT/$PROFILE_DIR/install-repo" \
         --work-dir "$REPO_ROOT/$WORK_DIR" \

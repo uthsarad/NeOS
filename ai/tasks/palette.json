@@ -2,5 +2,7 @@
   "task": "Focus strictly on profile/airootfs/usr/local/bin/neos-welcome-app UX and accessibility.",
   "target_files": [
     "profile/airootfs/usr/local/bin/neos-welcome-app"
-  ]
+  ],
+  "delegated_by": "Architect",
+  "notes": "Enhance UX and ensure accessible names for interactive widgets."
 }
