@@ -1,0 +1,13 @@
+{
+  "tasks": [
+    {
+      "description": "Point shipped URLs at uthsarad/NeOS in os-release, branding.desc, and profiledef.sh",
+      "target_file": "profile/airootfs/etc/os-release"
+    },
+    {
+      "description": "Fix the doc drift in docs/README.md, CLAUDE.md, docs/user-guide/HANDBOOK.md, docs/architecture/BOOTSTRAP.md, and docs/TROUBLESHOOTING.md",
+      "target_file": "docs/README.md"
+    }
+  ],
+  "architect_timestamp": "2026-10-16T23:33:57Z"
+}
