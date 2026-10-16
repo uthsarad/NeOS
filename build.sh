@@ -134,28 +134,37 @@ echo "Setting up Chaotic-AUR keys..."
 # Bolt: [Performance] Cache keyring to avoid multiple pacman-key --list-keys subprocesses
 CURRENT_KEYS="$(pacman-key --list-keys 2>/dev/null || true)"
 
-# Check if key exists to avoid redundant imports and keyserver hits
+# Check if keys exist to avoid redundant imports and keyserver hits
+RECV_KEYS=()
+LSIGN_KEYS=()
+
 if [[ "$CURRENT_KEYS" != *"3056513887B78AEB"* ]]; then
-    echo "Importing Chaotic-AUR key..."
-    pacman-key --recv-key 3056513887B78AEB --keyserver hkps://keyserver.ubuntu.com
-    pacman-key --lsign-key 3056513887B78AEB
+    echo "Queueing Chaotic-AUR key..."
+    RECV_KEYS+=(3056513887B78AEB)
+    LSIGN_KEYS+=(3056513887B78AEB)
 else
     echo "Chaotic-AUR key already imported."
 fi
 
 # Setup Garuda signing key (signs calamares-garuda in the [garuda] repo)
 if [[ "$CURRENT_KEYS" != *"349BC7808577C592"* ]]; then
-    echo "Importing Garuda signing key..."
-    pacman-key --recv-key 349BC7808577C592 --keyserver hkps://keyserver.ubuntu.com
-    pacman-key --lsign-key 349BC7808577C592
+    echo "Queueing Garuda signing key..."
+    RECV_KEYS+=(349BC7808577C592)
+    LSIGN_KEYS+=(349BC7808577C592)
 else
     echo "Garuda key already imported."
 fi
 
 if [[ "$CURRENT_KEYS" != *"BFB13EA507EFDADB64A944813A40CB5E7E5CBC30"* ]]; then
-    echo "Importing Chaotic-AUR package maintainer key..."
-    pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver hkps://keyserver.ubuntu.com
-    pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
+    echo "Queueing Chaotic-AUR package maintainer key..."
+    RECV_KEYS+=(BFB13EA507EFDADB64A944813A40CB5E7E5CBC30)
+    LSIGN_KEYS+=(BFB13EA507EFDADB64A944813A40CB5E7E5CBC30)
+fi
+
+if (( ${#RECV_KEYS[@]} > 0 )); then
+    echo "Importing queued keys..."
+    pacman-key --recv-keys "${RECV_KEYS[@]}" --keyserver hkps://keyserver.ubuntu.com
+    pacman-key --lsign-key "${LSIGN_KEYS[@]}"
 fi
 
 # Cache keyring package locally and only update if remote is newer
@@ -271,9 +280,21 @@ if [[ "$OFFLINE_REPO" == "true" ]]; then
     # before the real image and used to be picked up by the first-glob ISO
     # consumers (reports/v2026.09.18 M5).
     trap 'rm -f "${TMP_ISO:-}"' EXIT
-    if [[ -d "$INSTALL_REPO" ]] && [[ -n "$(ls -A "$INSTALL_REPO"/*.pkg.tar.zst 2>/dev/null || true)" ]]; then
+    shopt -s nullglob
+    PKG_FILES=("$INSTALL_REPO"/*.pkg.tar.zst)
+    shopt -u nullglob
+    if [[ -d "$INSTALL_REPO" ]] && (( ${#PKG_FILES[@]} > 0 )); then
         echo -e "${YELLOW}Adding offline package repo to ISO...${NC}"
-        ISO_PATH=$(find "$REPO_ROOT/$OUT_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+
+        ISO_PATH=""
+        shopt -s nullglob
+        for f in "$REPO_ROOT/$OUT_DIR"/*.iso; do
+            if [[ -z "$ISO_PATH" ]] || [[ "$f" -nt "$ISO_PATH" ]]; then
+                ISO_PATH="$f"
+            fi
+        done
+        shopt -u nullglob
+
         if [[ -n "$ISO_PATH" ]] && command -v xorriso &>/dev/null; then
             # Create a temporary ISO with the repo added
             TMP_ISO="${ISO_PATH%.iso}-with-repo.iso"
