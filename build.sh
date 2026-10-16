@@ -163,7 +163,7 @@ fi
 
 if (( ${#RECV_KEYS[@]} > 0 )); then
     echo "Importing queued keys..."
-    pacman-key --recv-keys "${RECV_KEYS[@]}" --keyserver hkps://keyserver.ubuntu.com
+    pacman-key --keyserver hkps://keyserver.ubuntu.com --recv-keys "${RECV_KEYS[@]}"
     pacman-key --lsign-key "${LSIGN_KEYS[@]}"
 fi
 
