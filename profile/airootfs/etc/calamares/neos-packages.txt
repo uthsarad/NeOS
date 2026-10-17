@@ -422,7 +422,6 @@ plasma-firewall
 plasma-nm
 plasma-pa
 plasma-systemmonitor
-plasma-workspace-x11
 plymouth
 plymouth-kcm
 polkit
