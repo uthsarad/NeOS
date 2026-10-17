@@ -1,12 +1,12 @@
 #!/bin/bash
 # neos-session-select — choose Wayland or X11 for the login screen and the
-# default Plasma session, once per boot, before SDDM starts.
+# default desktop session, once per boot, before SDDM starts.
 #
-# NeOS defaults to Plasma on Wayland. It falls back to X11 where Wayland is
+# NeOS defaults to Plasma on Wayland. It falls back to Xfce on X11 where Wayland is
 # known to fail on this image:
 #   - virtual machines: without 3D acceleration KWin on Wayland composites
 #     through llvmpipe and stops servicing input (frozen cursor, dead buttons);
-#     X11 KWin can run uncomposited instead;
+#     Xfce can run without OpenGL instead;
 #   - `nomodeset` (the Safe Graphics boot entry): no KMS device, so the Wayland
 #     compositor cannot start at all;
 #   - display drivers outside the known-good set below (nouveau, simpledrm,
@@ -110,8 +110,8 @@ CompositorCommand=kwin_wayland --drm --no-lockscreen --no-global-shortcuts --loc
 Session=$session
 EOF
 else
-    session="plasmax11"
-    session_file="/usr/share/xsessions/plasmax11.desktop"
+    session="xfce"
+    session_file="/usr/share/xsessions/xfce.desktop"
     cat > "$OUT" <<EOF
 # Generated at boot by neos-session-select ($reason). Do not edit; see
 # /etc/neos/session.conf to choose Wayland or X11.
@@ -125,8 +125,13 @@ fi
 
 # /etc/sddm.conf overrides every drop-in. Calamares writes the installed
 # system's autologin session there; keep it in step with the choice.
-if [[ -f "$MAIN_CONF" ]] && grep -qE '^Session=(plasma|plasmax11)(\.desktop)?$' "$MAIN_CONF"; then
-    sed -i -E "s/^Session=(plasma|plasmax11)(\\.desktop)?$/Session=$session/" "$MAIN_CONF"
+if [[ -f "$MAIN_CONF" ]] && grep -qE '^Session=(plasma|plasmax11|xfce)(\.desktop)?$' "$MAIN_CONF"; then
+    sed -i -E "s/^Session=(plasma|plasmax11|xfce)(\\.desktop)?$/Session=$session/" "$MAIN_CONF"
+fi
+
+# Migrate remembered sessions removed by Plasma 6.8; preserve other choices.
+if [[ -f "$STATE" ]]; then
+    sed -i 's#^Session=/usr/share/xsessions/plasmax11.desktop$#Session=/usr/share/xsessions/xfce.desktop#' "$STATE"
 fi
 
 # The greeter preselects the session last used. Before anyone has logged in it

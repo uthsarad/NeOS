@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2026.10.17] - 2026-10-17
+
+### Fixed
+- Restored compatibility with Arch's Plasma 6.8 packages by replacing the removed `plasma-x11-session` with an Xfce X11 fallback. Plasma Wayland remains the default on supported GPUs; VMs, Safe Graphics and other drivers use Xfce. Updated installer defaults, session migration, accessibility/autoinstall startup and documentation together.
+- Live VM setup no longer deletes the Plasma Wayland session, so an explicit Wayland override remains usable.
+- Update notifications now pass icon and urgency options before the argument separator, so `notify-send` accepts the title and message.
+- The installer now retries connectivity after an unsuccessful initial probe, allowing a delayed network connection to recover before selecting offline installation or reporting failure. An already successful probe no longer triggers a redundant check.
+- Added runtime regression checks for notification arguments and delayed, unavailable, and already connected installer networks.
+
 ### Changed
 - **Empty pull requests are closed instead of merged into `testing`.** Jules opened a daily "Acknowledge Architect persona directives" PR that changed no files; each was auto-merged and set off a full ISO build and release. The auto-merge workflow now closes any PR into `testing` with no changed files, with a one-line note (`tests/verify_auto_merge.sh` checks this happens before any merge).
 

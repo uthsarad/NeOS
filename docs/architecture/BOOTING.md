@@ -48,7 +48,7 @@ The BIOS boot process is handled by Syslinux in `profile/syslinux/`:
    (`archisolabel=NEOS_ISO`) and pivot onto the squashfs.
 2. systemd's default target is `graphical.target`. Before SDDM starts,
    `neos-session-select` picks the display session: Plasma on Wayland on Intel,
-   AMD and NVIDIA (proprietary) graphics, X11 (`plasmax11`) in VMs, with
+   AMD and NVIDIA (proprietary) graphics, Xfce on X11 (`xfce`) in VMs, with
    `nomodeset` (Safe Graphics) and on other drivers. SDDM then autologs in
    `liveuser` to that session. `neos.session=wayland|x11` on the kernel command
    line overrides the choice.

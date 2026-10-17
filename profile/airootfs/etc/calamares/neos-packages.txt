@@ -422,7 +422,6 @@ plasma-firewall
 plasma-nm
 plasma-pa
 plasma-systemmonitor
-plasma-x11-session
 plymouth
 plymouth-kcm
 polkit
@@ -552,7 +551,12 @@ xf86-video-fbdev
 xf86-video-nouveau
 xf86-video-qxl
 xf86-video-vesa
+xfce4-panel
+xfce4-session
+xfce4-settings
+xfdesktop
 xfsprogs
+xfwm4
 xkeyboard-config
 xmlsec
 xorg-server

@@ -153,8 +153,8 @@ else
     NET_RETRIES=12
 fi
 
-net_ok=0
-if [[ "$NET_AVAILABLE" -eq 1 ]]; then
+net_ok="$NET_AVAILABLE"
+if [[ "$net_ok" -eq 0 ]]; then
     log "⏳ waiting for network to be fully up ..."
     for _ in $(seq 1 "$NET_RETRIES"); do
         if curl -fsS --max-time "$NET_TIMEOUT" -o /dev/null https://geo.mirror.pkgbuild.com/ 2>/dev/null; then
@@ -187,9 +187,7 @@ else
     if [[ -z "$LOCAL_REPO" ]]; then
         echo "neos-pacstrap: no network detected and no local package repo on the ISO." >&2
         echo "neos-pacstrap: connect to the internet and retry the install." >&2
-        if [[ "$NET_AVAILABLE" -eq 0 ]]; then
-            echo "neos-pacstrap: network check failed immediately (check cable/WiFi)" >&2
-        fi
+        echo "neos-pacstrap: network checks exhausted (check cable/WiFi)" >&2
         exit 1
     fi
     do_offline_install || exit 1

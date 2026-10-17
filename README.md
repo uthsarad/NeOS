@@ -39,7 +39,7 @@ deliberately leaves out:
   someone coming from Windows expects them, with Firefox, LibreOffice, VLC, Discover
   and Flatpak ready to use. Plasma runs on Wayland on Intel, AMD and NVIDIA
   graphics; virtual machines, Safe Graphics and other display drivers fall back to
-  X11 automatically so the desktop always comes up
+  Xfce on X11 automatically
   ([choosing a session](docs/user-guide/TROUBLESHOOTING.md#choosing-wayland-or-x11)).
 - **Updates you can undo.** The root filesystem is Btrfs. Snapper takes a snapshot
   before and after every package transaction, and each snapshot appears in the GRUB

@@ -81,15 +81,26 @@ else
 fi
 
 # A user's later pick in the greeter must survive the next boot.
+printf '[Last]\nSession=/usr/share/xsessions/xfce.desktop\n' > "$root/var/lib/sddm/state.conf"
+NEOS_SESSION_ROOT="$root" NEOS_SESSION_CMDLINE="$root/cmdline" NEOS_SESSION_DRM="$root/drm" \
+    NEOS_SESSION_VIRT="$WORK/virt" NEOS_SESSION_NO_WAIT=1 FAKE_VM=0 bash "$SCRIPT" >/dev/null
+if grep -qx 'Session=/usr/share/xsessions/xfce.desktop' "$root/var/lib/sddm/state.conf"; then pass "keeps the session the user last chose"; else fail "overwrote the user's last session"; fi
+
 printf '[Last]\nSession=/usr/share/xsessions/plasmax11.desktop\n' > "$root/var/lib/sddm/state.conf"
 NEOS_SESSION_ROOT="$root" NEOS_SESSION_CMDLINE="$root/cmdline" NEOS_SESSION_DRM="$root/drm" \
     NEOS_SESSION_VIRT="$WORK/virt" NEOS_SESSION_NO_WAIT=1 FAKE_VM=0 bash "$SCRIPT" >/dev/null
-if grep -qx 'Session=/usr/share/xsessions/plasmax11.desktop' "$root/var/lib/sddm/state.conf"; then pass "keeps the session the user last chose"; else fail "overwrote the user's last session"; fi
+if grep -qx 'Session=/usr/share/xsessions/xfce.desktop' "$root/var/lib/sddm/state.conf"; then pass "migrates removed Plasma X11 session"; else fail "obsolete session survived migration"; fi
 
-if grep -qx 'Session=plasmax11' "$WORK/vm/etc/sddm.conf"; then pass "X11 fallback keeps the autologin session on plasmax11"; else fail "X11 fallback changed the autologin session"; fi
+if grep -qx 'Session=xfce' "$WORK/vm/etc/sddm.conf"; then pass "X11 fallback selects Xfce"; else fail "X11 fallback did not select Xfce"; fi
 
 # Static configs must stay the safe floor if the service never runs.
-if grep -qx 'DisplayServer=x11' profile/airootfs/etc/sddm.conf.d/10-displayserver.conf && grep -qx 'Session=plasmax11' profile/airootfs/etc/sddm.conf.d/autologin.conf; then pass "static SDDM config stays on X11 as the fallback"; else fail "static SDDM config must stay X11 (neos-session-select upgrades it)"; fi
+if grep -qx 'DisplayServer=x11' profile/airootfs/etc/sddm.conf.d/10-displayserver.conf && grep -qx 'Session=xfce' profile/airootfs/etc/sddm.conf.d/autologin.conf; then pass "static SDDM config stays on X11 as the fallback"; else fail "static SDDM config must stay X11 (neos-session-select upgrades it)"; fi
+
+for pkg in xfce4-session xfce4-panel xfce4-settings xfdesktop xfwm4; do
+    if grep -qx "$pkg" profile/packages.x86_64; then pass "$pkg available in the image"; else fail "missing fallback package $pkg"; fi
+done
+if grep -qx 'plasma-x11-session' profile/packages.x86_64; then fail "removed Plasma X11 package requested"; fi
+if grep -q 'rm -f /usr/share/wayland-sessions/plasma.desktop' profile/airootfs/usr/local/bin/neos-liveuser-setup; then fail "live setup deletes the Wayland override session"; fi
 
 if (( FAIL )); then
     echo "[FAIL] Display session selection checks failed."

@@ -73,30 +73,10 @@ if [ -d "$LIVE_USER_HOME" ]; then
     printf '[Desktop Entry]\nHidden=true\n' > "$AUTOSTART_DIR/org.kde.discover.notifier.desktop"
     printf '[Basic Settings]\nIndexing-Enabled=false\n' > "$LIVE_USER_HOME/.config/baloofilerc"
 
-    # In a VM there is no usable GPU. Plasma on Wayland has NO uncomposited mode,
-    # so KWin tries to composite through llvmpipe and the whole session locks up:
-    # the desktop paints once but input is never serviced — buttons appear dead.
-    # Force the live VM session onto X11 with compositing OFF so KWin runs as a
-    # plain, GL-free window manager: snappy and fully clickable on software
-    # rendering. Done deterministically here (root, before display-manager) rather
-    # than via the plasma env-script, which races KWin startup. Bare metal is left
-    # untouched — Wayland and hardware compositing stay available there.
+    # Session selection is owned by neos-session-select. Keep the packaged
+    # Wayland session available so an explicit override also works in a VM.
+    # Disable animations for users who choose Plasma with software rendering.
     if systemd-detect-virt -q 2>/dev/null; then
-        # Remove the Wayland session so neither autologin nor the SDDM greeter can
-        # land on it in a VM. The installed system is pacstrapped fresh, so this
-        # only affects the live environment.
-        rm -f /usr/share/wayland-sessions/plasma.desktop
-
-        # Fix SDDM autologin: Since we removed the default Wayland session,
-        # we must point the autologin target to the X11 session instead.
-        if [ -L /etc/sddm.conf.d/autologin.conf ]; then
-            echo "Security error: /etc/sddm.conf.d/autologin.conf is a symlink. Aborting." >&2
-            exit 1
-        fi
-        if [ -f /etc/sddm.conf.d/autologin.conf ]; then
-            sed -i 's/^Session=.*/Session=plasmax11/' /etc/sddm.conf.d/autologin.conf
-        fi
-
         mkdir -p "$LIVE_USER_HOME/.config"
         if [ -L "$LIVE_USER_HOME/.config" ] || [ -L "$LIVE_USER_HOME/.config/kwinrc" ] || [ -L "$LIVE_USER_HOME/.config/kdeglobals" ]; then
             echo "Security error: target config files or parent directory are symlinks. Aborting." >&2

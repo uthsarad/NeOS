@@ -83,12 +83,13 @@ This applies to X11 sessions only; on Wayland, KWin keeps input aligned itself. 
 
 ### Choosing Wayland or X11
 NeOS runs Plasma on **Wayland** on Intel, AMD and NVIDIA (proprietary driver)
-graphics. It uses **X11** in virtual machines (Wayland freezes there without 3D
+graphics. It uses **Xfce on X11** in virtual machines (Wayland can freeze without 3D
 acceleration), with the Safe Graphics boot entry, and on other display drivers.
 The choice is made at every boot by `neos-session-select`; `journalctl -u
 neos-session-select` shows what it picked and why.
 
-- **For one login:** pick *Plasma (Wayland)* or *Plasma (X11)* from the session
+- Plasma 6.8 removed its X11 session; Xfce provides the compatibility desktop.
+- **For one login:** pick *Plasma (Wayland)* or *Xfce Session* from the session
   menu on the login screen. SDDM remembers the choice.
 - **Permanently:** set `SESSION=wayland` or `SESSION=x11` in
   `/etc/neos/session.conf` (default `auto`) and reboot.
