@@ -257,7 +257,7 @@ sudo umount /mnt
 If you still see signature errors after the fix:
 
 ```bash
-# Verify the fix is applied
+# Verify the resolution is applied
 grep "SigLevel" pacman.conf
 # Should show: SigLevel    = Required DatabaseOptional
 
