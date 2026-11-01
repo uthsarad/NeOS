@@ -59,7 +59,7 @@ jobs:
         #   python-pyqt6 + qt6-declarative (+ a font) -> verify_ui_render.sh
         #     renders the login theme, installer slideshow and welcome app
         run: |
-          pacman -Sy --noconfirm git wget awk grep jq diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
+          pacman -Sy --noconfirm git openssh wget awk grep jq diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
 
       - name: Validate PyYAML Installation
         run: |
@@ -550,6 +550,7 @@ jobs:
           SOURCEFORGE_USERNAME: ${{ secrets.SOURCEFORGE_USERNAME }}
           SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
           RELEASE_VERSION: ${{ steps.tag.outputs.value }}
+          RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
 
@@ -561,7 +562,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           echo "Preparing release assets..."
-          LOCAL_TARGET="sf_release/${{ github.ref_name }}/${RELEASE_VERSION}"
+          LOCAL_TARGET="sf_release/${RELEASE_BRANCH}/${RELEASE_VERSION}"
           mkdir -p "$LOCAL_TARGET"
           
           # Gather all artifacts
@@ -582,26 +583,31 @@ jobs:
           fi
 
           echo "Setting up SSH key for SourceForge..."
-          # umask first: the key file must never exist with group/world bits,
-          # not even between the write and a later chmod.
+          # Use an isolated identity and known-hosts file; never overwrite the
+          # runner's SSH configuration. ssh-keyscan can fail independently of
+          # an SSH connection and used to abort here before upload retries.
+          SSH_DIR="$(mktemp -d /tmp/neos-sourceforge.XXXXXX)"
+          trap 'rm -rf -- "$SSH_DIR"' EXIT
+          chmod 700 "$SSH_DIR"
           (
             umask 077
-            mkdir -p "$HOME/.ssh"
-            printf '%s\n' "$SOURCEFORGE_PRIVATE_KEY" > "$HOME/.ssh/id_rsa"
+            printf '%s\n' "${SOURCEFORGE_PRIVATE_KEY//$'\r'/}" > "$SSH_DIR/key"
+            touch "$SSH_DIR/known_hosts"
           )
-          
-          # Add SourceForge to known hosts
-          ssh-keyscan -t rsa,ed25519 frs.sourceforge.net >> "$HOME/.ssh/known_hosts" 2>/dev/null
+          if ! ssh-keygen -y -P '' -f "$SSH_DIR/key" >/dev/null 2>&1; then
+            echo "::error::SOURCEFORGE_PRIVATE_KEY must contain a valid, unencrypted OpenSSH private key. Check the secret's full multiline value."
+            exit 1
+          fi
 
           # We sync sf_release/ which CONTAINS the testing/version/ dirs
           TARGET_DIR="/home/frs/project/${SOURCEFORGE_PROJECT}"
           
           echo "Uploading release assets to $TARGET_DIR (with full path mapping)..."
 
-          # Retry up to 3 times with exponential backoff
+          # Retry connection and transfer failures up to 3 times.
           for attempt in 1 2 3; do
             echo "Attempt $attempt/3..."
-            if rsync -avP -e "ssh -q -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" sf_release/ "${SOURCEFORGE_USERNAME}@frs.sourceforge.net:${TARGET_DIR}/" 2> >(grep -v "Could not chdir to home directory" >&2); then
+            if rsync -avP --timeout=120 -e "ssh -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=$SSH_DIR/known_hosts -i $SSH_DIR/key" sf_release/ "${SOURCEFORGE_USERNAME}@frs.sourceforge.net:${TARGET_DIR}/" 2> >(grep -v "Could not chdir to home directory" >&2); then
               echo "Assets uploaded successfully to SourceForge."
               break
             fi

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+- SourceForge publishing no longer aborts on a separate, silent host-key scan before its retry loop. Uploads use an isolated SSH identity, validate the configured private key, accept new host keys during the actual SSH connection, and bound connection/transfer waits. Added regression checks for upload retries and key handling.
+
 ## [2026.11.01] - 2026-11-01
 
 ### Fixed
