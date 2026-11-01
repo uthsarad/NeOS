@@ -7,11 +7,11 @@ if (( EUID != 0 )); then
     exit 1
 fi
 if command -v pacman >/dev/null 2>&1; then
-    pacman -Syu --needed --noconfirm git python python-yaml jq shellcheck rust ruby go \
+    pacman -Syu --needed --noconfirm git openssh python python-yaml jq shellcheck rust ruby go \
         dotnet-sdk pacman-contrib mktorrent python-pyqt6 qt6-declarative ttf-dejavu
 elif command -v apt-get >/dev/null 2>&1; then
     apt-get update
-    apt-get install -y --no-install-recommends git python3 python3-yaml jq shellcheck \
+    apt-get install -y --no-install-recommends git openssh-client python3 python3-yaml jq shellcheck \
         cargo rustc ruby golang-go dotnet-sdk-8.0 mktorrent python3-pyqt6 \
         python3-pyqt6.qtquick qml6-module-qtquick qml6-module-qtquick-controls \
         qml6-module-qtquick-layouts qml6-module-qtqml-workerscript
