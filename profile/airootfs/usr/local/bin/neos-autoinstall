@@ -380,9 +380,9 @@ username = os.environ["AI_USERNAME"]
 password_hash = os.environ["AI_HASHED_PASSWORD"]
 password = os.environ["AI_PASSWORD"]
 if password_hash:
-    command = "usermod -p " + shlex.quote(password_hash) + " " + shlex.quote(username)
+    command = ["usermod", "-p", password_hash, username]
 elif password:
-    command = "printf '%s\\n' " + shlex.quote(username + ":" + password) + " | chpasswd"
+    command = ["/bin/sh", "-c", "printf '%s\\n' \"$1\" | chpasswd", "sh", f"{username}:{password}"]
 else:
     command = None
 if command:

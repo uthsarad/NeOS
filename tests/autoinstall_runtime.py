@@ -36,16 +36,19 @@ class AssistedInstall(unittest.TestCase):
         commands = self.generate("secret!12")
         self.assertEqual(len(commands), 6)
         # Stub chpasswd so this never touches the host's user database.
-        out = subprocess.check_output(["bash", "-c", 'chpasswd() { cat; }; ' +
-                                       commands[-1]["command"]], text=True)
+        cmd = commands[-1]["command"]
+        self.assertIsInstance(cmd, list)
+        self.assertEqual(cmd[0], "/bin/sh")
+        self.assertEqual(cmd[1], "-c")
+        cmd[2] = "chpasswd() { cat; }; " + cmd[2]
+        out = subprocess.check_output(cmd, text=True)
         self.assertEqual(out, "alice:secret!12\n")
 
     def test_hash_is_passed_literally_and_takes_precedence(self):
         password_hash = "$6$salt$abcdefghijklmnop"
         command = self.generate("ignored12", password_hash)[-1]["command"]
-        out = subprocess.check_output(["bash", "-c",
-            'usermod() { printf "%s\\n" "$@"; }; ' + command], text=True)
-        self.assertEqual(out.splitlines(), ["-p", password_hash, "alice"])
+        self.assertIsInstance(command, list)
+        self.assertEqual(command, ["usermod", "-p", password_hash, "alice"])
 
     def test_no_password_keeps_existing_commands(self):
         self.assertEqual(len(self.generate("")), 5)
