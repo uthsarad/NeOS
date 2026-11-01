@@ -1,4 +1,4 @@
-# ISO Build Fix - VM Recognition Issue
+# ISO Build Resolution - VM Recognition Issue
 
 > **SUPERSEDED — historical record (2026-02-17).** The two-configuration model
 > described below is still accurate, but the sig-level values are not: the
@@ -10,7 +10,7 @@
 
 **Issue:** VM cannot recognize/load the NeOS ISO  
 **Root Cause:** ISO build was failing, preventing ISO creation  
-**Status:** FIXED
+**Status:** RESOLVED
 
 ---
 
@@ -31,7 +31,7 @@ This setting causes `mkarchiso` to fail with **"missing required signature" erro
 
 ## Solution
 
-### What Was Fixed
+### What Was Resolved
 
 **1. Build-Time Configuration (`pacman.conf`)**
 ```diff
@@ -65,7 +65,7 @@ This separation ensures:
 
 ## How to Build the ISO
 
-Now that the fix is in place, you can build the ISO successfully:
+Now that the resolution is in place, you can build the ISO successfully:
 
 ### Prerequisites
 
@@ -254,10 +254,10 @@ sudo umount /mnt
 
 ### Issue: Build fails with signature errors
 
-If you still see signature errors after the fix:
+If you still see signature errors after the resolution:
 
 ```bash
-# Verify the fix is applied
+# Verify the resolution is applied
 grep "SigLevel" pacman.conf
 # Should show: SigLevel    = Required DatabaseOptional
 
@@ -308,12 +308,12 @@ done
 
 **Current Status:**
 - [PASS] airootfs structure
-- [PASS] build profile (fixed!)
+- [PASS] build profile (resolved!)
 - [PASS] GRUB config
 - [PASS] ISO GRUB entries
 - [PASS] performance config
 - [PASS] security config (updated!)
-- [PASS] sudoers fix
+- [PASS] sudoers resolution
 
 ---
 
@@ -328,7 +328,7 @@ During ISO build, `mkarchiso` runs pacman in a chroot environment to install pac
 3. **Problem:** Package database signatures are not available in build environment
 4. Pacman fails with: `error: failed to synchronize all databases (missing required signature)`
 
-### The Fix
+### The Resolution
 
 By using `DatabaseOptional` in the build-time config:
 - Pacman still verifies individual package signatures (`Required` part)
@@ -346,7 +346,7 @@ The installed system uses `DatabaseOptional` because Arch's official repositorie
 **Solution:** Changed build-time config to `DatabaseOptional` while keeping runtime `DatabaseRequired`  
 **Result:** ISO builds successfully, boots in VMs with UEFI/BIOS support  
 
-**Status:** [FIXED] Fixed and verified with 7/7 tests passing
+**Status:** [RESOLVED] Resolved and verified with 7/7 tests passing
 
 ---
 
@@ -361,5 +361,5 @@ The installed system uses `DatabaseOptional` because Arch's official repositorie
 ---
 
 **Last Updated:** 2026-02-17  
-**Fix Applied:** Commit b5528ec  
+**Resolution Applied:** Commit b5528ec
 **Tests Passing:** 7/7 [PASS]
