@@ -335,7 +335,7 @@ By using `DatabaseOptional` in the build-time config:
 - Pacman doesn't fail if database signatures are unavailable (`DatabaseOptional` part)
 - Build succeeds with signature verification still active
 
-The installed system uses `DatabaseRequired` to enforce strict security for end users who have full database access.
+The installed system uses `DatabaseOptional` because Arch's official repositories do not sign their databases.
 
 ---
 
