@@ -15,6 +15,7 @@ Usage: tools/gen-logo.py [output.png] [--size WxH]
 
 Needs PyQt6 (QtSvg) and Pillow.
 """
+
 import os
 import shutil
 import sys
@@ -30,19 +31,22 @@ from PyQt6.QtSvg import QSvgRenderer
 ROOT = Path(__file__).resolve().parent.parent
 SVG = ROOT / "tools/brand/neos-logo.svg"
 _app = None
+_svg_renderer = None
 
 
 def render(size):
     """Return the logo as a Pillow RGBA image of `size` (w, h)."""
-    global _app
+    global _app, _svg_renderer
     if _app is None:
         _app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
+    if _svg_renderer is None:
+        _svg_renderer = QSvgRenderer(str(SVG))
     w, h = size
     image = QImage(w, h, QImage.Format.Format_ARGB32)
     image.fill(Qt.GlobalColor.transparent)
     painter = QPainter(image)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-    QSvgRenderer(str(SVG)).render(painter)
+    _svg_renderer.render(painter)
     painter.end()
     data = QByteArray()
     buf = QBuffer(data)
@@ -50,6 +54,7 @@ def render(size):
     image.save(buf, "PNG")
     buf.close()
     from io import BytesIO
+
     return Image.open(BytesIO(bytes(data))).convert("RGBA")
 
 
@@ -62,13 +67,24 @@ def save(img, out):
 
 def main(argv):
     if "--all" in argv:
-        save(render((256, 256)), "profile/airootfs/etc/calamares/branding/neos/logo.png")
+        save(
+            render((256, 256)), "profile/airootfs/etc/calamares/branding/neos/logo.png"
+        )
         save(render((256, 256)), "docs/assets/neos-logo.png")
-        save(render((128, 128)), "profile/airootfs/usr/share/plymouth/themes/neos/logo.png")
+        save(
+            render((128, 128)),
+            "profile/airootfs/usr/share/plymouth/themes/neos/logo.png",
+        )
         save(render((256, 256)), "profile/airootfs/usr/share/pixmaps/neos-logo.png")
         for px in (16, 22, 24, 32, 48, 64, 128, 256, 512):
-            save(render((px, px)), f"profile/airootfs/usr/share/icons/hicolor/{px}x{px}/apps/neos-logo.png")
-        scalable = ROOT / "profile/airootfs/usr/share/icons/hicolor/scalable/apps/neos-logo.svg"
+            save(
+                render((px, px)),
+                f"profile/airootfs/usr/share/icons/hicolor/{px}x{px}/apps/neos-logo.png",
+            )
+        scalable = (
+            ROOT
+            / "profile/airootfs/usr/share/icons/hicolor/scalable/apps/neos-logo.svg"
+        )
         scalable.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(SVG, scalable)
         print(f"wrote {scalable.relative_to(ROOT)}")
