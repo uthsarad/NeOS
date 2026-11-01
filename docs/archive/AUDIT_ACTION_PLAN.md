@@ -1,11 +1,12 @@
 # NeOS Audit - Quick Action Plan
 
-> **SUPERSEDED — historical record (2026-02-17).** The configuration issue
-> described below regarding `DatabaseRequired` is no longer applicable. Both the
-> build configuration and the installed system
-> (`profile/airootfs/etc/pacman.conf`) now use `Required DatabaseOptional`
-> because Arch's official repos do not sign their databases. The
-> `DatabaseRequired` values quoted throughout this document are historical.
+> **SUPERSEDED — historical record (2026-02-17).** One finding below is no longer
+> accurate: this report states the installed system keeps
+> `SigLevel = Required DatabaseRequired`. The shipped configuration
+> (`profile/airootfs/etc/pacman.conf`) now uses `Required DatabaseOptional`, and
+> `tools/neos-profile-audit` enforces `DatabaseOptional` for the build config. Do
+> not treat the DatabaseRequired claim in this document as current. For the
+> current state see `reports/v2026.09.18/`.
 
 **Generated:** 2026-02-17  
 **Full Report:** See [DEEP_AUDIT.md](./DEEP_AUDIT.md) for complete details
@@ -14,12 +15,12 @@ This document provides a prioritized action plan based on the comprehensive audi
 
 ---
 
-## Immediate Actions (MUST FIX BEFORE RELEASE)
+## 🚨 Immediate Actions (MUST RESOLVE BEFORE RELEASE)
 
 ### 1. Fix Build-Blocking pacman.conf Issue
 **Priority:** CRITICAL  
 **Time:** 5 minutes  
-**Status:** [BLOCKED] Currently blocking all builds
+**Status:** ❌ Currently blocking all builds
 
 **Action:**
 ```bash

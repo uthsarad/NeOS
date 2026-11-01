@@ -481,6 +481,36 @@ mod tests {
     }
 
     #[test]
+    fn test_assert_required_packages_all_present() {
+        let mut packages = HashSet::new();
+        for req in REQUIRED_PACKAGES {
+            packages.insert(req.to_string());
+        }
+        // Add some extra packages too
+        packages.insert("extra-package".to_string());
+
+        let parsed_files = vec![("packages.x86_64".to_string(), packages)];
+
+        assert!(assert_required_packages(&parsed_files).is_ok());
+    }
+
+    #[test]
+    fn test_assert_required_packages_missing_some() {
+        let mut packages = HashSet::new();
+        // Missing "sudo" and "vim"
+        for req in ["base", "mkinitcpio", "mkinitcpio-archiso", "networkmanager"] {
+            packages.insert(req.to_string());
+        }
+
+        let parsed_files = vec![("packages.x86_64".to_string(), packages)];
+
+        let err = assert_required_packages(&parsed_files).unwrap_err();
+        assert!(err.contains("packages.x86_64 is missing required packages:"));
+        assert!(err.contains("sudo"));
+        assert!(err.contains("vim"));
+    }
+
+    #[test]
     fn test_last_definition_wins() {
         let dir = tempdir().unwrap();
         let root = dir.path();
