@@ -17,14 +17,14 @@ strings:
     shortProductName:    NeOS
     # Display-only. CI (build-iso.yml, "Generate codename and set ISO version")
     # stamps productVersion and versionedName with the same release name as
-    # os-release PRETTY_NAME, e.g. "NeOS 2026.10 (Marlin Beta)"; the short forms
+    # os-release PRETTY_NAME, e.g. "NeOS 2026.10 (Marlin 2026.07)"; the short forms
     # stay generic. The committed values are the fallback for an unmodified
     # local build — never a date, which is stale the day after it is written
     # (reports/v2026.09.22/UPDATES_NEEDED.md, M10).
-    productVersion:      Beta
-    shortProductVersion: Beta
-    versionedName:       NeOS Beta
-    shortVersionedName:  NeOS Beta
+    productVersion:      2026.07
+    shortProductVersion: 2026.07
+    versionedName:       NeOS 2026.07
+    shortVersionedName:  NeOS 2026.07
     bootloaderEntryName: NeOS
     # URLs for the welcome-page info buttons. Calamares reads the URLs from here;
     # welcome.conf's show*Url booleans decide which buttons appear. Without these
