@@ -18,7 +18,8 @@ UNTRUSTED='github\.head_ref|github\.event\.(pull_request|issue|comment|review|re
 for wf in .github/workflows/*.yml; do
     # Print each line of every `run:` block (block scalars included) with its
     # line number, then look for untrusted ${{ }} expansions in them.
-    hits="$(awk -v pat="\\$\\{\\{[^}]*(${UNTRUSTED})[^}]*\\}\\}" '
+    hits="$(NEOS_WORKFLOW_PATTERN="\\$\\{\\{[^}]*(${UNTRUSTED})[^}]*\\}\\}" awk '
+        BEGIN { pat = ENVIRON["NEOS_WORKFLOW_PATTERN"] }
         function indent(s) { match(s, /^ */); return RLENGTH }
         in_run && (indent($0) > run_indent || $0 ~ /^[[:space:]]*$/) {
             if ($0 ~ pat) printf "%d:%s\n", NR, $0
@@ -40,7 +41,7 @@ for wf in .github/workflows/*.yml; do
 done
 
 if command -v actionlint >/dev/null 2>&1; then
-    if actionlint; then
+    if actionlint .github/workflows/*.yml; then
         echo "  [PASS] actionlint"
     else
         echo "[FAIL] actionlint reported findings"

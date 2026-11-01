@@ -96,3 +96,6 @@ tests/*.log
 # regenerated here, and it described a file tree that no longer existed. Run the
 # tool locally if you want a graph; keep its output out of the repository.
 graphify-out/
+
+# Machine-specific audit output
+reports/audit-*/

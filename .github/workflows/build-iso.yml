@@ -59,7 +59,7 @@ jobs:
         #   python-pyqt6 + qt6-declarative (+ a font) -> verify_ui_render.sh
         #     renders the login theme, installer slideshow and welcome app
         run: |
-          pacman -Sy --noconfirm git wget awk grep diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
+          pacman -Sy --noconfirm git wget awk grep jq diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
 
       - name: Validate PyYAML Installation
         run: |
@@ -257,7 +257,7 @@ jobs:
           # a crafted name would be executed as shell (actionlint: expression).
           EVENT_NAME: ${{ github.event_name }}
           HEAD_REF: ${{ github.head_ref }}
-          REF_NAME: ${{ github.ref_name }}
+          BUILD_BRANCH_REF: ${{ github.ref_name }}
           RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
@@ -274,7 +274,7 @@ jobs:
           # branch, and the slash terminated the `sed s/…/…/` below (the job
           # died here in ~0s). Use the PR's head branch instead, and sanitise
           # either source to [A-Za-z0-9._-].
-          SUFFIX_SOURCE="$REF_NAME"
+          SUFFIX_SOURCE="$BUILD_BRANCH_REF"
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
             SUFFIX_SOURCE="$HEAD_REF"
           fi

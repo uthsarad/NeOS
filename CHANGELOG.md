@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2026.11.01] - 2026-11-01
+
+### Fixed
+- Assisted installation now generates valid keyboard, locale, and password configuration, retains cidata mount records for cleanup, and restricts access to generated credentials.
+- Linux overlay and script files use LF checkouts on Windows as well as Linux.
+- Automatic integration merges wait for successful CI, pin the validated head commit, and respect branch protections.
+- Workflow scanning now works in isolated snapshots without losing regex escapes; mirror connectivity and interactive Bash probes avoid false skips and hangs.
+
+### Added
+- Reusable audit runner with per-check logs, machine-readable results, timeouts, strict tool validation, and regression coverage for generated installer configuration and mount cleanup.
+
 ## [2026.10.17] - 2026-10-17
 
 ### Fixed
