@@ -2,6 +2,8 @@
 # Guards the auto-merge policy: non-draft PRs into testing from branches of this
 # repository merge automatically; PRs from forks never do, because testing
 # publishes releases (reports/v2026.10.02/00-improvement-plan.md A2).
+# Literal source patterns intentionally contain shell variables.
+# shellcheck disable=SC2016
 set -euo pipefail
 
 WF=".github/workflows/jules-auto-merge.yml"
@@ -33,10 +35,15 @@ else
     FAIL=1
 fi
 
-if [[ "$CONTENT" == *"--admin"* ]]; then
-    echo "  [PASS] forced merge (--admin) is available"
+if grep -q -- '--admin' "$WF"; then
+    echo "[FAIL] auto-merge must respect branch protections"
+    FAIL=1
+elif [[ "$CONTENT" == *'--match-head-commit "$PR_HEAD_SHA"'* ]] \
+    && [[ "$CONTENT" == *'[[ "$TEST_PASSED" == 1 ]]'* ]] \
+    && [[ "$CONTENT" == *'.name == "test" and .state == "SUCCESS"'* ]]; then
+    echo "  [PASS] CI must succeed and the merge is pinned to the reviewed head"
 else
-    echo "[FAIL] $WF must pass --admin so testing cannot deadlock on required checks"
+    echo "[FAIL] auto-merge must await successful CI and pin the head commit"
     FAIL=1
 fi
 

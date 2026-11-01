@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Network checks use strict timeouts to prevent CI hangs.
 
-if ! curl -I -s --connect-timeout 1 --max-time 2 -- "https://archlinux.org" > /dev/null; then
+if ! curl -I -s --connect-timeout 5 --max-time 10 -- "https://archlinux.org" > /dev/null; then
     echo -e "\n================================================================================"
     echo -e "[INFO] SKIPPED: Network isolation detected."
     echo -e "   Mirrorlist connectivity test bypassed gracefully."

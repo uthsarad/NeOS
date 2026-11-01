@@ -149,6 +149,13 @@ Every push to `testing` builds an ISO in GitHub Actions and runs:
 CI cannot click through an interactive install, so installs on real hardware and in
 virtual machines remain the final check before a build is recommended.
 
+Run `python tools/audit.py` from Windows (WSL required), or
+`python3 tools/audit.py --snapshot` on Linux, for a repeatable audit with
+per-check logs and a JSON summary in `reports/audit-latest/`. Add
+`--strict --include-ui` for full tool validation and UI rendering. ISO boot
+checks run separately through `build.sh`. See [Contributing](CONTRIBUTING.md#reproducible-audits)
+for dependencies and targeted checks.
+
 ## Project layout
 
 | Path | Contents |

@@ -221,7 +221,7 @@ echo "Verifying /etc/skel/.bashrc starts cleanly..."
 
 SKEL_HOME="$(mktemp -d)"
 # Without a TTY, bash -i always reports missing job control; ignore just that.
-BASHRC_ERR="$(HOME="$SKEL_HOME" bash --noprofile --rcfile profile/airootfs/etc/skel/.bashrc -i -c true 2>&1 >/dev/null \
+BASHRC_ERR="$(HOME="$SKEL_HOME" bash --noprofile --rcfile profile/airootfs/etc/skel/.bashrc -i -c true </dev/null 2>&1 >/dev/null \
     | grep -vE 'cannot set terminal process group|no job control in this shell' || true)"
 rm -rf "$SKEL_HOME"
 if [[ -z "$BASHRC_ERR" ]]; then

@@ -37,12 +37,13 @@ fi
 FAIL=0
 for entry in \
     "profile/airootfs/etc/os-release|^VERSION=\"([^\"]+)\"" \
+    "tools/NeosDiagnostics/NeosDiagnostics.csproj|<Version>([^<]+)</Version>" \
     "tools/neosctl/main.go|Version[[:space:]]*=[[:space:]]*\"([^\"]+)\"" \
     "tools/neos_tasks.rb|VERSION[[:space:]]*=[[:space:]]*'([^']+)'" \
     "tools/NeosDiagnostics/SecurityInspector.cs|PlatformVersion[^\"]*\"([^\"]+)\""; do
     file="${entry%%|*}"
     pattern="${entry#*|}"
-    found="$(grep -oE "$pattern" "$file" | head -1 | sed -E "s/$pattern/\\1/")"
+    found="$(grep -oE "$pattern" "$file" | head -1 | sed -E "s#$pattern#\\1#")"
     if [[ "$found" == "$VER" ]]; then
         echo "  [PASS] $file carries $VER"
     else

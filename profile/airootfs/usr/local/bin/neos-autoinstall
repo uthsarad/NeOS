@@ -200,12 +200,13 @@ find_cidata_device() {
 # fresh mktemp mount (and tmpdir) on every probe.
 CIDATA_UDISKS=()
 CIDATA_MANUAL=()
+MOUNTED_CIDATA=""
 
 cleanup_cidata_mounts() {
     local mnt
     if ((${#CIDATA_UDISKS[@]} > 0)); then
         for mnt in "${CIDATA_UDISKS[@]}"; do
-            udisksctl unmount -p "$mnt" --no-user-interaction 2>/dev/null \
+            udisksctl unmount -b "$mnt" --no-user-interaction 2>/dev/null \
                 || umount "$mnt" 2>/dev/null \
                 || true
         done
@@ -222,10 +223,11 @@ cleanup_cidata_mounts() {
 
 mount_device() {
     local dev="$1" out mnt
+    MOUNTED_CIDATA=""
     # Already mounted anywhere? Reuse it and leave cleanup to its owner.
     mnt="$(findmnt -rn -S "$dev" -o TARGET 2>/dev/null | head -n 1 || true)"
     if [[ -n "$mnt" && -d "$mnt" ]]; then
-        printf '%s\n' "$mnt"
+        MOUNTED_CIDATA="$mnt"
         return 0
     fi
     # udisks2 is installed on the live image, so the live user can mount the
@@ -237,8 +239,8 @@ mount_device() {
             mnt="${mnt%.}"
             mnt="$(trim "$mnt")"
             if [[ -d "$mnt" ]]; then
-                CIDATA_UDISKS+=("$mnt")
-                printf '%s\n' "$mnt"
+                CIDATA_UDISKS+=("$dev")
+                MOUNTED_CIDATA="$mnt"
                 return 0
             fi
         fi
@@ -250,12 +252,12 @@ mount_device() {
     mnt="/tmp/neos-cidata-${dev##*/}"
     mkdir -p "$mnt" 2>/dev/null || true
     if mountpoint -q "$mnt" 2>/dev/null; then
-        printf '%s\n' "$mnt"
+        MOUNTED_CIDATA="$mnt"
         return 0
     fi
     if mount -o ro,nosuid,nodev,noexec "$dev" "$mnt" 2>/dev/null; then
         CIDATA_MANUAL+=("$mnt")
-        printf '%s\n' "$mnt"
+        MOUNTED_CIDATA="$mnt"
         return 0
     fi
     rmdir "$mnt" 2>/dev/null || true
@@ -275,7 +277,8 @@ probe_now() {
         fi
     done < <(iso_autoinstall_dirs)
     if dev="$(find_cidata_device)"; then
-        if mnt="$(mount_device "$dev")"; then
+        if mount_device "$dev"; then
+            mnt="$MOUNTED_CIDATA"
             if file="$(find_config_in_dir "$mnt")"; then
                 parse_file "$file"
                 printf 'FOUND=%s\n' "$file"
@@ -319,10 +322,11 @@ yaml_escape() {
 
 generate_calamares_config() {
     local dest="$1"
-    local src="/etc/calamares"
+    local src="${2:-/etc/calamares}"
     [[ -d "$src" ]] || return 1
-    mkdir -p "$dest"
+    (umask 077; mkdir -p "$dest")
     cp -a "$src/." "$dest/"
+    chmod 700 "$dest"
 
     if [[ -f "$dest/settings.conf" ]]; then
         sed -i \
@@ -353,20 +357,38 @@ generate_calamares_config() {
     fi
 
     if [[ -n "$AI_KEYBOARD" ]]; then
-        printf '---\nXkbLayout: "%s"\n' "$(yaml_escape "$AI_KEYBOARD")" > "$dest/modules/keyboard.conf"
+        printf -- '---\nXkbLayout: "%s"\n' "$(yaml_escape "$AI_KEYBOARD")" > "$dest/modules/keyboard.conf"
     fi
     if [[ -n "$AI_LOCALE" ]]; then
-        printf '---\nlocaleGenPath: /etc/locale.gen\n' > "$dest/modules/locale.conf"
+        printf -- '---\nlocaleGenPath: /etc/locale.gen\n' > "$dest/modules/locale.conf"
     fi
 
     if [[ -f "$dest/modules/shellprocess.conf" && -n "$AI_USERNAME" ]]; then
-        if [[ -n "$AI_HASHED_PASSWORD" ]]; then
-            printf '    - command: "usermod -p '\''%s'\'' %s"\n' \
-                "$AI_HASHED_PASSWORD" "$AI_USERNAME" >> "$dest/modules/shellprocess.conf"
-        elif [[ -n "$AI_PASSWORD" ]]; then
-            printf '    - command: "echo %s:%s | chpasswd"\n' \
-                "$AI_USERNAME" "$AI_PASSWORD" >> "$dest/modules/shellprocess.conf"
-        fi
+        # Edit the command sequence structurally: the file ends in i18n, so
+        # appending YAML text would put commands outside the script list.
+        AI_USERNAME="$AI_USERNAME" AI_PASSWORD="$AI_PASSWORD" \
+        AI_HASHED_PASSWORD="$AI_HASHED_PASSWORD" python3 - "$dest/modules/shellprocess.conf" <<'PYAML'
+import os
+import shlex
+import sys
+from pathlib import Path
+import yaml
+
+path = Path(sys.argv[1])
+config = yaml.safe_load(path.read_text())
+username = os.environ["AI_USERNAME"]
+password_hash = os.environ["AI_HASHED_PASSWORD"]
+password = os.environ["AI_PASSWORD"]
+if password_hash:
+    command = "usermod -p " + shlex.quote(password_hash) + " " + shlex.quote(username)
+elif password:
+    command = "printf '%s\\n' " + shlex.quote(username + ":" + password) + " | chpasswd"
+else:
+    command = None
+if command:
+    config["script"].append({"command": command})
+    path.write_text(yaml.safe_dump(config, sort_keys=False))
+PYAML
     fi
 
     if [[ "$AI_REBOOT" -eq 1 && -f "$dest/modules/finished.conf" ]]; then
@@ -444,7 +466,6 @@ cmd_apply() {
     fi
 
     local waited=0
-    local file=""
     while (( waited <= 30 )); do
         if probe_now >/dev/null; then
             break
@@ -453,16 +474,9 @@ cmd_apply() {
         waited=$((waited + 2))
     done
 
-    if ! probe_now >/tmp/neos-autoinstall.probe 2>/dev/null; then
+    if ! probe_now >/dev/null 2>/dev/null; then
         echo "neos-autoinstall: no cidata / autoinstall config found"
         return 0
-    fi
-    # probe_now already parsed into AI_* globals when it succeeded; re-run
-    # for the printed path so generate_calamares_config has AI_SOURCE.
-    file="$(awk -F= '/^FOUND=/{print substr($0,7); exit}' /tmp/neos-autoinstall.probe || true)"
-    rm -f /tmp/neos-autoinstall.probe
-    if [[ -n "$file" && -f "$file" ]]; then
-        parse_file "$file"
     fi
     # The config is parsed into memory; nothing below reads the volume again
     # (the generated Calamares config is copied from /etc/calamares), so
@@ -509,4 +523,6 @@ main() {
     esac
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
