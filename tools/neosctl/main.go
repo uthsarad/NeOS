@@ -92,11 +92,11 @@ func runInfo() {
 // tools/neos-profile-audit (Rust) — see reports/v2026.09.18/AUDIT_AND_RECOMMENDATIONS.md
 // and the ownership guard in tests/verify_go_neosctl.sh.
 
-func runRankMirrors(path string) error {
+func parseMirrors(path string) ([]string, error) {
 	fmt.Printf("%s[neosctl::rank-mirrors]%s Parsing %s...\n", ColorCyan, ColorReset, path)
 	f, err := os.Open(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer f.Close()
 
@@ -116,9 +116,13 @@ func runRankMirrors(path string) error {
 	}
 
 	if len(urls) == 0 {
-		return fmt.Errorf("no active Server URLs found in %s", path)
+		return nil, fmt.Errorf("no active Server URLs found in %s", path)
 	}
 
+	return urls, nil
+}
+
+func benchmarkMirrors(urls []string) error {
 	fmt.Printf("Benchmarking %d top mirrors concurrently with Go workers...\n", len(urls))
 
 	results := make(chan MirrorResult, len(urls))
@@ -175,4 +179,12 @@ func runRankMirrors(path string) error {
 	}
 
 	return nil
+}
+
+func runRankMirrors(path string) error {
+	urls, err := parseMirrors(path)
+	if err != nil {
+		return err
+	}
+	return benchmarkMirrors(urls)
 }
