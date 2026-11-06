@@ -412,6 +412,26 @@ jobs:
       # verify_iso_smoketest.sh) runs inside build.sh, so it is no longer
       # duplicated here — one entrypoint, one validation pass.
 
+      - name: Checksum pull request test image
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/out"
+          sha512sum ./*.iso > SHA512SUMS
+
+      - name: Upload pull request test image and boot evidence
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: neos-pr-${{ github.event.pull_request.number }}-test-image
+          path: |
+            out/*.iso
+            out/SHA512SUMS
+            out/smoke_*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
+
       - name: Prepare ISO for upload
         id: iso
         if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
