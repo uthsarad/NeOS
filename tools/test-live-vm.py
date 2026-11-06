@@ -68,6 +68,7 @@ class VM:
         self.qmp_reader.readline()
         self.execute('qmp_capabilities')
         self.read_until(b'NEOS-BOOT-OK', 600)
+        self.serial.sendall(b'\x03\n')
 
     def execute(self, command, arguments=None):
         self.qmp.sendall(json.dumps({'execute': command, 'arguments': arguments or {}}).encode() + b'\n')
@@ -158,10 +159,15 @@ def main():
         try:
             vm.start()
             probe = Path(__file__).with_name('vm-guest-probe.py').read_bytes()
-            encoded = base64.b64encode(probe).decode()
-            vm.python(f"import base64\nfrom pathlib import Path\n"
-                      f"Path('/tmp/neos-vm-guest-probe.py').write_bytes(base64.b64decode({encoded!r}))\n"
-                      "result=True")
+            vm.python("from pathlib import Path\n"
+                      "Path('/tmp/neos-vm-guest-probe.py').write_bytes(b'')\nresult=True")
+            # Serial terminals can truncate long canonical input lines. Deliver
+            # the probe in short, acknowledged commands instead of one large line.
+            for offset in range(0, len(probe), 500):
+                encoded = base64.b64encode(probe[offset:offset + 500]).decode()
+                vm.python("import base64\n"
+                          "with open('/tmp/neos-vm-guest-probe.py','ab') as f:\n"
+                          f" f.write(base64.b64decode({encoded!r}))\nresult=True")
             deadline = time.monotonic() + 120
             while True:
                 try:
@@ -204,9 +210,14 @@ def main():
             evidence['installer'] = installer
             vm.screenshot('03-calamares-after-mouse-click')
             evidence['result'] = 'PASS'
+            print(json.dumps(evidence, indent=2), flush=True)
             print('[PASS] Real USB tablet input aligns at three positions and a mouse click opens Calamares')
         except Exception as error:
             evidence.update(result='FAIL', error=str(error))
+            print('Guest serial diagnostics:\n' +
+                  (output / 'serial.log').read_bytes()[-8000:].decode(errors='replace'), flush=True)
+            print('QEMU diagnostics:\n' +
+                  (output / 'qemu.log').read_bytes()[-2000:].decode(errors='replace'), flush=True)
             if vm.qmp:
                 try:
                     vm.screenshot('failure')
