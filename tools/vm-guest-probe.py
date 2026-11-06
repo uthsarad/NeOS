@@ -36,6 +36,18 @@ def user_snapshot():
     x.XGetWindowProperty.argtypes = [C.c_void_p, ulong, ulong, C.c_long, C.c_long,
                                     C.c_int, ulong, C.POINTER(ulong), C.POINTER(C.c_int),
                                     C.POINTER(ulong), C.POINTER(ulong), C.POINTER(C.c_void_p)]
+
+    class Attributes(C.Structure):
+        _fields_ = [(name, C.c_int) for name in ('x', 'y', 'width', 'height', 'border_width', 'depth')] + [
+            ('visual', C.c_void_p), ('root', ulong), ('window_class', C.c_int),
+            ('bit_gravity', C.c_int), ('win_gravity', C.c_int), ('backing_store', C.c_int),
+            ('backing_planes', ulong), ('backing_pixel', ulong), ('save_under', C.c_int),
+            ('colormap', ulong), ('map_installed', C.c_int), ('map_state', C.c_int),
+            ('all_event_masks', C.c_long), ('your_event_mask', C.c_long),
+            ('do_not_propagate_mask', C.c_long), ('override_redirect', C.c_int),
+            ('screen', C.c_void_p)]
+
+    x.XGetWindowAttributes.argtypes = [C.c_void_p, ulong, C.POINTER(Attributes)]
     windows = []
 
     def visit(window, depth=0):
@@ -56,7 +68,11 @@ def user_snapshot():
             pid = C.cast(data, C.POINTER(ulong))[0] if count.value and data.value else 0
             if data.value:
                 x.XFree(data)
-            windows.append({'title': title, 'x': px.value, 'y': py.value, 'pid': pid})
+            attributes = Attributes()
+            x.XGetWindowAttributes(display, window, C.byref(attributes))
+            windows.append({'title': title, 'x': px.value, 'y': py.value, 'pid': pid,
+                            'width': attributes.width, 'height': attributes.height,
+                            'visible': attributes.map_state == 2})
         r, parent, children, count = ulong(), ulong(), C.POINTER(ulong)(), C.c_uint()
         if x.XQueryTree(display, window, C.byref(r), C.byref(parent),
                         C.byref(children), C.byref(count)):
@@ -70,7 +86,7 @@ def user_snapshot():
     pointer = QCursor.pos()
     result = {'width': screen.width(), 'height': screen.height(),
               'pointer': [pointer.x(), pointer.y()], 'windows': windows}
-    welcome = next((w for w in windows if w['title'] == 'Welcome to NeOS'), None)
+    welcome = next((w for w in windows if w['title'] == 'Welcome to NeOS' and w['visible']), None)
     if welcome:
         # Compute the button's layout using the installed widget code, without
         # showing a second window or invoking its handler. Input goes through QEMU.

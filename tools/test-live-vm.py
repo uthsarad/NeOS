@@ -215,8 +215,9 @@ def main():
             while True:
                 installer = vm.probe('installer')
                 windows = installer['snapshot']['windows']
-                if any(str(w['pid']) in installer['pids'] and
-                       re.search('install|calamares', w['title'], re.I) for w in windows):
+                main_window = next((w for w in windows if str(w['pid']) in installer['pids']
+                                    and w['visible'] and w['width'] >= 400 and w['height'] >= 300), None)
+                if main_window:
                     break
                 if time.monotonic() > deadline:
                     evidence['installer'] = installer
@@ -224,6 +225,17 @@ def main():
                 time.sleep(3)
             evidence['installer'] = installer
             vm.screenshot('03-calamares-after-mouse-click')
+            from PIL import Image
+            with Image.open(output / '03-calamares-after-mouse-click.png') as image:
+                x, y = max(0, main_window['x']), max(0, main_window['y'])
+                crop = image.crop((x, y, min(image.width, x + main_window['width']),
+                                   min(image.height, y + main_window['height'])))
+                crop.resize((crop.width * 2, crop.height * 2)).save(output / '04-installer-page.png')
+            page_text = subprocess.check_output(['tesseract', str(output / '04-installer-page.png'),
+                                                 'stdout'], text=True, timeout=30)
+            evidence['installer_page_text'] = page_text
+            if not re.search(r'\bwelcome\b', page_text, re.I) or not re.search(r'\bnext\b', page_text, re.I):
+                raise AssertionError('The visible Calamares window did not show its Welcome/Next page')
             evidence['result'] = 'PASS'
             print(json.dumps(evidence, indent=2), flush=True)
             print('[PASS] Real USB tablet input aligns at three positions and a mouse click opens Calamares')

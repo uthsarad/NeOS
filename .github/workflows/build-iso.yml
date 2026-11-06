@@ -174,7 +174,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Install VM tools
-        run: sudo apt-get update && sudo apt-get install -y qemu-system-x86 qemu-utils xorriso python3-pil
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-system-x86 qemu-utils xorriso python3-pil tesseract-ocr
       - name: Download existing test image
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
