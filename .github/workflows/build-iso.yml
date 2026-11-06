@@ -24,6 +24,10 @@ on:
         description: 'Artifact containing the ISO and SHA512SUMS'
         type: string
         default: ''
+      vm_candidate_launcher:
+        description: 'Apply the checked-out installer launcher to the disposable VM before testing'
+        type: boolean
+        default: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -182,6 +186,8 @@ jobs:
         working-directory: vm-input
         run: sha512sum -c SHA512SUMS
       - name: Test live mouse input and installer button in QEMU
+        env:
+          NEOS_VM_CANDIDATE_LAUNCHER: ${{ inputs.vm_candidate_launcher && 'profile/airootfs/usr/local/bin/neos-welcome' || '' }}
         run: python3 tools/test-live-vm.py --iso-dir vm-input --output out/vm-interaction
       - name: Upload interaction evidence
         if: always()

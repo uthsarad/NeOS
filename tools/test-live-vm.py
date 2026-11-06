@@ -7,6 +7,7 @@ is attached. BIOS/UEFI bootloader tests remain separate.
 """
 import argparse
 import base64
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -117,6 +118,14 @@ class VM:
         return self.python("import runpy\nns=runpy.run_path('/tmp/neos-vm-guest-probe.py')\n"
                            f"result=ns['probe']({mode!r})")
 
+    def write_guest(self, path, content):
+        self.python(f"from pathlib import Path\nPath({path!r}).write_bytes(b'')\nresult=True")
+        for offset in range(0, len(content), 500):
+            encoded = base64.b64encode(content[offset:offset + 500]).decode()
+            self.python("import base64\n"
+                        f"with open({path!r},'ab') as f:\n"
+                        f" f.write(base64.b64decode({encoded!r}))\nresult=True")
+
     def screenshot(self, name):
         ppm = self.output / (name + '.ppm')
         self.execute('screendump', {'filename': str(ppm)})
@@ -147,6 +156,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--iso-dir', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--candidate-launcher', type=Path,
+                        default=os.environ.get('NEOS_VM_CANDIDATE_LAUNCHER') or None)
     args = parser.parse_args()
     images = list(args.iso_dir.glob('*.iso'))
     if len(images) != 1:
@@ -158,16 +169,18 @@ def main():
         evidence = {}
         try:
             vm.start()
+            print('[PASS] Guest reached graphical.target', flush=True)
             probe = Path(__file__).with_name('vm-guest-probe.py').read_bytes()
-            vm.python("from pathlib import Path\n"
-                      "Path('/tmp/neos-vm-guest-probe.py').write_bytes(b'')\nresult=True")
             # Serial terminals can truncate long canonical input lines. Deliver
             # the probe in short, acknowledged commands instead of one large line.
-            for offset in range(0, len(probe), 500):
-                encoded = base64.b64encode(probe[offset:offset + 500]).decode()
-                vm.python("import base64\n"
-                          "with open('/tmp/neos-vm-guest-probe.py','ab') as f:\n"
-                          f" f.write(base64.b64decode({encoded!r}))\nresult=True")
+            vm.write_guest('/tmp/neos-vm-guest-probe.py', probe)
+            if args.candidate_launcher:
+                candidate = args.candidate_launcher.read_bytes()
+                vm.write_guest('/usr/local/bin/neos-welcome', candidate)
+                vm.python("from pathlib import Path\n"
+                          "Path('/usr/local/bin/neos-welcome').chmod(0o755)\nresult=True")
+                evidence['candidate_launcher_sha256'] = hashlib.sha256(candidate).hexdigest()
+            print('[PASS] Guest control channel ready', flush=True)
             deadline = time.monotonic() + 120
             while True:
                 try:
@@ -181,6 +194,7 @@ def main():
                     raise TimeoutError('Welcome window did not become available')
                 time.sleep(3)
             evidence['welcome'] = snapshot
+            print('[PASS] Live welcome window is present', flush=True)
             vm.screenshot('01-welcome')
             width, height = snapshot['width'], snapshot['height']
             evidence['pointer_checks'] = []
@@ -191,6 +205,7 @@ def main():
                 evidence['pointer_checks'].append({'sent': [x, y], 'received': actual})
                 if abs(actual[0] - x) > 5 or abs(actual[1] - y) > 5:
                     raise AssertionError(f'Absolute mouse coordinates are misaligned: {(x,y)} -> {actual}')
+            print('[PASS] Actual USB tablet pointer aligns at all three positions', flush=True)
             vm.screenshot('02-pointer-on-install')
             for down in (True, False):
                 vm.execute('input-send-event', {'events': [

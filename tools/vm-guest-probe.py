@@ -117,6 +117,20 @@ def probe(mode):
         result = {'pids': process.stdout.split(), 'snapshot': probe('snapshot')}
         result['launcher_log'] = Path('/home/liveuser/.cache/neos-installer.log').read_text()[-4000:] \
             if Path('/home/liveuser/.cache/neos-installer.log').exists() else ''
+        result['processes'] = []
+        for entry in Path('/proc').glob('[0-9]*'):
+            try:
+                arguments = (entry / 'cmdline').read_bytes().split(b'\0')
+                if not any(b'kdialog' in arg or arg == b'/usr/local/bin/neos-welcome'
+                           or arg.endswith(b'/calamares') for arg in arguments[:2]):
+                    continue
+                result['processes'].append({'pid': int(entry.name),
+                                            'args': [os.fsdecode(arg) for arg in arguments if arg],
+                                            'wait': (entry / 'wchan').read_text()})
+            except OSError:
+                continue
+        result['temporary_logs'] = {str(path): path.read_text(errors='replace')[-4000:]
+                                    for path in Path('/tmp').glob('neos-installer.*') if path.is_file()}
         return result
     raise ValueError(mode)
 
