@@ -41,7 +41,16 @@ get_primary_rotation() {
 
     # Query xrandr for connected outputs and parse primary or first active output rotation
     local line
-    line=$(xrandr --current 2>/dev/null | grep -E '\bconnected\b' | grep -E '\b(normal|left|right|inverted)\b' | head -n 1 || true)
+    # The parenthesized suffix lists SUPPORTED rotations, including "left"
+    # even on a normal display. Only parse the active geometry's suffix.
+    # Prefer the primary output; ignore connected outputs without a mode.
+    line=$(xrandr --current 2>/dev/null | sed 's/ (.*//' | awk '
+        $2 == "connected" && /[0-9]+x[0-9]+[+-][0-9]+[+-][0-9]+/ {
+            if ($3 == "primary") { print; found=1; exit }
+            if (first == "") first=$0
+        }
+        END { if (!found) print first }
+    ' || true)
     if [ -z "$line" ]; then
         echo "normal"
         return 0

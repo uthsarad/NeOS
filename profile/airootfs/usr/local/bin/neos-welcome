@@ -117,8 +117,11 @@ fi
 
 # Launch Calamares as root on the live session's X display, capturing output so
 # a failed start is visible to the user instead of silently doing nothing.
+# The live image grants passwordless sudo. Fail promptly if that setup is
+# missing: a GUI launcher has no terminal for sudo's password prompt. Display
+# and Xauthority are passed explicitly below, without needing preserve-env.
 # shellcheck disable=SC2024
-sudo --preserve-env=DISPLAY,XAUTHORITY \
+sudo -n \
     env QT_QPA_PLATFORM=xcb \
         DISPLAY="$DISPLAY_TO_USE" \
         XAUTHORITY="$XAUTH_TO_USE" \

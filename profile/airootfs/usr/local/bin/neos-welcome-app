@@ -5,8 +5,8 @@ import subprocess
 import sys
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout,
                              QPushButton, QLabel, QGraphicsDropShadowEffect,
-                             QFrame)
-from PyQt6.QtCore import Qt
+                             QFrame, QMessageBox)
+from PyQt6.QtCore import Qt, QProcess
 from PyQt6.QtGui import QColor
 
 
@@ -231,6 +231,12 @@ class NeosWelcome(QWidget):
             self.move(x, y)
 
     def closeEvent(self, event):
+        # Destroying an owned QProcess kills it. Minimize the welcome window
+        # instead while an installation is running.
+        if getattr(self, 'installer', None) is not None:
+            event.ignore()
+            self.showMinimized()
+            return
         # On an installed system, closing the window completes first-boot
         # onboarding so it does not open again at the next login.
         if not is_live_mode():
@@ -244,8 +250,35 @@ class NeosWelcome(QWidget):
         super().closeEvent(event)
 
     def run_installer(self):
-        subprocess.Popen(['/usr/local/bin/neos-welcome'])
-        self.close()
+        if getattr(self, 'installer', None) is not None:
+            return
+        # Keep the welcome window and event loop alive until the launcher exits.
+        # A successful fork alone does not mean Calamares actually started.
+        self.primary_button.setEnabled(False)
+        self.installer = QProcess(self)
+        self.installer.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
+        self.installer.errorOccurred.connect(self.installer_error)
+        self.installer.finished.connect(self.installer_finished)
+        self.installer.start('/usr/local/bin/neos-welcome', [])
+
+    def installer_error(self, error):
+        if error == QProcess.ProcessError.FailedToStart:
+            message = self.installer.errorString()
+            self.installer.deleteLater()
+            self.installer = None
+            self.primary_button.setEnabled(True)
+            QMessageBox.critical(self, 'Install NeOS',
+                                 f'Could not launch the installer: {message}')
+
+    def installer_finished(self, exit_code, exit_status):
+        output = bytes(self.installer.readAllStandardOutput()).decode('utf-8', errors='replace')
+        self.installer.deleteLater()
+        self.installer = None
+        self.primary_button.setEnabled(True)
+        if exit_code != 0 or exit_status != QProcess.ExitStatus.NormalExit:
+            QMessageBox.critical(self, 'Install NeOS',
+                                 'The installer exited unexpectedly.\n\n' + output[-4000:] +
+                                 '\n\nLauncher log: ~/.cache/neos-installer.log')
 
     def launch_drivers(self):
         try:

@@ -78,5 +78,42 @@ else
     exit 1
 fi
 
+# Exercise real synchronization with XRandR output and a VirtualBox tablet.
+# Supported rotations appear on every line and must not change a normal screen.
+# The mocks below are called indirectly by the sourced sync functions.
+# shellcheck disable=SC2317,SC2329
+(
+    export XDG_SESSION_TYPE=x11 DISPLAY=:99
+    # shellcheck disable=SC1090
+    source "$SCRIPT" --help >/dev/null
+    xrandr() { printf '%s\n' "$fixture"; }
+    xinput() {
+        case "$1" in
+            list) echo '↳ VirtualBox USB Tablet id=10 [slave pointer (2)]' ;;
+            list-props) echo 'Coordinate Transformation Matrix' ;;
+            set-prop) printf '%s\n' "${*:4}" ;;
+        esac
+    }
+    supported='(normal left inverted right x axis y axis)'
+    for rotation in normal left right inverted; do
+        active="$rotation"
+        [[ "$rotation" == normal ]] && active=''
+        fixture="Virtual-1 connected primary 1920x1080+0+0 $active $supported"
+        actual=$(sync_rotation)
+        expected=$(get_matrix_for_rotation "$rotation")
+        if ! grep -qxF -- "$expected" <<< "$actual"; then
+            echo "[FAIL] wrong tablet matrix for $rotation: $actual"; exit 1
+        fi
+    done
+    fixture=$(printf '%s\n' \
+        "Virtual-2 connected 1080x1920+1920+0 left $supported" \
+        "Virtual-1 connected primary 1920x1080+0+0 $supported")
+    [[ "$(get_primary_rotation)" == normal ]]
+    fixture=$(printf '%s\n' "Virtual-2 connected $supported" \
+        "Virtual-1 connected 1920x1080-1920+0 right $supported")
+    [[ "$(get_primary_rotation)" == right ]]
+    echo '  [PASS] normal/rotated VirtualBox tablet matrices, primary and inactive outputs'
+)
+
 echo "All display & input sync verification checks passed!"
 exit 0
