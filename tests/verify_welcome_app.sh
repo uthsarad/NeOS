@@ -54,3 +54,11 @@ else
 fi
 
 echo "All Welcome App & First-Boot Onboarding checks passed!"
+
+if python3 -c 'import PyQt6.QtWidgets' >/dev/null 2>&1; then
+    python3 tests/welcome_installer_runtime.py
+elif [[ "${REQUIRE_TOOLS:-0}" == 1 ]]; then
+    echo '[FAIL] PyQt6 is required for installer lifecycle checks'; exit 1
+else
+    echo '[WARN] PyQt6 unavailable; skipping installer lifecycle checks'
+fi

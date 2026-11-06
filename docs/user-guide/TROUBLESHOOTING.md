@@ -79,7 +79,7 @@ NeOS attempts to include common drivers. If your specific hardware is not suppor
 This applies to X11 sessions only; on Wayland, KWin keeps input aligned itself. In X11 environments, rotating the screen (`xrandr` or KDE Display Settings) rotates the visual buffer, but absolute pointing devices (VirtualBox/VMware tablet pointers, touchscreens, stylus digitizers) do not automatically transform their input matrices.
 - **Automatic Fix:** NeOS includes `neos-display-sync`, which runs as a daemon at login (`neos-display-sync --daemon`) and monitors display rotation events, automatically synchronizing pointer coordinates 1:1.
 - **Manual Sync:** Run `neos-display-sync` in a terminal or rotate directly via `neos-display-sync --rotate left|right|normal|inverted`.
-- **Virtual Machine Tip:** In VirtualBox or VMware, disabling host "Mouse Integration" forces the guest to use relative mouse input, which also eliminates coordinate misalignment on rotated screens.
+- **VirtualBox:** Keep host **Mouse Integration** enabled and select **USB Tablet** as the pointing device. Run `neos-display-sync --sync` if tablet coordinates are misaligned after rotation. Disabling integration switches to captured relative input and requires the Host key to release the pointer; see [VM setup](VM_STARTUP.md#virtualbox-mouse-input).
 
 ### Choosing Wayland or X11
 NeOS runs Plasma on **Wayland** on Intel, AMD and NVIDIA (proprietary driver)
