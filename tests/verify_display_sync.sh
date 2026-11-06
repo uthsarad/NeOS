@@ -81,7 +81,7 @@ fi
 # Exercise real synchronization with XRandR output and a VirtualBox tablet.
 # Supported rotations appear on every line and must not change a normal screen.
 # The mocks below are called indirectly by the sourced sync functions.
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 (
     export XDG_SESSION_TYPE=x11 DISPLAY=:99
     # shellcheck disable=SC1090
