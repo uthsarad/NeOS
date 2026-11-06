@@ -15,6 +15,19 @@ on:
   pull_request:
     branches: [testing, main]
   workflow_dispatch:
+    inputs:
+      vm_iso_run_id:
+        description: 'Test an existing PR ISO in a VM instead of building (workflow run ID)'
+        type: string
+        default: ''
+      vm_iso_artifact:
+        description: 'Artifact containing the ISO and SHA512SUMS'
+        type: string
+        default: ''
+      vm_candidate_launcher:
+        description: 'Apply the checked-out installer launcher to the disposable VM before testing'
+        type: boolean
+        default: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -31,6 +44,7 @@ permissions:
 
 jobs:
   test:
+    if: github.event_name != 'workflow_dispatch' || inputs.vm_iso_run_id == ''
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -149,6 +163,40 @@ jobs:
           echo "=============================="
           echo "All Security Scans Passed!"
           echo "=============================="
+
+  vm-interaction:
+    if: github.event_name == 'workflow_dispatch' && inputs.vm_iso_run_id != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Install VM tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-system-x86 qemu-utils xorriso python3-pil tesseract-ocr
+      - name: Download existing test image
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ inputs.vm_iso_artifact }}
+          run-id: ${{ inputs.vm_iso_run_id }}
+          github-token: ${{ github.token }}
+          path: vm-input
+      - name: Verify image checksum
+        working-directory: vm-input
+        run: sha512sum -c SHA512SUMS
+      - name: Test live mouse input and installer button in QEMU
+        env:
+          NEOS_VM_CANDIDATE_LAUNCHER: ${{ inputs.vm_candidate_launcher && 'profile/airootfs/usr/local/bin/neos-welcome' || '' }}
+        run: python3 tools/test-live-vm.py --iso-dir vm-input --output out/vm-interaction
+      - name: Upload interaction evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: live-vm-interaction-evidence
+          path: out/vm-interaction/
+          if-no-files-found: warn
+          retention-days: 3
 
   build:
     needs: test
