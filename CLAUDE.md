@@ -123,7 +123,7 @@ pointing at files that do not exist again.
 
 ## Start
 
-1. **Analyze** the request type (Feature/Bug/API/Refactor/Issue/Research)
+1. **Analyze** the request type (`Feature`/`Bug`/`API`/`Refactor`/`Issue`/`Research`)
 2. **Determine version** — Read VERSION, decide increment (MAJOR/MINOR/PATCH)
 3. **Create report folder** — `mkdir -p reports/vX.X.X/`
 4. **Announce** — "Working on vX.X.X - [type]: [description]"
