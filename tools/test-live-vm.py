@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""Boot an unmodified ISO and verify real absolute input and its installer button.
+
+Uses a debug serial shell enabled only on this test VM's kernel command line.
+The ISO is unchanged, no host directory is mounted, and only a disposable disk
+is attached. BIOS/UEFI bootloader tests remain separate.
+"""
+import argparse
+import base64
+import json
+import os
+from pathlib import Path
+import re
+import select
+import socket
+import subprocess
+import tempfile
+import time
+import uuid
+
+
+class VM:
+    def __init__(self, directory, output, iso):
+        self.directory, self.output = Path(directory), output
+        self.qmp = None
+        self.serial = None
+        self.process = None
+        self.serial_log = (output / 'serial.log').open('ab', buffering=0)
+        self.qemu_log = (output / 'qemu.log').open('wb')
+        self.iso = iso
+
+    def start(self):
+        for name in ('vmlinuz-linux-lts', 'initramfs-linux-lts.img'):
+            subprocess.run(['xorriso', '-osirrox', 'on', '-indev', str(self.iso),
+                            '-extract', '/neos/boot/x86_64/' + name,
+                            str(self.directory / name)], check=True, stdout=self.qemu_log,
+                           stderr=subprocess.STDOUT)
+        label = subprocess.check_output(['blkid', '-p', '-s', 'LABEL', '-o', 'value',
+                                         str(self.iso)], text=True).strip()
+        subprocess.run(['qemu-img', 'create', '-f', 'qcow2', str(self.directory / 'test.qcow2'),
+                        '32G'], check=True)
+        acceleration = ['-enable-kvm'] if os.access('/dev/kvm', os.W_OK) else ['-accel', 'tcg']
+        command = ['qemu-system-x86_64', *acceleration, '-m', '4096', '-smp', '2',
+                   '-display', 'none', '-no-reboot', '-monitor', 'none',
+                   '-qmp', f'unix:{self.directory}/qmp,server=on,wait=off',
+                   '-serial', f'unix:{self.directory}/serial,server=on,wait=off',
+                   '-device', 'qemu-xhci', '-device', 'usb-tablet',
+                   '-drive', f'file={self.directory}/test.qcow2,if=virtio,format=qcow2',
+                   '-cdrom', str(self.iso), '-kernel', str(self.directory / 'vmlinuz-linux-lts'),
+                   '-initrd', str(self.directory / 'initramfs-linux-lts.img'),
+                   '-append', f'archisobasedir=neos archisolabel={label} '
+                   'console=tty0 console=ttyS0,115200 cow_spacesize=4G copytoram=n '
+                   'quiet loglevel=3 systemd.debug_shell=ttyS0 '
+                   'systemd.mask=serial-getty@ttyS0.service']
+        self.process = subprocess.Popen(command, stdin=subprocess.DEVNULL,
+                                        stdout=self.qemu_log, stderr=subprocess.STDOUT)
+        for name in ('qmp', 'serial'):
+            deadline = time.monotonic() + 30
+            while not (self.directory / name).exists():
+                if self.process.poll() is not None or time.monotonic() > deadline:
+                    raise RuntimeError('QEMU failed to start; see qemu.log')
+                time.sleep(0.2)
+            connection = socket.socket(socket.AF_UNIX)
+            connection.settimeout(60)
+            connection.connect(str(self.directory / name))
+            setattr(self, name, connection)
+        self.qmp_reader = self.qmp.makefile('rb')
+        self.qmp_reader.readline()
+        self.execute('qmp_capabilities')
+        self.read_until(b'NEOS-BOOT-OK', 600)
+
+    def execute(self, command, arguments=None):
+        self.qmp.sendall(json.dumps({'execute': command, 'arguments': arguments or {}}).encode() + b'\n')
+        while True:
+            message = json.loads(self.qmp_reader.readline())
+            if 'error' in message:
+                raise RuntimeError(message['error'])
+            if 'return' in message:
+                return message['return']
+
+    def read_until(self, marker, timeout):
+        data = bytearray()
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            if self.process.poll() is not None:
+                raise RuntimeError('QEMU exited unexpectedly')
+            if select.select([self.serial], [], [], 1)[0]:
+                chunk = self.serial.recv(65536)
+                if not chunk:
+                    raise RuntimeError('Guest serial console disconnected')
+                self.serial_log.write(chunk)
+                data.extend(chunk)
+                if marker in data:
+                    return bytes(data)
+        raise TimeoutError(f'Guest did not report {marker!r}; see serial.log')
+
+    def python(self, code, timeout=60):
+        marker = 'NEOS_VM_' + uuid.uuid4().hex
+        wrapped = ('import json,traceback\ntry:\n' +
+                   '\n'.join(' '+line for line in code.splitlines()) +
+                   f'\nexcept Exception as e:\n result={{"error":str(e),"trace":traceback.format_exc()}}\n'
+                   f'print("{marker}:"+json.dumps(result),flush=True)\n')
+        encoded = base64.b64encode(wrapped.encode()).decode()
+        self.serial.sendall(f"python3 -c \"$(printf %s {encoded} | base64 -d)\"\n".encode())
+        response = self.read_until((marker + ':').encode(), timeout)
+        # The JSON may arrive in a later serial read than the marker.
+        payload = response.split((marker + ':').encode())[-1]
+        while b'\n' not in payload:
+            payload += self.read_until(b'\n', 10)
+        result = json.loads(payload.splitlines()[0])
+        if isinstance(result, dict) and 'error' in result:
+            raise RuntimeError(result['trace'])
+        return result
+
+    def probe(self, mode='snapshot'):
+        return self.python("import runpy\nns=runpy.run_path('/tmp/neos-vm-guest-probe.py')\n"
+                           f"result=ns['probe']({mode!r})")
+
+    def screenshot(self, name):
+        ppm = self.output / (name + '.ppm')
+        self.execute('screendump', {'filename': str(ppm)})
+        from PIL import Image
+        with Image.open(ppm) as image:
+            image.save(self.output / (name + '.png'))
+        ppm.unlink()
+
+    def move(self, x, y, width, height):
+        self.execute('input-send-event', {'events': [
+            {'type': 'abs', 'data': {'axis': 'x', 'value': round(x * 32767 / (width - 1))}},
+            {'type': 'abs', 'data': {'axis': 'y', 'value': round(y * 32767 / (height - 1))}},
+        ]})
+
+    def close(self):
+        if self.process and self.process.poll() is None:
+            self.process.terminate()
+            try:
+                self.process.wait(15)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
+                self.process.wait()
+        self.serial_log.close()
+        self.qemu_log.close()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--iso-dir', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    images = list(args.iso_dir.glob('*.iso'))
+    if len(images) != 1:
+        raise RuntimeError(f'Expected one ISO; found {len(images)}')
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='neos-vm-') as directory:
+        vm = VM(directory, output, images[0].resolve())
+        evidence = {}
+        try:
+            vm.start()
+            probe = Path(__file__).with_name('vm-guest-probe.py').read_bytes()
+            encoded = base64.b64encode(probe).decode()
+            vm.python(f"import base64\nfrom pathlib import Path\n"
+                      f"Path('/tmp/neos-vm-guest-probe.py').write_bytes(base64.b64decode({encoded!r}))\n"
+                      "result=True")
+            deadline = time.monotonic() + 120
+            while True:
+                try:
+                    snapshot = vm.probe()
+                    if 'install_button' in snapshot:
+                        break
+                except RuntimeError:
+                    if time.monotonic() > deadline:
+                        raise
+                if time.monotonic() > deadline:
+                    raise TimeoutError('Welcome window did not become available')
+                time.sleep(3)
+            evidence['welcome'] = snapshot
+            vm.screenshot('01-welcome')
+            width, height = snapshot['width'], snapshot['height']
+            evidence['pointer_checks'] = []
+            for x, y in ((100, 100), (width - 100, height - 100), snapshot['install_button']):
+                vm.move(x, y, width, height)
+                time.sleep(0.5)
+                actual = vm.probe()['pointer']
+                evidence['pointer_checks'].append({'sent': [x, y], 'received': actual})
+                if abs(actual[0] - x) > 5 or abs(actual[1] - y) > 5:
+                    raise AssertionError(f'Absolute mouse coordinates are misaligned: {(x,y)} -> {actual}')
+            vm.screenshot('02-pointer-on-install')
+            for down in (True, False):
+                vm.execute('input-send-event', {'events': [
+                    {'type': 'btn', 'data': {'down': down, 'button': 'left'}}]})
+                time.sleep(0.2)
+            deadline = time.monotonic() + 120
+            while True:
+                installer = vm.probe('installer')
+                titles = [w['title'] for w in installer['snapshot']['windows']]
+                if installer['pids'] and any(re.search('install|calamares', title, re.I) for title in titles):
+                    break
+                if time.monotonic() > deadline:
+                    evidence['installer'] = installer
+                    raise AssertionError('Clicking Install NeOS did not open Calamares')
+                time.sleep(3)
+            evidence['installer'] = installer
+            vm.screenshot('03-calamares-after-mouse-click')
+            evidence['result'] = 'PASS'
+            print('[PASS] Real USB tablet input aligns at three positions and a mouse click opens Calamares')
+        except Exception as error:
+            evidence.update(result='FAIL', error=str(error))
+            if vm.qmp:
+                try:
+                    vm.screenshot('failure')
+                except Exception:
+                    pass
+            raise
+        finally:
+            (output / 'result.json').write_text(json.dumps(evidence, indent=2))
+            vm.close()
+
+
+if __name__ == '__main__':
+    main()
