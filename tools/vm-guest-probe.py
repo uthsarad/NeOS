@@ -30,6 +30,12 @@ def user_snapshot():
     x.XTranslateCoordinates.argtypes = [C.c_void_p, ulong, ulong, C.c_int, C.c_int,
                                       C.POINTER(C.c_int), C.POINTER(C.c_int), C.POINTER(ulong)]
     x.XFree.argtypes = [C.c_void_p]
+    x.XInternAtom.argtypes = [C.c_void_p, C.c_char_p, C.c_int]
+    x.XInternAtom.restype = ulong
+    pid_atom = x.XInternAtom(display, b'_NET_WM_PID', False)
+    x.XGetWindowProperty.argtypes = [C.c_void_p, ulong, ulong, C.c_long, C.c_long,
+                                    C.c_int, ulong, C.POINTER(ulong), C.POINTER(C.c_int),
+                                    C.POINTER(ulong), C.POINTER(ulong), C.POINTER(C.c_void_p)]
     windows = []
 
     def visit(window, depth=0):
@@ -42,7 +48,15 @@ def user_snapshot():
             px, py, child = C.c_int(), C.c_int(), ulong()
             x.XTranslateCoordinates(display, window, root, 0, 0,
                                     C.byref(px), C.byref(py), C.byref(child))
-            windows.append({'title': title, 'x': px.value, 'y': py.value})
+            actual_type, count, remaining = ulong(), ulong(), ulong()
+            actual_format, data = C.c_int(), C.c_void_p()
+            x.XGetWindowProperty(display, window, pid_atom, 0, 1, False, 0,
+                                 C.byref(actual_type), C.byref(actual_format), C.byref(count),
+                                 C.byref(remaining), C.byref(data))
+            pid = C.cast(data, C.POINTER(ulong))[0] if count.value and data.value else 0
+            if data.value:
+                x.XFree(data)
+            windows.append({'title': title, 'x': px.value, 'y': py.value, 'pid': pid})
         r, parent, children, count = ulong(), ulong(), C.POINTER(ulong)(), C.c_uint()
         if x.XQueryTree(display, window, C.byref(r), C.byref(parent),
                         C.byref(children), C.byref(count)):

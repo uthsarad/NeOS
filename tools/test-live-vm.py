@@ -193,8 +193,9 @@ def main():
             deadline = time.monotonic() + 120
             while True:
                 installer = vm.probe('installer')
-                titles = [w['title'] for w in installer['snapshot']['windows']]
-                if installer['pids'] and any(re.search('install|calamares', title, re.I) for title in titles):
+                windows = installer['snapshot']['windows']
+                if any(str(w['pid']) in installer['pids'] and
+                       re.search('install|calamares', w['title'], re.I) for w in windows):
                     break
                 if time.monotonic() > deadline:
                     evidence['installer'] = installer
