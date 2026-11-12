@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2026.11.12] - 2026-11-12
+
+### Added
+- Go regression coverage for `neosctl` mirror parsing and concurrent mirror benchmarking.
+- Calamares module configuration integrity checks in the Rust profile auditor.
+- Comprehensive Python unit test suite in `tests/test_live_scripts.py` covering live mode detection, dynamic version extraction, and Calamares pacstrap job progress regexes.
+
 ### Fixed
 - SourceForge publishing no longer aborts on a separate, silent host-key scan before its retry loop. Uploads use an isolated SSH identity, validate the configured private key, accept new host keys during the actual SSH connection, and bound connection/transfer waits. Added regression checks for upload retries and key handling.
 
