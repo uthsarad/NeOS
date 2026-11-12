@@ -58,6 +58,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_url || github.event.pull_request.html_url }}
+          REPO: ${{ github.repository }}
           EVENT_NAME: ${{ github.event_name }}
           EVENT_ACTION: ${{ github.event.action }}
         run: |
@@ -66,6 +67,14 @@ jobs:
           if [[ -z "${PR_URL:-}" ]]; then
             echo "PR_URL is required." >&2
             exit 1
+          fi
+
+          # Prevent cross-repository PAT misuse when manually dispatched.
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && -n "${REPO:-}" ]]; then
+            if [[ ! "$PR_URL" =~ ^https://github\.com/${REPO}/pull/[0-9]+/?$ ]]; then
+              echo "Refusing PR_URL outside repository '$REPO': $PR_URL" >&2
+              exit 1
+            fi
           fi
 
           echo "Inspecting PR: $PR_URL"
@@ -170,6 +179,39 @@ jobs:
             sleep 15
           done
           [[ "$TEST_PASSED" == 1 ]] || { echo "Timed out waiting for pre-build tests." >&2; exit 1; }
+
+          # Also wait for the ISO `build` check (mkarchiso + QEMU smoke test) so a
+          # PR that passes static checks but breaks ISO creation or live boot is
+          # never auto-merged into testing.
+          BUILD_READY=0
+          for attempt in {1..40}; do
+            echo "Waiting for ISO build check registration ($attempt/40)."
+            CHECKS="$(gh pr checks "$PR_URL" --json name,state 2>/dev/null || true)"
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "build")' >/dev/null 2>&1; then
+              BUILD_READY=1
+              break
+            fi
+            sleep 15
+          done
+          if [[ "$BUILD_READY" != 1 ]]; then
+            echo "Required ISO build check did not appear; leaving PR open." >&2
+            exit 1
+          fi
+          BUILD_PASSED=0
+          for attempt in {1..300}; do
+            echo "Waiting for ISO build & boot smoke test ($attempt/300)."
+            CHECKS="$(gh pr checks "$PR_URL" --json name,state 2>/dev/null || true)"
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "build" and .state == "SUCCESS")' >/dev/null 2>&1; then
+              BUILD_PASSED=1
+              break
+            fi
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "build" and (.state == "FAILURE" or .state == "ERROR" or .state == "CANCELLED" or .state == "TIMED_OUT" or .state == "ACTION_REQUIRED"))' >/dev/null 2>&1; then
+              echo "ISO build check failed; leaving PR open." >&2
+              exit 1
+            fi
+            sleep 15
+          done
+          [[ "$BUILD_PASSED" == 1 ]] || { echo "Timed out waiting for ISO build check." >&2; exit 1; }
 
           # Pin the reviewed head so a push during validation cannot slip through.
           gh pr merge "$PR_URL" --squash --delete-branch --match-head-commit "$PR_HEAD_SHA"

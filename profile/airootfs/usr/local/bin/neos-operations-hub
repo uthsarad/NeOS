@@ -71,7 +71,13 @@ System stability remains unaffected."
             # Single quotes: the trap must expand $TEMP_FILE when it fires, not
             # when the trap is installed (SC2064).
             trap 'rm -f "$TEMP_FILE"' EXIT INT TERM
-            snapper list > "$TEMP_FILE" 2>&1
+            if ! snapper --config=root list > "$TEMP_FILE" 2>&1; then
+                SNAP_ERR=$(cat "$TEMP_FILE" 2>/dev/null || echo "Unknown Snapper error.")
+                rm -f "$TEMP_FILE"
+                exec /usr/bin/kdialog --icon dialog-error --title "Snapshot Error" --error "Could not query Snapper 'root' configuration:
+
+$SNAP_ERR"
+            fi
             mapfile -t SNAP_LINES < "$TEMP_FILE"
             if [ ${#SNAP_LINES[@]} -le 2 ]; then
                 rm -f "$TEMP_FILE"

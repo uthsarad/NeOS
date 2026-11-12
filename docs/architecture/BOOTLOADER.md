@@ -5,18 +5,15 @@
 NeOS configures GRUB and mkinitcpio defaults to improve early boot reliability across common VM hypervisors and filesystems. The settings below are conservative to avoid unnecessary probing while still supporting standard layouts.
 
 ## GRUB defaults
-The GRUB configuration lives at `airootfs/etc/default/grub` and includes preload modules for common partition tables and filesystems:
+The GRUB configuration lives at `profile/airootfs/etc/default/grub` (installed systems) and `profile/grub/grub.cfg` (live ISO), preloading modules for standard partition tables and filesystems:
 - `part_gpt`, `part_msdos` for partition discovery
-- `ext2`, `btrfs`, `zfs` for common root filesystem types
-
-Adjust `GRUB_PRELOAD_MODULES` as needed for your target environment.
+- `btrfs`, `ext2`, `fat` for installed Btrfs (`/@`, `/@.snapshots`) and EFI System Partition layouts
+- `grub-btrfsd` integration on installed Btrfs systems for booting read-only Snapper snapshots directly from GRUB
 
 ## Initramfs defaults
-The initramfs configuration in `airootfs/etc/mkinitcpio.conf` includes:
-- `systemd` hook for early userspace init
-- VM guest modules and filesystem drivers for `btrfs` and `zfs`
-
-If you remove or replace filesystem support, ensure the corresponding modules are removed from `MODULES` to avoid boot-time errors.
+The initramfs configuration in `profile/airootfs/etc/mkinitcpio.conf` (live ISO) and `profile/airootfs/etc/mkinitcpio.conf.d/neos-snapshot-boot.conf` (installed systems) configures:
+- `udev`, `autodetect`, `microcode`, `modconf`, `kms`, `keyboard`, `block`, `filesystems`, and `plymouth` hooks
+- Btrfs and read-only snapshot boot overlay support (`grub-btrfs-overlayfs` where applicable)
 
 ## Low-Level Initialization & Assembly Code Location
 
@@ -27,10 +24,10 @@ The low-level initialization code—including the assembly code responsible for 
 ### Configuration vs. Source Code
 
 - **Configuration (In this Repo):**
-    - `grub/grub.cfg`: Configures the GRUB boot menu and kernel command line arguments.
-    - `syslinux/syslinux.cfg`: Configures the Syslinux boot menu (for BIOS boot).
-    - `airootfs/etc/mkinitcpio.conf`: Configures the initial ramdisk (initramfs) generation, specifying which kernel modules and hooks are included for early userspace initialization.
+    - `profile/grub/grub.cfg`: Configures the live ISO GRUB boot menu and kernel command line arguments.
+    - `profile/syslinux/syslinux.cfg`: Configures the live ISO Syslinux boot menu (for BIOS boot).
+    - `profile/airootfs/etc/mkinitcpio.conf`: Configures live ISO initial ramdisk (`initramfs-linux-lts.img`) generation.
 
 - **Source Code (External):**
-    - **Linux Kernel:** The assembly code for entry points (e.g., `arch/x86/boot/` and `arch/x86/kernel/head_64.S`) is downloaded and built via the `linux-neos-pkgbuild` script.
-    - **Bootloaders:** The source code for GRUB and Syslinux is provided by their respective Arch Linux packages.
+    - **Linux Kernel:** Shipped via the official Arch Linux `linux-lts` package.
+    - **Bootloaders:** Shipped via the official Arch Linux `grub` and `syslinux` packages.

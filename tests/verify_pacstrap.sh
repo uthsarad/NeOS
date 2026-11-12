@@ -173,6 +173,9 @@ if [[ -f "$OVERLAY" ]]; then
 '
     for must in \
         "etc/os-release" \
+        "etc/conf.d/snapper" \
+        "usr/local/bin/neos-polkit-agent" \
+        "etc/xdg/autostart/neos-polkit-xfce.desktop" \
         "usr/share/backgrounds/neos-wallpaper.png" \
         "etc/systemd/system/neos-autoupdate.timer" \
         "etc/sysctl.d/90-neos-security.conf"; do
@@ -187,7 +190,9 @@ if [[ -f "$OVERLAY" ]]; then
     # These must NEVER be copied to an installed system.
     for forbidden in \
         "etc/machine-id" \
+        "etc/polkit-1/rules.d/48-neos-live-packagekit.rules" \
         "etc/polkit-1/rules.d/49-nopasswd_calamares.rules" \
+        "etc/skel/Desktop/welcome-neos.desktop" \
         "etc/mkinitcpio.conf" \
         "etc/sudoers.d/zz-live-wheel" \
         "usr/local/bin/neos-pacstrap"; do
@@ -199,6 +204,20 @@ if [[ -f "$OVERLAY" ]]; then
     done
 else
     echo "[FAIL] overlay manifest not found (run build.sh to generate it)"; FAIL=1
+fi
+
+# 6b. Offline repo section name in neos-pacstrap must match neos.db.tar.zst from
+#     tools/gen-install-repo.sh, and must NEVER disable signature verification
+#     via TrustAll.
+if grep -q '^        echo "\[neos\]"$' "$PACSTRAP_BIN"; then
+    echo "  [PASS] neos-pacstrap offline section [neos] matches neos.db.tar.zst"
+else
+    echo "[FAIL] neos-pacstrap offline repo section does not match neos.db.tar.zst ([neos])"; FAIL=1
+fi
+if grep -vE '^[[:space:]]*#' "$PACSTRAP_BIN" | grep -q 'TrustAll'; then
+    echo "[FAIL] neos-pacstrap disables signature verification with TrustAll"; FAIL=1
+else
+    echo "  [PASS] neos-pacstrap enforces package signature verification (no TrustAll)"
 fi
 
 # 7. Every neos-* unit the installer enables must be delivered by the overlay,

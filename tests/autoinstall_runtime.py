@@ -19,39 +19,57 @@ def bash(code, *args):
 
 
 class AssistedInstall(unittest.TestCase):
-    def generate(self, password, password_hash=""):
+    def generate(self, password, password_hash="", fullname="", locale_val="en_US.UTF-8", timezone=""):
         with tempfile.TemporaryDirectory() as folder:
             dest = Path(folder) / "generated"
             bash('AI_USERNAME=alice; AI_PASSWORD="$3"; AI_HASHED_PASSWORD="$4"; '
-                 'generate_calamares_config "$1" "$2"', dest, CONFIG, password, password_hash)
+                 'AI_FULLNAME="$5"; AI_LOCALE="$6"; AI_TIMEZONE="$7"; '
+                 'generate_calamares_config "$1" "$2"',
+                 dest, CONFIG, password, password_hash, fullname, locale_val, timezone)
             self.assertEqual(dest.stat().st_mode & 0o777, 0o700)
             keyboard = yaml.safe_load((dest / "modules/keyboard.conf").read_text())
             self.assertEqual(keyboard["XkbLayout"], "us")
-            yaml.safe_load((dest / "modules/locale.conf").read_text())
-            config = yaml.safe_load((dest / "modules/shellprocess.conf").read_text())
+            locale_cfg = yaml.safe_load((dest / "modules/locale.conf").read_text())
+            users_cfg = yaml.safe_load((dest / "modules/users.conf").read_text())
+            raw_sp = (dest / "modules/shellprocess.conf").read_text()
+            config = yaml.safe_load(raw_sp)
             self.assertEqual(config["i18n"]["name"], "Post-install configuration")
-            return config["script"]
+            return config["script"], raw_sp, users_cfg, locale_cfg
 
-    def test_plain_password_is_a_command_and_preserves_content(self):
-        commands = self.generate("secret!12")
-        self.assertEqual(len(commands), 6)
-        # Stub chpasswd so this never touches the host's user database.
+    def test_plain_password_is_hashed_and_never_stored_in_cleartext(self):
+        base_scripts, _, _, _ = self.generate("")
+        commands, raw_sp, _, _ = self.generate("secret!12")
+        self.assertEqual(len(commands), len(base_scripts) + 1)
+        self.assertNotIn("secret!12", raw_sp)
         cmd = commands[-1]["command"]
         self.assertIsInstance(cmd, list)
-        self.assertEqual(cmd[0], "/bin/sh")
-        self.assertEqual(cmd[1], "-c")
-        cmd[2] = "chpasswd() { cat; }; " + cmd[2]
-        out = subprocess.check_output(cmd, text=True)
-        self.assertEqual(out, "alice:secret!12\n")
+        self.assertEqual(cmd[:2], ["usermod", "-p"])
+        self.assertEqual(cmd[3], "alice")
+        generated_hash = cmd[2]
+        self.assertTrue(generated_hash.startswith("$6$"), generated_hash)
+        salt = generated_hash.split("$")[2]
+        expected = subprocess.check_output(
+            ["openssl", "passwd", "-6", "-salt", salt, "-stdin"],
+            input="secret!12", text=True
+        ).strip()
+        self.assertEqual(generated_hash, expected)
 
     def test_hash_is_passed_literally_and_takes_precedence(self):
         password_hash = "$6$salt$abcdefghijklmnop"
-        command = self.generate("ignored12", password_hash)[-1]["command"]
+        commands, raw_sp, _, _ = self.generate("ignored12", password_hash)
+        self.assertNotIn("ignored12", raw_sp)
+        command = commands[-1]["command"]
         self.assertIsInstance(command, list)
         self.assertEqual(command, ["usermod", "-p", password_hash, "alice"])
 
-    def test_no_password_keeps_existing_commands(self):
-        self.assertEqual(len(self.generate("")), 5)
+    def test_fullname_and_locale_timezone_serialized_safely(self):
+        _, _, users_cfg, locale_cfg = self.generate(
+            "", fullname='Alice "Ops": injected', locale_val="en_GB", timezone="Asia/Colombo"
+        )
+        self.assertEqual(users_cfg["presets"]["fullName"]["value"], 'Alice "Ops": injected')
+        self.assertEqual(locale_cfg["localeConfiguration"]["LANG"], "en_GB.UTF-8")
+        self.assertEqual(locale_cfg["region"], "Asia")
+        self.assertEqual(locale_cfg["zone"], "Colombo")
 
     def test_probe_tracks_and_releases_udisks_mount(self):
         with tempfile.TemporaryDirectory() as folder:

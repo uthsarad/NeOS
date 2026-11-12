@@ -154,6 +154,10 @@ func benchmarkMirrors(urls []string) error {
 				return
 			}
 			resp.Body.Close()
+			if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+				results <- MirrorResult{URL: url, Err: fmt.Errorf("HTTP %d", resp.StatusCode)}
+				return
+			}
 			latency := time.Since(start)
 			results <- MirrorResult{URL: url, Latency: latency}
 		}(u)

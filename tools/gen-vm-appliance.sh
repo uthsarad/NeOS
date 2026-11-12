@@ -59,14 +59,13 @@ sed -e "s/{4e454f53-0000-4000-8000-000000000001}/{$VM_UUID}/g" \
     profile/vm/neos.vbox > "$OUT_DIR/$VM_NAME.vbox"
 
 echo -e "${GREEN}Generating VMware Configuration (.vmx)...${NC}"
-cp profile/vm/neos.vmx "$OUT_DIR/$VM_NAME.vmx"
+sed -e "s/neos\.nvram/${VM_NAME}.nvram/g" \
+    -e "s/NeOS-Appliance\.vmdk/${VM_NAME}.vmdk/g" \
+    profile/vm/neos.vmx > "$OUT_DIR/$VM_NAME.vmx"
 
-echo -e "${YELLOW}To create the VMDK, you have two options:${NC}"
-echo -e "1. ${GREEN}Convert an existing ISO to a Live-Disk:${NC}"
-echo -e "   qemu-img convert -f raw -O vmdk out/neos.iso $OUT_DIR/$VM_NAME.vmdk"
-echo -e ""
-echo -e "2. ${GREEN}Create a blank 40GB sparse disk (recommended for installation):${NC}"
-echo -e "   qemu-img create -f vmdk $OUT_DIR/$VM_NAME.vmdk 40G"
+echo -e "${GREEN}Creating sparse 40 GiB VMDK disk ($OUT_DIR/$VM_NAME.vmdk)...${NC}"
+rm -f "$OUT_DIR/$VM_NAME.vmdk"
+qemu-img create -f vmdk "$OUT_DIR/$VM_NAME.vmdk" 40G
 
-echo -e "\n${GREEN}Virtual Appliance templates generated in $OUT_DIR${NC}"
-echo -e "You can now distribute these files along with your ISO."
+echo -e "\n${GREEN}Virtual Appliance bundle generated in $OUT_DIR (${VM_NAME}.{vbox,vmx,vmdk})${NC}"
+echo -e "Mount the NeOS ISO on the DVD drive in VirtualBox or VMware to install."

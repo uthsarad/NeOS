@@ -198,15 +198,15 @@ else
     exit 1
 fi
 
-# Check for Left Arrow Navigation
-if [[ "$QML_CONTENT" == *"Keys.onLeftPressed: presentation.advance()"* ]]; then
-    echo "  [PASS] Left Arrow navigation binding found."
+# Check for Left Arrow Navigation (must navigate backward via retreat(), not advance())
+if [[ "$QML_CONTENT" == *"Keys.onLeftPressed: presentation.retreat()"* ]] && [[ "$QML_CONTENT" == *"function retreat()"* ]]; then
+    echo "  [PASS] Left Arrow backwards navigation binding found."
 else
-    echo "[FAIL] Left Arrow navigation binding missing!"
+    echo "[FAIL] Left Arrow backwards navigation binding missing!"
     echo ""
     echo "How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to enable backwards navigation."
+    echo "   - Add 'Keys.onLeftPressed: presentation.retreat()' to enable backwards navigation."
     exit 1
 fi
 

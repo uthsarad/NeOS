@@ -38,7 +38,9 @@ fi
 if [[ -f "$TARGET_DIR" && "$TARGET_DIR" == *.iso ]]; then
     ISO_PATH="$TARGET_DIR"
 elif [[ -d "$TARGET_DIR" ]]; then
-    ISO_PATH=$(find "$TARGET_DIR" -maxdepth 1 -name '*.iso' | sort | head -1)
+    # Pick newest ISO by mtime (consistent with build.sh and build-iso.yml) so a
+    # stale or temporary image never outranks the latest build alphabetically.
+    ISO_PATH=$(find "$TARGET_DIR" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
 else
     echo "::error::Target '$TARGET_DIR' is not a valid directory or ISO file."
     exit 1

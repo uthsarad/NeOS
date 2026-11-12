@@ -65,18 +65,6 @@ if ! flock -n 9; then
     exit 1
 fi
 
-# Validate dependencies
-if ! command -v snapper >/dev/null 2>&1; then
-    logger -t neos-autoupdate "INFO: 'snapper' utility is missing. System update skipped to prevent unsafe upgrades without rollback protection. Action: Install 'snapper' and configure a root profile."
-    exit 0
-fi
-
-# Check for Btrfs root
-if [[ "$(stat -f -c %T / 2>/dev/null)" != "btrfs" ]]; then
-    logger -t neos-autoupdate "INFO: Auto-update skipped: Root filesystem is not Btrfs. Btrfs is required for safe rollback snapshots."
-    exit 0
-fi
-
 log() {
     local msg
     printf -v msg '%(%Y-%m-%d %H:%M:%S)T - %s\n' -1 "$1"
@@ -101,8 +89,13 @@ notify_users() {
         if [[ -z "$uid" || -z "$user_name" ]]; then continue; fi
 
         # Sentinel: Enforce safe execution boundary using -- and env
-        sudo -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-            notify-send --icon="$icon" --urgency="$urgency" -- "$title" "$err_msg" || true
+        if command -v runuser >/dev/null 2>&1; then
+            runuser -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+                notify-send --icon="$icon" --urgency="$urgency" -- "$title" "$err_msg" || true
+        else
+            sudo -u "$user_name" -- env DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+                notify-send --icon="$icon" --urgency="$urgency" -- "$title" "$err_msg" || true
+        fi
     done < <(loginctl list-users --no-legend)
 }
 
@@ -176,12 +169,27 @@ Please free up some disk space to continue."
 }
 
 perform_update() {
+    if [[ -e /var/lib/pacman/db.lck ]]; then
+        log "Info: Pacman database lock (/var/lib/pacman/db.lck) is active; skipping background update."
+        exit 0
+    fi
+
+    if ! "$SNAPPER_BIN" --config=root list >/dev/null 2>&1; then
+        local cfg_msg="Automatic updates are paused because the Snapper 'root' configuration is not active.
+
+<b>How to fix:</b>
+Verify /etc/snapper/configs/root and SNAPPER_CONFIGS=\"root\" in /etc/conf.d/snapper."
+        log "Error: Snapper 'root' configuration is missing or inactive."
+        notify_users "$cfg_msg" "System Update Skipped" "dialog-warning" "normal"
+        exit 1
+    fi
+
     log "Starting system update..."
 
     # Create pre-update snapshot
     local desc="Pre-update snapshot"
     local snap_id
-    snap_id=$("$SNAPPER_BIN" create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
+    snap_id=$("$SNAPPER_BIN" --config=root create --type pre --print-number --description "$desc" --cleanup-algorithm number --userdata "important=yes")
     # Sentinel: Sanitize snap_id to prevent injection on subsequent calls
     snap_id="${snap_id//[^0-9]/}"
     if [[ -z "$snap_id" ]]; then
@@ -191,12 +199,13 @@ perform_update() {
 
     log "Created pre-update snapshot: $snap_id"
 
-    # Perform update
-    if "$PACMAN_BIN" -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
+    # Suppress duplicate pre/post snapshots from 49/99-neos-snapshot-*.hook
+    # while neos-autoupdate.sh manages the paired pre/post snapshots directly.
+    if NEOS_AUTOUPDATE_ACTIVE=1 "$PACMAN_BIN" -Syu --noconfirm >> "$LOG_FILE" 2>&1; then
         log "System update completed successfully."
         notify_users "Your system has been successfully updated to the latest version." "System Update Complete" "system-software-update" "normal"
         # Create post-update snapshot
-        "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
+        "$SNAPPER_BIN" --config=root create --type post --pre-number "$snap_id" --description "Post-update snapshot" --cleanup-algorithm number --userdata "important=yes"
         log "Created post-update snapshot linked to $snap_id"
     else
         local err_msg="The system update encountered an error.
@@ -206,7 +215,7 @@ Please review the logs at <b>/var/log/neos-autoupdate.log</b> for more details."
         log "System update failed. Check pacman logs."
         notify_users "$err_msg" "System Update Failed" "dialog-error" "critical"
         # Still create post snapshot to close the pair, but mark as failed
-        "$SNAPPER_BIN" create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number
+        "$SNAPPER_BIN" --config=root create --type post --pre-number "$snap_id" --description "Failed update snapshot" --cleanup-algorithm number || true
         exit 1
     fi
 }

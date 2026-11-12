@@ -36,7 +36,8 @@ def snapshot(root, dest):
             target.symlink_to(os.readlink(source) if source.is_symlink() else source.read_text())
         else:
             shutil.copyfile(source, target)
-            target.chmod(0o755 if modes.get(name) == "100755" else 0o644)
+            is_exec = modes.get(name) == "100755" or (name not in modes and os.access(source, os.X_OK))
+            target.chmod(0o755 if is_exec else 0o644)
 
 
 def run(root, args, output):
@@ -49,7 +50,7 @@ def run(root, args, output):
         reason = None
         if args.only and name not in args.only:
             continue
-        if "iso" in name:
+        if name in {"verify_iso_calamares_libs.sh", "verify_iso_smoketest.sh"}:
             reason = "requires a built ISO; run through build.sh"
         elif name == "verify_ui_render.sh" and not args.include_ui:
             reason = "UI rendering not requested (use --include-ui)"

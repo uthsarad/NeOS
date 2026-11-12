@@ -15,7 +15,15 @@ public class Program
         Console.WriteLine("=================================================================");
         Console.ResetColor();
 
-        string rootDir = args.Length > 0 ? args[0] : Directory.GetCurrentDirectory();
+        string rootDir = Directory.GetCurrentDirectory();
+        foreach (string arg in args)
+        {
+            if (!arg.StartsWith("--", StringComparison.Ordinal))
+            {
+                rootDir = arg;
+                break;
+            }
+        }
         Console.WriteLine($"Scanning Repository Root: {rootDir}\n");
 
         var report = SecurityInspector.RunAudit(rootDir);
@@ -52,11 +60,12 @@ public class Program
         Console.WriteLine($"Summary: {passed} checks passed, {failed} checks failed.");
         Console.ResetColor();
 
-        if (args.Contains("--json"))
+        if (Array.Exists(args, a => a == "--json"))
         {
+            string reportPath = Path.Combine(rootDir, "neos-diagnostics-report.json");
             string json = JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true });
-            await File.WriteAllTextAsync("neos-diagnostics-report.json", json);
-            Console.WriteLine("📄 JSON Report saved to 'neos-diagnostics-report.json'.");
+            await File.WriteAllTextAsync(reportPath, json);
+            Console.WriteLine($"📄 JSON Report saved to '{reportPath}'.");
         }
 
         return failed == 0 ? 0 : 1;

@@ -1,4 +1,5 @@
 etc/NetworkManager/conf.d/wifi_backend.conf
+etc/conf.d/snapper
 etc/default/grub
 etc/mkinitcpio.conf.d/neos-snapshot-boot.conf
 etc/modules-load.d/neos-networking.conf
@@ -16,7 +17,6 @@ etc/skel/.config/autostart/neos-desktop-setup.desktop
 etc/skel/.config/ksplashrc
 etc/skel/.config/wireplumber/wireplumber.conf.d/bluetooth-a2dp-autoconnect.conf
 etc/skel/Desktop/neos-terminal.desktop
-etc/skel/Desktop/welcome-neos.desktop
 etc/snapper/configs/root
 etc/ssh/sshd_config
 etc/sudoers.d/wheel
@@ -31,6 +31,7 @@ etc/systemd/system/dbus-org.freedesktop.resolve1.service
 etc/systemd/system/dbus-org.freedesktop.timesync1.service
 etc/systemd/system/default.target
 etc/systemd/system/docker.service.d/no-block-boot.conf
+etc/systemd/system/emergency.service.d/10-neos-sulogin.conf
 etc/systemd/system/neos-accessibility.service
 etc/systemd/system/neos-autoupdate.service
 etc/systemd/system/neos-autoupdate.timer
@@ -39,6 +40,7 @@ etc/systemd/system/neos-session-select.service
 etc/systemd/system/neos-vm-graphics.service
 etc/systemd/system/plocate-updatedb.service.d/ac-only.conf
 etc/systemd/system/qemu-guest-agent.service.d/10-neos-vm-only.conf
+etc/systemd/system/rescue.service.d/10-neos-sulogin.conf
 etc/systemd/system/sddm.service.d/10-software-greeter.conf
 etc/systemd/system/spice-vdagentd.service.d/10-neos-vm-only.conf
 etc/systemd/system/user@.service.d/10-faster-shutdown.conf
@@ -47,6 +49,7 @@ etc/systemd/system/vmtoolsd.service.d/10-neos-vm-only.conf
 etc/systemd/zram-generator.conf
 etc/ufw/ufw.conf
 etc/xdg/autostart/neos-display-sync.desktop
+etc/xdg/autostart/neos-polkit-xfce.desktop
 etc/xdg/autostart/neos-screen-reader.desktop
 etc/xdg/autostart/neos-welcome-app.desktop
 etc/xdg/discoverrc
@@ -61,6 +64,7 @@ usr/local/bin/neos-doctor
 usr/local/bin/neos-driver-manager
 usr/local/bin/neos-hardware-setup
 usr/local/bin/neos-operations-hub
+usr/local/bin/neos-polkit-agent
 usr/local/bin/neos-rollback
 usr/local/bin/neos-secureboot-setup
 usr/local/bin/neos-session-select
