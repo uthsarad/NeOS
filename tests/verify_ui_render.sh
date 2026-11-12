@@ -32,9 +32,9 @@ check() {  # name, log file, command...
         echo "[FAIL] $name failed to render:"
         sed 's/^/     /' "$log"
         FAIL=1
-    elif grep -qE 'TypeError|ReferenceError|SyntaxError|is not defined|Cannot assign|Traceback' "$log"; then
+    elif grep -qE 'TypeError|ReferenceError|SyntaxError|is not defined|Cannot assign|Property value set multiple times|Traceback' "$log"; then
         echo "[FAIL] $name rendered with errors:"
-        grep -E 'TypeError|ReferenceError|SyntaxError|is not defined|Cannot assign|Traceback' "$log" | sed 's/^/     /'
+        grep -E 'TypeError|ReferenceError|SyntaxError|is not defined|Cannot assign|Property value set multiple times|Traceback' "$log" | sed 's/^/     /'
         FAIL=1
     else
         echo "  [PASS] $name"

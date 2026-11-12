@@ -51,9 +51,12 @@ circle_cut "$THEME/logo.png"
 circle_cut "$BRANDING/logo.png"
 
 # --- 2. Regenerate Plymouth cat frames from the transparent source GIF -------
-# Same layout rules as tools/gen-bootlogo-frames.py: composite GIF disposal,
-# crop each cel to its visible pixels, scale 2x, centre all frames on one
-# shared canvas (largest cel + 20px margin) so the cat never wobbles.
+# Optional: the current Plymouth splash uses a clean minimal progress bar
+# without animated cat frames, so skip gracefully when loader-cat.gif is absent.
+if [[ ! -f "$SRC_GIF" ]]; then
+    echo "Skipping cat-frame regeneration ($SRC_GIF is not present)."
+    exit 0
+fi
 SCALE=200%   # 2x
 MARGIN=20
 

@@ -76,7 +76,9 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^usr/lib/calamares/' \
     -e '^etc/pacman\.conf$' \
     -e '^etc/pacman\.d/' \
+    -e '^etc/polkit-1/rules\.d/48-neos-live-packagekit\.rules$' \
     -e '^etc/polkit-1/rules\.d/49-nopasswd_calamares\.rules$' \
+    -e '^etc/skel/Desktop/welcome-neos\.desktop$' \
     -e '^etc/machine-id$' \
     -e '^etc/hostname$' \
     -e '^etc/locale\.conf$' \

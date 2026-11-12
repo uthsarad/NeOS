@@ -26,7 +26,9 @@
 # handling, overlay copy) stays in neos-pacstrap unchanged — this module is
 # an instrumentation wrapper around it, not a reimplementation.
 
+import os
 import re
+import signal
 import subprocess
 import threading
 
@@ -61,7 +63,7 @@ _DOWNLOAD_RE = re.compile(
 # The transaction summary pacman prints before downloading: "Packages (1042) ...".
 _TOTAL_PKGS_RE = re.compile(r"^Packages \((\d+)\)|installing (\d+) packages")
 # Database refreshes use the same "<name> downloading..." shape; not packages.
-_DB_NAMES = {"core", "extra", "multilib", "chaotic-aur", "garuda", "neos-local"}
+_DB_NAMES = {"core", "extra", "multilib", "chaotic-aur", "garuda", "neos", "neos-local"}
 _OVERLAY_RE = re.compile(r"applying NeOS overlay", re.IGNORECASE)
 _RETRY_RE = re.compile(r"pacstrap attempt (\d+)/(\d+)", re.IGNORECASE)
 
@@ -95,6 +97,7 @@ def run():
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
+        start_new_session=True,
     )
 
     # A wall-clock watchdog, not a per-line check: neos-pacstrap can go quiet
@@ -102,11 +105,18 @@ def run():
     # generation) and a check that only runs when a line arrives would never
     # fire during exactly that silence — the one case this timeout most needs
     # to cover. Timer fires independently of whether any output is flowing.
+    # Kill the whole session/process group so child pacstrap/pacman/gpg-agent
+    # processes cannot keep proc.stdout open and deadlock the reader loop.
     timed_out = threading.Event()
 
     def _on_timeout():
         timed_out.set()
-        proc.kill()
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        except OSError:
+            proc.kill()
 
     watchdog = threading.Timer(TIMEOUT_SECONDS, _on_timeout)
     watchdog.start()

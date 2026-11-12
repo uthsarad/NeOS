@@ -25,11 +25,20 @@ Rectangle {
     readonly property color cBgBot:         "#0a0f1a"
 
     // ---- Session list (extracted from sessionModel via a hidden Repeater) --
+    // Assign a fresh copy on update: QML does not emit change notifications
+    // when a `var` array is mutated in place (`sessionNames[index] = ...`),
+    // which previously left the session label stuck on "Session: Default".
     property var sessionNames: []
     property int sessionIndex: sessionModel.lastIndex
     Repeater {
         model: sessionModel
-        Item { Component.onCompleted: root.sessionNames[index] = model.name }
+        Item {
+            Component.onCompleted: {
+                var next = root.sessionNames.slice();
+                next[index] = model.name;
+                root.sessionNames = next;
+            }
+        }
     }
 
     // ---- Background: gradient with optional wallpaper overlay --------------

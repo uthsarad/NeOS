@@ -137,8 +137,14 @@ Presentation {
                         Rectangle {
                             width: 8; height: 8; radius: 4
                             color: presentation.cAccent
-                            opacity: 0.3 + (0.7 * (Math.sin(Date.now() / 300 + index * 2) * 0.5 + 0.5))
-                            Behavior on opacity { NumberAnimation { duration: 200 } }
+                            opacity: 0.3
+                            SequentialAnimation on opacity {
+                                loops: Animation.Infinite
+                                running: !presentation.paused
+                                PauseAnimation { duration: index * 200 }
+                                NumberAnimation { from: 0.3; to: 1.0; duration: 500; easing.type: Easing.InOutSine }
+                                NumberAnimation { from: 1.0; to: 0.3; duration: 500; easing.type: Easing.InOutSine }
+                            }
                         }
                     }
                 }
@@ -379,11 +385,11 @@ Presentation {
             Repeater {
                 model: totalSlides
                 Rectangle {
-                    width: 8; height: 8; radius: 4
+                    width: index === currentSlide ? 24 : 8
+                    height: 8; radius: 4
                     color: index === currentSlide ? presentation.cAccent : "#2a3354"
                     Behavior on color { ColorAnimation { duration: 300 } }
                     Behavior on width { NumberAnimation { duration: 300 } }
-                    width: index === currentSlide ? 24 : 8
                 }
             }
         }
@@ -399,6 +405,13 @@ Presentation {
     function advance() {
         internalAdvance = true;
         currentSlide = (currentSlide + 1) % totalSlides;
+        slideContainer.showSlide(currentSlide);
+        internalAdvance = false;
+    }
+
+    function retreat() {
+        internalAdvance = true;
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
         slideContainer.showSlide(currentSlide);
         internalAdvance = false;
     }
@@ -450,6 +463,6 @@ Presentation {
 
     // ---- Keyboard navigation ----------------------------------------------
     Keys.onRightPressed: presentation.advance()
-    Keys.onLeftPressed: presentation.advance()
+    Keys.onLeftPressed: presentation.retreat()
     Keys.onSpacePressed: presentation.advance()
 }

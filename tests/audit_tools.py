@@ -24,7 +24,8 @@ class AuditRunner(unittest.TestCase):
             (root / "tests").mkdir()
             scripts = {"pass": "exit 0", "fail": "exit 7",
                        "missing": "echo '[WARN] tool missing'", "slow": "sleep 10",
-                       "message": "echo '{\"skipped\":0}'"}
+                       "message": "echo '{\"skipped\":0}'",
+                       "iso_grub": "exit 0", "iso_smoketest": "exit 9"}
             for name, text in scripts.items():
                 (root / "tests" / f"verify_{name}.sh").write_text(text)
             output = root / "reports"
@@ -35,7 +36,9 @@ class AuditRunner(unittest.TestCase):
             statuses = {r["check"]: r["status"] for r in result}
             self.assertEqual(statuses, {"verify_pass.sh": "passed", "verify_fail.sh": "failed",
                                        "verify_missing.sh": "incomplete", "verify_slow.sh": "timeout",
-                                       "verify_message.sh": "passed"})
+                                       "verify_message.sh": "passed",
+                                       "verify_iso_grub.sh": "passed",
+                                       "verify_iso_smoketest.sh": "skipped"})
             args.only = ["verify_missing.sh"]
             self.assertEqual(audit.run(root, args, output), 0)
             args.strict = True
@@ -43,12 +46,14 @@ class AuditRunner(unittest.TestCase):
 
 
 class MergePolicy(unittest.TestCase):
-    def execute(self, state, fork=False, stale=False):
+    def execute(self, state, build_state=None, fork=False, stale=False,
+                event_name="pull_request_target", pr_url="https://example.invalid/pr/1", repo=""):
         config = yaml.safe_load((ROOT / ".github/workflows/jules-auto-merge.yml").read_text())
         script = config["jobs"]["merge-into-testing"]["steps"][0]["run"]
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             calls = root / "calls"
+            calls.touch()
             gh = root / "gh"
             gh.write_text('''#!/usr/bin/env python3
 import json, os, sys
@@ -57,22 +62,25 @@ args = sys.argv[1:]
 with open(os.environ['CALLS'], 'a') as f: f.write(json.dumps(args) + '\\n')
 if args[:2] == ['pr', 'view']:
  print(json.dumps(dict(state='OPEN',baseRefName='testing',headRefName='fix',isDraft=False,
-  isCrossRepository=os.environ['FORK']=='1',author={'login':'tester'},url='https://example.invalid/pr/1',
+  isCrossRepository=os.environ['FORK']=='1',author={'login':'tester'},url=os.environ['PR_URL'],
   changedFiles=1,headRefOid='validated-head')))
 elif args[:2] == ['pr', 'checks']:
  print(json.dumps([dict(name='test',state=os.environ['CHECK_STATE']),
+                   dict(name='build',state=os.environ['BUILD_STATE']),
                    dict(name='merge-into-testing',state='IN_PROGRESS')]))
 elif args[:2] == ['pr', 'merge'] and os.environ['STALE']=='1':
  sys.exit(1)
 ''')
             gh.chmod(0o755)
             env = dict(os.environ, PATH=str(root) + ":" + os.environ["PATH"],
-                       CALLS=str(calls), CHECK_STATE=state, FORK=str(int(fork)), STALE=str(int(stale)),
-                       PR_URL="https://example.invalid/pr/1", EVENT_NAME="pull_request_target",
+                       CALLS=str(calls), CHECK_STATE=state,
+                       BUILD_STATE=state if build_state is None else build_state,
+                       FORK=str(int(fork)), STALE=str(int(stale)),
+                       PR_URL=pr_url, REPO=repo, EVENT_NAME=event_name,
                        EVENT_ACTION="synchronize")
             result = subprocess.run(["bash", "-c", script], env=env,
                                     stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=10)
-            return result.returncode, [json.loads(line) for line in calls.read_text().splitlines()]
+            return result.returncode, [json.loads(line) for line in calls.read_text().splitlines() if line]
 
     def test_success_merges_exact_head_without_waiting_for_itself(self):
         code, calls = self.execute("SUCCESS")
@@ -86,6 +94,18 @@ elif args[:2] == ['pr', 'merge'] and os.environ['STALE']=='1':
         code, calls = self.execute("FAILURE")
         self.assertNotEqual(code, 0)
         self.assertFalse(any(c[:2] == ["pr", "merge"] for c in calls))
+
+    def test_failed_build_never_merges(self):
+        code, calls = self.execute("SUCCESS", build_state="FAILURE")
+        self.assertNotEqual(code, 0)
+        self.assertFalse(any(c[:2] == ["pr", "merge"] for c in calls))
+
+    def test_cross_repo_manual_dispatch_rejected(self):
+        code, calls = self.execute("SUCCESS", event_name="workflow_dispatch",
+                                   pr_url="https://github.com/other/repo/pull/9",
+                                   repo="uthsarad/NeOS")
+        self.assertNotEqual(code, 0)
+        self.assertEqual(calls, [])
 
     def test_fork_never_merges_automatically(self):
         code, calls = self.execute("SUCCESS", fork=True)

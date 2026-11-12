@@ -434,6 +434,8 @@ plasma-systemmonitor
 plymouth
 plymouth-kcm
 polkit
+polkit-gnome
+polkit-kde-agent
 popt
 power-profiles-daemon
 powerdevil

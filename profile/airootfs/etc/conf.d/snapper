@@ -1,0 +1,5 @@
+## Path: System/Snapper
+## Description: Newly created configs will be added here
+## Type: string
+## Default: ""
+SNAPPER_CONFIGS="root"

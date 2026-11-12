@@ -92,14 +92,38 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
 
     let mut pacman_conf_val = None;
     let mut bootmodes_val = None;
+    let mut in_bootmodes = false;
+    let mut bootmodes_acc = String::new();
 
-    // Extract values, taking the last definition in case of duplicates
-    for line in content.lines() {
-        let trimmed = line.trim();
+    // Extract values, taking the last definition in case of duplicates and
+    // supporting both single-line and multi-line bootmodes=(...) arrays with
+    // trailing `#` comments stripped outside quotes.
+    for raw_line in content.lines() {
+        let code_line = strip_inline_comment(raw_line);
+        let trimmed = code_line.trim();
+        if in_bootmodes {
+            if let Some(end_idx) = trimmed.find(')') {
+                bootmodes_acc.push(' ');
+                bootmodes_acc.push_str(&trimmed[..end_idx]);
+                bootmodes_val = Some(bootmodes_acc.trim().to_string());
+                bootmodes_acc.clear();
+                in_bootmodes = false;
+            } else {
+                bootmodes_acc.push(' ');
+                bootmodes_acc.push_str(trimmed);
+            }
+            continue;
+        }
         if let Some(stripped) = trimmed.strip_prefix("pacman_conf=") {
             pacman_conf_val = Some(stripped.trim_matches(|c| c == '"' || c == '\'').to_string());
         } else if let Some(stripped) = trimmed.strip_prefix("bootmodes=(") {
-            bootmodes_val = Some(stripped.trim_end_matches(')').to_string());
+            if let Some(end_idx) = stripped.find(')') {
+                bootmodes_val = Some(stripped[..end_idx].to_string());
+            } else {
+                bootmodes_acc.clear();
+                bootmodes_acc.push_str(stripped);
+                in_bootmodes = true;
+            }
         }
     }
 
@@ -152,6 +176,20 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn strip_inline_comment(line: &str) -> &str {
+    let mut in_single = false;
+    let mut in_double = false;
+    for (idx, ch) in line.char_indices() {
+        match ch {
+            '\'' if !in_double => in_single = !in_single,
+            '"' if !in_single => in_double = !in_double,
+            '#' if !in_single && !in_double => return &line[..idx],
+            _ => {}
+        }
+    }
+    line
 }
 
 fn assert_required_files(root: &Path) -> Result<(), String> {

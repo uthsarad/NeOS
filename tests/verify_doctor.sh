@@ -30,10 +30,10 @@ else
     FAIL=1
 fi
 
-if [[ -f "$DESKTOP" ]] && grep -q 'Exec=konsole -e /usr/local/bin/neos-doctor' "$DESKTOP"; then
-    echo "  [PASS] desktop entry present"
+if [[ -f "$DESKTOP" ]] && grep -q 'Exec=konsole --hold -e /usr/local/bin/neos-doctor' "$DESKTOP"; then
+    echo "  [PASS] desktop entry present with --hold"
 else
-    echo "[FAIL] $DESKTOP missing or wrong Exec"
+    echo "[FAIL] $DESKTOP missing or wrong Exec (expected konsole --hold -e /usr/local/bin/neos-doctor)"
     FAIL=1
 fi
 
