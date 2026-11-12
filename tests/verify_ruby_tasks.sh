@@ -26,4 +26,8 @@ fi
 
 echo "Verifying Ruby task runner (canonical audit: tools/neos-profile-audit)..."
 ruby tools/neos_tasks.rb audit .
+if ruby -e "require 'minitest/autorun'" >/dev/null 2>&1; then
+    echo "Running Ruby Minitest unit suite..."
+    ruby tests/ruby/test_neos_tasks.rb
+fi
 echo "[PASS] Ruby tasks audit passed successfully."

@@ -291,12 +291,28 @@ probe_now() {
 }
 
 validate_identity() {
-    if [[ -n "$AI_USERNAME" && ! "$AI_USERNAME" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
-        echo "neos-autoinstall: invalid username '$AI_USERNAME'" >&2
+    if [[ -n "$AI_USERNAME" && ( "$AI_USERNAME" == "root" || "$AI_USERNAME" == "liveuser" || ! "$AI_USERNAME" =~ ^[a-z_][a-z0-9_-]{0,31}$ ) ]]; then
+        echo "neos-autoinstall: invalid or reserved username '$AI_USERNAME'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_FULLNAME" && "$AI_FULLNAME" =~ [[:cntrl:]] ]]; then
+        echo "neos-autoinstall: fullname must not contain control characters" >&2
         return 1
     fi
     if [[ -n "$AI_HOSTNAME" && ! "$AI_HOSTNAME" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,62}$ ]]; then
         echo "neos-autoinstall: invalid hostname '$AI_HOSTNAME'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_KEYBOARD" && ! "$AI_KEYBOARD" =~ ^[A-Za-z0-9_-]{1,16}$ ]]; then
+        echo "neos-autoinstall: invalid keyboard layout '$AI_KEYBOARD'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_LOCALE" && ! "$AI_LOCALE" =~ ^[A-Za-z0-9_.@-]{2,32}$ ]]; then
+        echo "neos-autoinstall: invalid locale '$AI_LOCALE'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_TIMEZONE" && ! "$AI_TIMEZONE" =~ ^[A-Za-z0-9_+/-]{2,64}$ ]]; then
+        echo "neos-autoinstall: invalid timezone '$AI_TIMEZONE'" >&2
         return 1
     fi
     if [[ -n "$AI_PASSWORD" && ! "$AI_PASSWORD" =~ ^[A-Za-z0-9._@%+=!-]{6,}$ ]]; then
@@ -316,10 +332,6 @@ validate_identity() {
     return 0
 }
 
-yaml_escape() {
-    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
-}
-
 generate_calamares_config() {
     local dest="$1"
     local src="${2:-/etc/calamares}"
@@ -335,61 +347,84 @@ generate_calamares_config() {
             "$dest/settings.conf"
     fi
 
-    if [[ -f "$dest/modules/users.conf" ]]; then
-        local users_tmp
-        users_tmp="$(mktemp)"
-        sed '/^presets:/,$d' "$dest/modules/users.conf" > "$users_tmp"
-        {
-            cat "$users_tmp"
-            printf 'presets:\n'
-            if [[ -n "$AI_FULLNAME" ]]; then
-                printf '    fullName:\n        value: "%s"\n        editable: false\n' "$(yaml_escape "$AI_FULLNAME")"
-            fi
-            if [[ -n "$AI_USERNAME" ]]; then
-                printf '    loginName:\n        value: "%s"\n        editable: false\n' "$(yaml_escape "$AI_USERNAME")"
-            fi
-        } > "$dest/modules/users.conf"
-        rm -f "$users_tmp"
-        if [[ -n "$AI_HOSTNAME" ]]; then
-            sed -i "s/^  template:.*/  template: \"$(yaml_escape "$AI_HOSTNAME")\"/" "$dest/modules/users.conf" \
-                || true
-        fi
+    # Hash plaintext passwords immediately via openssl SHA-512 crypt (-6) so
+    # cleartext passwords are NEVER written to /tmp/neos-calamares.* or logged
+    # by Calamares's shellprocess job runner into /var/log/Calamares.log.
+    local effective_hash="$AI_HASHED_PASSWORD"
+    if [[ -z "$effective_hash" && -n "$AI_PASSWORD" ]]; then
+        effective_hash="$(printf '%s' "$AI_PASSWORD" | openssl passwd -6 -stdin)"
     fi
 
-    if [[ -n "$AI_KEYBOARD" ]]; then
-        printf -- '---\nXkbLayout: "%s"\n' "$(yaml_escape "$AI_KEYBOARD")" > "$dest/modules/keyboard.conf"
-    fi
-    if [[ -n "$AI_LOCALE" ]]; then
-        printf -- '---\nlocaleGenPath: /etc/locale.gen\n' > "$dest/modules/locale.conf"
-    fi
-
-    if [[ -f "$dest/modules/shellprocess.conf" && -n "$AI_USERNAME" ]]; then
-        # Edit the command sequence structurally: the file ends in i18n, so
-        # appending YAML text would put commands outside the script list.
-        AI_USERNAME="$AI_USERNAME" AI_PASSWORD="$AI_PASSWORD" \
-        AI_HASHED_PASSWORD="$AI_HASHED_PASSWORD" python3 - "$dest/modules/shellprocess.conf" <<'PYAML'
+    AI_DEST="$dest" \
+    AI_FULLNAME="${AI_FULLNAME:-}" \
+    AI_USERNAME="${AI_USERNAME:-}" \
+    AI_HOSTNAME="${AI_HOSTNAME:-}" \
+    AI_KEYBOARD="${AI_KEYBOARD:-}" \
+    AI_LOCALE="${AI_LOCALE:-}" \
+    AI_TIMEZONE="${AI_TIMEZONE:-}" \
+    AI_EFFECTIVE_HASH="$effective_hash" \
+    python3 - <<'PYAML'
 import os
-import shlex
-import sys
 from pathlib import Path
 import yaml
 
-path = Path(sys.argv[1])
-config = yaml.safe_load(path.read_text())
+dest = Path(os.environ["AI_DEST"])
+fullname = os.environ["AI_FULLNAME"]
 username = os.environ["AI_USERNAME"]
-password_hash = os.environ["AI_HASHED_PASSWORD"]
-password = os.environ["AI_PASSWORD"]
-if password_hash:
-    command = ["usermod", "-p", password_hash, username]
-elif password:
-    command = ["/bin/sh", "-c", "printf '%s\\n' \"$1\" | chpasswd", "sh", f"{username}:{password}"]
-else:
-    command = None
-if command:
-    config["script"].append({"command": command})
-    path.write_text(yaml.safe_dump(config, sort_keys=False))
+hostname = os.environ["AI_HOSTNAME"]
+keyboard = os.environ["AI_KEYBOARD"]
+locale_val = os.environ["AI_LOCALE"]
+timezone = os.environ["AI_TIMEZONE"]
+password_hash = os.environ["AI_EFFECTIVE_HASH"]
+
+users_path = dest / "modules/users.conf"
+if users_path.is_file():
+    users_cfg = yaml.safe_load(users_path.read_text()) or {}
+    presets = {}
+    if fullname:
+        presets["fullName"] = {"value": fullname, "editable": False}
+    if username:
+        presets["loginName"] = {"value": username, "editable": False}
+    if presets:
+        users_cfg["presets"] = presets
+    if hostname:
+        users_cfg.setdefault("hostname", {})["template"] = hostname
+    users_path.write_text("---\n" + yaml.safe_dump(users_cfg, sort_keys=False))
+
+if keyboard:
+    kb_path = dest / "modules/keyboard.conf"
+    kb_cfg = yaml.safe_load(kb_path.read_text()) if kb_path.is_file() else {}
+    kb_cfg = kb_cfg or {}
+    kb_cfg["XkbLayout"] = keyboard
+    kb_path.write_text("---\n" + yaml.safe_dump(kb_cfg, sort_keys=False))
+
+if locale_val or timezone:
+    loc_path = dest / "modules/locale.conf"
+    loc_cfg = yaml.safe_load(loc_path.read_text()) if loc_path.is_file() else {}
+    loc_cfg = loc_cfg or {}
+    loc_cfg["localeGenPath"] = "/etc/locale.gen"
+    if locale_val:
+        lang = locale_val if "." in locale_val else f"{locale_val}.UTF-8"
+        loc_cfg["localeConfiguration"] = {"LANG": lang}
+    if timezone:
+        if "/" in timezone:
+            region, zone = timezone.split("/", 1)
+            loc_cfg["region"] = region
+            loc_cfg["zone"] = zone
+        else:
+            loc_cfg["region"] = "Etc"
+            loc_cfg["zone"] = timezone
+        loc_cfg["geoip"] = {"style": "none"}
+    loc_path.write_text("---\n" + yaml.safe_dump(loc_cfg, sort_keys=False))
+
+sp_path = dest / "modules/shellprocess.conf"
+if sp_path.is_file() and username and password_hash:
+    sp_cfg = yaml.safe_load(sp_path.read_text()) or {}
+    sp_cfg.setdefault("script", []).append({
+        "command": ["usermod", "-p", password_hash, username]
+    })
+    sp_path.write_text("---\n" + yaml.safe_dump(sp_cfg, sort_keys=False))
 PYAML
-    fi
 
     if [[ "$AI_REBOOT" -eq 1 && -f "$dest/modules/finished.conf" ]]; then
         sed -i 's/^restartNowChecked:.*/restartNowChecked: true/' "$dest/modules/finished.conf"

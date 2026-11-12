@@ -1,20 +1,18 @@
 [Unit]
 Description=NeOS Autoupdate Service
+ConditionPathExists=!/run/archiso
 
 [Service]
 Type=oneshot
 Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-autoupdate.sh
-ProtectSystem=strict
-ReadWritePaths=/usr /boot /etc /var /opt /run
-NoNewPrivileges=yes
+# System-wide package upgrades (`pacman -Syu` + libalpm hooks + `snapper`) must
+# write across /, /.snapshots, /usr, /boot, /etc, /var and /opt, drop privileges
+# to `alpm` (DownloadUser) and logged-in desktop users (`runuser`), and run
+# kernel/udev/initramfs post-transaction hooks. Keep the isolation directives
+# that do not break package management or snapshot creation:
 PrivateTmp=yes
-ProtectHome=yes
-ProtectKernelTunables=yes
-ProtectControlGroups=yes
-ProtectHostname=yes
+ProtectHome=read-only
 RestrictRealtime=yes
 LockPersonality=yes
-RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-CapabilityBoundingSet=CAP_CHOWN CAP_FOWNER CAP_DAC_OVERRIDE CAP_SYS_ADMIN CAP_FSETID CAP_SETFCAP
-
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=NeOS PolicyKit Authentication Agent
+Comment=Graphical privilege elevation prompt for Xfce fallback sessions
+Exec=/usr/local/bin/neos-polkit-agent
+Terminal=false
+Type=Application
+Categories=System;
+OnlyShowIn=XFCE;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

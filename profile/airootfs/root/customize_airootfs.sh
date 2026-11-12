@@ -21,7 +21,7 @@ locale-gen
 # build. A hard, comma-separated `-G a,b,c` aborts the whole build under
 # `set -e` if even one group is missing; this loop never breaks the build.
 useradd -m -u 1000 -g users -s /usr/bin/zsh liveuser
-for grp in wheel video audio storage power rfkill optical scanner lp input network; do
+for grp in wheel audio power rfkill; do
     if getent group "$grp" >/dev/null 2>&1; then
         gpasswd -a liveuser "$grp" >/dev/null 2>&1 || true
     fi

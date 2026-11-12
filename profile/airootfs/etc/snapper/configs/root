@@ -3,8 +3,14 @@
 # Subvolume to snapshot
 SUBVOLUME="/"
 
-# Exclude patterns
-EXCLUDES="/home /tmp /var/tmp /var/cache/pacman/pkg /var/lib/lxcfs /var/lib/docker /var/lib/machines /var/lib/portables /boot"
+# Filesystem type (required by libsnapper; omitting FSTYPE causes
+# InvalidConfigException on every `snapper -c root` invocation)
+FSTYPE="btrfs"
+
+# Btrfs quota group (optional; /home, /var/cache and /var/log live in separate
+# subvolumes created by etc/calamares/modules/mount.conf so they are already
+# excluded from root snapshots)
+QGROUP=""
 
 # TIMELINE
 TIMELINE_CREATE="yes"

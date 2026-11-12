@@ -170,23 +170,27 @@ echo "Verifying user groups in $USERS_CONF..."
 
 if [ -f "$USERS_CONF" ]; then
     if grep -q "defaultGroups:" "$USERS_CONF" && grep -q "wheel" "$USERS_CONF"; then
-        UNSAFE_GROUPS=("sys" "lp" "network" "optical" "scanner" "adm" "uucp")
-        UNSAFE_PATTERN="[[:space:]]- ($(IFS=\|; echo "${UNSAFE_GROUPS[*]}"))"
+        UNSAFE_GROUPS=("sys" "lp" "network" "optical" "scanner" "adm" "uucp" "input" "video" "storage")
+        UNSAFE_PATTERN="^[[:space:]]*-[[:space:]]*(name:[[:space:]]*)?($(IFS=\|; echo "${UNSAFE_GROUPS[*]}"))([[:space:]]|$)"
         UNSAFE_FOUND=false
 
         while read -r match; do
             if [ -n "$match" ]; then
-                # Extract the group name from the match (e.g. "  - sys" -> "sys")
-                group="${match##*- }"
+                group="$(printf '%s' "$match" | sed -E 's/^[[:space:]]*-[[:space:]]*(name:[[:space:]]*)?//; s/[[:space:]].*$//')"
                 echo "[FAIL] Unsafe group '$group' found in $USERS_CONF"
                 UNSAFE_FOUND=true
             fi
-        done < <(grep -E -o "$UNSAFE_PATTERN" "$USERS_CONF" || true)
+        done < <(grep -E "$UNSAFE_PATTERN" "$USERS_CONF" || true)
+
+        if ! grep -qE 'forbidden_names:.*liveuser' "$USERS_CONF"; then
+            echo "[FAIL] $USERS_CONF must forbid username 'liveuser' in forbidden_names"
+            exit 1
+        fi
 
         if [ "$UNSAFE_FOUND" = true ]; then
             exit 1
         else
-            echo "  [PASS] User groups configuration is secure"
+            echo "  [PASS] User groups and forbidden_names configuration is secure"
         fi
     else
         echo "[FAIL] defaultGroups or wheel not found in $USERS_CONF"
@@ -194,6 +198,14 @@ if [ -f "$USERS_CONF" ]; then
     fi
 else
     echo "[WARN] $USERS_CONF not found, skipping check."
+fi
+
+INSTALLED_PK_RULE="profile/airootfs/etc/polkit-1/rules.d/50-neos-packagekit.rules"
+if grep -vE '^[[:space:]]*(/\*|\*|//)' "$INSTALLED_PK_RULE" | grep -q 'liveuser'; then
+    echo "[FAIL] $INSTALLED_PK_RULE must not contain a liveuser passwordless bypass on installed systems"
+    exit 1
+else
+    echo "  [PASS] Installed PackageKit Polkit rule has no liveuser bypass"
 fi
 
 # neos-secureboot-setup must only sign PE binaries (GRUB EFI + kernel). The

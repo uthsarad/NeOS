@@ -1,0 +1,23 @@
+#!/bin/bash
+# neos-polkit-agent — graphical Polkit authentication agent launcher for Xfce.
+#
+# KDE Plasma autostarts polkit-kde-authentication-agent-1 via its own systemd
+# user target / OnlyShowIn=KDE autostart entry, whereas Xfce (NeOS's fallback
+# session on VMs and Safe Graphics) ships no built-in Polkit agent. Without an
+# active agent, `pkexec --disable-internal-agent` in NeOS Operations Hub fails
+# immediately ("No authentication agent found").
+set -euo pipefail
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+for agent in \
+    /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
+    /usr/lib/polkit-kde-authentication-agent-1 \
+    /usr/lib/xfce-polkit/xfce-polkit; do
+    if [[ -x "$agent" ]]; then
+        exec "$agent"
+    fi
+done
+
+echo "neos-polkit-agent: no graphical Polkit authentication agent binary found." >&2
+exit 0

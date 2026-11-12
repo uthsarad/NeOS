@@ -15,15 +15,18 @@ class SourceForgeUpload(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         workflow = yaml.safe_load((ROOT / ".github/workflows/build-iso.yml").read_text())
-        cls.script = next(step["run"] for step in workflow["jobs"]["build"]["steps"]
+        steps = [step for job in workflow["jobs"].values() for step in job.get("steps", [])]
+        cls.script = next(step["run"] for step in steps
                           if step.get("name") == "Upload Release Assets to SourceForge")
+        # Also verify the build job itself stays read-only on PRs.
+        cls.build_permissions = workflow["jobs"]["build"].get("permissions", {})
         with tempfile.TemporaryDirectory() as folder:
             key = Path(folder) / "identity"
             subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", str(key)],
                            check=True, stdin=subprocess.DEVNULL)
             cls.key = key.read_text()
 
-    def execute(self, success_on=1, key=None):
+    def execute(self, success_on=1, key=None, known_hosts=""):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             binary = root / "bin"
@@ -44,8 +47,10 @@ calls = json.loads(log.read_text()) if log.exists() else []
 args = sys.argv[1:]
 ssh = shlex.split(args[args.index('-e')+1])
 key = Path(ssh[ssh.index('-i')+1])
+kh = Path(next(opt.split('=', 1)[1] for opt in ssh if opt.startswith('UserKnownHostsFile=')))
 calls.append(dict(args=args, key=str(key), mode=stat.S_IMODE(key.stat().st_mode),
                   directory_mode=stat.S_IMODE(key.parent.stat().st_mode),
+                  known_hosts=kh.read_text() if kh.exists() else '',
                   crlf=b'\\r' in key.read_bytes()))
 log.write_text(json.dumps(calls))
 if len(calls) < int(os.environ['TEST_SUCCESS_ON']):
@@ -60,6 +65,7 @@ if len(calls) < int(os.environ['TEST_SUCCESS_ON']):
                        GITHUB_WORKSPACE=str(root), RELEASE_BRANCH="testing", RELEASE_VERSION="fixture",
                        SOURCEFORGE_USERNAME="test-user", SOURCEFORGE_PROJECT="test-project",
                        SOURCEFORGE_PRIVATE_KEY=self.key if key is None else key,
+                       SOURCEFORGE_KNOWN_HOSTS=known_hosts,
                        TEST_CALLS=str(root / "calls.json"), TEST_SUCCESS_ON=str(success_on))
             result = subprocess.run(["bash", "-c", self.script], env=env,
                                     capture_output=True, text=True, timeout=15,
@@ -72,6 +78,18 @@ if len(calls) < int(os.environ['TEST_SUCCESS_ON']):
             for call in calls:
                 self.assertFalse(Path(call["key"]).exists(), "temporary identity was not removed")
             return result, calls
+
+    def test_build_job_has_read_only_permissions(self):
+        self.assertEqual(self.build_permissions, {"contents": "read"})
+
+    def test_pinned_known_hosts_enforces_strict_host_key_checking(self):
+        pinned = "frs.sourceforge.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFakeTestKeyMaterialOnly"
+        result, calls = self.execute(known_hosts=pinned)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        command = calls[0]["args"][calls[0]["args"].index("-e") + 1]
+        self.assertIn("StrictHostKeyChecking=yes", command)
+        self.assertIn("frs.sourceforge.net", calls[0]["known_hosts"])
 
     def test_upload_does_not_depend_on_host_key_scan(self):
         result, calls = self.execute()

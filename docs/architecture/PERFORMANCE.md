@@ -24,20 +24,21 @@ These targets apply to the "Stable" release channel on reference hardware (Moder
 ## Optimization Strategies
 
 ### Base System (Arch Linux)
-- **Kernel:** Evaluate `linux-zen` for better desktop interactive performance.
-- **I/O Scheduler:** Ensure `bfq` or `kyber` is active for NVMe/SSD.
+- **Kernel:** Ship `linux-lts` for hardware/driver stability and predictable DKMS module compatibility (see [ADR 0001](../decisions/0001-linux-lts.md)).
+- **Memory & Swap:** Configure `zram-generator` (`zstd`, `ram / 2`) paired with `vm.swappiness = 100` and `vm.page-cluster = 0` (`99-neos-performance.conf`).
+- **I/O Scheduler (`60-neos-ioschedulers.rules`):** Set `none` on NVMe SSDs, `mq-deadline` on non-rotational SATA/SAS SSDs, and `bfq` on rotational HDDs.
 - **Boot Process:**
   - Minimize `systemd-analyze` critical chain.
-  - Disable unused services (e.g., `lvm2-monitor` if not using LVM, printer spools if no printer).
+  - Gate hypervisor guest agents (`qemu-guest-agent`, `vboxservice`, `vmtoolsd`, `spice-vdagentd`) on `ConditionVirtualization=` so bare-metal boots pay zero guest-agent cost.
 
 ### Desktop Environment (KDE Plasma)
-- **Animations:** Default animation speed scale set to instant or fast.
-- **Indexing:** Configure Baloo (file indexer) to exclude build directories and sensitive paths, or run only on AC power.
-- **Start-up:** Disable "Restore previous session" by default to ensure clean, fast boots.
+- **Animations:** Responsive defaults on Plasma 6 Wayland (with automatic Xfce X11 fallback on software-rendered VMs).
+- **Indexing:** Run `plocate-updatedb` only on AC power (`plocate-updatedb.service.d/ac-only.conf`).
+- **Start-up:** Keep session startup lean and avoid unnecessary background daemons.
 
 ### Application Layer
-- **Preloading:** Use speculative preloading for the default browser (Brave) and File Manager (Dolphin) if RAM permits.
-- **Updates:** Run `checkupdates` in a low-priority background process to avoid blocking interactive usage.
+- **Default Applications:** Ship Firefox (`firefox`) and Dolphin (`dolphin`) with responsive defaults.
+- **Updates:** Run `neos-autoupdate.timer` with paired Btrfs Snapper pre/post snapshots in the background.
 
 ## Measurement & Verification
 
