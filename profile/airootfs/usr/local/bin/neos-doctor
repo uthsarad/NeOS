@@ -77,7 +77,7 @@ fi
 
 VIRT="none"
 if have systemd-detect-virt; then
-    VIRT="$(systemd-detect-virt 2>/dev/null || echo none)"
+    VIRT="$(systemd-detect-virt 2>/dev/null)" || VIRT="none"
 fi
 
 FIRMWARE="unknown"

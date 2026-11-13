@@ -25,6 +25,7 @@ else
     exit 1
 fi
 
+# shellcheck disable=SC2016
 if grep -q '"/etc/sudoers.d/wheel"\]="0:0:440"' profile/profiledef.sh \
    && grep -q 'chmod 0440 "\$ROOT/etc/sudoers.d/wheel"' profile/airootfs/usr/local/bin/neos-pacstrap; then
     echo "PASS: /etc/sudoers.d/wheel is enforced as mode 0440 on both live and installed systems."
