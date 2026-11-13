@@ -10,8 +10,11 @@ cd "$(dirname "$0")/.."
 eval "$(sed -n '/^notify_users() {$/,/^}$/p' profile/airootfs/usr/local/bin/neos-autoupdate.sh)"
 loginctl() { printf '1000 alice\n'; }
 notify-send() { :; }
+# Stub both runuser (preferred path) and sudo (fallback) so the test captures either.
+runuser() { printf '%s\n' "$@"; }
 sudo() { printf '%s\n' "$@"; }
 actual=$(notify_users '-message with spaces' '-title' dialog-error critical)
+# notify_users emits: runuser -u <user> -- env DBUS=... notify-send --icon= --urgency= -- <title> <msg>
 expected=$(printf '%s\n' -u alice -- env DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
     notify-send --icon=dialog-error --urgency=critical -- '-title' '-message with spaces')
 if [[ "$actual" != "$expected" ]]; then
