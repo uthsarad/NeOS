@@ -16,6 +16,8 @@ const REQUIRED_PROFILE_FILES: [&str; 6] = [
     "airootfs/etc/pacman.d/neos-mirrorlist",
     "airootfs/etc/pacman.d/chaotic-mirrorlist",
 ];
+const CALAMARES_SETTINGS: &str = "airootfs/etc/calamares/settings.conf";
+const CALAMARES_MODULES_DIR: &str = "airootfs/etc/calamares/modules";
 const REQUIRED_PACKAGES: [&str; 6] = [
     "base",
     "mkinitcpio",
@@ -60,6 +62,7 @@ fn run_audit(root: &Path) -> Result<String, String> {
     assert_required_files(root)?;
     assert_mirrorlists_have_servers(root)?;
     assert_profiledef_properties(root)?;
+    assert_calamares_module_configs(root)?;
 
     let mut parsed_files: Vec<(String, HashSet<String>)> = Vec::new();
     for relative in PACKAGE_FILES {
@@ -72,6 +75,59 @@ fn run_audit(root: &Path) -> Result<String, String> {
     assert_arch_specific_expectations(&parsed_files)?;
 
     Ok(build_summary(&parsed_files))
+}
+
+/// Ensures every local Calamares module configuration named by settings.conf is
+/// shipped in the profile. This catches installer configuration drift before an
+/// ISO is built, where Calamares would otherwise fail only at install time.
+fn assert_calamares_module_configs(root: &Path) -> Result<(), String> {
+    let settings_path = root.join(CALAMARES_SETTINGS);
+    let content = fs::read_to_string(&settings_path)
+        .map_err(|err| format!("unable to read {}: {err}", settings_path.display()))?;
+
+    for (line_number, raw_line) in content.lines().enumerate() {
+        let without_comment = strip_inline_comment(raw_line);
+        let trimmed = without_comment.trim();
+        let Some(value) = trimmed.strip_prefix("config:") else {
+            continue;
+        };
+
+        let config = value.trim().trim_matches(|c| c == '\"' || c == '\'');
+        if config.is_empty() {
+            return Err(format!(
+                "{}:{} declares an empty Calamares module config",
+                settings_path.display(),
+                line_number + 1
+            ));
+        }
+
+        let config_path = Path::new(config);
+        if config_path.is_absolute()
+            || config_path.components().count() != 1
+            || config_path.file_name().is_none()
+        {
+            return Err(format!(
+                "{}:{} declares unsafe Calamares module config '{}'; expected a file name within {}",
+                settings_path.display(),
+                line_number + 1,
+                config,
+                root.join(CALAMARES_MODULES_DIR).display()
+            ));
+        }
+
+        let expected_path = root.join(CALAMARES_MODULES_DIR).join(config_path);
+        if !expected_path.is_file() {
+            return Err(format!(
+                "{}:{} declares Calamares module config '{}', but expected file is missing: {}",
+                settings_path.display(),
+                line_number + 1,
+                config,
+                expected_path.display()
+            ));
+        }
+    }
+
+    Ok(())
 }
 
 fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
@@ -565,5 +621,47 @@ mod tests {
         fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
 
         assert!(assert_profiledef_properties(root).is_ok());
+    }
+
+    fn write_calamares_settings(root: &Path, content: &str) {
+        let settings = root.join(CALAMARES_SETTINGS);
+        fs::create_dir_all(settings.parent().unwrap()).unwrap();
+        fs::write(settings, content).unwrap();
+    }
+
+    #[test]
+    fn test_calamares_module_configs_exist() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        write_calamares_settings(
+            root,
+            "instances:\n- module: shellprocess\n  config: shellprocess.conf\n",
+        );
+        let modules = root.join(CALAMARES_MODULES_DIR);
+        fs::create_dir_all(&modules).unwrap();
+        fs::write(modules.join("shellprocess.conf"), "\n").unwrap();
+
+        assert!(assert_calamares_module_configs(root).is_ok());
+    }
+
+    #[test]
+    fn test_calamares_module_config_missing_from_profile() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        write_calamares_settings(root, "config: missing.conf\n");
+
+        let err = assert_calamares_module_configs(root).unwrap_err();
+        assert!(err.contains("missing.conf"));
+        assert!(err.contains("expected file is missing"));
+    }
+
+    #[test]
+    fn test_calamares_module_config_rejects_nested_path() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        write_calamares_settings(root, "config: ../outside.conf\n");
+
+        let err = assert_calamares_module_configs(root).unwrap_err();
+        assert!(err.contains("unsafe Calamares module config"));
     }
 }
