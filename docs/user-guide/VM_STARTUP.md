@@ -28,6 +28,30 @@ The live login manager waits for live-user setup. If an image is missing the
 prebuilt live account, startup creates it before attempting automatic login.
 The ISO boot check requires an active live-user graphical session and its
 desktop process; reaching a TTY or only the boot splash does not pass.
+No username, password or shell commands are needed to start the live desktop.
+
+## Graphical startup fallback
+
+In VMs, NeOS selects the Xfce desktop on X11 and uses software rendering. If a
+VMware VGA adapter has no bound driver and exposes no DRM device, logind may
+report that the machine has no graphical seat. SDDM then waits instead of
+starting Xorg, even when Xorg's VESA driver can display the desktop.
+
+NeOS waits briefly for udev and driver initialization, then applies a runtime-only
+seat rule to that specific unbound VMware adapter. This allows SDDM to start
+Xorg's fallback. The rule is not written into the installed system's persistent
+configuration, and does not match once a graphics driver binds the adapter.
+Adapters with a DRM device continue using normal graphics detection. The rule
+is applied automatically before the login manager starts.
+
+The live boot probe checks SDDM and the actual live-user desktop directly. It
+does not wait for unrelated `graphical.target` jobs, so offline time
+synchronization cannot hide an already usable desktop from the boot check.
+
+Both cases were reproduced with the checksum-verified Barracuda b501 ISO under
+QEMU, including its VMware SVGA emulation. This does not establish the identical
+failure on VMware Workstation; verification on that host remains separate.
+A rebuilt ISO is required to include these startup changes.
 
 ## Included modules
 - **Virtio (QEMU/KVM):** `virtio`, `virtio_pci`, `virtio_blk`, `virtio_scsi`, `virtio_net`, `virtio_console`, `virtio_balloon`

@@ -45,9 +45,9 @@ else
     echo "  [PASS] smoke test and probe unit share the '$MARKER_FROM_TEST' marker"
 fi
 
-# 2. The unit must only fire once graphical.target is active, and must be
-#    pulled in by it (a unit nothing wants never runs).
-for needle in "After=graphical.target" "WantedBy=graphical.target" "ExecStart=/usr/local/bin/neos-boot-probe"; do
+# 2. The unit starts after SDDM, independently of unrelated work still holding
+#    graphical.target's activation job. The target still pulls the probe in.
+for needle in "After=sddm.service neos-liveuser-setup.service" "Wants=sddm.service" "WantedBy=graphical.target" "ExecStart=/usr/local/bin/neos-boot-probe"; do
     if grep -qF -- "$needle" "$PROBE_UNIT"; then
         echo "  [PASS] $PROBE_UNIT declares '$needle'"
     else
@@ -55,6 +55,13 @@ for needle in "After=graphical.target" "WantedBy=graphical.target" "ExecStart=/u
         FAIL=1
     fi
 done
+
+if grep -qE '^(After|Wants|Requires)=.*graphical\.target' "$PROBE_UNIT"; then
+    echo "[FAIL] desktop readiness must not wait for graphical.target activation"
+    FAIL=1
+else
+    echo "  [PASS] desktop readiness does not wait for unrelated target jobs"
+fi
 
 if [[ -L "$PROBE_WANTS" ]]; then
     echo "  [PASS] probe unit is enabled for graphical.target"

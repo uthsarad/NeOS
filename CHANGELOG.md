@@ -9,6 +9,13 @@ All notable changes to this project will be documented in this file.
 - Calamares module configuration integrity checks in the Rust profile auditor.
 - Comprehensive Python unit test suite in `tests/test_live_scripts.py` covering live mode detection, dynamic version extraction, and Calamares pacstrap job progress regexes.
 
+## [2026.11.14] - 2026-11-14
+
+### Fixed
+- VMs with an unbound VMware VGA adapter and no DRM device can now start the X11 login manager through Xorg's VESA fallback. Previously logind reported no graphical seat, so SDDM waited without starting Xorg. After a bounded udev settle, NeOS adds a runtime-only seat rule for that exact unbound virtual adapter; systems with a bound graphics driver or a DRM device retain normal detection.
+- The live desktop boot probe no longer waits for unrelated jobs behind `graphical.target`, such as network time synchronization. It reports readiness when SDDM and an active graphical live-user desktop are running, while still rejecting failed login managers, text consoles and missing desktop processes.
+- Session selection now updates conflicting display-server settings in `/etc/sddm.conf`, whose values override SDDM's drop-ins. A VM selected for X11 can no longer remain on Wayland because of a primary configuration override. Updates respect INI sections and preserve authentication settings and unrelated session keys.
+
 ## [2026.11.01] - 2026-11-01
 
 ### Fixed

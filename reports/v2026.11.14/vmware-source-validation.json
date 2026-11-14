@@ -1,0 +1,233 @@
+{
+  "before_seat": "Id=seat0\nCanTTY=yes\nCanGraphical=no\nSessions=1\nIdleHint=no\nIdleSinceHint=0\nIdleSinceHintMonotonic=0\n",
+  "unit_status": "ActiveState=active\nSubState=exited\nResult=success\nExecMainStatus=0\n",
+  "after_seat": "Id=seat0\nCanTTY=yes\nCanGraphical=yes\nSessions=1\nIdleHint=no\nIdleSinceHint=0\nIdleSinceHintMonotonic=0\n",
+  "rule": "# NeOS: allow Xorg VESA startup on an unbound VMware VGA adapter.\nSUBSYSTEM==\"pci\", KERNEL==\"0000:00:02.0\", ATTR{vendor}==\"0x15ad\", ATTR{class}==\"0x030000\", DRIVER==\"\", TAG+=\"seat\", TAG+=\"master-of-seat\"\n",
+  "last_probe_error": "The live welcome application is not running yet",
+  "desktop": {
+    "width": 1280,
+    "height": 768,
+    "pointer": [
+      640,
+      384
+    ],
+    "windows": [
+      {
+        "title": "Desktop",
+        "x": 0,
+        "y": 0,
+        "pid": 3035,
+        "width": 1280,
+        "height": 768,
+        "visible": true
+      },
+      {
+        "title": "Welcome to NeOS",
+        "x": 215,
+        "y": 119,
+        "pid": 3113,
+        "width": 860,
+        "height": 560,
+        "visible": true
+      },
+      {
+        "title": "xfce4-panel",
+        "x": 0,
+        "y": 0,
+        "pid": 3007,
+        "width": 1280,
+        "height": 27,
+        "visible": true
+      },
+      {
+        "title": "wrapper-2.0",
+        "x": 1204,
+        "y": 0,
+        "pid": 3086,
+        "width": 1,
+        "height": 26,
+        "visible": false
+      },
+      {
+        "title": "wrapper-2.0",
+        "x": 1279,
+        "y": 0,
+        "pid": 3092,
+        "width": 1,
+        "height": 26,
+        "visible": false
+      },
+      {
+        "title": "xfce4-panel",
+        "x": 634,
+        "y": 719,
+        "pid": 3007,
+        "width": 306,
+        "height": 49,
+        "visible": true
+      },
+      {
+        "title": "xfce4-session",
+        "x": 10,
+        "y": 10,
+        "pid": 2875,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "xfwm4",
+        "x": 10,
+        "y": 10,
+        "pid": 2961,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "xfwm4",
+        "x": -1000,
+        "y": -1000,
+        "pid": 2961,
+        "width": 5,
+        "height": 5,
+        "visible": true
+      },
+      {
+        "title": "xfsettingsd",
+        "x": 10,
+        "y": 10,
+        "pid": 2993,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "xfce4-panel",
+        "x": 10,
+        "y": 10,
+        "pid": 3007,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "Thunar",
+        "x": 10,
+        "y": 10,
+        "pid": 3013,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "xfdesktop",
+        "x": 10,
+        "y": 10,
+        "pid": 3035,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "wrapper-2.0",
+        "x": 10,
+        "y": 10,
+        "pid": 3086,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "wrapper-2.0",
+        "x": 10,
+        "y": 10,
+        "pid": 3092,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "Xfdesktop Manager Selection",
+        "x": -100,
+        "y": -100,
+        "pid": 3035,
+        "width": 1,
+        "height": 1,
+        "visible": false
+      },
+      {
+        "title": "polkit-gnome-authentication-agent-1",
+        "x": 10,
+        "y": 10,
+        "pid": 3103,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "Qt Selection Owner for neos-welcome-app",
+        "x": 0,
+        "y": 0,
+        "pid": 0,
+        "width": 3,
+        "height": 3,
+        "visible": false
+      },
+      {
+        "title": "python3",
+        "x": 10,
+        "y": 10,
+        "pid": 3113,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "xdg-desktop-portal-gtk",
+        "x": 10,
+        "y": 10,
+        "pid": 3327,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "NeOS",
+        "x": 0,
+        "y": 0,
+        "pid": 0,
+        "width": 1,
+        "height": 1,
+        "visible": false
+      },
+      {
+        "title": "wrapper-2.0",
+        "x": -100,
+        "y": -100,
+        "pid": 3086,
+        "width": 10,
+        "height": 10,
+        "visible": false
+      },
+      {
+        "title": "Qt Selection Owner for ",
+        "x": 0,
+        "y": 0,
+        "pid": 0,
+        "width": 3,
+        "height": 3,
+        "visible": false
+      }
+    ],
+    "install_button": [
+      755,
+      589
+    ],
+    "input_devices": "\u23a1 Virtual core pointer                    \tid=2\t[master pointer  (3)]\n\u239c   \u21b3 Virtual core XTEST pointer              \tid=4\t[slave  pointer  (2)]\n\u239c   \u21b3 QEMU QEMU USB Tablet                    \tid=6\t[slave  pointer  (2)]\n\u239c   \u21b3 ImExPS/2 Generic Explorer Mouse         \tid=9\t[slave  pointer  (2)]\n\u23a3 Virtual core keyboard                   \tid=3\t[master keyboard (2)]\n    \u21b3 Virtual core XTEST keyboard             \tid=5\t[slave  keyboard (3)]\n    \u21b3 Power Button                            \tid=7\t[slave  keyboard (3)]\n    \u21b3 AT Translated Set 2 keyboard            \tid=8\t[slave  keyboard (3)]\n"
+  },
+  "boot_probe": "ActiveState=active\nSubState=exited\nResult=success\nExecMainStatus=0\n",
+  "journal": "Nov 14 07:33:06 neos-live systemd[1]: Starting NeOS VM graphics fallback (software OpenGL when no hardware GL)...\nNov 14 07:33:07 neos-live systemd[1]: Finished NeOS VM graphics fallback (software OpenGL when no hardware GL).\nNov 14 07:45:50 neos-live systemd[1]: Starting NeOS live boot probe (serial marker for automated boot verification)...\nNov 14 07:45:50 neos-live systemd[1]: neos-vm-graphics.service: Deactivated successfully.\nNov 14 07:45:50 neos-live systemd[1]: Stopped NeOS VM graphics fallback (software rendering and graphical seat).\nNov 14 07:45:50 neos-live systemd[1]: Stopping NeOS VM graphics fallback (software rendering and graphical seat)...\nNov 14 07:45:50 neos-live systemd[1]: Starting NeOS VM graphics fallback (software rendering and graphical seat)...\nNov 14 07:45:52 neos-live neos-vm-graphics[2810]: neos-vm-graphics: enabled graphical-seat fallback for unbound VMware VGA 0000:00:02.0\nNov 14 07:45:52 neos-live systemd[1]: Finished NeOS VM graphics fallback (software rendering and graphical seat).\nNov 14 07:46:02 neos-live neos-boot-probe[2806]: NeOS live desktop session ready\nNov 14 07:46:02 neos-live systemd[1]: Finished NeOS live boot probe (serial marker for automated boot verification).\nNov 14 07:46:28 neos-live systemd[1]: neos-boot-probe.service: Deactivated successfully.\nNov 14 07:46:28 neos-live systemd[1]: Stopped NeOS live boot probe (serial marker for automated boot verification).\nNov 14 07:46:28 neos-live systemd[1]: neos-boot-probe.service: Consumed 2.075s CPU time over 38.059s wall clock time, 2.2M memory peak.\nNov 14 07:46:28 neos-live systemd[1]: Stopping NeOS live boot probe (serial marker for automated boot verification)...\nNov 14 07:46:28 neos-live systemd[1]: Starting NeOS live boot probe (serial marker for automated boot verification)...\nNov 14 07:46:29 neos-live neos-boot-probe[3413]: NeOS live desktop session ready\nNov 14 07:46:29 neos-live systemd[1]: Finished NeOS live boot probe (serial marker for automated boot verification).\n",
+  "graphical_target": "ActiveState=inactive\nSubState=dead\n",
+  "pass": true
+}

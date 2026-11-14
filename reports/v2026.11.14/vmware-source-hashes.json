@@ -1,0 +1,10 @@
+{
+  "source_sha256": {
+    "/usr/local/bin/neos-vm-graphics": "5fe47a2aa0a6add11327f751051822940c23cba4114fe09834574950b3b2e6e9",
+    "/etc/systemd/system/neos-vm-graphics.service": "b4fc34ec86d0551520509dfcafe23eba1a5a25ca55ff828a49bacdef9898fcd2",
+    "/usr/local/bin/neos-session-select": "208a7cd6e9cb91eabc73fbbb6fda3d375705b9ebc7088a50bf545211f2714abb",
+    "/usr/local/bin/neos-boot-probe": "56f8b2b64cccd0df1582908d9e2f382d24fd23aaa88a5e49dbc3024c7ff920e2",
+    "/etc/systemd/system/neos-boot-probe.service": "0afcbe6d1a008a5b11ee6da43cca5e04487fe5aa076dc927503b0ede0f7246c9"
+  },
+  "source_hashes_match": true
+}
