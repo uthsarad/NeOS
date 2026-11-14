@@ -27,6 +27,11 @@ DOTNET_ROLL_FORWARD="${DOTNET_ROLL_FORWARD:-Major}"
 export DOTNET_ROLL_FORWARD
 if dotnet run --project tools/NeosDiagnostics -- "$PWD"; then
     echo "  [PASS] C# diagnostics passed successfully."
+    if [ -f "tools/NeosDiagnostics.Tests/NeosDiagnostics.Tests.csproj" ]; then
+        echo "Running C# .NET unit tests..."
+        dotnet test tools/NeosDiagnostics.Tests --nologo
+        echo "  [PASS] C# unit tests passed successfully."
+    fi
 else
     if [[ "${REQUIRE_TOOLS:-0}" == "1" ]]; then
         echo "[FAIL] dotnet could not run tools/NeosDiagnostics (REQUIRE_TOOLS=1; DOTNET_ROLL_FORWARD=$DOTNET_ROLL_FORWARD)."

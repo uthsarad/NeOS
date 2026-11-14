@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <VirtualBox xmlns="http://www.virtualbox.org/" version="1.19-linux">
   <Machine uuid="{4e454f53-0000-4000-8000-000000000001}" name="NeOS-Virtual-Appliance" OSType="ArchLinux_64" snapshotFolder="Snapshots">
+    <MediaRegistry>
+      <HardDisks>
+        <HardDisk uuid="{4e454f53-0000-4000-8000-000000000002}" location="NeOS-Appliance.vmdk" format="VMDK" type="Normal"/>
+      </HardDisks>
+    </MediaRegistry>
     <Hardware>
       <CPU count="4">
         <PAE enabled="false"/>

@@ -1,0 +1,21 @@
+[Unit]
+Description=NeOS display session selection (Wayland, or X11 where Wayland fails)
+Documentation=file:///usr/local/bin/neos-session-select
+# Writes SDDM's configuration, so it must finish before the display manager.
+Before=display-manager.service sddm.service
+After=systemd-udevd.service systemd-modules-load.service
+# Runs after neos-liveuser-setup on the live image so its choice is final.
+After=neos-liveuser-setup.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/neos-session-select
+ProtectSystem=strict
+ReadWritePaths=/etc -/var/lib/sddm
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

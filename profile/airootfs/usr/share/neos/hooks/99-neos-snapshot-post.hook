@@ -8,7 +8,7 @@ Target = *
 [Action]
 Description = Creating post-transaction Btrfs snapshot...
 When = PostTransaction
-# Pair with the newest *pre* snapshot specifically — the newest snapshot of
-# any type may be a concurrent timeline/autoupdate snapshot, which would
-# mis-link this post snapshot.
-Exec = /usr/bin/bash -c 'if command -v snapper >/dev/null 2>&1 && [ -e /etc/snapper/configs/root ]; then PRE_NUMBER=$(snapper --config=root list --type pre --columns number 2>/dev/null | grep -E "^[0-9]+" | tail -n 1 | tr -d " "); if [ -n "$PRE_NUMBER" ]; then snapper --config=root create --type post --cleanup-algorithm timeline --pre-number "$PRE_NUMBER" --description "Post-package-operation-$(date +%Y%m%d_%H%M%S)" || true; fi; fi'
+# Pair strictly with the pre-snapshot ID recorded by 49-neos-snapshot-pre.hook
+# in /run/neos-pacman-pre-snap.id, and skip when neos-autoupdate.sh is already
+# managing the pre/post snapshot pair (NEOS_AUTOUPDATE_ACTIVE=1).
+Exec = /usr/bin/bash -c 'if [ -z "${NEOS_AUTOUPDATE_ACTIVE:-}" ] && command -v snapper >/dev/null 2>&1 && [ -e /etc/snapper/configs/root ] && [ -f /run/neos-pacman-pre-snap.id ] && [ ! -L /run/neos-pacman-pre-snap.id ]; then PRE_NUMBER=$(tr -d "[:space:]" < /run/neos-pacman-pre-snap.id 2>/dev/null || true); rm -f /run/neos-pacman-pre-snap.id; case "$PRE_NUMBER" in ""|*[!0-9]*) ;; *) snapper --config=root create --type post --cleanup-algorithm number --pre-number "$PRE_NUMBER" --description "Post-package-operation-$(date +%Y%m%d_%H%M%S)" >/dev/null 2>&1 || true ;; esac; fi'

@@ -1,12 +1,12 @@
 {
   "bolt": {
-    "guidance": "Clear pending task queue: Acknowledge the continued Phase 8 Validation Strategic Pause."
+    "guidance": "Focus strictly on build.sh and package caching optimization."
   },
   "palette": {
-    "guidance": "Clear pending task queue: Refine UX of snapshot selection and Acknowledge the continued Phase 8 Validation Strategic Pause."
+    "guidance": "Focus strictly on profile/airootfs/usr/local/bin/neos-welcome-app UX and accessibility."
   },
   "sentinel": {
-    "guidance": "Clear pending task queue: Acknowledge the continued Phase 8 Validation Strategic Pause."
+    "guidance": "Focus strictly on profile/airootfs/usr/local/bin/neos-autoupdate.sh security hardening."
   },
-  "maestro_timestamp": "2026-09-11 (Continued Phase 8 Validation)"
+  "maestro_timestamp": "2026-10-03T02:48:45Z"
 }

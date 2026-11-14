@@ -1,0 +1,19 @@
+/* Live-session-only PackageKit rule (NEVER copied to installed systems — see
+ * tools/gen-manifests.sh and tests/verify_pacstrap.sh).
+ *
+ * The live user has passwordless sudo (zz-live-wheel) and no password
+ * (passwd -d), so AUTH_ADMIN prompts in Discover cannot be satisfied during a
+ * live test session. Restrict strictly to active local sessions and exclude
+ * repository-configuration or key-trust actions.
+ */
+polkit.addRule(function(action, subject) {
+    if ((action.id == "org.freedesktop.packagekit.package-install" ||
+         action.id == "org.freedesktop.packagekit.package-remove" ||
+         action.id == "org.freedesktop.packagekit.system-update" ||
+         action.id == "org.freedesktop.packagekit.offline-update") &&
+        subject.user == "liveuser" &&
+        subject.local &&
+        subject.active) {
+        return polkit.Result.YES;
+    }
+});

@@ -34,10 +34,10 @@ fi
 
 # 3. SDDM autologin must be configured for liveuser
 AUTOLOGIN="profile/airootfs/etc/sddm.conf.d/autologin.conf"
-if grep -q "User=liveuser" "$AUTOLOGIN" && grep -q "Session=plasma" "$AUTOLOGIN"; then
-    echo "[PASS] SDDM autologin configured for liveuser / plasma"
+if grep -q "User=liveuser" "$AUTOLOGIN" && grep -qx "Session=xfce" "$AUTOLOGIN"; then
+    echo "[PASS] SDDM autologin configured for liveuser / xfce fallback"
 else
-    echo "[FAIL] $AUTOLOGIN must set User=liveuser and Session=plasma"; FAIL=1
+    echo "[FAIL] $AUTOLOGIN must set User=liveuser and Session=xfce"; FAIL=1
 fi
 
 # 4. customize_airootfs.sh must exist — this script pre-creates liveuser
@@ -65,3 +65,9 @@ if [[ "$FAIL" -ne 0 ]]; then
     exit 1
 fi
 echo "Live graphical target verification passed!"
+
+# SDDM must pull in the live account setup even when started directly.
+DROPIN="$SYSDIR/sddm.service.d/20-live-session.conf"
+grep -qx 'Requires=neos-liveuser-setup.service' "$DROPIN"
+grep -qx 'RemainAfterExit=yes' "$SERVICE"
+echo "[PASS] live SDDM requires persistent account setup"

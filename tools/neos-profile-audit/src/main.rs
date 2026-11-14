@@ -16,6 +16,8 @@ const REQUIRED_PROFILE_FILES: [&str; 6] = [
     "airootfs/etc/pacman.d/neos-mirrorlist",
     "airootfs/etc/pacman.d/chaotic-mirrorlist",
 ];
+const CALAMARES_SETTINGS: &str = "airootfs/etc/calamares/settings.conf";
+const CALAMARES_MODULES_DIR: &str = "airootfs/etc/calamares/modules";
 const REQUIRED_PACKAGES: [&str; 6] = [
     "base",
     "mkinitcpio",
@@ -60,6 +62,7 @@ fn run_audit(root: &Path) -> Result<String, String> {
     assert_required_files(root)?;
     assert_mirrorlists_have_servers(root)?;
     assert_profiledef_properties(root)?;
+    assert_calamares_module_configs(root)?;
 
     let mut parsed_files: Vec<(String, HashSet<String>)> = Vec::new();
     for relative in PACKAGE_FILES {
@@ -72,6 +75,59 @@ fn run_audit(root: &Path) -> Result<String, String> {
     assert_arch_specific_expectations(&parsed_files)?;
 
     Ok(build_summary(&parsed_files))
+}
+
+/// Ensures every local Calamares module configuration named by settings.conf is
+/// shipped in the profile. This catches installer configuration drift before an
+/// ISO is built, where Calamares would otherwise fail only at install time.
+fn assert_calamares_module_configs(root: &Path) -> Result<(), String> {
+    let settings_path = root.join(CALAMARES_SETTINGS);
+    let content = fs::read_to_string(&settings_path)
+        .map_err(|err| format!("unable to read {}: {err}", settings_path.display()))?;
+
+    for (line_number, raw_line) in content.lines().enumerate() {
+        let without_comment = strip_inline_comment(raw_line);
+        let trimmed = without_comment.trim();
+        let Some(value) = trimmed.strip_prefix("config:") else {
+            continue;
+        };
+
+        let config = value.trim().trim_matches(|c| c == '\"' || c == '\'');
+        if config.is_empty() {
+            return Err(format!(
+                "{}:{} declares an empty Calamares module config",
+                settings_path.display(),
+                line_number + 1
+            ));
+        }
+
+        let config_path = Path::new(config);
+        if config_path.is_absolute()
+            || config_path.components().count() != 1
+            || config_path.file_name().is_none()
+        {
+            return Err(format!(
+                "{}:{} declares unsafe Calamares module config '{}'; expected a file name within {}",
+                settings_path.display(),
+                line_number + 1,
+                config,
+                root.join(CALAMARES_MODULES_DIR).display()
+            ));
+        }
+
+        let expected_path = root.join(CALAMARES_MODULES_DIR).join(config_path);
+        if !expected_path.is_file() {
+            return Err(format!(
+                "{}:{} declares Calamares module config '{}', but expected file is missing: {}",
+                settings_path.display(),
+                line_number + 1,
+                config,
+                expected_path.display()
+            ));
+        }
+    }
+
+    Ok(())
 }
 
 fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
@@ -92,14 +148,38 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
 
     let mut pacman_conf_val = None;
     let mut bootmodes_val = None;
+    let mut in_bootmodes = false;
+    let mut bootmodes_acc = String::new();
 
-    // Extract values, taking the last definition in case of duplicates
-    for line in content.lines() {
-        let trimmed = line.trim();
+    // Extract values, taking the last definition in case of duplicates and
+    // supporting both single-line and multi-line bootmodes=(...) arrays with
+    // trailing `#` comments stripped outside quotes.
+    for raw_line in content.lines() {
+        let code_line = strip_inline_comment(raw_line);
+        let trimmed = code_line.trim();
+        if in_bootmodes {
+            if let Some(end_idx) = trimmed.find(')') {
+                bootmodes_acc.push(' ');
+                bootmodes_acc.push_str(&trimmed[..end_idx]);
+                bootmodes_val = Some(bootmodes_acc.trim().to_string());
+                bootmodes_acc.clear();
+                in_bootmodes = false;
+            } else {
+                bootmodes_acc.push(' ');
+                bootmodes_acc.push_str(trimmed);
+            }
+            continue;
+        }
         if let Some(stripped) = trimmed.strip_prefix("pacman_conf=") {
             pacman_conf_val = Some(stripped.trim_matches(|c| c == '"' || c == '\'').to_string());
         } else if let Some(stripped) = trimmed.strip_prefix("bootmodes=(") {
-            bootmodes_val = Some(stripped.trim_end_matches(')').to_string());
+            if let Some(end_idx) = stripped.find(')') {
+                bootmodes_val = Some(stripped[..end_idx].to_string());
+            } else {
+                bootmodes_acc.clear();
+                bootmodes_acc.push_str(stripped);
+                in_bootmodes = true;
+            }
         }
     }
 
@@ -152,6 +232,20 @@ fn assert_profiledef_properties(root: &Path) -> Result<(), String> {
     }
 
     Ok(())
+}
+
+fn strip_inline_comment(line: &str) -> &str {
+    let mut in_single = false;
+    let mut in_double = false;
+    for (idx, ch) in line.char_indices() {
+        match ch {
+            '\'' if !in_double => in_single = !in_single,
+            '"' if !in_single => in_double = !in_double,
+            '#' if !in_single && !in_double => return &line[..idx],
+            _ => {}
+        }
+    }
+    line
 }
 
 fn assert_required_files(root: &Path) -> Result<(), String> {
@@ -481,6 +575,36 @@ mod tests {
     }
 
     #[test]
+    fn test_assert_required_packages_all_present() {
+        let mut packages = HashSet::new();
+        for req in REQUIRED_PACKAGES {
+            packages.insert(req.to_string());
+        }
+        // Add some extra packages too
+        packages.insert("extra-package".to_string());
+
+        let parsed_files = vec![("packages.x86_64".to_string(), packages)];
+
+        assert!(assert_required_packages(&parsed_files).is_ok());
+    }
+
+    #[test]
+    fn test_assert_required_packages_missing_some() {
+        let mut packages = HashSet::new();
+        // Missing "sudo" and "vim"
+        for req in ["base", "mkinitcpio", "mkinitcpio-archiso", "networkmanager"] {
+            packages.insert(req.to_string());
+        }
+
+        let parsed_files = vec![("packages.x86_64".to_string(), packages)];
+
+        let err = assert_required_packages(&parsed_files).unwrap_err();
+        assert!(err.contains("packages.x86_64 is missing required packages:"));
+        assert!(err.contains("sudo"));
+        assert!(err.contains("vim"));
+    }
+
+    #[test]
     fn test_last_definition_wins() {
         let dir = tempdir().unwrap();
         let root = dir.path();
@@ -497,5 +621,47 @@ mod tests {
         fs::write(root.join("my_pacman.conf"), pacman_conf_content).unwrap();
 
         assert!(assert_profiledef_properties(root).is_ok());
+    }
+
+    fn write_calamares_settings(root: &Path, content: &str) {
+        let settings = root.join(CALAMARES_SETTINGS);
+        fs::create_dir_all(settings.parent().unwrap()).unwrap();
+        fs::write(settings, content).unwrap();
+    }
+
+    #[test]
+    fn test_calamares_module_configs_exist() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        write_calamares_settings(
+            root,
+            "instances:\n- module: shellprocess\n  config: shellprocess.conf\n",
+        );
+        let modules = root.join(CALAMARES_MODULES_DIR);
+        fs::create_dir_all(&modules).unwrap();
+        fs::write(modules.join("shellprocess.conf"), "\n").unwrap();
+
+        assert!(assert_calamares_module_configs(root).is_ok());
+    }
+
+    #[test]
+    fn test_calamares_module_config_missing_from_profile() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        write_calamares_settings(root, "config: missing.conf\n");
+
+        let err = assert_calamares_module_configs(root).unwrap_err();
+        assert!(err.contains("missing.conf"));
+        assert!(err.contains("expected file is missing"));
+    }
+
+    #[test]
+    fn test_calamares_module_config_rejects_nested_path() {
+        let dir = tempdir().unwrap();
+        let root = dir.path();
+        write_calamares_settings(root, "config: ../outside.conf\n");
+
+        let err = assert_calamares_module_configs(root).unwrap_err();
+        assert!(err.contains("unsafe Calamares module config"));
     }
 }

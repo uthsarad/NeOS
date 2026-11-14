@@ -53,15 +53,16 @@ else
     exit 1
 fi
 
-# Check for Pause Indicator (enhanced)
-if [[ "$QML_CONTENT" == *"text: \"⏸ \" + qsTr(\"Paused\")"* ]]; then
+# Check for the pause indicator. Plain text, no emoji glyph: U+23F8 renders as
+# colour emoji in many fonts (reports/v2026.10.03 Q5).
+if [[ "$QML_CONTENT" == *"text: qsTr(\"Paused\")"* ]]; then
     echo "  [PASS] Enhanced Pause indicator found."
 else
     echo "[FAIL] Enhanced Pause indicator missing!"
     echo ""
     echo "How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'text: \"⏸ \" + qsTr(\"Paused\")' to clearly indicate the paused state."
+    echo "   - Add 'text: qsTr(\"Paused\")' to clearly indicate the paused state."
     exit 1
 fi
 
@@ -197,15 +198,15 @@ else
     exit 1
 fi
 
-# Check for Left Arrow Navigation
-if [[ "$QML_CONTENT" == *"Keys.onLeftPressed: presentation.advance()"* ]]; then
-    echo "  [PASS] Left Arrow navigation binding found."
+# Check for Left Arrow Navigation (must navigate backward via retreat(), not advance())
+if [[ "$QML_CONTENT" == *"Keys.onLeftPressed: presentation.retreat()"* ]] && [[ "$QML_CONTENT" == *"function retreat()"* ]]; then
+    echo "  [PASS] Left Arrow backwards navigation binding found."
 else
-    echo "[FAIL] Left Arrow navigation binding missing!"
+    echo "[FAIL] Left Arrow backwards navigation binding missing!"
     echo ""
     echo "How to fix:"
     echo "   - Open $QML_FILE."
-    echo "   - Add 'Keys.onLeftPressed: presentation.advance()' to enable backwards navigation."
+    echo "   - Add 'Keys.onLeftPressed: presentation.retreat()' to enable backwards navigation."
     exit 1
 fi
 

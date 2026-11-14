@@ -1,11 +1,11 @@
 [Unit]
 Description=NeOS live boot probe (serial marker for automated boot verification)
 Documentation=https://github.com/uthsarad/NeOS/blob/testing/reports/v2026.09.22/UPDATES_NEEDED.md
-# Ordered after graphical.target so the marker is only emitted once the
-# graphical boot has actually completed. This unit exists on the live medium
-# only (tools/gen-manifests.sh excludes it from the installed-system overlay).
-After=graphical.target
-Wants=graphical.target
+# Check the desktop as soon as SDDM can start it. graphical.target may still be
+# waiting for unrelated work, including network time synchronization offline.
+# This unit is live-only (excluded from the installed-system overlay).
+After=sddm.service neos-liveuser-setup.service
+Wants=sddm.service
 
 [Service]
 Type=oneshot
@@ -16,10 +16,9 @@ ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes
-# Evidence, not assumption: re-check the target state and only then write the
-# marker to the serial console, which tests/verify_iso_smoketest.sh asserts on.
-# Machines without a serial port exit silently.
-ExecStart=/usr/bin/bash -c 'systemctl is-active --quiet graphical.target || exit 0; [ -w /dev/ttyS0 ] || exit 0; printf "\nNEOS-BOOT-OK graphical.target active\n" > /dev/ttyS0'
+# Wait for a real graphical live-user session, not merely graphical.target.
+TimeoutStartSec=200
+ExecStart=/usr/local/bin/neos-boot-probe
 
 [Install]
 WantedBy=graphical.target

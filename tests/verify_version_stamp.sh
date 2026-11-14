@@ -32,4 +32,44 @@ else
     exit 1
 fi
 
+# The tool version constants are bumped by hand alongside VERSION (M10); fail
+# when one is left behind instead of shipping a tool that reports an old release.
+FAIL=0
+for entry in \
+    "profile/airootfs/etc/os-release|^VERSION=\"([^\"]+)\"" \
+    "tools/NeosDiagnostics/NeosDiagnostics.csproj|<Version>([^<]+)</Version>" \
+    "tools/neosctl/main.go|Version[[:space:]]*=[[:space:]]*\"([^\"]+)\"" \
+    "tools/neos_tasks.rb|VERSION[[:space:]]*=[[:space:]]*'([^']+)'" \
+    "tools/NeosDiagnostics/SecurityInspector.cs|PlatformVersion[^\"]*\"([^\"]+)\""; do
+    file="${entry%%|*}"
+    pattern="${entry#*|}"
+    found="$(grep -oE "$pattern" "$file" | head -1 | sed -E "s#$pattern#\\1#")"
+    if [[ "$found" == "$VER" ]]; then
+        echo "  [PASS] $file carries $VER"
+    else
+        echo "[FAIL] $file carries '${found:-nothing}', VERSION is '$VER'"
+        FAIL=1
+    fi
+done
+if (( FAIL )); then
+    exit 1
+fi
+
+# PRETTY_NAME is what "About this System" and the website show:
+# "NeOS <YYYY.MM> (Beta)"; CI inserts the build codename before "Beta".
+PRETTY="$(grep -E '^PRETTY_NAME=' "$OS_RELEASE" | cut -d= -f2- | tr -d '"')"
+if [[ "$PRETTY" == "NeOS ${VER:0:7} (Beta)" ]]; then
+    echo "  [PASS] PRETTY_NAME is '$PRETTY'"
+else
+    echo "[FAIL] os-release PRETTY_NAME is '$PRETTY', expected 'NeOS ${VER:0:7} (Beta)'"
+    exit 1
+fi
+
+if grep -qE "^## \[$VER\]" CHANGELOG.md; then
+    echo "  [PASS] CHANGELOG.md has a section for $VER (the release body source)"
+else
+    echo "[FAIL] CHANGELOG.md has no '## [$VER]' section; the release body would be empty"
+    exit 1
+fi
+
 echo "[PASS] Version stamp verified."

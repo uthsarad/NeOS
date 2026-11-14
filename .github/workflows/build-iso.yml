@@ -6,14 +6,28 @@ on:
     # yet — only testing builds/releases for now. Add main back here when
     # it's time to resume shipping from it.
     branches: [testing]
-  # Pull requests run the `test` job only: the gate suite is the point of a PR,
-  # but the `build` job publishes a release and pushes to SourceForge, so it is
-  # explicitly excluded from pull_request events below. Without this trigger the
-  # gates only ran after a merge, i.e. they could not gate anything
+  # Pull requests run the gate suite (`test`) and the ISO build (`build`), so a
+  # change proves it builds before it lands. Nothing is published from a PR:
+  # every release/upload step in `build` is gated on github.ref being
+  # refs/heads/{main,testing}, which a pull_request ref never is. Without this
+  # trigger the gates only ran after a merge, i.e. they could not gate anything
   # (reports/v2026.09.18 H3/O3).
   pull_request:
     branches: [testing, main]
   workflow_dispatch:
+    inputs:
+      vm_iso_run_id:
+        description: 'Test an existing PR ISO in a VM instead of building (workflow run ID)'
+        type: string
+        default: ''
+      vm_iso_artifact:
+        description: 'Artifact containing the ISO and SHA512SUMS'
+        type: string
+        default: ''
+      vm_candidate_launcher:
+        description: 'Apply the checked-out installer launcher to the disposable VM before testing'
+        type: boolean
+        default: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -30,7 +44,8 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch' || inputs.vm_iso_run_id == ''
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
@@ -44,6 +59,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Install dependencies
         # Toolchains are installed so the language gates actually execute
@@ -55,9 +72,10 @@ jobs:
         # REQUIRE_TOOLS=1 below turns a missing toolchain into a failure rather
         # than a silent skip.
         #   pacman-contrib -> repo-add, used by verify_install_repo.sh
-        #   mktorrent      -> verify_torrent.sh (exercises the .torrent generator)
+        #   python-pyqt6 + qt6-declarative (+ a font) -> verify_ui_render.sh
+        #     renders the login theme, installer slideshow and welcome app
         run: |
-          pacman -Sy --noconfirm git wget awk grep diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy mktorrent
+          pacman -Syu --noconfirm git openssh wget awk grep jq diffutils syslinux python rust ruby go dotnet-sdk python-yaml pacman-contrib shellcheck trivy python-pyqt6 qt6-declarative ttf-dejavu
 
       - name: Validate PyYAML Installation
         run: |
@@ -83,9 +101,9 @@ jobs:
           FAILED=0
 
           for script in tests/verify_*.sh; do
-            # *iso* tests need a built image; they run inside build.sh in the
-            # build job, after mkarchiso produces one.
-            if [[ "$script" == *iso* ]]; then
+            # Only skip gates that genuinely require a built .iso artifact;
+            # verify_iso_grub.sh inspects static profile files and runs here.
+            if [[ "$script" == "tests/verify_iso_calamares_libs.sh" || "$script" == "tests/verify_iso_smoketest.sh" ]]; then
               continue
             fi
 
@@ -148,21 +166,55 @@ jobs:
           echo "All Security Scans Passed!"
           echo "=============================="
 
+  vm-interaction:
+    if: github.event_name == 'workflow_dispatch' && inputs.vm_iso_run_id != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Install VM tools
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-system-x86 qemu-utils xorriso python3-pil tesseract-ocr
+      - name: Download existing test image
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ${{ inputs.vm_iso_artifact }}
+          run-id: ${{ inputs.vm_iso_run_id }}
+          github-token: ${{ github.token }}
+          path: vm-input
+      - name: Verify image checksum
+        working-directory: vm-input
+        run: sha512sum -c SHA512SUMS
+      - name: Test live mouse input and installer button in QEMU
+        env:
+          NEOS_VM_CANDIDATE_LAUNCHER: ${{ inputs.vm_candidate_launcher && 'profile/airootfs/usr/local/bin/neos-welcome' || '' }}
+        run: python3 tools/test-live-vm.py --iso-dir vm-input --output out/vm-interaction
+      - name: Upload interaction evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: live-vm-interaction-evidence
+          path: out/vm-interaction/
+          if-no-files-found: warn
+          retention-days: 3
+
   build:
     needs: test
     # Runs on pull requests too, so the ISO *build* is verified before merge.
-    # Publishing stays impossible from a PR: every release step below is gated
-    # on github.ref being refs/heads/{main,testing}, and on a pull_request event
-    # github.ref is refs/pull/<n>/merge. That gating — rather than skipping the
-    # job — is what lets a PR prove the image builds: the first CI run that
-    # executed build.sh failed here with the `yes | mkarchiso` SIGPIPE, and a
-    # merge into testing was the first thing to find out (see CHANGELOG).
-    # Cost: ~20-35 minutes of runner time per PR. To opt out, restore
-    # `if: github.event_name != 'pull_request'`.
+    # Least privilege: `build` runs inside a --privileged container and executes
+    # PR code, so it NEVER receives `contents: write` or release upload secrets.
+    # Publishing is isolated in the separate `publish` job below, which runs
+    # only on pushes to refs/heads/{main,testing} outside the privileged container.
     permissions:
-      contents: write
+      contents: read
 
-    runs-on: ubuntu-latest
+    outputs:
+      codename: ${{ steps.codename.outputs.value }}
+      branch_suffix: ${{ steps.codename.outputs.branch_suffix }}
+
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
 
     container:
@@ -176,6 +228,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
       - name: Install dependencies
         # edk2-ovmf is for tests/verify_iso_smoketest.sh: without it the UEFI
@@ -188,42 +242,46 @@ jobs:
           pacman-key --init
           pacman-key --populate archlinux
 
-          pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+          pacman-key --recv-key 3056513887B78AEB --keyserver hkps://keyserver.ubuntu.com
           pacman-key --lsign-key 3056513887B78AEB
 
+          pacman-key --recv-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30 --keyserver hkps://keyserver.ubuntu.com
+          pacman-key --lsign-key BFB13EA507EFDADB64A944813A40CB5E7E5CBC30
+
           # Garuda signing key (signs calamares-garuda in the [garuda] repo)
-          pacman-key --recv-key 349BC7808577C592 --keyserver keyserver.ubuntu.com
+          pacman-key --recv-key 349BC7808577C592 --keyserver hkps://keyserver.ubuntu.com
           pacman-key --lsign-key 349BC7808577C592
 
-          # Download to a local file first (with retries + a fallback mirror)
-          # instead of `pacman -U <url>` direct-fetching: a bare direct fetch
-          # has no retry and a transient 503 from the primary CDN fails the
-          # whole release build. Same two hosts as chaotic-mirrorlist. NOTE:
-          # geo-mirror is a virtual/auto-routing endpoint on different backing
-          # infra than cdn-mirror, so a cdn-mirror-specific outage shouldn't
-          # take both down at once (unlike the old mirror.exozy.me fallback,
-          # which turned out to be a dead host not even in Chaotic-AUR's
-          # current official mirrorlist — see aur.chaotic.cx/mirrorlist.txt).
+          # Download BOTH chaotic-keyring and its detached .sig signature with
+          # strict TLS 1.2+ and verify via pacman-key BEFORE pacman -U (without
+          # the .sig file, LocalFileSigLevel = Optional silently skips PGP
+          # verification).
           CHAOTIC_KEYRING_PKG="chaotic-keyring.pkg.tar.zst"
-          rm -f "$CHAOTIC_KEYRING_PKG"
-          for url in \
-              'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' \
-              'https://geo-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'; do
-            echo "Fetching chaotic-keyring from $url ..."
-            if curl -fL --retry 5 --retry-delay 3 --retry-all-errors \
-                 -o "$CHAOTIC_KEYRING_PKG" "$url"; then
+          CHAOTIC_KEYRING_SIG="chaotic-keyring.pkg.tar.zst.sig"
+          rm -f "$CHAOTIC_KEYRING_PKG" "$CHAOTIC_KEYRING_SIG"
+          CURL_FLAGS=(-fL --retry 5 --retry-delay 3 --retry-all-errors --proto '=https' --tlsv1.2)
+          for host in \
+              'https://cdn-mirror.chaotic.cx/chaotic-aur' \
+              'https://geo-mirror.chaotic.cx/chaotic-aur'; do
+            echo "Fetching chaotic-keyring (+ .sig) from $host ..."
+            if curl "${CURL_FLAGS[@]}" -o "$CHAOTIC_KEYRING_PKG" "$host/$CHAOTIC_KEYRING_PKG" \
+               && curl "${CURL_FLAGS[@]}" -o "$CHAOTIC_KEYRING_SIG" "$host/$CHAOTIC_KEYRING_SIG"; then
               break
             fi
-            rm -f "$CHAOTIC_KEYRING_PKG"
+            rm -f "$CHAOTIC_KEYRING_PKG" "$CHAOTIC_KEYRING_SIG"
           done
-          if [[ ! -f "$CHAOTIC_KEYRING_PKG" ]]; then
-            echo "::error::Failed to download chaotic-keyring from all mirrors"
+          if [[ ! -f "$CHAOTIC_KEYRING_PKG" || ! -f "$CHAOTIC_KEYRING_SIG" ]]; then
+            echo "::error::Failed to download chaotic-keyring and signature from all mirrors"
+            exit 1
+          fi
+          if ! pacman-key --verify "$CHAOTIC_KEYRING_SIG" "$CHAOTIC_KEYRING_PKG"; then
+            echo "::error::Chaotic-AUR keyring PGP signature verification failed!"
             exit 1
           fi
 
           pacman -U --noconfirm "$CHAOTIC_KEYRING_PKG"
 
-          pacman -Sy --noconfirm \
+          pacman -Syu --noconfirm \
             --overwrite='/usr/lib/libgcc*' \
             --overwrite='/usr/lib/libstdc++*' \
             --overwrite='/usr/share/licenses/gcc-libs/*' \
@@ -232,7 +290,6 @@ jobs:
             wget \
             jq \
             squashfs-tools \
-            mktorrent \
             grub \
             syslinux \
             rust \
@@ -243,13 +300,20 @@ jobs:
             util-linux \
             github-cli \
             rsync \
-            openssh
+            openssh \
+            mktorrent
 
       - name: Generate codename and set ISO version
         id: codename
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GH_TOKEN: ${{ github.token }}
+          ANTHROPIC_API_KEY: ${{ github.event_name != 'pull_request' && secrets.ANTHROPIC_API_KEY || '' }}
+          # Branch names are attacker-controlled on a fork PR. Pass them through
+          # the environment, never by expanding ${{ }} inside the script, where
+          # a crafted name would be executed as shell (actionlint: expression).
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          BUILD_BRANCH_REF: ${{ github.ref_name }}
+          RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
 
@@ -261,38 +325,20 @@ jobs:
           # testing) gets its own "-<branch>" suffixed tag/filename.
           #
           # The suffix must be safe in a filename, a tag and a sed replacement.
-          # On a pull_request event github.ref_name is "123/merge" — not a branch
-          # and not safe: the slash terminated the `sed s/…/…/` expression below
-          # and the whole job died at this step in ~0s. Take the PR's head branch
-          # instead, and sanitise either source to [A-Za-z0-9._-].
-          SUFFIX_SOURCE="${{ github.ref_name }}"
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            SUFFIX_SOURCE="${{ github.head_ref }}"
+          # On a pull_request event github.ref_name is "<n>/merge" — not a
+          # branch, and the slash terminated the `sed s/…/…/` below (the job
+          # died here in ~0s). Use the PR's head branch instead, and sanitise
+          # either source to [A-Za-z0-9._-].
+          SUFFIX_SOURCE="$BUILD_BRANCH_REF"
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            SUFFIX_SOURCE="$HEAD_REF"
           fi
-          BRANCH_SUFFIX=""
-          if [[ "$SUFFIX_SOURCE" != "main" ]]; then
-            SAFE_SUFFIX="${SUFFIX_SOURCE//[^A-Za-z0-9._-]/-}"
-            SAFE_SUFFIX="${SAFE_SUFFIX%-}"
-            if [[ -n "$SAFE_SUFFIX" ]]; then
-              BRANCH_SUFFIX="-$SAFE_SUFFIX"
-            fi
-          fi
-          # pull_request events set github.ref_name to "<n>/merge". The slash
-          # terminates the sed below (`sed: unknown option to 's'`) and the
-          # ISO never builds. Use the head branch on PRs and strip anything
-          # that is not ISO-filename-safe.
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            REF_NAME="${{ github.head_ref }}"
-          else
-            REF_NAME="${{ github.ref_name }}"
-          fi
-          REF_SAFE="$(printf '%s' "$REF_NAME" | tr -c 'A-Za-z0-9._-' '-' | sed -E 's/-+/-/g; s/^-+//; s/-+$//')"
+          REF_SAFE="$(printf '%s' "$SUFFIX_SOURCE" | tr -c 'A-Za-z0-9._-' '-' | sed -E 's/-+/-/g; s/^-+//; s/-+$//')"
           BRANCH_SUFFIX=""
           if [[ "$REF_SAFE" != "main" && -n "$REF_SAFE" ]]; then
             BRANCH_SUFFIX="-${REF_SAFE}"
           fi
           echo "branch_suffix=$BRANCH_SUFFIX" >> "$GITHUB_OUTPUT"
-          VERSION="$(tr -d '[:space:]' < VERSION)"
           CODENAME=""
 
           # Fish-species codename per build, generated by Claude for variety.
@@ -307,15 +353,23 @@ jobs:
             Anchovy Halibut Flounder Salmon Trout
           )
 
+          # Claude Opus 5.5 always thinks, and thinking counts toward
+          # max_tokens, so leave headroom beyond the few tokens of the answer;
+          # effort "low" keeps that thinking short. `fallbacks: "default"`
+          # retries a (rare) policy decline on a fallback model inside the same
+          # call; anything else that yields no text falls through to the static
+          # list below.
           if [[ -z "$CODENAME" && -n "${ANTHROPIC_API_KEY:-}" ]]; then
-            RESPONSE=$(curl -s --max-time 20 https://api.anthropic.com/v1/messages \
+            RESPONSE=$(curl -s --max-time 30 https://api.anthropic.com/v1/messages \
               -H "Content-Type: application/json" \
               -H "x-api-key: $ANTHROPIC_API_KEY" \
               -H "anthropic-version: 2023-06-01" \
+              -H "anthropic-beta: server-side-fallback-2026-07-01" \
               -d '{
-                "model": "claude-opus-5",
-                "max_tokens": 300,
+                "model": "claude-opus-5-5",
+                "max_tokens": 1024,
                 "output_config": {"effort": "low"},
+                "fallbacks": "default",
                 "messages": [{"role": "user", "content": "Invent ONE short, evocative release codename (1-3 words) for a Linux distro build, in the theme of fish species/breeds (real or a plausible-sounding invented one). Respond with ONLY the codename text — no quotes, no punctuation, no explanation."}]
               }' 2>/dev/null || true)
             CODENAME=$(echo "$RESPONSE" | jq -r '.content[] | select(.type=="text") | .text' 2>/dev/null \
@@ -327,7 +381,7 @@ jobs:
 
           if [[ -z "$CODENAME" ]]; then
             echo "::warning::Claude codename generation unavailable (no ANTHROPIC_API_KEY secret, or API call failed) — using fallback list"
-            CODENAME="${FALLBACK_CODENAMES[$(( ${{ github.run_number }} % ${#FALLBACK_CODENAMES[@]} ))]}"
+            CODENAME="${FALLBACK_CODENAMES[$(( RUN_NUMBER % ${#FALLBACK_CODENAMES[@]} ))]}"
           fi
 
           echo "Release codename: $CODENAME"
@@ -342,6 +396,27 @@ jobs:
             "$GITHUB_WORKSPACE/profile/profiledef.sh"
           grep '^iso_version=' "$GITHUB_WORKSPACE/profile/profiledef.sh"
 
+          # The build's codename also goes into /etc/os-release (live and
+          # installed), e.g. PRETTY_NAME="NeOS 2026.10 (Marlin Beta)", as the
+          # website shows it. VERSION/VERSION_ID keep the full date.
+          VERSION="$(tr -d '[:space:]' < VERSION)"
+          OS_RELEASE="$GITHUB_WORKSPACE/profile/airootfs/etc/os-release"
+          sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"NeOS ${VERSION:0:7} (${CODENAME} Beta)\"/" "$OS_RELEASE"
+          if grep -q '^VERSION_CODENAME=' "$OS_RELEASE"; then
+            sed -i "s/^VERSION_CODENAME=.*/VERSION_CODENAME=${CODENAME,,}/" "$OS_RELEASE"
+          else
+            echo "VERSION_CODENAME=${CODENAME,,}" >> "$OS_RELEASE"
+          fi
+          grep -E '^(PRETTY_NAME|VERSION_CODENAME)=' "$OS_RELEASE"
+
+          # Same name in the installer's window and welcome page.
+          BRANDING="$GITHUB_WORKSPACE/profile/airootfs/etc/calamares/branding/neos/branding.desc"
+          sed -i -E \
+            -e "s/^(    productVersion: +).*/\1${VERSION:0:7} (${CODENAME} Beta)/" \
+            -e "s/^(    versionedName: +).*/\1NeOS ${VERSION:0:7} (${CODENAME} Beta)/" \
+            "$BRANDING"
+          grep -E '^    (productVersion|versionedName):' "$BRANDING"
+
       # ONE build path. CI used to re-implement the build inline (generate the
       # build pacman.conf, regenerate the netinstall manifests, run mkarchiso,
       # validate), which meant the tested artefact and the developer artefact
@@ -351,68 +426,12 @@ jobs:
       # packages (~hundreds of MiB plus a long download) has no place in the
       # release job. build.sh also runs the ISO validation gates itself.
       - name: "Build ISO (shared entrypoint: build.sh)"
-        env:
-          # The chaotic CDN intermittently 503s/404s (including short db
-          # repaint windows where chaotic-aur.db is briefly unfetchable), and
-          # a single failed sync used to fail the whole release. Retrying the
-          # full build after a cool-off rides out those windows; the per-URL
-          # curl retries injected into pacman-build.conf handle the blips in
-          # between.
-          BUILD_ATTEMPTS: 3
         run: |
-          set -uo pipefail
+          set -euo pipefail
 
           cd "$GITHUB_WORKSPACE"
 
-          rc=1
-          for attempt in $(seq 1 "$BUILD_ATTEMPTS"); do
-            echo "::group::build attempt ${attempt}/${BUILD_ATTEMPTS}"
-            set +e
-            bash build.sh --ci --no-offline-repo > /tmp/build-sh.log 2>&1
-            rc=$?
-            set -e
-            cat /tmp/build-sh.log
-            echo "::endgroup::"
-            if (( rc == 0 )); then
-              break
-            fi
-            if (( attempt < BUILD_ATTEMPTS )); then
-              echo "::warning::build.sh failed (exit $rc) on attempt ${attempt}/${BUILD_ATTEMPTS} - retrying in 90s"
-              sleep 90
-            fi
-          done
-
-          if (( rc != 0 )); then
-            # Actions log-zip downloads fail for this repo; put the failure
-            # output into the step summary and annotations, which the checks
-            # API can always read, and upload the full log as a workflow
-            # artifact. TEMPORARY debug aid — revert once log downloads work.
-            {
-              echo "### build.sh failure (exit $rc, after ${BUILD_ATTEMPTS} attempts)"
-              echo
-              echo '```'
-              sed 's/\x1b\[[0-9;]*m//g' /tmp/build-sh.log | grep -v '^[[:space:]]*$' | tail -100
-              echo '```'
-            } > "${GITHUB_STEP_SUMMARY:-/tmp/no-summary.txt}" || true
-            sed 's/\x1b\[[0-9;]*m//g' /tmp/build-sh.log | grep -iE "^error:|failed (retrieving|to synchronize|to commit|to init)|invalid or corrupted|CRITICAL" | head -6 | while IFS= read -r line; do
-              echo "::error::${line:0:350}"
-            done
-            sed 's/\x1b\[[0-9;]*m//g' /tmp/build-sh.log | grep -v '^[[:space:]]*$' | tail -25 | head -12 | while IFS= read -r line; do
-              echo "::error::${line:0:350}"
-            done
-            exit "$rc"
-          fi
-
-      # Debug companion: the checks-API channel above can come up empty when
-      # build.sh dies before writing anything; the artifact always carries the
-      # full log. TEMPORARY — remove with the step above.
-      - name: Upload build log (debug)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-sh-log
-          path: /tmp/build-sh.log
-          if-no-files-found: ignore
+          bash build.sh --ci --no-offline-repo
 
       - name: Combine ISO parts if split
         run: |
@@ -447,6 +466,26 @@ jobs:
       # NOTE: ISO validation (verify_iso_grub.sh, verify_iso_calamares_libs.sh,
       # verify_iso_smoketest.sh) runs inside build.sh, so it is no longer
       # duplicated here — one entrypoint, one validation pass.
+
+      - name: Checksum pull request test image
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/out"
+          sha512sum ./*.iso > SHA512SUMS
+
+      - name: Upload pull request test image and boot evidence
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: neos-pr-${{ github.event.pull_request.number }}-test-image
+          path: |
+            out/*.iso
+            out/SHA512SUMS
+            out/smoke_*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 3
 
       - name: Prepare ISO for upload
         id: iso
@@ -501,6 +540,10 @@ jobs:
         if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
           SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
+          BRANCH_SUFFIX: ${{ steps.codename.outputs.branch_suffix }}
+          CODENAME_VAL: ${{ steps.codename.outputs.value }}
+          RUN_NUM: ${{ github.run_number }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
 
@@ -510,11 +553,8 @@ jobs:
           # entries. Suffix with date and run_number to allow multiple releases
           # per day.
           VERSION="$(tr -d '[:space:]' < VERSION)"
-          # Branch suffix is computed in the codename step so PR refs cannot
-          # inject a slash into the tag either.
-          BRANCH_SUFFIX="${{ steps.codename.outputs.branch_suffix }}"
           # Inject codename into tag to make it readable in the UI and SourceForge URLs (without date/version prefix)
-          TAG_VAL="${{ steps.codename.outputs.value }}-b${{ github.run_number }}${BRANCH_SUFFIX}"
+          TAG_VAL="${CODENAME_VAL}-b${RUN_NUM}${BRANCH_SUFFIX}"
           echo "value=$TAG_VAL" >> "$GITHUB_OUTPUT"
 
           # Release body = the CHANGELOG section for this VERSION (empty file
@@ -527,56 +567,96 @@ jobs:
           ' CHANGELOG.md > release-body.md
 
           if [[ -n "${SOURCEFORGE_PROJECT:-}" ]]; then
-            SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${{ github.ref_name }}/${TAG_VAL}/"
-            echo -e "\n---\n\n### 💿 Download ISO Assets\n\n**[➡️ Download ISOs and release assets from SourceForge]($SF_URL)**\n" >> release-body.md
+            SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
+            echo "Release SF URL: $SF_URL"
           fi
 
           echo "Release body:"
           cat release-body.md
 
-      # build.sh already wrote a plain torrent (DHT + default public trackers)
-      # next to the ISO. Re-generate it now that the release tag is known, with
-      # two kinds of web seeds added:
-      #   1. The GitHub release asset URL for the ISO in this very release —
-      #      GitHub publishes the torrent alongside the ISO it points at, so
-      #      the swarm always has GitHub's CDN to pull from, secrets or not.
-      #   2. The SourceForge download URLs (when SOURCEFORGE_PROJECT exists).
-      # The re-run must produce an identical info hash — same image, same
-      # piece boundaries — only the seed/tracker metadata around it changes.
-      - name: Generate release torrent
+      - name: Generate Torrent File
         if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
           SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
-          NEOS_RELEASE_TAG: ${{ steps.tag.outputs.value }}
-          NEOS_RELEASE_BRANCH: ${{ github.ref_name }}
+          TAG_VAL: ${{ steps.tag.outputs.value }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-
-          cd "$GITHUB_WORKSPACE"
-
-          # Newest-image rule, same as build.sh/CI selection everywhere else.
-          ISO_FILE=$(find out -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
-          if [[ -z "$ISO_FILE" ]]; then
-            echo "::error::No ISO found in out/ to torrent"
-            exit 1
-          fi
-          ISO_BASENAME="$(basename "$ISO_FILE")"
-          # Web seed the asset of the release this step is about to publish:
-          # github.com/.../releases/download/<tag>/<iso> resolves to GitHub's
-          # CDN right after the next step creates the release.
-          export NEOS_TORRENT_WEB_SEEDS="https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.value }}/${ISO_BASENAME}"
-
           chmod +x tools/gen-torrent.sh
-          ./tools/gen-torrent.sh
+          ./tools/gen-torrent.sh out
 
-          ls -lh out/
+          # Newest image by mtime, the same rule as "Prepare ISO for upload"
+          # (a first-glob match can pick a stale or temporary image; M5).
+          ISO_FILE=$(find "$GITHUB_WORKSPACE/out" -maxdepth 1 -name '*.iso' -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)
+          if [[ -n "$ISO_FILE" && -n "${SOURCEFORGE_PROJECT:-}" ]]; then
+            ISO_BASENAME="${ISO_FILE##*/}"
+            TORRENT_FILE="${ISO_BASENAME}.torrent"
+            WEB_SEED_URL="https://downloads.sourceforge.net/project/${SOURCEFORGE_PROJECT}/${REF_NAME}/${TAG_VAL}/${ISO_BASENAME}"
+            SF_URL="https://sourceforge.net/projects/${SOURCEFORGE_PROJECT}/files/${REF_NAME}/${TAG_VAL}/"
+            {
+              echo ""
+              echo "---"
+              echo ""
+              echo "### 💿 Downloads"
+              echo "* **Direct Download (ISO):** [${ISO_BASENAME}](${WEB_SEED_URL})"
+              echo "* **BitTorrent:** \`${TORRENT_FILE}\` (attached to this release assets below and mirrored on SourceForge)"
+              echo "* **Release Directory:** [SourceForge Files](${SF_URL})"
+            } >> "$GITHUB_WORKSPACE/release-body.md"
+          fi
+
+      - name: Upload release bundle for isolated publish job
+        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: neos-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            out/*.iso
+            out/SHA256SUMS
+            out/SHA512SUMS
+            out/vm/*
+            out/*.torrent
+            release-body.md
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+
+  publish:
+    needs: build
+    if: github.event_name != 'pull_request' && contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository (known_hosts only, no persisted credentials)
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Download release bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: neos-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .
+
+      - name: Compute release tag
+        id: tag
+        env:
+          CODENAME_VAL: ${{ needs.build.outputs.codename }}
+          BRANCH_SUFFIX: ${{ needs.build.outputs.branch_suffix }}
+          RUN_NUM: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          echo "value=${CODENAME_VAL}-b${RUN_NUM}${BRANCH_SUFFIX}" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release (small assets)
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3
-        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         with:
           tag_name: ${{ steps.tag.outputs.value }}
-          name: NeOS "${{ steps.codename.outputs.value }} Beta"${{ github.ref_name != 'main' && format(' ({0})', github.ref_name) || '' }}
+          name: NeOS "${{ needs.build.outputs.codename }} Beta"${{ github.ref_name != 'main' && format(' ({0})', github.ref_name) || '' }}
           prerelease: ${{ github.ref_name != 'main' }}
           generate_release_notes: true
           body_path: release-body.md
@@ -587,12 +667,13 @@ jobs:
             out/*.torrent
 
       - name: Upload Release Assets to SourceForge
-        if: contains(fromJSON('["refs/heads/main","refs/heads/testing"]'), github.ref)
         env:
           SOURCEFORGE_PRIVATE_KEY: ${{ secrets.SOURCEFORGE_PRIVATE_KEY }}
           SOURCEFORGE_USERNAME: ${{ secrets.SOURCEFORGE_USERNAME }}
           SOURCEFORGE_PROJECT: ${{ secrets.SOURCEFORGE_PROJECT }}
+          SOURCEFORGE_KNOWN_HOSTS: ${{ secrets.SOURCEFORGE_KNOWN_HOSTS }}
           RELEASE_VERSION: ${{ steps.tag.outputs.value }}
+          RELEASE_BRANCH: ${{ github.ref_name }}
         run: |
           set -euo pipefail
 
@@ -604,17 +685,15 @@ jobs:
           cd "$GITHUB_WORKSPACE"
 
           echo "Preparing release assets..."
-          LOCAL_TARGET="sf_release/${{ github.ref_name }}/${RELEASE_VERSION}"
+          LOCAL_TARGET="sf_release/${RELEASE_BRANCH}/${RELEASE_VERSION}"
           mkdir -p "$LOCAL_TARGET"
-          
+
           # Gather all artifacts
           shopt -s nullglob
           cp out/*.iso "$LOCAL_TARGET"/ || true
+          cp out/*.torrent "$LOCAL_TARGET"/ || true
           cp out/SHA256SUMS "$LOCAL_TARGET"/ || true
           cp out/SHA512SUMS "$LOCAL_TARGET"/ || true
-          # The torrent goes next to the ISO it points at, so SourceForge
-          # visitors can grab both from the same directory listing.
-          cp out/*.torrent "$LOCAL_TARGET"/ || true
           if [ -d "out/vm" ]; then
             cp -r out/vm "$LOCAL_TARGET"/
           fi
@@ -627,22 +706,41 @@ jobs:
           fi
 
           echo "Setting up SSH key for SourceForge..."
-          mkdir -p "$HOME/.ssh"
-          echo "$SOURCEFORGE_PRIVATE_KEY" > "$HOME/.ssh/id_rsa"
-          chmod 600 "$HOME/.ssh/id_rsa"
-          
-          # Add SourceForge to known hosts
-          ssh-keyscan -t rsa,ed25519 frs.sourceforge.net >> "$HOME/.ssh/known_hosts" 2>/dev/null
+          SSH_DIR="$(mktemp -d /tmp/neos-sourceforge.XXXXXX)"
+          trap 'rm -rf -- "$SSH_DIR"' EXIT
+          chmod 700 "$SSH_DIR"
+          (
+            umask 077
+            printf '%s\n' "${SOURCEFORGE_PRIVATE_KEY//$'\r'/}" > "$SSH_DIR/key"
+            : > "$SSH_DIR/known_hosts"
+          )
+          if ! ssh-keygen -y -P '' -f "$SSH_DIR/key" >/dev/null 2>&1; then
+            echo "::error::SOURCEFORGE_PRIVATE_KEY must contain a valid, unencrypted OpenSSH private key. Check the secret's full multiline value."
+            exit 1
+          fi
 
-          # We sync sf_release/ which CONTAINS the testing/version/ dirs
+          # Enforce strict SSH host-key verification whenever pinned host keys
+          # are provided via SOURCEFORGE_KNOWN_HOSTS or .github/sourceforge_known_hosts.
+          HOST_KEY_CHECK="accept-new"
+          if [[ -n "${SOURCEFORGE_KNOWN_HOSTS:-}" ]]; then
+            printf '%s\n' "${SOURCEFORGE_KNOWN_HOSTS//$'\r'/}" > "$SSH_DIR/known_hosts"
+            HOST_KEY_CHECK="yes"
+          elif [[ -f "$GITHUB_WORKSPACE/.github/sourceforge_known_hosts" ]] && grep -qE '^frs\.sourceforge\.net[[:space:]]+ssh-' "$GITHUB_WORKSPACE/.github/sourceforge_known_hosts"; then
+            cp "$GITHUB_WORKSPACE/.github/sourceforge_known_hosts" "$SSH_DIR/known_hosts"
+            chmod 600 "$SSH_DIR/known_hosts"
+            HOST_KEY_CHECK="yes"
+          else
+            echo "::warning::Pinned frs.sourceforge.net host key not found in SOURCEFORGE_KNOWN_HOSTS or .github/sourceforge_known_hosts; falling back to StrictHostKeyChecking=accept-new."
+          fi
+
           TARGET_DIR="/home/frs/project/${SOURCEFORGE_PROJECT}"
-          
+
           echo "Uploading release assets to $TARGET_DIR (with full path mapping)..."
 
-          # Retry up to 3 times with exponential backoff
+          # Retry connection and transfer failures up to 3 times.
           for attempt in 1 2 3; do
             echo "Attempt $attempt/3..."
-            if rsync -avP -e "ssh -q -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" sf_release/ "${SOURCEFORGE_USERNAME}@frs.sourceforge.net:${TARGET_DIR}/" 2> >(grep -v "Could not chdir to home directory" >&2); then
+            if rsync -avP --timeout=120 -e "ssh -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=${HOST_KEY_CHECK} -o UserKnownHostsFile=$SSH_DIR/known_hosts -i $SSH_DIR/key" sf_release/ "${SOURCEFORGE_USERNAME}@frs.sourceforge.net:${TARGET_DIR}/" 2> >(grep -v "Could not chdir to home directory" >&2); then
               echo "Assets uploaded successfully to SourceForge."
               break
             fi

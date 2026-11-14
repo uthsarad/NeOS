@@ -9,8 +9,8 @@
 # (reports/v2026.09.18 H4). The gate is now:
 #
 #   1. the guest's serial log must contain the marker emitted by
-#      neos-boot-probe.service ("NEOS-BOOT-OK ... graphical.target active"),
-#      which only runs once systemd reports graphical.target as active; and
+#      neos-boot-probe.service ("NEOS-BOOT-OK ... live desktop ready"),
+#      which waits for an active graphical live-user session and desktop process; and
 #   2. a QEMU screendump taken after that marker must not be a blank frame
 #      (corroboration; skipped with a warning if python3/QMP is unavailable).
 #
@@ -263,7 +263,7 @@ run_boot() {
     fi
 
     if (( ! marker_seen )); then
-        echo "[FAIL] QEMU $mode boot test failed: the live session never reported an active graphical.target"
+        echo "[FAIL] QEMU $mode boot test failed: the live desktop session never became ready"
         echo "       (waited ${waited}s for '$MARKER' from neos-boot-probe.service)."
         echo "       A boot that reaches no desktop is a failure — a timeout is not a pass."
         if [[ -s "$serial_log" ]]; then

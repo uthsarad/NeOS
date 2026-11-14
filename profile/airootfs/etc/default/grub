@@ -1,7 +1,9 @@
 # NeOS GRUB defaults for boot reliability on common storage and VM targets.
 
 GRUB_DEFAULT=0
-GRUB_TIMEOUT=1
+# Long enough to reach the menu (and the snapshot submenu) when recovering.
+GRUB_TIMEOUT=3
+GRUB_TIMEOUT_STYLE=menu
 GRUB_DISTRIBUTOR="NeOS"
 # Performance Optimizations
 # - nowatchdog: Disable watchdog timer to reduce CPU interrupts
@@ -17,10 +19,17 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos ext2 btrfs"
 # Disable submenus for a simpler boot menu experience.
 GRUB_DISABLE_SUBMENU=true
 
-# Use the classic Arch 'starfield' GRUB theme, which ships natively with the
-# grub package at this path on the installed system — no overlay shipping or
-# generated font is needed. grub-mkconfig auto-loads the theme's bundled DejaVu
-# fonts, so GRUB_FONT is intentionally unset. Matches the ISO boot menu.
-GRUB_THEME="/usr/share/grub/themes/starfield/theme.txt"
-GRUB_GFXMODE="auto"
+# The same medieval graphical menu is shipped on the ISO and installed disk.
+GRUB_THEME="/usr/share/grub/themes/neos-medieval/theme.txt"
+GRUB_FONT="/usr/share/grub/themes/neos-medieval/dejavu_16.pf2"
+GRUB_GFXMODE="1024x768,auto"
 GRUB_TERMINAL_OUTPUT="gfxterm"
+
+# Name of the snapshot submenu that grub-btrfs adds (docs/user-guide/TROUBLESHOOTING.md).
+# Exported because grub-mkconfig only passes its own GRUB_* variables to the
+# /etc/grub.d scripts.
+export GRUB_BTRFS_SUBMENUNAME="NeOS snapshots"
+
+# List Windows and other installed systems in the menu (dual boot). GRUB 2.06+
+# skips os-prober unless this is set explicitly.
+GRUB_DISABLE_OS_PROBER=false

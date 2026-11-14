@@ -283,6 +283,9 @@ if [[ "$SKIP_DOWNLOAD" == false ]]; then
             base="$(pkg_base_name "$f")"
             if [[ -n "${WANT[$base]:-}" && -z "${REPO_HAVE[$base]:-}" ]]; then
                 if cp -n "$f" "$REPO_DIR/" 2>/dev/null; then
+                    if [[ -f "${f}.sig" ]]; then
+                        cp -n "${f}.sig" "$REPO_DIR/" 2>/dev/null || true
+                    fi
                     REPO_HAVE["$base"]="$REPO_DIR/${f##*/}"
                     REUSED_COUNT=$((REUSED_COUNT + 1))
                 fi

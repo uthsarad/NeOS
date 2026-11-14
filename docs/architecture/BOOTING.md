@@ -22,11 +22,13 @@ Entries (BIOS and UEFI share the same set):
 
 | Entry | What it does |
 | :--- | :--- |
-| **NeOS (LTS Kernel)** | Default. Quiet splash, overlay on the boot media (`copytoram=n`). |
+| **Try or Install NeOS (Live Desktop)** | Default. Quiet splash, overlay on the boot media (`copytoram=n`). Opens the live desktop and Try / Install welcome window. |
 | **NeOS (Copy to RAM)** | `copytoram=y` — the live image is copied into RAM and the USB stick can be removed. Needs enough RAM for the squashfs plus a 4G overlay. |
 | **NeOS (Safe Graphics)** | `nomodeset`. Use when the desktop does not appear. |
 | **NeOS (Verbose)** | No `quiet`/`splash`, `loglevel=7`. Use with `neos-doctor` when a boot hangs. |
-| **NeOS (Accessibility - Speech)** | `accessibility=on` starts the live screen-reader stack. |
+| **NeOS (Screen Reader)** | `accessibility=on` starts the live screen-reader stack (`neos-accessibility.service`). |
+| **UEFI Firmware Settings** | UEFI only: reboots into the firmware setup (`fwsetup`). |
+| **Reboot** / **Power Off** | Leave the boot menu without booting. (BIOS also offers **Boot existing OS**.) |
 
 Every live entry passes `console=tty0 console=ttyS0,115200` so CI's QEMU smoke
 test can read the `NEOS-BOOT-OK` marker from `neos-boot-probe.service`.
@@ -44,8 +46,12 @@ The BIOS boot process is handled by Syslinux in `profile/syslinux/`:
 
 1. `mkinitcpio` hooks (`archiso`, `archiso_loop_mnt`, Plymouth) find the ISO
    (`archisolabel=NEOS_ISO`) and pivot onto the squashfs.
-2. systemd's default target is `graphical.target`; SDDM autologs in `liveuser`
-   to the X11 Plasma session (`plasmax11`).
+2. systemd's default target is `graphical.target`. Before SDDM starts,
+   `neos-session-select` picks the display session: Plasma on Wayland on Intel,
+   AMD and NVIDIA (proprietary) graphics, Xfce on X11 (`xfce`) in VMs, with
+   `nomodeset` (Safe Graphics) and on other drivers. SDDM then autologs in
+   `liveuser` to that session. `neos.session=wayland|x11` on the kernel command
+   line overrides the choice.
 3. If a volume labelled `cidata` / `NEOSCIDATA` is present,
    `neos-autoinstall` may auto-launch Calamares with identity pre-filled
    (partitioning is still confirmed) — see
@@ -60,3 +66,17 @@ and SDDM actually came up — the same evidence the ISO smoke test asserts.
 *   **`profile/profiledef.sh`**: `bootmodes` lists GRUB (UEFI, including ia32)
     and Syslinux (BIOS). `iso_label="NEOS_ISO"` is what the bootloaders search
     for.
+
+## Medieval boot menu
+
+The UEFI ISO and installed system share the `neos-medieval` graphical GRUB
+theme: dark stone, brass borders, parchment text and castle silhouettes. The
+BIOS Syslinux menu uses matching artwork. The default entry still boots the
+live desktop automatically. Firmware without a supported graphical mode can
+use the text menu.
+
+Theme assets and fonts are committed, so ISO builds do not require Pillow.
+To change the artwork, edit `tools/gen-grub-theme.py` and the ISO theme's
+`theme.txt`, then run `python3 tools/gen-grub-theme.py` and
+`bash tools/gen-manifests.sh`. Run `bash tests/verify_grub_theme.sh` to verify
+that ISO and installed assets match and are included in installation.

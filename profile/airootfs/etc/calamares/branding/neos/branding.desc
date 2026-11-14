@@ -15,15 +15,16 @@ navigation: widget
 strings:
     productName:         NeOS
     shortProductName:    NeOS
-    # These four are display-only and are stamped with the real build version by
-    # CI (build-iso.yml, "Generate codename and set ISO version"). The committed
-    # values are the fallback used by an unmodified local build — never a date,
-    # which is stale the day after it is written
+    # Display-only. CI (build-iso.yml, "Generate codename and set ISO version")
+    # stamps productVersion and versionedName with the same release name as
+    # os-release PRETTY_NAME, e.g. "NeOS 2026.10 (Marlin 2026.07)"; the short forms
+    # stay generic. The committed values are the fallback for an unmodified
+    # local build — never a date, which is stale the day after it is written
     # (reports/v2026.09.22/UPDATES_NEEDED.md, M10).
-    productVersion:      Beta
-    shortProductVersion: Beta
-    versionedName:       NeOS Beta
-    shortVersionedName:  NeOS Beta
+    productVersion:      2026.07
+    shortProductVersion: 2026.07
+    versionedName:       NeOS 2026.07
+    shortVersionedName:  NeOS 2026.07
     bootloaderEntryName: NeOS
     # URLs for the welcome-page info buttons. Calamares reads the URLs from here;
     # welcome.conf's show*Url booleans decide which buttons appear. Without these
@@ -54,10 +55,10 @@ style:
    SidebarBackground:        "#0A0E1A"
    SidebarText:              "#AEB4C7"
    SidebarBackgroundCurrent: "#38bdf8"
-   SidebarTextCurrent:       "#FFFFFF"
+   SidebarTextCurrent:       "#0A0E1A"
 
-# Let users upload installer logs for support (calamares "Upload" button).
-uploadServer:
-    type:      "fiche"
-    url:       "http://termbin.com:9999"
-    sizeLimit: -1
+# No uploadServer: Calamares' "Upload log" button used to send the full
+# installer log (hostname, user name, disk layout) to a public pastebin
+# (termbin.com) over plain HTTP. The log stays on the machine instead, at
+# ~/.cache/neos-installer.log (docs/user-guide/TROUBLESHOOTING.md), and
+# `neos-doctor` points at it.

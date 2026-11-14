@@ -25,8 +25,13 @@ if systemd-detect-virt -q 2>/dev/null; then
     # backend. Written per-user before KWin reads it; only in VMs, so bare metal
     # keeps full hardware compositing.
     kwinrc="${XDG_CONFIG_HOME:-$HOME/.config}/kwinrc"
-    if ! grep -q '^\[Compositing\]' "$kwinrc" 2>/dev/null; then
-        mkdir -p "$(dirname "$kwinrc")"
-        printf '\n[Compositing]\nEnabled=false\n' >> "$kwinrc"
+    kwinrc_dir="$(dirname "$kwinrc")"
+    if [ -L "$kwinrc" ] || [ -L "$kwinrc_dir" ]; then
+        echo "Security error: $kwinrc or parent directory is a symlink. Aborting." >&2
+    else
+        if ! grep -q '^\[Compositing\]' "$kwinrc" 2>/dev/null; then
+            mkdir -p "$kwinrc_dir"
+            printf '\n[Compositing]\nEnabled=false\n' >> "$kwinrc"
+        fi
     fi
 fi

@@ -26,6 +26,12 @@ All notable changes to this project will be documented in this file.
   `tests/verify_torrent.sh` (bencode-level checks: newest-by-mtime ISO
   selection, tracker override/DHT-only modes, web seeds, private flag, piece
   size, regeneration overwrite).
+- Go regression coverage for `neosctl` mirror parsing and concurrent mirror
+  benchmarking.
+- Calamares module configuration integrity checks in the Rust profile auditor.
+- Comprehensive Python unit test suite in `tests/test_live_scripts.py` covering
+  live mode detection, dynamic version extraction, and Calamares pacstrap job
+  progress regexes.
 
 ## [2026.09.23] - 2026-09-23
 

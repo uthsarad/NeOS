@@ -33,6 +33,29 @@ verify_service() {
             echo "[PASS] $SERVICE_FILE verified unsandboxed (account-setup unit, must not be sandboxed)"
             return 0
             ;;
+        neos-autoupdate.service)
+            # System-wide package updater (`pacman -Syu` + libalpm hooks + `snapper`):
+            # ProtectSystem=strict mounts /.snapshots read-only and blocks rootfs
+            # upgrades, and NoNewPrivileges=yes / narrow CapabilityBoundingSet
+            # breaks `alpm` DownloadUser privilege drops and `runuser` desktop
+            # notifications. Require safe isolation directives instead.
+            CONTENT=$(grep -v '^[[:space:]]*#' "$SERVICE_FILE")
+            for forbidden in ProtectSystem=strict NoNewPrivileges=yes; do
+                if [[ "$CONTENT" == *"$forbidden"* ]]; then
+                    echo "[FAIL] $SERVICE_FILE contains $forbidden — breaks snapper /.snapshots writes and pacman privilege drops"
+                    return 1
+                fi
+            done
+            for required in "PrivateTmp=yes" "ProtectHome=read-only" "RestrictRealtime=yes" "LockPersonality=yes" "RestrictAddressFamilies="; do
+                if [[ "$CONTENT" == *"$required"* ]]; then
+                    echo "  [PASS] $required found"
+                else
+                    echo "[FAIL] $SERVICE_FILE missing $required"
+                    return 1
+                fi
+            done
+            return 0
+            ;;
     esac
 
     CONTENT=$(<"$SERVICE_FILE")

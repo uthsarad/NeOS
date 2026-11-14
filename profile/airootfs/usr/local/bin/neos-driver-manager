@@ -59,16 +59,19 @@ while IFS= read -r line; do
         if [[ "$line" =~ "NVIDIA" ]]; then
             if pacman -Qs nvidia &>/dev/null; then
                 echo -e "    \e[32m✅ NVIDIA proprietary drivers are installed.\e[0m"
-                is_loaded "nvidia" || { echo "    🚀 Loading modules..."; modprobe -- nvidia nvidia_modeset nvidia_uvm nvidia_drm || true; }
+                if ! is_loaded "nvidia" && (( EUID == 0 )); then
+                    echo "    🚀 Loading modules..."
+                    modprobe -- nvidia nvidia_modeset nvidia_uvm nvidia_drm || true
+                fi
             else
                 echo -e "    \e[33m💡 Suggestion:\e[0m Install 'nvidia-open-lts' (prebuilt for the NeOS LTS kernel) for maximum performance."
             fi
         elif [[ "$line" =~ "Intel" ]]; then
             echo -e "    \e[34m🔵 Intel drivers are active.\e[0m"
-            is_loaded "i915" || modprobe -- i915 || true
+            if ! is_loaded "i915" && (( EUID == 0 )); then modprobe -- i915 || true; fi
         elif [[ "$line" =~ "AMD" ]] || [[ "$line" =~ "ATI" ]]; then
             echo -e "    \e[31m🔴 AMD/ATI drivers are active.\e[0m"
-            is_loaded "amdgpu" || modprobe -- amdgpu || true
+            if ! is_loaded "amdgpu" && (( EUID == 0 )); then modprobe -- amdgpu || true; fi
         fi
     fi
 done <<< "$GPU_BLOCKS"
@@ -142,13 +145,16 @@ elif [[ "$CPU_INFO" == *GenuineIntel* ]]; then
 fi
 
 if VIRT_TYPE=$(systemd-detect-virt 2>/dev/null); then
-    echo -e "  - \e[35mVirtualization:\e[0m $VIRT_TYPE detected. Optimizing guest modules..."
-    case "$VIRT_TYPE" in
-        kvm|qemu)         for mod in virtio-pci virtio-blk virtio-net; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
-        oracle)           for mod in vboxguest vboxsf vboxvideo; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
-        vmware)           for mod in vmw-balloon vmw-vmci vmwgfx; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
-        microsoft|hyperv) for mod in hv_vmbus hv_storvsc hv_netvsc hv_utils; do is_loaded "$mod" || modprobe -- "$mod" || true; done ;;
-    esac
+    echo -e "  - \e[35mVirtualization:\e[0m $VIRT_TYPE detected."
+    if (( EUID == 0 )); then
+        echo -e "    Optimizing guest modules..."
+        case "$VIRT_TYPE" in
+            kvm|qemu)         for mod in virtio-pci virtio-blk virtio-net; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+            oracle)           for mod in vboxguest vboxsf vboxvideo; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+            vmware)           for mod in vmw-balloon vmw-vmci vmwgfx; do is_loaded "${mod//-/_}" || modprobe -- "$mod" || true; done ;;
+            microsoft|hyperv) for mod in hv_vmbus hv_storvsc hv_netvsc hv_utils; do is_loaded "$mod" || modprobe -- "$mod" || true; done ;;
+        esac
+    fi
 fi
 
 echo -e "\n\e[1m\e[32m✅ NeOS Driver Intelligence check complete.\e[0m"

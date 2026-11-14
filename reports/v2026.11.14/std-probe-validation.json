@@ -1,0 +1,34 @@
+{
+  "desktop_before": {
+    "code": 0,
+    "output": "SESSION  UID USER     SEAT  LEADER CLASS   TTY  IDLE SINCE\n      1 1000 liveuser seat0 833    user    tty2 no   -\n      2 1000 liveuser -     844    manager -    no   -\n\n2 sessions listed.\nName=liveuser\nType=x11\nActive=yes\n856 xfce4-session\n1125 python3 /usr/local/bin/neos-welcome-app\n"
+  },
+  "probe_before": {
+    "code": 3,
+    "output": "\u25cb neos-boot-probe.service - NeOS live boot probe (serial marker for automated boot verification)\n     Loaded: loaded (/etc/systemd/system/neos-boot-probe.service; enabled; preset: disabled)\n     Active: inactive (dead)\n        Job: 215\n       Docs: https://github.com/uthsarad/NeOS/blob/testing/reports/v2026.09.22/UPDATES_NEEDED.md\n"
+  },
+  "jobs_before": {
+    "code": 0,
+    "output": "JOB UNIT                             TYPE  STATE\n166 archlinux-keyring-wkd-sync.timer start waiting\n164 timers.target                    start waiting\n2   multi-user.target                start waiting\n1   graphical.target                 start waiting\n924 power-profiles-daemon.service    start waiting\n168 shadow.timer                     start waiting\n70  systemd-time-wait-sync.service   start running\n71  time-sync.target                 start waiting\n190 pacman-init.service              start waiting\n165 man-db.timer                     start waiting\n215 neos-boot-probe.service          start waiting\n\n11 jobs listed.\n"
+  },
+  "reload": {
+    "code": 0,
+    "output": ""
+  },
+  "probe_restart": {
+    "code": 0,
+    "output": ""
+  },
+  "probe_after": {
+    "code": 0,
+    "output": "ActiveState=active\nSubState=exited\nResult=success\nExecMainStatus=0\n"
+  },
+  "jobs_after": {
+    "code": 0,
+    "output": "JOB UNIT                             TYPE  STATE\n166 archlinux-keyring-wkd-sync.timer start waiting\n164 timers.target                    start waiting\n2   multi-user.target                start waiting\n1   graphical.target                 start waiting\n924 power-profiles-daemon.service    start waiting\n168 shadow.timer                     start waiting\n70  systemd-time-wait-sync.service   start running\n71  time-sync.target                 start waiting\n190 pacman-init.service              start waiting\n165 man-db.timer                     start waiting\n\n10 jobs listed.\n"
+  },
+  "journal_after": {
+    "code": 0,
+    "output": "Nov 14 07:41:18 neos-live systemd[1]: Starting NeOS live boot probe (serial marker for automated boot verification)...\nNov 14 07:41:19 neos-live neos-boot-probe[2220]: NeOS live desktop session ready\nNov 14 07:41:19 neos-live systemd[1]: Finished NeOS live boot probe (serial marker for automated boot verification).\n"
+  }
+}

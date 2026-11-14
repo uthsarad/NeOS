@@ -54,6 +54,11 @@ Insert the USB drive, restart your computer, and enter the Boot Menu (usually F1
 The firmware boot menu (GRUB on UEFI, Syslinux on BIOS) is shown for 3 seconds.
 The default entry is fine on most hardware. Other entries:
 
+**Try or Install NeOS (Live Desktop)** opens a graphical live session without
+installing to your drives. It signs in automatically and displays the welcome
+window. NeOS uses Plasma on supported graphics hardware and Xfce on X11 in VMs
+and with Safe Graphics.
+
 *   **Copy to RAM** — loads the live image into memory so you can unplug the USB stick. Needs enough RAM.
 *   **Safe Graphics** — `nomodeset`, when the desktop never appears.
 *   **Verbose** — full kernel/systemd messages, for a hung boot.
@@ -69,6 +74,16 @@ Once booted, the NeOS welcome app starts automatically and offers **Try NeOS** o
 *   **Partitions**: "Erase Disk" is easiest for a clean install. "Manual Partitioning" is for advanced users.
 *   **Users**: Create your username and password.
 
+To install on a **secondary drive**, select that drive by its model and size
+in the partition page. Erase Disk erases the selected drive; use manual
+partitioning to keep existing partitions. Review the target drive and proposed
+changes on the summary page before starting. For an independent UEFI install,
+place an EFI System Partition on the secondary drive and mount it at
+`/boot/efi`. On legacy BIOS, select the secondary drive as the bootloader target.
+
+The installer verifies that the installed system has the graphical login
+manager, desktop sessions and graphical boot target before reporting success.
+
 Internet is optional: a locally built ISO (`sudo ./build.sh`) embeds an offline
 package repo, and Calamares no longer refuses to continue without a network.
 CI-published ISOs still install from the network.
@@ -78,6 +93,30 @@ For a hands-off install (second volume labelled `cidata` with
 
 ### 5. First Boot
 After installation, remove the USB drive and reboot. You will be greeted by the NeOS login screen.
+
+If NeOS was installed on a secondary drive, choose its NeOS/UEFI boot entry in
+your firmware boot menu. The graphical login and desktop work the same on
+either drive. Sign in with the account created during installation; live-user
+autologin is only for the ISO. The installed disk uses the same medieval GRUB
+theme as the live media.
+
+### 6. Installing More Software
+Desktop applications are easiest to find in **Discover** (the software centre in the
+app menu). From a terminal, any Arch package installs with `sudo pacman -S <name>`.
+
+A fresh install includes a lean developer core: `base-devel` (compilers and `make`), `git`,
+Python with `pip`, and Node.js with `npm`. Other toolchains are one command away:
+
+| Toolchain | Command |
+| :-- | :-- |
+| Rust | `sudo pacman -S rust` |
+| Go | `sudo pacman -S go` |
+| Java | `sudo pacman -S jdk-openjdk` |
+| .NET | `sudo pacman -S dotnet-sdk` |
+| Ruby | `sudo pacman -S ruby` |
+| PHP | `sudo pacman -S php composer` |
+| C/C++ tooling | `sudo pacman -S clang cmake ninja gdb` |
+| Docker | `sudo pacman -S docker docker-compose && sudo systemctl enable --now docker` |
 
 ## Getting Started (Developer Guide)
 
@@ -151,7 +190,7 @@ When modifying key structure files:
 Edit `profile/packages.x86_64` and add the package name on a new line.
 
 ### Changing Default Settings
-Modify files under `profile/airootfs/etc/`. For example, the default wallpaper is `profile/airootfs/usr/share/backgrounds/neos-wallpaper.png` (referenced from the KDE and SDDM configuration).
+Modify files under `profile/airootfs/etc/`. For example, the default wallpaper is `profile/airootfs/usr/share/backgrounds/neos-wallpaper.png` (referenced from the KDE and SDDM configuration). It is rendered by `tools/gen-wallpaper.py`; `tools/wallpaper-reference.html` is the design it reproduces.
 
 ### Custom Scripts
 Place your scripts in `profile/airootfs/usr/local/bin/` and ensure they are executable. You can set permissions in `profile/profiledef.sh`.

@@ -73,12 +73,17 @@ The script will:
    `/usr/share/secureboot/keys/` using `sbctl create-keys`.  Idempotent: skips
    if keys already exist.
 
-2. **Sign binaries** — signs the GRUB EFI binary
-   (`/boot/EFI/GRUB/grubx64.efi` and the fallback `BOOTX64.EFI`) plus
-   `/boot/vmlinuz-linux-lts` using `sbctl sign -s`.  The `-s` flag records
-   each path in sbctl's signing database so pacman hooks automatically re-sign
-   on future GRUB or kernel updates — no manual action required after the
-   initial setup.
+2. **Rebuild standalone GRUB & sign PE binaries** — rebuilds GRUB (`grubx64.efi`
+   and fallback `BOOTX64.EFI`) as a standalone EFI binary with embedded
+   filesystem/graphics modules and `--disable-shim-lock` (required for own-key
+   UEFI Secure Boot without `shim`), then signs the GRUB EFI binaries,
+   `/boot/vmlinuz-linux-lts`, and `/usr/lib/fwupd/efi/fwupdx64.efi` (when
+   present) using `sbctl sign -s`. The `-s` flag records each path in sbctl's
+   signing database so pacman hooks automatically re-sign on future updates.
+   *(Note: `/boot/initramfs-linux-lts.img` and `/boot/grub/grub.cfg` are not PE
+   binaries and are not cryptographically verified by GRUB; full initramfs
+   tamper protection requires Unified Kernel Images [UKIs] and full-disk
+   encryption.)*
 
 3. **Enroll keys** (if firmware is in Setup Mode) — runs
    `sbctl enroll-keys -m`.  The `-m` flag adds Microsoft's UEFI CA alongside

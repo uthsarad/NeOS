@@ -1,5 +1,9 @@
 #!/bin/bash
-# Guards the "any PR into testing merges automatically" policy.
+# Guards the auto-merge policy: non-draft PRs into testing from branches of this
+# repository merge automatically; PRs from forks never do, because testing
+# publishes releases (reports/v2026.10.02/00-improvement-plan.md A2).
+# Literal source patterns intentionally contain shell variables.
+# shellcheck disable=SC2016
 set -euo pipefail
 
 WF=".github/workflows/jules-auto-merge.yml"
@@ -18,21 +22,28 @@ CONTENT="$(<"$WF")"
 if [[ "$CONTENT" == *"pull_request_target"* ]]; then
     echo "  [PASS] triggered on pull_request_target (write token, no PR checkout)"
 else
-    echo "[FAIL] $WF must trigger on pull_request_target so same-repo and fork PRs can merge"
+    echo "[FAIL] $WF must trigger on pull_request_target (write token, PR code never checked out)"
     FAIL=1
 fi
 
-if [[ "$CONTENT" == *"branches: [testing]"* ]] || [[ "$CONTENT" == *"branches: [ testing ]"* ]]; then
-    echo "  [PASS] restricted to the testing branch"
+# testing is the merge target; main may be listed only so bot PRs aimed at it
+# can be retargeted (checked below: nothing is ever merged into main).
+if [[ "$CONTENT" == *"branches: [testing]"* ]] || [[ "$CONTENT" == *"branches: [testing, main]"* ]]; then
+    echo "  [PASS] triggered for PRs into testing (and main, for retargeting only)"
 else
-    echo "[FAIL] $WF must restrict pull_request_target to branches: [testing]"
+    echo "[FAIL] $WF must trigger on pull_request_target branches: [testing] or [testing, main]"
     FAIL=1
 fi
 
-if [[ "$CONTENT" == *"--admin"* ]]; then
-    echo "  [PASS] forced merge (--admin) is available"
+if grep -q -- '--admin' "$WF"; then
+    echo "[FAIL] auto-merge must respect branch protections"
+    FAIL=1
+elif [[ "$CONTENT" == *'--match-head-commit "$PR_HEAD_SHA"'* ]] \
+    && [[ "$CONTENT" == *'[[ "$TEST_PASSED" == 1 ]]'* ]] \
+    && [[ "$CONTENT" == *'.name == "test" and .state == "SUCCESS"'* ]]; then
+    echo "  [PASS] CI must succeed and the merge is pinned to the reviewed head"
 else
-    echo "[FAIL] $WF must pass --admin so testing cannot deadlock on required checks"
+    echo "[FAIL] auto-merge must await successful CI and pin the head commit"
     FAIL=1
 fi
 
@@ -43,13 +54,25 @@ else
     FAIL=1
 fi
 
-# main must not be an auto-merge target. A naive 'branches: [testing, main]'
-# would ship the firehose onto the release branch.
-if grep -A20 '^  pull_request_target:' "$WF" | grep -q 'main'; then
-    echo "[FAIL] pull_request_target must not list main (main stays manual)"
-    FAIL=1
+# Fork PRs must be refused on the automatic path. The check has to read
+# isCrossRepository and exit before any `gh pr merge`.
+if [[ "$CONTENT" == *"isCrossRepository"* ]] \
+    && awk '/"\$PR_FROM_FORK" != "false"/ && !fork {fork=NR} /gh pr merge/ && !merge {merge=NR} END {exit !(fork && merge && fork < merge)}' "$WF"; then
+    echo "  [PASS] fork PRs are refused before any merge attempt"
 else
-    echo "  [PASS] main is not an auto-merge target"
+    echo "[FAIL] $WF must refuse PRs from forks (isCrossRepository) before calling gh pr merge"
+    FAIL=1
+fi
+
+# main must never be an auto-merge target: a strict "base must be testing"
+# guard has to sit before the first `gh pr merge`, and any PR into main that is
+# not retargeted must exit before reaching it.
+if awk '/"\$PR_BASE" != "testing"/ && !guard {guard=NR} /gh pr merge/ && !merge {merge=NR} END {exit !(guard && merge && guard < merge)}' "$WF" \
+    && grep -q 'left for a maintainer' "$WF"; then
+    echo "  [PASS] main is never an auto-merge target (strict testing-only guard before any merge)"
+else
+    echo "[FAIL] $WF must refuse to merge anything whose base is not testing, before any gh pr merge"
+    FAIL=1
 fi
 
 if [[ "$CONTENT" == *"checkout"* && "$CONTENT" == *"actions/checkout"* ]]; then
@@ -57,6 +80,18 @@ if [[ "$CONTENT" == *"checkout"* && "$CONTENT" == *"actions/checkout"* ]]; then
     FAIL=1
 else
     echo "  [PASS] no actions/checkout (gh is API-only)"
+fi
+
+# PRs that change no files are closed, never merged: an empty commit on testing
+# still builds and publishes a release. The check must come before any merge.
+EMPTY_LINE="$(grep -n 'PR_FILES" == "0"' "$WF" | head -1 | cut -d: -f1)"
+MERGE_LINE="$(grep -n 'gh pr merge' "$WF" | head -1 | cut -d: -f1)"
+if [[ "$CONTENT" == *"changedFiles"* && -n "$EMPTY_LINE" && -n "$MERGE_LINE" ]] && (( EMPTY_LINE < MERGE_LINE )) \
+    && grep -qF 'gh pr close "' "$WF"; then
+    echo "  [PASS] PRs that change no files are closed before any merge"
+else
+    echo "[FAIL] $WF must close PRs with changedFiles == 0 before merging"
+    FAIL=1
 fi
 
 if (( FAIL )); then

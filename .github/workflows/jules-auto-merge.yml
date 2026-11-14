@@ -1,8 +1,23 @@
 name: Auto-merge into testing
 
-# testing is the integration branch: every non-draft PR that targets it is
-# merged automatically, with `--admin` when branch rules would otherwise
-# block. main is not in scope — it still only moves by a maintainer.
+# testing is the integration branch: every non-draft PR that targets it from a
+# branch of THIS repository is merged after CI succeeds, respecting branch
+# protections. main only moves by a maintainer.
+#
+# Pull requests from forks are NOT auto-merged: every push to testing builds
+# and publishes a release (GitHub + SourceForge), so auto-merging forks would
+# let anyone with a GitHub account ship code in a NeOS release. A fork PR gets
+# a one-time comment and waits for a maintainer, who can merge it by hand or
+# run this workflow manually (workflow_dispatch) with its URL — that is an
+# explicit human decision, so the manual path accepts forks.
+#
+# Bot PRs that target `main` (Jules and the persona agents open them there) are
+# retargeted to `testing` instead of merged: `main` only moves by a maintainer
+# merging `testing`. A PR whose head IS `testing` (the release PR) is left alone.
+#
+# PRs that change no files (Jules opens "Acknowledge … directives" PRs daily
+# with nothing in them) are closed with a short note instead of merged: an
+# empty commit on testing still triggers a full ISO build and release.
 #
 # This workflow never checks out PR code. It only calls `gh` against the
 # pull request URL from the event payload, which is why pull_request_target
@@ -11,7 +26,9 @@ name: Auto-merge into testing
 on:
   pull_request_target:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches: [testing]
+    # main is listed only so bot PRs aimed at it can be retargeted to testing;
+    # nothing is ever merged into main by this workflow (see the guard below).
+    branches: [testing, main]
   workflow_dispatch:
     inputs:
       pr_url:
@@ -29,16 +46,21 @@ permissions:
 
 jobs:
   merge-into-testing:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.draft == false &&
-       github.event.pull_request.base.ref == 'testing')
+       (github.event.pull_request.base.ref == 'testing' ||
+        github.event.pull_request.head.ref != 'testing'))
     steps:
       - name: Approve and merge
         env:
           GH_TOKEN: ${{ secrets.JULES_AUTO_MERGE_TOKEN != '' && secrets.JULES_AUTO_MERGE_TOKEN || secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_url || github.event.pull_request.html_url }}
+          REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action }}
         run: |
           set -euo pipefail
 
@@ -47,18 +69,50 @@ jobs:
             exit 1
           fi
 
+          # Prevent cross-repository PAT misuse when manually dispatched.
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && -n "${REPO:-}" ]]; then
+            if [[ ! "$PR_URL" =~ ^https://github\.com/${REPO}/pull/[0-9]+/?$ ]]; then
+              echo "Refusing PR_URL outside repository '$REPO': $PR_URL" >&2
+              exit 1
+            fi
+          fi
+
           echo "Inspecting PR: $PR_URL"
 
-          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,isDraft,url)"
+          PR_JSON="$(gh pr view "$PR_URL" --json state,baseRefName,headRefName,isDraft,isCrossRepository,author,url,changedFiles,headRefOid)"
           PR_STATE="$(printf '%s' "$PR_JSON" | jq -r '.state')"
           PR_BASE="$(printf '%s' "$PR_JSON" | jq -r '.baseRefName')"
           PR_DRAFT="$(printf '%s' "$PR_JSON" | jq -r '.isDraft')"
+          PR_FROM_FORK="$(printf '%s' "$PR_JSON" | jq -r '.isCrossRepository')"
+          PR_HEAD="$(printf '%s' "$PR_JSON" | jq -r '.headRefName')"
+          PR_AUTHOR="$(printf '%s' "$PR_JSON" | jq -r '.author.login')"
+          PR_HEAD_SHA="$(printf '%s' "$PR_JSON" | jq -r '.headRefOid')"
+          PR_FILES="$(printf '%s' "$PR_JSON" | jq -r '.changedFiles')"
 
           if [[ "$PR_STATE" != "OPEN" ]]; then
             echo "PR is in state $PR_STATE. Nothing to merge."
             exit 0
           fi
 
+          # Bot PRs aimed at main go to testing instead. Only the automation
+          # accounts' own branches are retargeted; a human's PR to main, a fork
+          # PR, and the testing -> main release PR are left for a maintainer.
+          if [[ "$PR_BASE" == "main" ]]; then
+            if [[ "$PR_HEAD" != "testing" && "$PR_FROM_FORK" == "false" ]] \
+                && [[ "$PR_AUTHOR" =~ ^(app/)?google-labs-jules(\[bot\])?$|^RaidenShogun-AI$|^MikoYae-AI$ ]]; then
+              echo "Bot PR from $PR_AUTHOR targets main; retargeting it to testing."
+              if ! gh pr edit "$PR_URL" --base testing; then
+                gh pr comment "$PR_URL" --body "This automated PR targets \`main\`, which only moves by a maintainer merging \`testing\`, and it could not be retargeted automatically. Please retarget it to \`testing\`." || true
+                exit 1
+              fi
+              PR_BASE="testing"
+            else
+              echo "PR into main ($PR_AUTHOR, head $PR_HEAD): left for a maintainer."
+              exit 0
+            fi
+          fi
+
+          # Strict guard: nothing is ever merged automatically except into testing.
           if [[ "$PR_BASE" != "testing" ]]; then
             echo "Refusing to auto-merge a PR targeting '$PR_BASE' (only testing is automatic)." >&2
             exit 1
@@ -69,32 +123,97 @@ jobs:
             exit 0
           fi
 
+          # Forks are never merged automatically (see header). Comment once,
+          # when the PR is opened or reopened, not on every push to it.
+          if [[ "$PR_FROM_FORK" != "false" && "$EVENT_NAME" != "workflow_dispatch" ]]; then
+            echo "PR comes from a fork (isCrossRepository=$PR_FROM_FORK); leaving it for a maintainer."
+            if [[ "$EVENT_ACTION" == "opened" || "$EVENT_ACTION" == "reopened" ]]; then
+              gh pr comment "$PR_URL" --body "Thanks! Pull requests from forks are not merged into \`testing\` automatically, because \`testing\` publishes releases. A maintainer will review and merge this." || true
+            fi
+            exit 0
+          fi
+
+          # Nothing to merge: close it rather than land an empty commit (which
+          # would still build and publish a release).
+          if [[ "$PR_FILES" == "0" ]]; then
+            echo "PR changes no files; closing it instead of merging."
+            gh pr close "$PR_URL" --delete-branch \
+              --comment "Closed automatically: this pull request changes no files, so there is nothing to merge into \`testing\`." \
+              || gh pr close "$PR_URL" || true
+            exit 0
+          fi
+
           gh pr ready "$PR_URL" 2>/dev/null || true
           gh pr review "$PR_URL" --approve \
-            --body "Auto-approved: PRs into \`testing\` merge automatically." \
+            --body "Auto-approved for integration; merge waits for successful CI." \
             || echo "Note: could not approve (self-review or already approved)."
 
-          # Land it. --admin is intentional: testing is the firehose, and a
-          # required-check deadlock must not strand a PR. main is unaffected.
-          merged=0
-          if gh pr merge "$PR_URL" --squash --delete-branch --admin; then
-            echo "Merged (squash, admin)."
-            merged=1
-          elif gh pr merge "$PR_URL" --squash --delete-branch; then
-            echo "Merged (squash)."
-            merged=1
-          elif gh pr merge "$PR_URL" --merge --delete-branch --admin; then
-            echo "Merged (merge commit, admin)."
-            merged=1
-          elif gh pr merge "$PR_URL" --merge --delete-branch; then
-            echo "Merged (merge commit)."
-            merged=1
-          fi
-
-          if [[ "$merged" -ne 1 ]]; then
-            echo "Failed to merge $PR_URL into testing." >&2
-            gh pr comment "$PR_URL" --body "Auto-merge into \`testing\` failed. A maintainer should merge this by hand (or re-run **Auto-merge into testing**)." || true
+          # Wait for the build workflow's pre-build test job on this exact head.
+          # Requiring a named check avoids treating an empty check list as success.
+          CHECK_READY=0
+          for attempt in {1..40}; do
+            echo "Waiting for pre-build check registration ($attempt/40)."
+            CHECKS="$(gh pr checks "$PR_URL" --json name,state 2>/dev/null || true)"
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "test")' >/dev/null 2>&1; then
+              CHECK_READY=1
+              break
+            fi
+            sleep 15
+          done
+          if [[ "$CHECK_READY" != 1 ]]; then
+            echo "Required pre-build test check did not appear; leaving PR open." >&2
             exit 1
           fi
+          TEST_PASSED=0
+          for attempt in {1..300}; do
+            echo "Waiting for pre-build tests ($attempt/300)."
+            CHECKS="$(gh pr checks "$PR_URL" --json name,state 2>/dev/null || true)"
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "test" and .state == "SUCCESS")' >/dev/null 2>&1; then
+              TEST_PASSED=1
+              break
+            fi
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "test" and (.state == "FAILURE" or .state == "ERROR" or .state == "CANCELLED" or .state == "TIMED_OUT" or .state == "ACTION_REQUIRED"))' >/dev/null 2>&1; then
+              echo "Pre-build tests failed; leaving PR open." >&2
+              exit 1
+            fi
+            sleep 15
+          done
+          [[ "$TEST_PASSED" == 1 ]] || { echo "Timed out waiting for pre-build tests." >&2; exit 1; }
+
+          # Also wait for the ISO `build` check (mkarchiso + QEMU smoke test) so a
+          # PR that passes static checks but breaks ISO creation or live boot is
+          # never auto-merged into testing.
+          BUILD_READY=0
+          for attempt in {1..40}; do
+            echo "Waiting for ISO build check registration ($attempt/40)."
+            CHECKS="$(gh pr checks "$PR_URL" --json name,state 2>/dev/null || true)"
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "build")' >/dev/null 2>&1; then
+              BUILD_READY=1
+              break
+            fi
+            sleep 15
+          done
+          if [[ "$BUILD_READY" != 1 ]]; then
+            echo "Required ISO build check did not appear; leaving PR open." >&2
+            exit 1
+          fi
+          BUILD_PASSED=0
+          for attempt in {1..300}; do
+            echo "Waiting for ISO build & boot smoke test ($attempt/300)."
+            CHECKS="$(gh pr checks "$PR_URL" --json name,state 2>/dev/null || true)"
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "build" and .state == "SUCCESS")' >/dev/null 2>&1; then
+              BUILD_PASSED=1
+              break
+            fi
+            if printf '%s' "$CHECKS" | jq -e 'any(.[]; .name == "build" and (.state == "FAILURE" or .state == "ERROR" or .state == "CANCELLED" or .state == "TIMED_OUT" or .state == "ACTION_REQUIRED"))' >/dev/null 2>&1; then
+              echo "ISO build check failed; leaving PR open." >&2
+              exit 1
+            fi
+            sleep 15
+          done
+          [[ "$BUILD_PASSED" == 1 ]] || { echo "Timed out waiting for ISO build check." >&2; exit 1; }
+
+          # Pin the reviewed head so a push during validation cannot slip through.
+          gh pr merge "$PR_URL" --squash --delete-branch --match-head-commit "$PR_HEAD_SHA"
 
           gh pr comment "$PR_URL" --body "Merged into \`testing\` automatically." || true

@@ -41,7 +41,16 @@ get_primary_rotation() {
 
     # Query xrandr for connected outputs and parse primary or first active output rotation
     local line
-    line=$(xrandr --current 2>/dev/null | grep -E '\bconnected\b' | grep -E '\b(normal|left|right|inverted)\b' | head -n 1 || true)
+    # The parenthesized suffix lists SUPPORTED rotations, including "left"
+    # even on a normal display. Only parse the active geometry's suffix.
+    # Prefer the primary output; ignore connected outputs without a mode.
+    line=$(xrandr --current 2>/dev/null | sed 's/ (.*//' | awk '
+        $2 == "connected" && /[0-9]+x[0-9]+[+-][0-9]+[+-][0-9]+/ {
+            if ($3 == "primary") { print; found=1; exit }
+            if (first == "") first=$0
+        }
+        END { if (!found) print first }
+    ' || true)
     if [ -z "$line" ]; then
         echo "normal"
         return 0
@@ -185,10 +194,8 @@ EOF
 run_daemon() {
     echo "==> Starting NeOS Display & Input Sync Daemon..."
     if [ -z "${DISPLAY:-}" ]; then
-        echo "Waiting for active X11 DISPLAY..."
-        while [ -z "${DISPLAY:-}" ]; do
-            sleep 3
-        done
+        echo "neos-display-sync: No active X11 DISPLAY found; exiting daemon."
+        return 0
     fi
 
     local last_rot=""
@@ -196,9 +203,19 @@ run_daemon() {
     last_rot=$(get_primary_rotation)
     sync_rotation || true
 
-    # Monitor rotation changes
+    # Prefer kernel DRM uevent wakeups with a 10-second timeout fallback for
+    # pure software XRandR rotations so idle sessions do not spawn xrandr every 2s.
+    if command -v udevadm >/dev/null 2>&1; then
+        coproc UDEV_MON { udevadm monitor --udev --subsystem-match=drm 2>/dev/null; }
+        trap 'if [[ -n "${UDEV_MON_PID:-}" ]]; then kill "$UDEV_MON_PID" 2>/dev/null || true; fi' EXIT INT TERM
+    fi
+
     while true; do
-        sleep 2
+        if [[ -n "${UDEV_MON[0]:-}" ]]; then
+            read -r -t 10 -u "${UDEV_MON[0]}" _ || true
+        else
+            sleep 10
+        fi
         local current_rot
         current_rot=$(get_primary_rotation)
         if [ "$current_rot" != "$last_rot" ]; then
@@ -229,6 +246,21 @@ Examples:
   neos-display-sync --daemon                # Start continuous background rotation watcher
 EOF
 }
+
+# Everything below drives X11 (xrandr/xinput/Xft). On Wayland, KWin itself keeps
+# touch and tablet input mapped to rotated screens and handles scaling (System
+# Settings > Display & Monitor), so there is nothing to sync.
+if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
+    case "${1:-}" in
+        --help|-h) ;;
+        --daemon|-d|--watch) exit 0 ;;
+        *)
+            echo "neos-display-sync: this is a Wayland session; KWin handles rotation, input mapping and scaling." >&2
+            echo "Use System Settings > Display & Monitor (or kscreen-doctor) instead." >&2
+            exit 0
+            ;;
+    esac
+fi
 
 # Parse CLI arguments
 case "${1:-}" in

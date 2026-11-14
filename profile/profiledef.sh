@@ -24,8 +24,10 @@ airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '22' '-b' '1M')
 
 file_permissions=(
+  ["/usr/local/bin/neos-boot-probe"]="0:0:755"
   ["/root"]="0:0:750"
   ["/root/customize_airootfs.sh"]="0:0:755"
+  ["/etc/sudoers.d/wheel"]="0:0:440"
   ["/usr/local/bin/neos-driver-manager"]="0:0:755"
   ["/usr/local/bin/neos-autoupdate.sh"]="0:0:755"
   ["/usr/local/bin/neos-liveuser-setup"]="0:0:755"
@@ -42,5 +44,8 @@ file_permissions=(
   ["/usr/local/bin/neos-display-sync"]="0:0:755"
   ["/usr/local/bin/neos-autoinstall"]="0:0:755"
   ["/usr/local/bin/neos-doctor"]="0:0:755"
+  ["/usr/local/bin/neos-rollback"]="0:0:755"
+  ["/usr/local/bin/neos-session-select"]="0:0:755"
+  ["/usr/local/bin/neos-polkit-agent"]="0:0:755"
   ["/usr/lib/calamares/modules/neospacstrap/main.py"]="0:0:755"
 )

@@ -128,16 +128,65 @@ create_keys_if_needed() {
 # priority order and collect every GRUB/fallback EFI we find.
 # ---------------------------------------------------------------------------
 
-ESP_SEARCH_ROOTS=(/boot /boot/efi /efi)
+ESP_SEARCH_ROOTS=(/boot/efi /efi /boot)
+
+# Modules embedded into the standalone GRUB EFI binary so GRUB never attempts
+# to load unsigned external .mod files from /boot/grub/x86_64-efi/ (which UEFI
+# Secure Boot lockdown forbids) and boots Linux directly with --disable-shim-lock
+# under the user's own enrolled sbctl keys.
+GRUB_SB_MODULES="part_gpt part_msdos fat btrfs ext2 xfs normal linux echo configfile search search_fs_uuid search_fs_file search_label gfxterm gfxterm_background gfxmenu png jpeg all_video test loadenv loopback gzio zstd"
+
+rebuild_standalone_grub() {
+    if ! command -v grub-install >/dev/null 2>&1; then
+        warn "grub-install not found; signing existing EFI binaries as-is."
+        return 0
+    fi
+
+    local esp=""
+    for root in "${ESP_SEARCH_ROOTS[@]}"; do
+        if [[ -d "$root/EFI" ]]; then
+            esp="$root"
+            break
+        fi
+    done
+
+    if [[ -z "$esp" ]]; then
+        warn "No mounted EFI System Partition found under ${ESP_SEARCH_ROOTS[*]}; skipping standalone GRUB rebuild."
+        return 0
+    fi
+
+    section "Rebuilding GRUB for standalone UEFI Secure Boot"
+    info "Embedding filesystem/graphics modules and disabling shim_lock for own-key Secure Boot (ESP: ${esp})..."
+
+    local sbat_args=()
+    if [[ -f /usr/share/grub/sbat.csv ]]; then
+        sbat_args=(--sbat /usr/share/grub/sbat.csv)
+    fi
+
+    grub-install \
+        --target=x86_64-efi \
+        --efi-directory="$esp" \
+        --bootloader-id=neos \
+        --modules="$GRUB_SB_MODULES" \
+        --disable-shim-lock \
+        --force-extra-removable \
+        "${sbat_args[@]}"
+    ok "Standalone Secure Boot GRUB image installed to ${esp}/EFI/neos/grubx64.efi (and fallback BOOTX64.EFI)."
+}
 
 find_efi_files() {
     local -n _result=$1   # nameref: caller passes array variable name
-    local found
+    local -A seen=()
+    local found real
 
     for root in "${ESP_SEARCH_ROOTS[@]}"; do
         [[ -d "$root/EFI" ]] || continue
         while IFS= read -r -d '' found; do
-            _result+=("$found")
+            real="$(realpath "$found" 2>/dev/null || printf '%s' "$found")"
+            if [[ -z "${seen[$real]:-}" ]]; then
+                seen["$real"]=1
+                _result+=("$found")
+            fi
         done < <(find "$root/EFI" -maxdepth 4 \
             \( -iname "grubx64.efi" -o -iname "BOOTX64.EFI" -o -iname "bootx64.efi" \) \
             -print0 2>/dev/null)
@@ -145,6 +194,7 @@ find_efi_files() {
 }
 
 KERNEL_PATH="/boot/vmlinuz-linux-lts"
+FWUPD_EFI="/usr/lib/fwupd/efi/fwupdx64.efi"
 
 # ---------------------------------------------------------------------------
 # Signing — idempotent via sbctl's signing database (-s flag)
@@ -156,6 +206,8 @@ KERNEL_PATH="/boot/vmlinuz-linux-lts"
 SIGNED_EFI_COUNT=0
 
 sign_binaries() {
+    rebuild_standalone_grub
+
     section "Signing boot-chain binaries"
 
     local efi_files=()
@@ -164,7 +216,7 @@ sign_binaries() {
     if (( ${#efi_files[@]} == 0 )); then
         warn "No GRUB EFI binaries found under ${ESP_SEARCH_ROOTS[*]}."
         warn "If your ESP is mounted elsewhere, sign manually:"
-        warn "  sbctl sign -s /path/to/EFI/GRUB/grubx64.efi"
+        warn "  sbctl sign -s /path/to/EFI/neos/grubx64.efi"
     else
         for efi in "${efi_files[@]}"; do
             info "Signing EFI binary: ${efi}"
@@ -184,6 +236,12 @@ sign_binaries() {
         warn "Kernel not found at ${KERNEL_PATH} — skipping kernel signing."
         warn "Sign it manually once it is installed:"
         warn "  sbctl sign -s /boot/vmlinuz-linux-lts"
+    fi
+
+    if [[ -f "$FWUPD_EFI" ]]; then
+        info "Signing fwupd UEFI capsule updater: ${FWUPD_EFI}"
+        sbctl sign -s "$FWUPD_EFI"
+        ok "Signed: ${FWUPD_EFI}"
     fi
 
     # NOTE: the initramfs images are deliberately NOT signed. They are cpio

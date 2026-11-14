@@ -1,9 +1,10 @@
 #!/bin/bash
 # Installer launcher for NeOS installation media.
 #
-# Launches Calamares as root on top of the live user's X11 Plasma session
-# (QT_QPA_PLATFORM=xcb). Any failure is surfaced to the user via kdialog
-# instead of failing silently.
+# Launches Calamares as root on top of the live user's Plasma session through
+# X11 (QT_QPA_PLATFORM=xcb): the X server itself, or XWayland in a Wayland
+# session, where root cannot reach the user's Wayland socket. Any failure is
+# surfaced to the user via kdialog instead of failing silently.
 #
 # NOTE: there is deliberately no unattended flag. Upstream Calamares has no
 # unattended CLI switch (its parser only knows -d/-D/-T/-c/-X), so a `-u` here
@@ -49,24 +50,29 @@ fi
 
 LOG="$(mktemp "${TMPDIR:-/tmp}/neos-installer.XXXXXX")"
 STABLE_LOG="$HOME/.cache/neos-installer.log"
+XHOST_GRANTED=0
+cleanup_launcher() {
+    if (( XHOST_GRANTED )) && command -v xhost >/dev/null 2>&1; then
+        xhost -SI:localuser:root >/dev/null 2>&1 || true
+    fi
+    mkdir -p "$(dirname "$STABLE_LOG")" 2>/dev/null || true
+    cp -f "$LOG" "$STABLE_LOG" 2>/dev/null || true
+    rm -f "$LOG"
+}
 # Persist this wrapper's stdout/stderr to a fixed, known path on exit (success,
-# crash, or Ctrl-C) instead of just deleting the tempfile — a stall or crash
-# mid-install otherwise leaves nothing to inspect afterward. The detailed
-# Calamares module/job log itself is separate and already fixed at
-# /var/log/Calamares.log (Calamares' own default when run as root via sudo
-# above), so check that too.
-trap 'mkdir -p "$(dirname "$STABLE_LOG")" 2>/dev/null; cp -f "$LOG" "$STABLE_LOG" 2>/dev/null; rm -f "$LOG"' EXIT INT TERM
+# crash, or Ctrl-C) and revoke temporary root X11 display access.
+trap cleanup_launcher EXIT INT TERM
 
 notify_error() {
     local msg="$1"
-    if command -v kdialog >/dev/null 2>&1; then
-        kdialog --title "Install NeOS" --error "$msg" 2>/dev/null || true
-    fi
     printf '%s\n' "$msg" >&2
+    if command -v kdialog >/dev/null 2>&1; then
+        timeout --kill-after=2s 15s kdialog --title "Install NeOS" --error "$msg" 2>/dev/null || true
+    fi
 }
 
 if pgrep -x calamares >/dev/null 2>&1; then
-    kdialog --msgbox "🚀 The installer is already running." 2>/dev/null || \
+    timeout --kill-after=2s 15s kdialog --msgbox "🚀 The installer is already running." 2>/dev/null || \
         echo "🚀 The installer is already running."
     exit 0
 fi
@@ -76,9 +82,11 @@ if ! command -v calamares >/dev/null 2>&1; then
     exit 1
 fi
 
-# Grant root access to the running (X)Wayland display.
+# Grant root access to the running (X)Wayland display (revoked on EXIT).
 if command -v xhost >/dev/null 2>&1; then
-    xhost +SI:localuser:root >/dev/null 2>&1 || true
+    if xhost +SI:localuser:root >/dev/null 2>&1; then
+        XHOST_GRANTED=1
+    fi
 fi
 
 # Use the live session's real display/auth rather than guessing :0.
@@ -94,19 +102,41 @@ if systemd-detect-virt -q 2>/dev/null; then
     GL_ENV=(LIBGL_ALWAYS_SOFTWARE=1 QT_QUICK_BACKEND=software)
 fi
 
+# Screen reader boot: make the installer readable by Orca. Calamares runs as
+# root and would not find the user's accessibility bus, so look its address up
+# here (as the user) and hand it over; Qt's AT-SPI bridge uses
+# AT_SPI_BUS_ADDRESS when set. neos-accessibility.service has already allowed
+# root onto that bus for this boot. Best effort: no address, no change.
+A11Y_ENV=()
+if grep -qw 'accessibility=on' /proc/cmdline 2>/dev/null; then
+    A11Y_ADDR="$(busctl --user call org.a11y.Bus /org/a11y/bus org.a11y.Bus GetAddress 2>/dev/null \
+        | sed -n 's/^s "\(.*\)"$/\1/p')"
+    A11Y_ENV=(QT_LINUX_ACCESSIBILITY_ALWAYS_ON=1 QT_ACCESSIBILITY=1)
+    if [[ -n "$A11Y_ADDR" ]]; then
+        A11Y_ENV+=(AT_SPI_BUS_ADDRESS="$A11Y_ADDR")
+    fi
+fi
+
 if command -v kdialog >/dev/null 2>&1; then
-    kdialog --icon calamares --title "Install NeOS" \
-        --passivepopup "🚀 Starting the NeOS installer..." 4 2>/dev/null || true
+    # In the VM's Xfce fallback there may be no notification service. KDialog
+    # can then wait indefinitely before Calamares is even invoked. Feedback
+    # must never gate installation: run it asynchronously and bound its life.
+    timeout --kill-after=2s 6s kdialog --icon calamares --title "Install NeOS" \
+        --passivepopup "🚀 Starting the NeOS installer..." 4 </dev/null >/dev/null 2>&1 &
 fi
 
 # Launch Calamares as root on the live session's X display, capturing output so
 # a failed start is visible to the user instead of silently doing nothing.
+# The live image grants passwordless sudo. Fail promptly if that setup is
+# missing: a GUI launcher has no terminal for sudo's password prompt. Display
+# and Xauthority are passed explicitly below, without needing preserve-env.
 # shellcheck disable=SC2024
-sudo --preserve-env=DISPLAY,XAUTHORITY \
+sudo -n \
     env QT_QPA_PLATFORM=xcb \
         DISPLAY="$DISPLAY_TO_USE" \
         XAUTHORITY="$XAUTH_TO_USE" \
         "${GL_ENV[@]}" \
+        "${A11Y_ENV[@]}" \
         calamares "${CAL_ARGS[@]}" >"$LOG" 2>&1
 status=$?
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=NeOS accessibility bootstrap (start espeakup when accessibility=on)
+Description=NeOS accessibility bootstrap (console speech when accessibility=on; Orca starts in the desktop session)
 # Must run before the display manager starts so speech is available during
 # the graphical login screen as well as on the virtual console.
 After=sysinit.target
@@ -9,6 +9,9 @@ Before=display-manager.service sddm.service
 Type=oneshot
 Environment=LC_ALL=C
 ProtectSystem=strict
+# Only on a screen reader boot: lets the root installer onto the user's
+# accessibility bus (see the script).
+ReadWritePaths=-/usr/share/defaults/at-spi2
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes

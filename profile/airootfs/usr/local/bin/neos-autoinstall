@@ -200,12 +200,13 @@ find_cidata_device() {
 # fresh mktemp mount (and tmpdir) on every probe.
 CIDATA_UDISKS=()
 CIDATA_MANUAL=()
+MOUNTED_CIDATA=""
 
 cleanup_cidata_mounts() {
     local mnt
     if ((${#CIDATA_UDISKS[@]} > 0)); then
         for mnt in "${CIDATA_UDISKS[@]}"; do
-            udisksctl unmount -p "$mnt" --no-user-interaction 2>/dev/null \
+            udisksctl unmount -b "$mnt" --no-user-interaction 2>/dev/null \
                 || umount "$mnt" 2>/dev/null \
                 || true
         done
@@ -222,10 +223,11 @@ cleanup_cidata_mounts() {
 
 mount_device() {
     local dev="$1" out mnt
+    MOUNTED_CIDATA=""
     # Already mounted anywhere? Reuse it and leave cleanup to its owner.
     mnt="$(findmnt -rn -S "$dev" -o TARGET 2>/dev/null | head -n 1 || true)"
     if [[ -n "$mnt" && -d "$mnt" ]]; then
-        printf '%s\n' "$mnt"
+        MOUNTED_CIDATA="$mnt"
         return 0
     fi
     # udisks2 is installed on the live image, so the live user can mount the
@@ -237,8 +239,8 @@ mount_device() {
             mnt="${mnt%.}"
             mnt="$(trim "$mnt")"
             if [[ -d "$mnt" ]]; then
-                CIDATA_UDISKS+=("$mnt")
-                printf '%s\n' "$mnt"
+                CIDATA_UDISKS+=("$dev")
+                MOUNTED_CIDATA="$mnt"
                 return 0
             fi
         fi
@@ -250,12 +252,12 @@ mount_device() {
     mnt="/tmp/neos-cidata-${dev##*/}"
     mkdir -p "$mnt" 2>/dev/null || true
     if mountpoint -q "$mnt" 2>/dev/null; then
-        printf '%s\n' "$mnt"
+        MOUNTED_CIDATA="$mnt"
         return 0
     fi
     if mount -o ro,nosuid,nodev,noexec "$dev" "$mnt" 2>/dev/null; then
         CIDATA_MANUAL+=("$mnt")
-        printf '%s\n' "$mnt"
+        MOUNTED_CIDATA="$mnt"
         return 0
     fi
     rmdir "$mnt" 2>/dev/null || true
@@ -275,7 +277,8 @@ probe_now() {
         fi
     done < <(iso_autoinstall_dirs)
     if dev="$(find_cidata_device)"; then
-        if mnt="$(mount_device "$dev")"; then
+        if mount_device "$dev"; then
+            mnt="$MOUNTED_CIDATA"
             if file="$(find_config_in_dir "$mnt")"; then
                 parse_file "$file"
                 printf 'FOUND=%s\n' "$file"
@@ -288,12 +291,28 @@ probe_now() {
 }
 
 validate_identity() {
-    if [[ -n "$AI_USERNAME" && ! "$AI_USERNAME" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
-        echo "neos-autoinstall: invalid username '$AI_USERNAME'" >&2
+    if [[ -n "$AI_USERNAME" && ( "$AI_USERNAME" == "root" || "$AI_USERNAME" == "liveuser" || ! "$AI_USERNAME" =~ ^[a-z_][a-z0-9_-]{0,31}$ ) ]]; then
+        echo "neos-autoinstall: invalid or reserved username '$AI_USERNAME'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_FULLNAME" && "$AI_FULLNAME" =~ [[:cntrl:]] ]]; then
+        echo "neos-autoinstall: fullname must not contain control characters" >&2
         return 1
     fi
     if [[ -n "$AI_HOSTNAME" && ! "$AI_HOSTNAME" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,62}$ ]]; then
         echo "neos-autoinstall: invalid hostname '$AI_HOSTNAME'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_KEYBOARD" && ! "$AI_KEYBOARD" =~ ^[A-Za-z0-9_-]{1,16}$ ]]; then
+        echo "neos-autoinstall: invalid keyboard layout '$AI_KEYBOARD'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_LOCALE" && ! "$AI_LOCALE" =~ ^[A-Za-z0-9_.@-]{2,32}$ ]]; then
+        echo "neos-autoinstall: invalid locale '$AI_LOCALE'" >&2
+        return 1
+    fi
+    if [[ -n "$AI_TIMEZONE" && ! "$AI_TIMEZONE" =~ ^[A-Za-z0-9_+/-]{2,64}$ ]]; then
+        echo "neos-autoinstall: invalid timezone '$AI_TIMEZONE'" >&2
         return 1
     fi
     if [[ -n "$AI_PASSWORD" && ! "$AI_PASSWORD" =~ ^[A-Za-z0-9._@%+=!-]{6,}$ ]]; then
@@ -313,16 +332,13 @@ validate_identity() {
     return 0
 }
 
-yaml_escape() {
-    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
-}
-
 generate_calamares_config() {
     local dest="$1"
-    local src="/etc/calamares"
+    local src="${2:-/etc/calamares}"
     [[ -d "$src" ]] || return 1
-    mkdir -p "$dest"
+    (umask 077; mkdir -p "$dest")
     cp -a "$src/." "$dest/"
+    chmod 700 "$dest"
 
     if [[ -f "$dest/settings.conf" ]]; then
         sed -i \
@@ -331,43 +347,84 @@ generate_calamares_config() {
             "$dest/settings.conf"
     fi
 
-    if [[ -f "$dest/modules/users.conf" ]]; then
-        local users_tmp
-        users_tmp="$(mktemp)"
-        sed '/^presets:/,$d' "$dest/modules/users.conf" > "$users_tmp"
-        {
-            cat "$users_tmp"
-            printf 'presets:\n'
-            if [[ -n "$AI_FULLNAME" ]]; then
-                printf '    fullName:\n        value: "%s"\n        editable: false\n' "$(yaml_escape "$AI_FULLNAME")"
-            fi
-            if [[ -n "$AI_USERNAME" ]]; then
-                printf '    loginName:\n        value: "%s"\n        editable: false\n' "$(yaml_escape "$AI_USERNAME")"
-            fi
-        } > "$dest/modules/users.conf"
-        rm -f "$users_tmp"
-        if [[ -n "$AI_HOSTNAME" ]]; then
-            sed -i "s/^  template:.*/  template: \"$(yaml_escape "$AI_HOSTNAME")\"/" "$dest/modules/users.conf" \
-                || true
-        fi
+    # Hash plaintext passwords immediately via openssl SHA-512 crypt (-6) so
+    # cleartext passwords are NEVER written to /tmp/neos-calamares.* or logged
+    # by Calamares's shellprocess job runner into /var/log/Calamares.log.
+    local effective_hash="$AI_HASHED_PASSWORD"
+    if [[ -z "$effective_hash" && -n "$AI_PASSWORD" ]]; then
+        effective_hash="$(printf '%s' "$AI_PASSWORD" | openssl passwd -6 -stdin)"
     fi
 
-    if [[ -n "$AI_KEYBOARD" ]]; then
-        printf '---\nXkbLayout: "%s"\n' "$(yaml_escape "$AI_KEYBOARD")" > "$dest/modules/keyboard.conf"
-    fi
-    if [[ -n "$AI_LOCALE" ]]; then
-        printf '---\nlocaleGenPath: /etc/locale.gen\n' > "$dest/modules/locale.conf"
-    fi
+    AI_DEST="$dest" \
+    AI_FULLNAME="${AI_FULLNAME:-}" \
+    AI_USERNAME="${AI_USERNAME:-}" \
+    AI_HOSTNAME="${AI_HOSTNAME:-}" \
+    AI_KEYBOARD="${AI_KEYBOARD:-}" \
+    AI_LOCALE="${AI_LOCALE:-}" \
+    AI_TIMEZONE="${AI_TIMEZONE:-}" \
+    AI_EFFECTIVE_HASH="$effective_hash" \
+    python3 - <<'PYAML'
+import os
+from pathlib import Path
+import yaml
 
-    if [[ -f "$dest/modules/shellprocess.conf" && -n "$AI_USERNAME" ]]; then
-        if [[ -n "$AI_HASHED_PASSWORD" ]]; then
-            printf '    - command: "usermod -p '\''%s'\'' %s"\n' \
-                "$AI_HASHED_PASSWORD" "$AI_USERNAME" >> "$dest/modules/shellprocess.conf"
-        elif [[ -n "$AI_PASSWORD" ]]; then
-            printf '    - command: "echo %s:%s | chpasswd"\n' \
-                "$AI_USERNAME" "$AI_PASSWORD" >> "$dest/modules/shellprocess.conf"
-        fi
-    fi
+dest = Path(os.environ["AI_DEST"])
+fullname = os.environ["AI_FULLNAME"]
+username = os.environ["AI_USERNAME"]
+hostname = os.environ["AI_HOSTNAME"]
+keyboard = os.environ["AI_KEYBOARD"]
+locale_val = os.environ["AI_LOCALE"]
+timezone = os.environ["AI_TIMEZONE"]
+password_hash = os.environ["AI_EFFECTIVE_HASH"]
+
+users_path = dest / "modules/users.conf"
+if users_path.is_file():
+    users_cfg = yaml.safe_load(users_path.read_text()) or {}
+    presets = {}
+    if fullname:
+        presets["fullName"] = {"value": fullname, "editable": False}
+    if username:
+        presets["loginName"] = {"value": username, "editable": False}
+    if presets:
+        users_cfg["presets"] = presets
+    if hostname:
+        users_cfg.setdefault("hostname", {})["template"] = hostname
+    users_path.write_text("---\n" + yaml.safe_dump(users_cfg, sort_keys=False))
+
+if keyboard:
+    kb_path = dest / "modules/keyboard.conf"
+    kb_cfg = yaml.safe_load(kb_path.read_text()) if kb_path.is_file() else {}
+    kb_cfg = kb_cfg or {}
+    kb_cfg["XkbLayout"] = keyboard
+    kb_path.write_text("---\n" + yaml.safe_dump(kb_cfg, sort_keys=False))
+
+if locale_val or timezone:
+    loc_path = dest / "modules/locale.conf"
+    loc_cfg = yaml.safe_load(loc_path.read_text()) if loc_path.is_file() else {}
+    loc_cfg = loc_cfg or {}
+    loc_cfg["localeGenPath"] = "/etc/locale.gen"
+    if locale_val:
+        lang = locale_val if "." in locale_val else f"{locale_val}.UTF-8"
+        loc_cfg["localeConfiguration"] = {"LANG": lang}
+    if timezone:
+        if "/" in timezone:
+            region, zone = timezone.split("/", 1)
+            loc_cfg["region"] = region
+            loc_cfg["zone"] = zone
+        else:
+            loc_cfg["region"] = "Etc"
+            loc_cfg["zone"] = timezone
+        loc_cfg["geoip"] = {"style": "none"}
+    loc_path.write_text("---\n" + yaml.safe_dump(loc_cfg, sort_keys=False))
+
+sp_path = dest / "modules/shellprocess.conf"
+if sp_path.is_file() and username and password_hash:
+    sp_cfg = yaml.safe_load(sp_path.read_text()) or {}
+    sp_cfg.setdefault("script", []).append({
+        "command": ["usermod", "-p", password_hash, username]
+    })
+    sp_path.write_text("---\n" + yaml.safe_dump(sp_cfg, sort_keys=False))
+PYAML
 
     if [[ "$AI_REBOOT" -eq 1 && -f "$dest/modules/finished.conf" ]]; then
         sed -i 's/^restartNowChecked:.*/restartNowChecked: true/' "$dest/modules/finished.conf"
@@ -444,7 +501,6 @@ cmd_apply() {
     fi
 
     local waited=0
-    local file=""
     while (( waited <= 30 )); do
         if probe_now >/dev/null; then
             break
@@ -453,16 +509,9 @@ cmd_apply() {
         waited=$((waited + 2))
     done
 
-    if ! probe_now >/tmp/neos-autoinstall.probe 2>/dev/null; then
+    if ! probe_now >/dev/null 2>/dev/null; then
         echo "neos-autoinstall: no cidata / autoinstall config found"
         return 0
-    fi
-    # probe_now already parsed into AI_* globals when it succeeded; re-run
-    # for the printed path so generate_calamares_config has AI_SOURCE.
-    file="$(awk -F= '/^FOUND=/{print substr($0,7); exit}' /tmp/neos-autoinstall.probe || true)"
-    rm -f /tmp/neos-autoinstall.probe
-    if [[ -n "$file" && -f "$file" ]]; then
-        parse_file "$file"
     fi
     # The config is parsed into memory; nothing below reads the volume again
     # (the generated Calamares config is copied from /etc/calamares), so
@@ -509,4 +558,6 @@ main() {
     esac
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
