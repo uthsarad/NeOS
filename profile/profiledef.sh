@@ -24,6 +24,7 @@ airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '22' '-b' '1M')
 
 file_permissions=(
+  ["/usr/local/bin/neos-boot-probe"]="0:0:755"
   ["/root"]="0:0:750"
   ["/root/customize_airootfs.sh"]="0:0:755"
   ["/etc/sudoers.d/wheel"]="0:0:440"

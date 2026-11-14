@@ -21,8 +21,14 @@ trap '_error_handler $? $LINENO' ERR
 # 1000, full group set). This runtime unit only applies live-session state that
 # must happen on the booted system.
 if ! id "liveuser" &>/dev/null; then
-    echo "liveuser missing — customize_airootfs.sh did not run at build time" >&2
-    exit 1
+    echo "liveuser missing from image; creating the live-session account" >&2
+    useradd -m -g users -s /usr/bin/zsh liveuser
+    passwd -d liveuser
+    for grp in wheel audio power rfkill; do
+        if getent group "$grp" >/dev/null 2>&1; then
+            gpasswd -a liveuser "$grp"
+        fi
+    done
 fi
 
 echo "%wheel ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers.d/zz-live-wheel

@@ -1,0 +1,51 @@
+# NeOS medieval theme. Original artwork: tools/gen-grub-theme.py.
+desktop-image: "background.png"
+desktop-image-scale-method: "stretch"
+title-text: ""
+message-font: "DejaVu Sans Regular 14"
+message-color: "#ecd9ae"
+message-bg-color: "#171b20"
+terminal-font: "DejaVu Sans Regular 14"
+
++ boot_menu {
+    left = 15%
+    top = 28%
+    width = 70%
+    height = 52%
+    item_font = "DejaVu Sans Regular 16"
+    selected_item_font = "DejaVu Sans Regular 16"
+    item_color = "#bdb6a4"
+    selected_item_color = "#fff0cc"
+    item_height = 30
+    item_padding = 4
+    item_spacing = 3
+    icon_width = 0
+    icon_height = 0
+    selected_item_pixmap_style = "selected_*.png"
+    scrollbar = true
+}
+
++ label {
+    left = 15%
+    top = 83%
+    width = 70%
+    height = 24
+    align = "center"
+    font = "DejaVu Sans Regular 14"
+    color = "#b89a61"
+    text = "Arrow keys to choose  |  Enter to begin  |  E to edit"
+}
+
++ progress_bar {
+    id = "__timeout__"
+    left = 25%
+    top = 89%
+    width = 50%
+    height = 24
+    font = "DejaVu Sans Regular 14"
+    text_color = "#fff0cc"
+    fg_color = "#66543b"
+    bg_color = "#171b20"
+    border_color = "#b89a61"
+    text = "Starting in %d seconds"
+}

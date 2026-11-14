@@ -2,7 +2,7 @@
 # Guards the wiring that makes boot verification real rather than decorative.
 #
 # tests/verify_iso_smoketest.sh only passes when the live session reports an
-# active graphical.target (marker) and the framebuffer is not blank. That is
+# active graphical live-user session (marker) and the framebuffer is not blank. That is
 # only possible if:
 #   - the probe unit exists, is pulled in by graphical.target and emits exactly
 #     the marker the smoke test greps for,
@@ -15,6 +15,7 @@
 set -euo pipefail
 
 PROBE_UNIT="profile/airootfs/etc/systemd/system/neos-boot-probe.service"
+PROBE_SCRIPT="profile/airootfs/usr/local/bin/neos-boot-probe"
 PROBE_WANTS="profile/airootfs/etc/systemd/system/graphical.target.wants/neos-boot-probe.service"
 SMOKETEST="tests/verify_iso_smoketest.sh"
 SYSLINUX_CFG="profile/syslinux/archiso_sys.cfg"
@@ -27,8 +28,7 @@ FAIL=0
 
 # 1. Marker contract: the smoke test must grep for the exact string the unit
 #    writes to the serial console.
-MARKER_LINE=$(grep -oE 'printf "[^"]*NEOS-BOOT-OK[^"]*"' "$PROBE_UNIT" | head -1 \
-    | sed -e 's/^printf "//' -e 's/"$//' -e 's/\\n//g')
+MARKER_LINE=$(grep -oE "NEOS-BOOT-OK [a-z ]+" "$PROBE_SCRIPT" | head -1)
 MARKER_FROM_UNIT="${MARKER_LINE%% *}"
 MARKER_FROM_TEST=$(grep -oE '^MARKER="[^"]*"' "$SMOKETEST" | head -1 | sed -e 's/^MARKER="//' -e 's/"$//')
 
@@ -47,7 +47,7 @@ fi
 
 # 2. The unit must only fire once graphical.target is active, and must be
 #    pulled in by it (a unit nothing wants never runs).
-for needle in "After=graphical.target" "WantedBy=graphical.target" "is-active --quiet graphical.target" "/dev/ttyS0"; do
+for needle in "After=graphical.target" "WantedBy=graphical.target" "ExecStart=/usr/local/bin/neos-boot-probe"; do
     if grep -qF -- "$needle" "$PROBE_UNIT"; then
         echo "  [PASS] $PROBE_UNIT declares '$needle'"
     else
@@ -79,8 +79,8 @@ done
 # 4. The probe is live-media-only: it must be excluded from the installed-system
 #    overlay manifest (a serial marker has no business on an installed disk).
 if [[ -f "$OVERLAY" ]]; then
-    if grep -q '^etc/systemd/system/neos-boot-probe\.service$' "$OVERLAY"; then
-        echo "[FAIL] neos-boot-probe.service is listed in the installed-system overlay manifest"
+    if grep -qE '^(etc/systemd/system/neos-boot-probe\.service|usr/local/bin/neos-boot-probe|etc/systemd/system/sddm\.service\.d/20-live-session\.conf)$' "$OVERLAY"; then
+        echo "[FAIL] live desktop probe or live-user prerequisite is listed in the installed-system overlay manifest"
         FAIL=1
     else
         echo "  [PASS] probe unit is excluded from the installed-system overlay"

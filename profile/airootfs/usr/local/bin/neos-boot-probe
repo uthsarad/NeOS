@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# A target can be active with SDDM failed, and a TTY is a nonblank framebuffer.
+# Require an active graphical live-user session AND its desktop process.
+set -euo pipefail
+
+desktop_ready() {
+    systemctl is-active --quiet graphical.target || return 1
+    systemctl is-active --quiet sddm.service || return 1
+    local session rest name active type
+    while read -r session rest; do
+        [[ -n "$session" ]] || continue
+        name=$(loginctl show-session "$session" -p Name --value) || continue
+        [[ "$name" == liveuser ]] || continue
+        active=$(loginctl show-session "$session" -p Active --value) || continue
+        [[ "$active" == yes ]] || continue
+        type=$(loginctl show-session "$session" -p Type --value) || continue
+        case "$type" in
+            x11) pgrep -u liveuser -x xfce4-session >/dev/null && return 0 ;;
+            wayland) pgrep -u liveuser -x plasmashell >/dev/null && return 0 ;;
+        esac
+    done < <(loginctl list-sessions --no-legend --no-pager)
+    return 1
+}
+
+for ((attempt = 0; attempt < 90; attempt++)); do
+    if desktop_ready; then
+        echo 'NeOS live desktop session ready'
+        if [[ -w /dev/ttyS0 ]]; then
+            printf '\nNEOS-BOOT-OK live desktop ready\n' > /dev/ttyS0
+        fi
+        exit 0
+    fi
+    sleep 2
+done
+
+echo 'NeOS live desktop did not start within 180 seconds' >&2
+journalctl -b -u sddm -u neos-liveuser-setup -u neos-session-select --no-pager -n 80 >&2 || true
+exit 1

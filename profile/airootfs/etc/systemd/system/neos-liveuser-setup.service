@@ -4,6 +4,7 @@ Before=display-manager.service sddm.service
 
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 Environment=LC_ALL=C
 ExecStart=/usr/local/bin/neos-liveuser-setup
 # DO NOT sandbox this unit. Its whole job is system-level account creation:

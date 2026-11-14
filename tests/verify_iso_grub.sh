@@ -17,7 +17,7 @@ fi
 echo "Verifying ISO GRUB entries in $GRUB_FILE..."
 
 REQUIRED_STRINGS=(
-    "menuentry \"NeOS"
+    "menuentry \"Try or Install NeOS (Live Desktop)\""
     "linux /neos/boot/x86_64/vmlinuz-linux-lts"
     "initrd /neos/boot/x86_64/initramfs-linux-lts.img"
     "archisobasedir=neos"
@@ -31,7 +31,6 @@ REQUIRED_STRINGS=(
 )
 
 FORBIDDEN_STRINGS=(
-    "Try or Install"
     "nowatchdog"
     "intel_pstate=enable"
     "amd_pstate=active"

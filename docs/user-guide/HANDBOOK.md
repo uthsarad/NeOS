@@ -52,6 +52,11 @@ Insert the USB drive, restart your computer, and enter the Boot Menu (usually F1
 The firmware boot menu (GRUB on UEFI, Syslinux on BIOS) is shown for 3 seconds.
 The default entry is fine on most hardware. Other entries:
 
+**Try or Install NeOS (Live Desktop)** opens a graphical live session without
+installing to your drives. It signs in automatically and displays the welcome
+window. NeOS uses Plasma on supported graphics hardware and Xfce on X11 in VMs
+and with Safe Graphics.
+
 *   **Copy to RAM** — loads the live image into memory so you can unplug the USB stick. Needs enough RAM.
 *   **Safe Graphics** — `nomodeset`, when the desktop never appears.
 *   **Verbose** — full kernel/systemd messages, for a hung boot.
@@ -67,6 +72,16 @@ Once booted, the NeOS welcome app starts automatically and offers **Try NeOS** o
 *   **Partitions**: "Erase Disk" is easiest for a clean install. "Manual Partitioning" is for advanced users.
 *   **Users**: Create your username and password.
 
+To install on a **secondary drive**, select that drive by its model and size
+in the partition page. Erase Disk erases the selected drive; use manual
+partitioning to keep existing partitions. Review the target drive and proposed
+changes on the summary page before starting. For an independent UEFI install,
+place an EFI System Partition on the secondary drive and mount it at
+`/boot/efi`. On legacy BIOS, select the secondary drive as the bootloader target.
+
+The installer verifies that the installed system has the graphical login
+manager, desktop sessions and graphical boot target before reporting success.
+
 Internet is optional: a locally built ISO (`sudo ./build.sh`) embeds an offline
 package repo, and Calamares no longer refuses to continue without a network.
 CI-published ISOs still install from the network.
@@ -76,6 +91,12 @@ For a hands-off install (second volume labelled `cidata` with
 
 ### 5. First Boot
 After installation, remove the USB drive and reboot. You will be greeted by the NeOS login screen.
+
+If NeOS was installed on a secondary drive, choose its NeOS/UEFI boot entry in
+your firmware boot menu. The graphical login and desktop work the same on
+either drive. Sign in with the account created during installation; live-user
+autologin is only for the ISO. The installed disk uses the same medieval GRUB
+theme as the live media.
 
 ### 6. Installing More Software
 Desktop applications are easiest to find in **Discover** (the software centre in the
