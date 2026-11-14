@@ -9,7 +9,7 @@ public record DiagnosticCheck(string Category, string Name, bool Passed, string 
 public class DiagnosticReport
 {
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-    public string PlatformVersion { get; set; } = "2026.11.01";
+    public string PlatformVersion { get; set; } = "2026.11.14";
     public List<DiagnosticCheck> Checks { get; set; } = new();
 }
 

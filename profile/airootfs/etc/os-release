@@ -2,8 +2,8 @@ NAME="NeOS"
 PRETTY_NAME="NeOS 2026.11 (Beta)"
 ID=neos
 ID_LIKE=arch
-VERSION_ID="2026.11.01"
-VERSION="2026.11.01"
+VERSION_ID="2026.11.14"
+VERSION="2026.11.14"
 BUILD_ID=rolling
 ANSI_COLOR="38;2;56;189;248"
 # Canonical project repository. This file ships inside the installed system, so

@@ -96,6 +96,11 @@ neos-session-select` shows what it picked and why.
 - **For one boot:** add `neos.session=wayland` or `neos.session=x11` to the
   kernel command line (press `e` in the GRUB menu).
 
+Use these overrides to choose the display server. At startup,
+`neos-session-select` also updates conflicting display-server settings in
+`/etc/sddm.conf`, because that file takes precedence over SDDM's drop-ins. It
+preserves the login user, authentication settings and custom desktop sessions.
+
 ### Global display scaling not applying dynamically in KDE Plasma (X11)
 Under X11, KDE Plasma 6 does not support dynamic Wayland-style fractional surface scaling for running applications without session restarts.
 - **Applying Scale:** Use `neos-display-sync --scale <factor>` (e.g. `neos-display-sync --scale 1.25` for 125% / 120 DPI, or `1.5` for 150% / 144 DPI). This sets `Xft.dpi` via `xrdb`, updates KDE font/scale settings, and exports `QT_SCALE_FACTOR` and `GDK_DPI_SCALE`.

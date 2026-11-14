@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # A target can be active with SDDM failed, and a TTY is a nonblank framebuffer.
 # Require an active graphical live-user session AND its desktop process.
+# graphical.target may still be waiting for unrelated services such as time
+# synchronization even though SDDM and the desktop are already usable.
 set -euo pipefail
 
 desktop_ready() {
-    systemctl is-active --quiet graphical.target || return 1
     systemctl is-active --quiet sddm.service || return 1
     local session rest name active type
     while read -r session rest; do

@@ -1,5 +1,5 @@
 #!/bin/bash
-# neos-vm-graphics — guarantee a visible desktop inside virtual machines.
+# neos-vm-graphics — software rendering and a graphical seat in virtual machines.
 #
 # KDE Plasma 6 (SDDM greeter + the KWin compositor) needs OpenGL to draw. In
 # many VMs hardware GL is unavailable — e.g. VMware without "Accelerate 3D
@@ -11,18 +11,104 @@
 # login, so the graphical session inherits it). On bare metal we do nothing and
 # hardware OpenGL is used as normal. The login screen already uses the software
 # Qt Quick backend via the static sddm.service drop-in.
+#
+# An unbound VMware SVGA adapter can expose neither a DRM card nor a framebuffer.
+# logind then reports CanGraphical=no and SDDM waits without even starting Xorg,
+# although Xorg can use its VESA fallback. After waiting for udev, tag only that
+# unbound virtual VGA device as a graphical seat master. The generated rule is
+# runtime-only and stops matching if a driver subsequently binds the adapter.
 set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
-if ! systemd-detect-virt -q 2>/dev/null; then
-    exit 0   # bare metal: keep hardware OpenGL
+# Overridable roots/commands let regression tests exercise the real script.
+ROOT="${NEOS_VM_GRAPHICS_ROOT:-}"
+SYSFS="${NEOS_VM_GRAPHICS_SYSFS:-/sys}"
+DETECT_VIRT="${NEOS_VM_GRAPHICS_VIRT:-systemd-detect-virt}"
+UDEVADM="${NEOS_VM_GRAPHICS_UDEVADM:-udevadm}"
+ENV_FILE="$ROOT/etc/environment"
+RULE_DIR="$ROOT/run/udev/rules.d"
+RULE_FILE="$RULE_DIR/70-neos-vm-seat.rules"
+
+log() { printf 'neos-vm-graphics: %s\n' "$*"; }
+
+if "$DETECT_VIRT" --container -q 2>/dev/null || ! "$DETECT_VIRT" --vm -q 2>/dev/null; then
+    exit 0   # bare metal and containers: keep their graphics configuration
 fi
 
-if ! grep -q '^LIBGL_ALWAYS_SOFTWARE=' /etc/environment 2>/dev/null; then
+if [[ -L "$ENV_FILE" || -L "$ROOT/etc" ]]; then
+    log "refusing to write through symlink $ENV_FILE or its parent" >&2
+    exit 1
+fi
+if ! grep -q '^LIBGL_ALWAYS_SOFTWARE=' "$ENV_FILE" 2>/dev/null; then
     {
         echo "# NeOS: VM detected — force software OpenGL so Plasma renders."
         echo "# Remove these two lines if you enable real 3D acceleration in the VM."
         echo "LIBGL_ALWAYS_SOFTWARE=1"
-    } >> /etc/environment
+    } >> "$ENV_FILE"
 fi
+
+has_drm_card() {
+    local card
+    for card in "$SYSFS"/class/drm/card[0-9]*; do
+        [[ "$card" =~ /card[0-9]+$ && -e "$card" ]] && return 0
+    done
+    return 1
+}
+
+unbound_vmware_vga() {
+    local device address vendor class
+    for device in "$SYSFS"/bus/pci/devices/*; do
+        address="${device##*/}"
+        [[ "$address" =~ ^[[:xdigit:]]{4}:[[:xdigit:]]{2}:[[:xdigit:]]{2}\.[0-7]$ ]] || continue
+        [[ -r "$device/vendor" && -r "$device/class" ]] || continue
+        vendor="$(<"$device/vendor")"
+        class="$(<"$device/class")"
+        [[ "$vendor" == 0x15ad && "$class" == 0x030000 ]] || continue
+        [[ -e "$device/driver" || -L "$device/driver" ]] && continue
+        printf '%s\n' "$device"
+    done
+}
+
+has_drm_card && exit 0
+mapfile -t devices < <(unbound_vmware_vga)
+(( ${#devices[@]} )) || exit 0
+
+# Module loading and coldplug normally create the DRM seat. Do not race a late
+# driver or a busy udev queue by applying the fallback immediately.
+if ! "$UDEVADM" settle --timeout=5; then
+    log "udev did not settle; leaving graphical-seat detection to the driver" >&2
+    exit 0
+fi
+has_drm_card && exit 0
+mapfile -t devices < <(unbound_vmware_vga)
+(( ${#devices[@]} )) || exit 0
+
+for path in "$ROOT/run" "$ROOT/run/udev" "$RULE_DIR" "$RULE_FILE"; do
+    if [[ -L "$path" ]]; then
+        log "refusing to write through symlink $path" >&2
+        exit 1
+    fi
+done
+install -d -m 0755 -- "$RULE_DIR"
+rule_tmp="$(mktemp "$RULE_FILE.XXXXXX")"
+trap 'rm -f -- "$rule_tmp"' EXIT
+{
+    printf '# NeOS: allow Xorg VESA startup on an unbound VMware VGA adapter.\n'
+    for device in "${devices[@]}"; do
+        printf 'SUBSYSTEM=="pci", KERNEL=="%s", ATTR{vendor}=="0x15ad", ATTR{class}=="0x030000", DRIVER=="", TAG+="seat", TAG+="master-of-seat"\n' "${device##*/}"
+    done
+} > "$rule_tmp"
+chmod 0644 "$rule_tmp"
+if cmp -s -- "$rule_tmp" "$RULE_FILE"; then
+    rm -f -- "$rule_tmp"
+else
+    mv -f -- "$rule_tmp" "$RULE_FILE"
+fi
+trap - EXIT
+"$UDEVADM" control --reload-rules
+for device in "${devices[@]}"; do
+    "$UDEVADM" trigger --action=change "$device"
+    log "enabled graphical-seat fallback for unbound VMware VGA ${device##*/}"
+done
+"$UDEVADM" settle --timeout=5

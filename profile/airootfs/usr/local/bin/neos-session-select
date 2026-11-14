@@ -18,8 +18,8 @@
 #   /etc/neos/session.conf  SESSION=wayland|x11|auto
 #
 # Output: /etc/sddm.conf.d/zz-neos-session.conf (sorted last, so it wins over
-# the other drop-ins), the autologin session in /etc/sddm.conf if Calamares
-# wrote one, and on first boot SDDM's preselected session.
+# the other drop-ins), matching managed keys in /etc/sddm.conf (which takes
+# precedence over every drop-in), and on first boot SDDM's preselected session.
 set -euo pipefail
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -123,10 +123,69 @@ Session=$session
 EOF
 fi
 
-# /etc/sddm.conf overrides every drop-in. Calamares writes the installed
-# system's autologin session there; keep it in step with the choice.
-if [[ -f "$MAIN_CONF" ]] && grep -qE '^Session=(plasma|plasmax11|xfce)(\.desktop)?$' "$MAIN_CONF"; then
-    sed -i -E "s/^Session=(plasma|plasmax11|xfce)(\\.desktop)?$/Session=$session/" "$MAIN_CONF"
+# /etc/sddm.conf overrides every drop-in. Updating only Autologin/Session
+# leaves an existing General/DisplayServer=wayland in force even when the VM
+# fallback selected X11. Keep existing managed keys in step with the choice;
+# absent keys inherit the generated drop-in. Authentication, custom desktop
+# sessions and identically named keys in other sections remain untouched.
+if [[ -f "$MAIN_CONF" ]]; then
+    main_tmp="$(mktemp "${MAIN_CONF}.XXXXXX")"
+    trap 'rm -f -- "$main_tmp"' EXIT
+    awk -v choice="$choice" -v session="$session" '
+        function trim(value) {
+            sub(/^[ \t]+/, "", value)
+            sub(/[ \t]+$/, "", value)
+            return value
+        }
+        function unquote(value) {
+            value = trim(value)
+            if (value ~ /^".*"$/) value = substr(value, 2, length(value) - 2)
+            return value
+        }
+        function greeter_environment(value, entries, count, i, item, result) {
+            count = split(unquote(value), entries, ",")
+            result = ""
+            for (i = 1; i <= count; i++) {
+                item = trim(entries[i])
+                if (item == "" || item ~ /^QT_WAYLAND_SHELL_INTEGRATION[ \t]*=/) continue
+                result = result (result == "" ? "" : ",") item
+            }
+            return result (result == "" ? "" : ",") "QT_WAYLAND_SHELL_INTEGRATION=layer-shell"
+        }
+        /^[ \t]*\[/ {
+            section = $0
+            sub(/^[ \t]*\[/, "", section)
+            sub(/\].*$/, "", section)
+            section = trim(section)
+        }
+        /^[ \t]*[^#;= \t][^=]*=/ {
+            equals = index($0, "=")
+            key = trim(substr($0, 1, equals - 1))
+            value = substr($0, equals + 1)
+            if (section == "General" && key == "DisplayServer") {
+                print "DisplayServer=" choice
+                next
+            }
+            if (choice == "wayland" && section == "General" && key == "GreeterEnvironment") {
+                print "GreeterEnvironment=" greeter_environment(value)
+                next
+            }
+            if (choice == "wayland" && section == "Wayland" && key == "CompositorCommand") {
+                print "CompositorCommand=kwin_wayland --drm --no-lockscreen --no-global-shortcuts --locale1"
+                next
+            }
+            if (section == "Autologin" && key == "Session" &&
+                unquote(value) ~ /^(plasma|plasmax11|xfce)(\.desktop)?$/) {
+                print "Session=" session
+                next
+            }
+        }
+        { print }
+    ' "$MAIN_CONF" > "$main_tmp"
+    chmod --reference="$MAIN_CONF" -- "$main_tmp"
+    chown --reference="$MAIN_CONF" -- "$main_tmp"
+    mv -f -- "$main_tmp" "$MAIN_CONF"
+    trap - EXIT
 fi
 
 # Migrate remembered sessions removed by Plasma 6.8; preserve other choices.

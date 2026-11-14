@@ -1,11 +1,11 @@
 [Unit]
 Description=NeOS live boot probe (serial marker for automated boot verification)
 Documentation=https://github.com/uthsarad/NeOS/blob/testing/reports/v2026.09.22/UPDATES_NEEDED.md
-# Ordered after graphical.target so the marker is only emitted once the
-# graphical boot has actually completed. This unit exists on the live medium
-# only (tools/gen-manifests.sh excludes it from the installed-system overlay).
-After=graphical.target
-Wants=graphical.target
+# Check the desktop as soon as SDDM can start it. graphical.target may still be
+# waiting for unrelated work, including network time synchronization offline.
+# This unit is live-only (excluded from the installed-system overlay).
+After=sddm.service neos-liveuser-setup.service
+Wants=sddm.service
 
 [Service]
 Type=oneshot
