@@ -22,7 +22,7 @@ Entries (BIOS and UEFI share the same set):
 
 | Entry | What it does |
 | :--- | :--- |
-| **Start NeOS** | Default. Quiet splash, overlay on the boot media (`copytoram=n`). |
+| **Try or Install NeOS (Live Desktop)** | Default. Quiet splash, overlay on the boot media (`copytoram=n`). Opens the live desktop and Try / Install welcome window. |
 | **NeOS (Copy to RAM)** | `copytoram=y` — the live image is copied into RAM and the USB stick can be removed. Needs enough RAM for the squashfs plus a 4G overlay. |
 | **NeOS (Safe Graphics)** | `nomodeset`. Use when the desktop does not appear. |
 | **NeOS (Verbose)** | No `quiet`/`splash`, `loglevel=7`. Use with `neos-doctor` when a boot hangs. |
@@ -66,3 +66,17 @@ and SDDM actually came up — the same evidence the ISO smoke test asserts.
 *   **`profile/profiledef.sh`**: `bootmodes` lists GRUB (UEFI, including ia32)
     and Syslinux (BIOS). `iso_label="NEOS_ISO"` is what the bootloaders search
     for.
+
+## Medieval boot menu
+
+The UEFI ISO and installed system share the `neos-medieval` graphical GRUB
+theme: dark stone, brass borders, parchment text and castle silhouettes. The
+BIOS Syslinux menu uses matching artwork. The default entry still boots the
+live desktop automatically. Firmware without a supported graphical mode can
+use the text menu.
+
+Theme assets and fonts are committed, so ISO builds do not require Pillow.
+To change the artwork, edit `tools/gen-grub-theme.py` and the ISO theme's
+`theme.txt`, then run `python3 tools/gen-grub-theme.py` and
+`bash tools/gen-manifests.sh`. Run `bash tests/verify_grub_theme.sh` to verify
+that ISO and installed assets match and are included in installation.

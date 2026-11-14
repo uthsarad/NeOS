@@ -4,6 +4,31 @@
 
 NeOS ships a conservative set of modules to improve boot reliability in common VM environments. The list is included in the initramfs via `mkinitcpio.conf` for early boot and loaded via `modules-load.d` once the root filesystem is available, alongside filesystem modules for Btrfs and ZFS when configured.
 
+## Boot the live installer in VMware
+
+1. Power off the VM. Open **VM Settings → CD/DVD (SATA) → Use ISO image file**
+   and select the NeOS ISO. Enable **Connect at power on**.
+2. Choose **VM → Power → Power On to Firmware**, then select the virtual
+   CD/DVD drive in the firmware boot menu. This also works when the virtual
+   hard disk already contains an installation.
+3. Choose **Try or Install NeOS (Live Desktop)**. The live session signs in
+   automatically and opens the welcome window. Choose **Try NeOS** to explore
+   or **Install NeOS** to open the graphical installer.
+
+A menu containing only **NeOS Linux** and **Advanced options for NeOS Linux**
+belongs to the installed hard disk, not the live ISO. A `NeOS login:` text prompt
+is not the live installer. Boot the CD/DVD drive using the steps above.
+
+The current live image uses the NeOS logo and progress dots during boot. If you
+still see the old cat animation, check that the VM is booting a newly built ISO;
+updating this repository does not replace an ISO or an existing VM installation.
+After installation, disconnect the ISO and boot the virtual hard disk.
+
+The live login manager waits for live-user setup. If an image is missing the
+prebuilt live account, startup creates it before attempting automatic login.
+The ISO boot check requires an active live-user graphical session and its
+desktop process; reaching a TTY or only the boot splash does not pass.
+
 ## Included modules
 - **Virtio (QEMU/KVM):** `virtio`, `virtio_pci`, `virtio_blk`, `virtio_scsi`, `virtio_net`, `virtio_console`, `virtio_balloon`
 - **VMware:** `vmw_vsock_vmci_transport`

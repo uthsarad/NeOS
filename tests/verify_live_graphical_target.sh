@@ -65,3 +65,9 @@ if [[ "$FAIL" -ne 0 ]]; then
     exit 1
 fi
 echo "Live graphical target verification passed!"
+
+# SDDM must pull in the live account setup even when started directly.
+DROPIN="$SYSDIR/sddm.service.d/20-live-session.conf"
+grep -qx 'Requires=neos-liveuser-setup.service' "$DROPIN"
+grep -qx 'RemainAfterExit=yes' "$SERVICE"
+echo "[PASS] live SDDM requires persistent account setup"

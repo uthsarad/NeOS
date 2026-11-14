@@ -19,12 +19,10 @@ GRUB_PRELOAD_MODULES="part_gpt part_msdos ext2 btrfs"
 # Disable submenus for a simpler boot menu experience.
 GRUB_DISABLE_SUBMENU=true
 
-# Use the classic Arch 'starfield' GRUB theme, which ships natively with the
-# grub package at this path on the installed system — no overlay shipping or
-# generated font is needed. grub-mkconfig auto-loads the theme's bundled DejaVu
-# fonts, so GRUB_FONT is intentionally unset. Matches the ISO boot menu.
-GRUB_THEME="/usr/share/grub/themes/starfield/theme.txt"
-GRUB_GFXMODE="auto"
+# The same medieval graphical menu is shipped on the ISO and installed disk.
+GRUB_THEME="/usr/share/grub/themes/neos-medieval/theme.txt"
+GRUB_FONT="/usr/share/grub/themes/neos-medieval/dejavu_16.pf2"
+GRUB_GFXMODE="1024x768,auto"
 GRUB_TERMINAL_OUTPUT="gfxterm"
 
 # Name of the snapshot submenu that grub-btrfs adds (docs/user-guide/TROUBLESHOOTING.md).

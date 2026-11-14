@@ -23,18 +23,12 @@ for cfg in "$SYSLINUX_DIR"/*.cfg; do
         echo "  [PASS] $cfg does not contain redundant prefixes"
     fi
 
-    if [[ "$CONTENT" == *"Try or Install"* ]]; then
-        echo "[FAIL] $cfg uses live-OS wording instead of installer-media wording"
-        grep -Hn "Try or Install" "$cfg"
-        ALL_PASSED=false
-    else
-        echo "  [PASS] $cfg uses installer-media wording"
-    fi
+
 done
 
 SYS_CFG="$SYSLINUX_DIR/archiso_sys.cfg"
 SYS_CONTENT=$(<"$SYS_CFG")
-for label in "NeOS (Copy to RAM)" "NeOS (Verbose)" "NeOS (Safe Graphics)"; do
+for label in "Try or Install NeOS (Live Desktop)" "NeOS (Copy to RAM)" "NeOS (Verbose)" "NeOS (Safe Graphics)"; do
     if [[ "$SYS_CONTENT" == *"$label"* ]]; then
         echo "  [PASS] $SYS_CFG has '$label'"
     else

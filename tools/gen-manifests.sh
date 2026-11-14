@@ -91,6 +91,8 @@ echo "Generating NeOS overlay manifest -> $NETINSTALL_OVERLAY"
     -e '^etc/sudoers\.d/zz-live-wheel$' \
     -e '^etc/systemd/system/[^/]+\.target\.wants/' \
     -e '^etc/systemd/system/neos-boot-probe\.service$' \
+    -e '^usr/local/bin/neos-boot-probe$' \
+    -e '^etc/systemd/system/sddm\.service\.d/20-live-session\.conf$' \
     -e '^usr/local/bin/neos-autoinstall$' \
     -e '^etc/xdg/autostart/neos-autoinstall\.desktop$' \
     -e '^etc/systemd/system/getty@tty1\.service\.d/' \

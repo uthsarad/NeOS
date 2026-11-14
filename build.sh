@@ -213,10 +213,8 @@ REPO_ROOT="$PWD"
 echo "Generating temporary build configuration..."
 bash tools/gen-build-conf.sh "$REPO_ROOT" "$REPO_ROOT/$BUILD_CONF"
 
-# NOTE: GRUB uses the classic 'starfield' theme. On the ISO it is committed
-# under profile/grub/themes/starfield/; on the installed disk it comes from the
-# grub package natively. Neither needs a generated font, so there is nothing to
-# build here.
+# Medieval GRUB artwork and fonts are committed for ISO and installed use.
+# Regenerate only when changing the design: python3 tools/gen-grub-theme.py.
 
 # Generate the netinstall manifests (Calamares pacstrap package list + overlay
 # copy manifest). Shared with CI -- tools/gen-manifests.sh is the single source
