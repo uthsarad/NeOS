@@ -292,26 +292,38 @@ run_boot() {
         fi
 
         if (( dumped )); then
-            local stats
-            stats=$(python3 "$PPM_STATS_PY" "$shot")
-            echo "  [INFO] Framebuffer check: $stats"
-            local distinct bright
-            distinct=$(sed -n 's/.*distinct=\([0-9]*\).*/\1/p' <<<"$stats")
-            bright=$(sed -n 's/.*bright_ratio=\([0-9.]*\).*/\1/p' <<<"$stats")
-            if [[ -z "$distinct" ]]; then
-                echo "  [WARN] Could not analyse $shot ($stats); skipping the blank-frame check."
-            elif (( distinct < 24 )) || [[ "${bright:-0}" == "0.0000" ]]; then
+            local stats distinct bright
+            local retries=0
+            while :; do
+                stats=$(python3 "$PPM_STATS_PY" "$shot")
+                echo "  [INFO] Framebuffer check: $stats"
+                distinct=$(sed -n 's/.*distinct=\([0-9]*\).*/\1/p' <<<"$stats")
+                bright=$(sed -n 's/.*bright_ratio=\([0-9.]*\).*/\1/p' <<<"$stats")
+                if [[ -z "$distinct" ]]; then
+                    echo "  [WARN] Could not analyse $shot ($stats); skipping the blank-frame check."
+                    break
+                fi
+                if (( distinct >= 24 )) && [[ "${bright:-0}" != "0.0000" ]]; then
+                    echo "  [PASS] Framebuffer shows a rendered session (distinct=${distinct}, bright_ratio=${bright})."
+                    break
+                fi
                 if [[ "$ALLOW_BLANK_FRAME" == "1" ]]; then
                     echo "  [WARN] Blank-looking frame (distinct=${distinct}, bright_ratio=${bright}) ignored (ALLOW_BLANK_FRAME=1)."
-                else
+                    break
+                fi
+                if (( retries >= 2 )) || ! kill -0 "$QEMU_PID" 2>/dev/null; then
                     echo "[FAIL] QEMU $mode boot test failed: the framebuffer is blank (distinct=${distinct}, bright_ratio=${bright})."
                     echo "       graphical.target was reached but nothing was rendered — see $shot."
                     kill "$QEMU_PID" 2>/dev/null || true
                     exit 1
                 fi
-            else
-                echo "  [PASS] Framebuffer shows a rendered session (distinct=${distinct}, bright_ratio=${bright})."
-            fi
+                retries=$((retries + 1))
+                sleep 5
+                python3 "$QMP_PY" "$QMP_SOCK" screendump \
+                    "{\"filename\":\"$shot\",\"format\":\"ppm\"}" >/dev/null 2>&1 || \
+                python3 "$QMP_PY" "$QMP_SOCK" screendump \
+                    "{\"filename\":\"$shot\"}" >/dev/null 2>&1 || true
+            done
         else
             echo "  [WARN] No framebuffer screenshot could be taken (python3/QMP unavailable); marker evidence only."
         fi
